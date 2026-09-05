@@ -25,3 +25,4 @@
 | [0008](0008-no-accuracy-metric.md) | 평가에 accuracy 사용 금지 | 채택 |
 | [0009](0009-evidence-citation-required.md) | LLM 응답의 근거 스팬 인용 강제 | 채택 |
 | [0010](0010-dataset-lifecycle-purge.md) | 데이터셋 원본은 임시 자원, 파생 후 삭제 | 채택 |
+| [0011](0011-lanl-labels-have-no-lateral-movement.md) | LANL 라벨로는 측면이동을 평가하지 않는다 | 채택 |

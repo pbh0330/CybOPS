@@ -1,0 +1,278 @@
+﻿{
+    "source":  "F:\\mc-cycop-data\\raw\\lanl-cyber1\\redteam.txt.gz",
+    "events":  749,
+    "first_time":  150885,
+    "last_time":  2557047,
+    "first_day":  1.746,
+    "last_day":  29.595,
+    "active_days":  18,
+    "distinct_users":  104,
+    "distinct_sources":  4,
+    "distinct_targets":  301,
+    "distinct_hosts":  305,
+    "auth_events_ref":  1051430459,
+    "total_events_ref":  1648275307,
+    "malicious_share_of_auth_pct":  7.12363E-05,
+    "one_in_auth":  1403779,
+    "malicious_share_of_all_pct":  4.54414E-05,
+    "one_in_all":  2200635,
+    "per_day":  [
+                    {
+                        "day":  1,
+                        "events":  10
+                    },
+                    {
+                        "day":  2,
+                        "events":  15
+                    },
+                    {
+                        "day":  5,
+                        "events":  21
+                    },
+                    {
+                        "day":  6,
+                        "events":  3
+                    },
+                    {
+                        "day":  7,
+                        "events":  1
+                    },
+                    {
+                        "day":  8,
+                        "events":  273
+                    },
+                    {
+                        "day":  9,
+                        "events":  15
+                    },
+                    {
+                        "day":  12,
+                        "events":  209
+                    },
+                    {
+                        "day":  13,
+                        "events":  81
+                    },
+                    {
+                        "day":  14,
+                        "events":  35
+                    },
+                    {
+                        "day":  15,
+                        "events":  26
+                    },
+                    {
+                        "day":  20,
+                        "events":  1
+                    },
+                    {
+                        "day":  21,
+                        "events":  4
+                    },
+                    {
+                        "day":  22,
+                        "events":  1
+                    },
+                    {
+                        "day":  26,
+                        "events":  26
+                    },
+                    {
+                        "day":  27,
+                        "events":  9
+                    },
+                    {
+                        "day":  28,
+                        "events":  3
+                    },
+                    {
+                        "day":  29,
+                        "events":  16
+                    }
+                ],
+    "top_users":  [
+                      {
+                          "user":  "U66@DOM1",
+                          "events":  118
+                      },
+                      {
+                          "user":  "U3005@DOM1",
+                          "events":  36
+                      },
+                      {
+                          "user":  "U737@DOM1",
+                          "events":  32
+                      },
+                      {
+                          "user":  "U1653@DOM1",
+                          "events":  31
+                      },
+                      {
+                          "user":  "U293@DOM1",
+                          "events":  31
+                      },
+                      {
+                          "user":  "U748@DOM1",
+                          "events":  26
+                      },
+                      {
+                          "user":  "U8946@DOM1",
+                          "events":  19
+                      },
+                      {
+                          "user":  "U1723@DOM1",
+                          "events":  19
+                      },
+                      {
+                          "user":  "U3635@DOM1",
+                          "events":  18
+                      },
+                      {
+                          "user":  "U9947@DOM1",
+                          "events":  15
+                      },
+                      {
+                          "user":  "U2837@DOM1",
+                          "events":  15
+                      },
+                      {
+                          "user":  "U4448@DOM1",
+                          "events":  14
+                      },
+                      {
+                          "user":  "U3549@DOM1",
+                          "events":  13
+                      },
+                      {
+                          "user":  "U5087@DOM1",
+                          "events":  13
+                      },
+                      {
+                          "user":  "U8601@DOM1",
+                          "events":  13
+                      },
+                      {
+                          "user":  "U218@DOM1",
+                          "events":  13
+                      },
+                      {
+                          "user":  "U342@DOM1",
+                          "events":  12
+                      },
+                      {
+                          "user":  "U4353@DOM1",
+                          "events":  12
+                      },
+                      {
+                          "user":  "U1480@DOM1",
+                          "events":  12
+                      },
+                      {
+                          "user":  "U1145@DOM1",
+                          "events":  12
+                      }
+                  ],
+    "top_sources":  [
+                        {
+                            "host":  "C17693",
+                            "events":  701
+                        },
+                        {
+                            "host":  "C22409",
+                            "events":  26
+                        },
+                        {
+                            "host":  "C19932",
+                            "events":  19
+                        },
+                        {
+                            "host":  "C18025",
+                            "events":  3
+                        }
+                    ],
+    "top_targets":  [
+                        {
+                            "host":  "C2388",
+                            "events":  27
+                        },
+                        {
+                            "host":  "C754",
+                            "events":  26
+                        },
+                        {
+                            "host":  "C2519",
+                            "events":  21
+                        },
+                        {
+                            "host":  "C395",
+                            "events":  15
+                        },
+                        {
+                            "host":  "C1015",
+                            "events":  15
+                        },
+                        {
+                            "host":  "C19038",
+                            "events":  12
+                        },
+                        {
+                            "host":  "C1438",
+                            "events":  11
+                        },
+                        {
+                            "host":  "C92",
+                            "events":  11
+                        },
+                        {
+                            "host":  "C828",
+                            "events":  10
+                        },
+                        {
+                            "host":  "C2079",
+                            "events":  10
+                        },
+                        {
+                            "host":  "C1710",
+                            "events":  9
+                        },
+                        {
+                            "host":  "C1936",
+                            "events":  9
+                        },
+                        {
+                            "host":  "C3019",
+                            "events":  7
+                        },
+                        {
+                            "host":  "C457",
+                            "events":  7
+                        },
+                        {
+                            "host":  "C8209",
+                            "events":  7
+                        },
+                        {
+                            "host":  "C1737",
+                            "events":  7
+                        },
+                        {
+                            "host":  "C231",
+                            "events":  7
+                        },
+                        {
+                            "host":  "C5653",
+                            "events":  7
+                        },
+                        {
+                            "host":  "C108",
+                            "events":  6
+                        },
+                        {
+                            "host":  "C1268",
+                            "events":  6
+                        }
+                    ],
+    "pivot_hosts":  [
+
+                    ]
+}

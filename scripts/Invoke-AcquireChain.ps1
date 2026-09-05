@@ -95,14 +95,31 @@ while ($true) {
         }
     }
 
+    # Chrome renames "<something>.crdownload" to the name it chose when the
+    # download started. That is normally auth.txt.gz, but a pre-existing file
+    # of that name would have made it "auth (1).txt.gz". Accept either, and
+    # prefer an exact size match over the name.
+    $done = $null
     if (Test-Path -LiteralPath $final) {
-        $sz = Get-LiveLength $final
+        $done = $final
+    } else {
+        $cand = @(Get-ChildItem -LiteralPath $DownloadDir -Filter 'auth*.txt.gz' -File -Force -ErrorAction SilentlyContinue |
+                  ForEach-Object { [PSCustomObject]@{ Path = $_.FullName; Size = (Get-LiveLength $_.FullName) } } |
+                  Sort-Object @{ e = { [math]::Abs($_.Size - $AuthExpectedBytes) } })
+        if ($cand.Count -gt 0) {
+            $done = $cand[0].Path
+            Log ("  found finished file under a different name: {0}" -f (Split-Path $done -Leaf))
+        }
+    }
+
+    if ($done) {
+        $sz = Get-LiveLength $done
         Log ("  DOWNLOAD FINISHED in Downloads: {0:N0} B" -f $sz)
         if ($sz -ne $AuthExpectedBytes) {
             Log ("  *** SIZE MISMATCH: expected {0:N0} B ***" -f $AuthExpectedBytes)
         }
         try {
-            Move-Item -LiteralPath $final -Destination $dest -Force
+            Move-Item -LiteralPath $done -Destination $dest -Force
             Log ("  moved -> {0}" -f $dest)
             $authOk = $true
         } catch {
@@ -204,5 +221,43 @@ if (-not (Test-Path $ait)) {
 Log ('  handing off to ' + $ait)
 Log '  progress: F:\mc-cycop-data\raw\ait-lds-v2\_acquire.log'
 
-& powershell -NoProfile -ExecutionPolicy Bypass -File $ait
-Log ("=== chain end (AIT exit {0}) ===" -f $LASTEXITCODE)
+# 130 GB at ~0.6 MB/s is days of transfer. fetch-ait.ps1 abandons a file after
+# 12 consecutive stalled attempts and moves on, which over that span is likely
+# to happen at least once. Re-running is cheap and safe: complete files are
+# skipped and partial ones resume, so loop until a pass changes nothing.
+$aitDir = 'F:\mc-cycop-data\raw\ait-lds-v2'
+$aitFiles = @('russellmitchell.zip','santos.zip','fox.zip','harrison.zip',
+              'wardbeck.zip','shaw.zip','wheeler.zip','wilson.zip')
+
+function Get-AitTotal {
+    $t = [long]0
+    foreach ($f in $aitFiles) {
+        $p = Join-Path $aitDir $f
+        if (Test-Path -LiteralPath $p) { $t += (Get-Item -LiteralPath $p).Length }
+    }
+    return $t
+}
+
+$pass = 0
+$maxPasses = 12
+while ($pass -lt $maxPasses) {
+    $pass++
+    $before = Get-AitTotal
+    Log ("--- AIT pass {0}/{1}, have {2:N2} GB ---" -f $pass, $maxPasses, ($before/1GB))
+
+    & powershell -NoProfile -ExecutionPolicy Bypass -File $ait
+    $code = $LASTEXITCODE
+
+    $after = Get-AitTotal
+    $gained = $after - $before
+    Log ("--- AIT pass {0} done (exit {1}), +{2:N2} GB, total {3:N2} GB ---" -f `
+         $pass, $code, ($gained/1GB), ($after/1GB))
+
+    if ($gained -le 0) {
+        Log '  pass gained nothing - stopping. Check _acquire.log for the reason.'
+        break
+    }
+    Start-Sleep -Seconds 120
+}
+
+Log ("=== chain end: AIT total {0:N2} GB after {1} pass(es) ===" -f ((Get-AitTotal)/1GB), $pass)
