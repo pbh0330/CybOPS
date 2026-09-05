@@ -1,0 +1,45 @@
+# 데이터셋 원본과 가공물은 저장소에 넣지 않는다 (크기 + 라이선스)
+# `data/`로 디렉터리를 통째로 제외하면 Git이 그 안을 들여다보지 않아
+# `!data/README.md` 예외가 동작하지 않는다. `data/*`로 내용물을 제외해야 한다.
+data/*
+!data/README.md
+
+# 모델 가중치, 인덱스
+models/
+*.gguf
+*.safetensors
+.chroma/
+*.faiss
+
+# 비밀값
+.env
+.env.*
+!.env.example
+configs/*.local.yaml
+secrets/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Node
+node_modules/
+dist/
+build/
+
+# OS / 에디터
+Thumbs.db
+desktop.ini
+.DS_Store
+.idea/
+.vscode/
+
+# Claude Code 로컬 설정
+.claude/settings.local.json
+CLAUDE.local.md

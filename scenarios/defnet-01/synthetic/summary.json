@@ -1,0 +1,30 @@
+﻿{
+    "scenario":  "defnet-01",
+    "campaign":  "CAMP-01",
+    "generated_at":  "2026-09-05T19:44:10",
+    "seed":  42,
+    "total_events":  8012,
+    "malicious_events":  12,
+    "malicious_pct":  0.1498,
+    "time_start":  "2026-09-01T08:00:00",
+    "time_end":  "2026-09-01T15:59:50",
+    "techniques":  [
+                       "T1003.001",
+                       "T1003.003",
+                       "T1005",
+                       "T1021.002",
+                       "T1046",
+                       "T1048.003",
+                       "T1059.001",
+                       "T1070.001",
+                       "T1071.001",
+                       "T1078.002",
+                       "T1566.001"
+                   ],
+    "files":  [
+                  "events.jsonl",
+                  "labels.jsonl",
+                  "states.jsonl"
+              ],
+    "warning":  "Synthetic data. Do not use for any published detection performance claim. See docs/07-synthetic-data.md"
+}

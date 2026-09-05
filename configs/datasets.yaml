@@ -1,0 +1,88 @@
+# 데이터셋 로컬 경로와 취득 정보
+# 원본 파일은 저장소에 커밋하지 않는다. 이 파일만 커밋한다. (ADR-0010)
+# 수명주기 절차: docs/05-data-lifecycle.md
+
+roots:
+  # F: 는 내장 고정 디스크 (931GB, 여유 923GB). 대용량 원본 보관용.
+  raw: 'F:\mc-cycop-data\raw'
+  interim: 'F:\mc-cycop-data\interim'
+  # 파생물은 영구 자산이다. 백업 대상이며 어떤 정리 스크립트도 건드리지 않는다.
+  processed: 'F:\mc-cycop-data\processed'
+
+datasets:
+
+  ait-lds-v2:
+    priority: 1
+    status: acquiring          # not-acquired | acquiring | acquired | distilled | verified | purged
+    source: 'https://zenodo.org/records/5789064'
+    doi: '10.5281/zenodo.5789064'
+    published: '2022-02-24'
+    license: 'CC BY-NC-SA 4.0'
+    redistributable: 'attribution + non-commercial + share-alike 조건 하에서만'
+    auth_required: false
+    url_pattern: 'https://zenodo.org/records/5789064/files/{file}?download=1'
+    total_compressed_gb: 130.6
+    # 테스트베드 단위 부분 취득이 가능하다. 작은 것부터 받아 파이프라인을 검증한다.
+    parts:
+      - {file: 'russellmitchell.zip', gb: 7.1,  unpacked_gb: 14, status: acquiring}
+      - {file: 'santos.zip',          gb: 10.0, unpacked_gb: 17, status: not-acquired}
+      - {file: 'fox.zip',             gb: 15.8, unpacked_gb: 26, status: not-acquired}
+      - {file: 'harrison.zip',        gb: 16.8, unpacked_gb: 27, status: not-acquired}
+      - {file: 'wardbeck.zip',        gb: 17.2, unpacked_gb: 26, status: not-acquired}
+      - {file: 'shaw.zip',            gb: 17.6, unpacked_gb: 27, status: not-acquired}
+      - {file: 'wheeler.zip',         gb: 19.6, unpacked_gb: 30, status: not-acquired}
+      - {file: 'wilson.zip',          gb: 26.5, unpacked_gb: 39, status: not-acquired}
+
+  lanl-cyber1:
+    priority: 2
+    status: acquiring-manual   # 2026-09-05 사용자가 브라우저로 직접 취득 중
+    landing_zone: 'C:\Users\qwert\Downloads'   # 완료 후 raw/lanl-cyber1 로 이동 필요
+    acquired_parts:
+      - {file: 'redteam.txt.gz', bytes: 4846, verified: 'gzip magic 1F 8B 확인', status: acquired}
+    source: 'https://csr.lanl.gov/data/cyber1/'
+    license: 'CC0 (퍼블릭 도메인)'   # 재배포 제약 없음 — 논문 부록 활용 여지가 가장 큼
+    redistributable: true
+    auth_required: true
+    # 직접 다운로드 URL이 없다. 이메일과 사용 목적을 폼으로 제출해야 접근 권한이 나온다.
+    # 사용자가 직접 신청해야 하는 항목.
+    blocked_reason: 'csr.lanl.gov 폼 제출 필요 (이메일 + 사용 목적)'
+    contact: 'cyberdata@lanl.gov'
+    total_compressed_gb: 10.7
+    parts:
+      - {file: 'auth.txt.gz',    size: '7.2G'}
+      - {file: 'proc.txt.gz',    size: '2.2G'}
+      - {file: 'flows.txt.gz',   size: '1.1G'}
+      - {file: 'dns.txt.gz',     size: '177M'}
+      - {file: 'redteam.txt.gz', size: '4.8K'}   # 그라운드트루스
+
+  darpa-tc:
+    priority: 3
+    status: not-acquired
+    source: 'https://github.com/darpa-i2o/Transparent-Computing'
+    license: 'TBD — 취득 시 확인'
+    auth_required: false
+    notes: 'Google Drive 호스팅. 서브셋(CADETS/THEIA/TRACE/FiveDirections) 단위 취득.
+            각 캠페인에 ATT&CK 단계 정렬 그라운드트루스 매니페스트 포함.'
+
+  darpa-optc:
+    priority: 4
+    status: not-acquired
+    source: 'https://github.com/FiveDirections/OpTC-data'
+    hosting: 'Google Drive — https://drive.google.com/drive/u/0/folders/1n3kkS3KR31KUegn42yk3-e6JkZvf0Caa'
+    license: 'TBD — 취득 시 확인'
+    auth_required: false
+    total_compressed_gb: 1000     # 약 1TB. 17억+ 이벤트.
+    notes: |
+      Google Drive 폴더 호스팅이라 curl로 직접 받기 어렵다. gdown 등 별도 도구 필요.
+      전체를 받지 않는다. 구조: ecar/{short,evaluation,benign}, ecar-bro/{동일}, bro/(날짜별).
+      그라운드트루스: OpTCRedTeamGroundTruth.pdf
+      취득 전략: 레드팀 3일 구간(evaluation) + 그라운드트루스 등장 호스트로 한정.
+      errata.md를 반드시 먼저 읽을 것 (데이터 이슈 기술됨).
+      실측 주의: 수집 공간 제약으로 1,000대가 아닌 500대 호스트 데이터만 수집되었다는
+      기술이 있다. 논문에 호스트 수를 인용하기 전 확인 필요.
+
+  security-datasets:
+    priority: 보조
+    status: not-acquired
+    source: 'https://github.com/OTRF/Security-Datasets'
+    notes: '소용량. ATT&CK 기법 단위 스모크 테스트 입력. 상시 보관 가능.'

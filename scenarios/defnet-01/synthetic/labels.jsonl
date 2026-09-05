@@ -1,0 +1,12 @@
+{"event_uid":"EV0008001","malicious":true,"technique":"T1566.001","tactic":"initial-access","stage":"초기 침해","campaign":"CAMP-01"}
+{"event_uid":"EV0008002","malicious":true,"technique":"T1059.001","tactic":"execution","stage":"실행","campaign":"CAMP-01"}
+{"event_uid":"EV0008003","malicious":true,"technique":"T1071.001","tactic":"command-and-control","stage":"C2 수립","campaign":"CAMP-01"}
+{"event_uid":"EV0008004","malicious":true,"technique":"T1003.001","tactic":"credential-access","stage":"자격증명 탈취","campaign":"CAMP-01"}
+{"event_uid":"EV0008005","malicious":true,"technique":"T1046","tactic":"discovery","stage":"내부 정찰","campaign":"CAMP-01"}
+{"event_uid":"EV0008006","malicious":true,"technique":"T1021.002","tactic":"lateral-movement","stage":"측면 이동 (DC01)","campaign":"CAMP-01"}
+{"event_uid":"EV0008007","malicious":true,"technique":"T1003.003","tactic":"credential-access","stage":"도메인 자격증명 탈취","campaign":"CAMP-01"}
+{"event_uid":"EV0008008","malicious":true,"technique":"T1021.002","tactic":"lateral-movement","stage":"측면 이동 (DC02)","campaign":"CAMP-01"}
+{"event_uid":"EV0008009","malicious":true,"technique":"T1078.002","tactic":"defense-evasion","stage":"유효 계정 악용","campaign":"CAMP-01"}
+{"event_uid":"EV0008010","malicious":true,"technique":"T1005","tactic":"collection","stage":"데이터 수집","campaign":"CAMP-01"}
+{"event_uid":"EV0008011","malicious":true,"technique":"T1048.003","tactic":"exfiltration","stage":"유출","campaign":"CAMP-01"}
+{"event_uid":"EV0008012","malicious":true,"technique":"T1070.001","tactic":"defense-evasion","stage":"흔적 삭제","campaign":"CAMP-01"}

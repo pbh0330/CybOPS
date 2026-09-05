@@ -1,0 +1,121 @@
+{
+  "scenario_id": "defnet-01",
+  "name": "국방망 지휘통제/군수지원 축약 시나리오",
+  "network_type": "defense-enterprise",
+  "authored": "2026-09-05",
+  "classification": "가상. 공개 자료와 일반 교리 수준으로만 구성. 실제 부대편성·임무계획·자산대장 미사용.",
+  "assumption": "docs/99-open-questions.md Q1 미확정 상태에서 국방망(엔터프라이즈 유사)을 가정했다. 전술망으로 확정되면 시간축(temporal edge)이 추가되어야 한다.",
+
+  "units": [
+    {"id": "U-HQ",  "name": "사령부",     "echelon": "HQ",   "parent": null},
+    {"id": "U-1BN", "name": "1대대",      "echelon": "BN",   "parent": "U-HQ"},
+    {"id": "U-LOG", "name": "군수대대",   "echelon": "BN",   "parent": "U-HQ"}
+  ],
+
+  "missions": [
+    {"id": "M-C2",  "name": "지휘통제",   "priority": 1, "owner": "U-HQ"},
+    {"id": "M-LOG", "name": "군수지원",   "priority": 2, "owner": "U-LOG"}
+  ],
+
+  "phases": [
+    {"id": "PH-C2-1",  "mission": "M-C2",  "seq": 1, "name": "상황판단"},
+    {"id": "PH-C2-2",  "mission": "M-C2",  "seq": 2, "name": "명령하달"},
+    {"id": "PH-LOG-1", "mission": "M-LOG", "seq": 1, "name": "소요판단"},
+    {"id": "PH-LOG-2", "mission": "M-LOG", "seq": 2, "name": "보급실시"}
+  ],
+
+  "tasks": [
+    {"id": "T-SITREP", "phase": "PH-C2-1",  "name": "상황보고 수신",   "criticality": 1.0},
+    {"id": "T-ORDER",  "phase": "PH-C2-2",  "name": "작전명령 배포",   "criticality": 1.0},
+    {"id": "T-REQ",    "phase": "PH-LOG-1", "name": "소요 집계",       "criticality": 0.8},
+    {"id": "T-ISSUE",  "phase": "PH-LOG-2", "name": "보급 지시",       "criticality": 0.9}
+  ],
+
+  "services": [
+    {"id": "S-DIR",  "name": "디렉터리/인증", "redundancy_group": "dir"},
+    {"id": "S-MSG",  "name": "메시징",        "redundancy_group": null},
+    {"id": "S-FILE", "name": "파일공유",      "redundancy_group": null},
+    {"id": "S-DB",   "name": "군수 DB",       "redundancy_group": "db"},
+    {"id": "S-WEB",  "name": "상황portal",    "redundancy_group": null}
+  ],
+
+  "assets": [
+    {"id": "DC01",   "type": "domain-controller", "unit": "U-HQ",  "site": "본부 전산실", "os": "windows-server"},
+    {"id": "DC02",   "type": "domain-controller", "unit": "U-HQ",  "site": "예비 전산실", "os": "windows-server"},
+    {"id": "MAIL01", "type": "mail-server",       "unit": "U-HQ",  "site": "본부 전산실", "os": "linux"},
+    {"id": "FS01",   "type": "file-server",       "unit": "U-HQ",  "site": "본부 전산실", "os": "windows-server"},
+    {"id": "DB01",   "type": "database",          "unit": "U-LOG", "site": "본부 전산실", "os": "linux"},
+    {"id": "DB02",   "type": "database",          "unit": "U-LOG", "site": "예비 전산실", "os": "linux"},
+    {"id": "WEB01",  "type": "web-server",        "unit": "U-HQ",  "site": "본부 전산실", "os": "linux"},
+    {"id": "ESX01",  "type": "hypervisor",        "unit": "U-HQ",  "site": "본부 전산실", "os": "esxi"},
+    {"id": "ESX02",  "type": "hypervisor",        "unit": "U-HQ",  "site": "예비 전산실", "os": "esxi"},
+    {"id": "FW01",   "type": "firewall",          "unit": "U-HQ",  "site": "본부 전산실", "os": "appliance"},
+    {"id": "SW01",   "type": "switch",            "unit": "U-HQ",  "site": "본부 전산실", "os": "appliance"},
+    {"id": "WKS001", "type": "workstation",       "unit": "U-HQ",  "site": "지휘소",     "os": "windows"},
+    {"id": "WKS002", "type": "workstation",       "unit": "U-HQ",  "site": "지휘소",     "os": "windows"},
+    {"id": "WKS003", "type": "workstation",       "unit": "U-1BN", "site": "1대대",      "os": "windows"},
+    {"id": "WKS004", "type": "workstation",       "unit": "U-1BN", "site": "1대대",      "os": "windows"},
+    {"id": "WKS005", "type": "workstation",       "unit": "U-LOG", "site": "군수대대",   "os": "windows"}
+  ],
+
+  "edges": {
+    "requires": [
+      {"from": "T-SITREP", "to": "S-MSG",  "w": 1.0},
+      {"from": "T-SITREP", "to": "S-DIR",  "w": 0.7},
+      {"from": "T-SITREP", "to": "S-WEB",  "w": 0.5},
+      {"from": "T-ORDER",  "to": "S-MSG",  "w": 1.0},
+      {"from": "T-ORDER",  "to": "S-FILE", "w": 0.8},
+      {"from": "T-ORDER",  "to": "S-DIR",  "w": 0.7},
+      {"from": "T-REQ",    "to": "S-DB",   "w": 1.0},
+      {"from": "T-REQ",    "to": "S-DIR",  "w": 0.6},
+      {"from": "T-ISSUE",  "to": "S-DB",   "w": 1.0},
+      {"from": "T-ISSUE",  "to": "S-MSG",  "w": 0.7}
+    ],
+    "provided_by": [
+      {"from": "S-DIR",  "to": "DC01",   "w": 1.0},
+      {"from": "S-DIR",  "to": "DC02",   "w": 1.0},
+      {"from": "S-MSG",  "to": "MAIL01", "w": 1.0},
+      {"from": "S-FILE", "to": "FS01",   "w": 1.0},
+      {"from": "S-DB",   "to": "DB01",   "w": 1.0},
+      {"from": "S-DB",   "to": "DB02",   "w": 1.0},
+      {"from": "S-WEB",  "to": "WEB01",  "w": 1.0}
+    ],
+    "_depends_on_note": "to 는 자산 id 또는 서비스 id 둘 다 가능하다. 이중화된 대상에 의존할 때는 반드시 서비스 id로 건다. 자산에 직접 걸면 이중화를 우회해 과잉 저하가 계산된다(2026-09-05 실측으로 확인).",
+    "depends_on": [
+      {"from": "MAIL01", "to": "S-DIR", "w": 0.8},
+      {"from": "FS01",   "to": "S-DIR", "w": 0.9},
+      {"from": "DB01",   "to": "S-DIR", "w": 0.5},
+      {"from": "DB02",   "to": "S-DIR", "w": 0.5},
+      {"from": "WEB01",  "to": "S-DB",  "w": 0.7}
+    ],
+    "hosted_on": [
+      {"from": "DC01",   "to": "ESX01"},
+      {"from": "MAIL01", "to": "ESX01"},
+      {"from": "FS01",   "to": "ESX01"},
+      {"from": "WEB01",  "to": "ESX01"},
+      {"from": "DB01",   "to": "ESX01"},
+      {"from": "DC02",   "to": "ESX02"},
+      {"from": "DB02",   "to": "ESX02"}
+    ],
+    "redundant_with": [
+      {"a": "DC01", "b": "DC02", "group": "dir"},
+      {"a": "DB01", "b": "DB02", "group": "db"}
+    ],
+    "communicates_with": [
+      {"a": "WKS001", "b": "MAIL01"}, {"a": "WKS001", "b": "FS01"},  {"a": "WKS001", "b": "DC01"},
+      {"a": "WKS002", "b": "MAIL01"}, {"a": "WKS002", "b": "DC01"},
+      {"a": "WKS003", "b": "MAIL01"}, {"a": "WKS003", "b": "FS01"},  {"a": "WKS003", "b": "DC01"},
+      {"a": "WKS004", "b": "MAIL01"}, {"a": "WKS004", "b": "DC01"},
+      {"a": "WKS005", "b": "DB01"},   {"a": "WKS005", "b": "MAIL01"}, {"a": "WKS005", "b": "DC01"},
+      {"a": "WEB01",  "b": "DB01"},   {"a": "MAIL01", "b": "DC01"},   {"a": "FS01", "b": "DC01"}
+    ]
+  },
+
+  "crown_jewels": ["DC01", "DC02", "DB01", "DB02", "MAIL01"],
+
+  "notes": [
+    "S-DIR과 S-DB만 이중화되어 있다. 이중화 처리를 빼먹으면 DC01 침해만으로 임무가 붉게 뜨는 과잉경보가 난다.",
+    "ESX01에 DC01/MAIL01/FS01/WEB01/DB01이 몰려 있다. 단일 장애점이며 what-if 실험의 핵심 소재다.",
+    "M-C2는 S-MSG에 강하게 의존하는데 MAIL01은 이중화가 없다."
+  ]
+}

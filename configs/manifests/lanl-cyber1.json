@@ -1,0 +1,96 @@
+﻿{
+  "dataset": "lanl-cyber1",
+  "title": "Comprehensive Multi-Source Cyber-Security Events",
+  "publisher": "Los Alamos National Laboratory",
+  "source_url": "https://csr.lanl.gov/data/cyber1/",
+  "license": "CC0 (public domain)",
+  "redistributable": true,
+  "auth_required": true,
+  "auth_note": "직접 다운로드 URL 없음. csr.lanl.gov 폼에 이메일과 사용 목적 제출 후 접근 권한 부여. 자동화 불가.",
+  "contact": "cyberdata@lanl.gov",
+  "local_root": "F:\\mc-cycop-data\\raw\\lanl-cyber1",
+  "scale": {
+    "days": 58,
+    "events": 1640000000,
+    "users": 12425,
+    "computers": 17684,
+    "malicious_ratio_pct": 0.0000713
+  },
+  "acquisition_log": [
+    {
+      "file": "redteam.txt.gz",
+      "bytes": 4846,
+      "status": "acquired",
+      "acquired_at": "2026-09-05",
+      "method": "browser (Chrome)",
+      "integrity": "gzip 전체 해제 성공 — CRC32 + ISIZE 검증 통과. 압축해제 22,986 B.",
+      "sha256": "606635837C684AD11E464075ECF97BC5DF325FF7D7F64614D2D8C8AF18051669",
+      "last_timestamp": 2557047,
+      "note": "그라운드트루스. 가장 중요한 파일. 레드팀 활동은 30일차에 끝나므로 마지막 타임스탬프가 5011199가 아닌 2557047인 것이 정상이다 — 절단이 아니다."
+    },
+    {
+      "file": "dns.txt.gz",
+      "bytes": 185104940,
+      "status": "acquired",
+      "acquired_at": "2026-09-05",
+      "method": "browser (Chrome)",
+      "integrity": "gzip 전체 해제 성공 — CRC32 + ISIZE 검증 통과. 압축해제 812,736,592 B (0.76 GB).",
+      "sha256": "3E1CB718BAA6BE7AF7BD376324285BE45D99EE2563D22BC4ABF023572120CAB9",
+      "last_timestamp": 5011199
+    },
+    {
+      "file": "flows.txt.gz",
+      "bytes": 1083479090,
+      "status": "acquired",
+      "acquired_at": "2026-09-05",
+      "method": "browser (Chrome)",
+      "integrity": "gzip 전체 해제 성공 — CRC32 + ISIZE 검증 통과. 압축해제 5,237,189,507 B (4.88 GB). 파일 트레일러 ISIZE(942222211)와 실제 해제 바이트의 mod 2^32가 일치하므로 단일 멤버 전체를 읽은 것이 확정됐다 — 즉 절단이 아니라 원본 자체가 짧다.",
+      "sha256": "60E0CFEAE74F820E7DAD42A06291941BD329B547439F12705435927278082F98",
+      "last_timestamp": 3126928,
+      "note": "마지막 타임스탬프가 3126928(36.2일차)이다. auth/proc/dns가 58일 전체를 덮는 것과 달리 flows만 36일에서 끝난다. 다운로드 사고가 아님을 ISIZE 대조로 확인했다."
+    },
+    {
+      "file": "proc.txt.gz",
+      "bytes": 2358611874,
+      "status": "acquired",
+      "acquired_at": "2026-09-05",
+      "method": "browser (Chrome), 재부팅 후 재취득",
+      "integrity": "gzip 전체 해제 성공 — CRC32 + ISIZE 검증 통과. 압축해제 15,397,551,964 B (14.34 GB). 마지막 레코드 t=5011199 (수집기간 58일의 마지막 초)로 절단 없음 확인.",
+      "sha256": "AF82F47EBF3FFC6DC392A01F890CAA6157A5C7581A2CF0B1821801347F293AE4",
+      "note": "프로세스 시작/종료 이벤트. 형식: time,user@domain,computer,process,start/end"
+    },
+    {
+      "file": "auth.txt.gz",
+      "expected_size": "7.2G",
+      "status": "in_progress",
+      "note": "2026-09-05 21:43 기준 Chrome이 재취득 중 (약 160MB, 0.38 MB/s). 가장 중요 — 레드팀 이벤트가 인증 로그와 맞물려야 측면이동 탐지가 성립한다."
+    }
+  ],
+  "todo": [
+    "auth.txt.gz 취득 완료 → 전체 해제로 CRC 검증 후 SHA256 기록 (proc.txt.gz와 동일 절차)",
+    "Chrome이 또 끊기면 직접 URL로 curl 기반 취득 (scripts/fetch-ait.ps1 구조 재사용)"
+  ],
+  "temporal_coverage": {
+    "note": "파일마다 커버리지가 다르다. 실험 구간을 정할 때 반드시 확인할 것. 타임스탬프는 수집 시작 이후 경과 초.",
+    "unit": "seconds since capture start (86400 = 1 day)",
+    "files": {
+      "proc.txt.gz":    {"first": 1,      "last": 5011199, "days": "0.00 ~ 58.00"},
+      "dns.txt.gz":     {"first": 2,      "last": 5011199, "days": "0.00 ~ 58.00"},
+      "flows.txt.gz":   {"first": 1,      "last": 3126928, "days": "0.00 ~ 36.19"},
+      "redteam.txt.gz": {"first": 150885, "last": 2557047, "days": "1.75 ~ 29.60"},
+      "auth.txt.gz":    {"first": null,   "last": null,    "days": "미취득 — 확인 필요"}
+    },
+    "implication": "레드팀 구간(1.75~29.60일)이 flows 범위(0~36.19일) 안에 완전히 들어간다. 따라서 flows가 58일을 못 덮는 것은 그라운드트루스 기반 실험에 지장이 없다. 다만 '정상만 있는 구간'을 음성 샘플로 쓸 때 29.60일 이후로 잡으면 flows는 36.19일까지만 쓸 수 있다.",
+    "todo": "auth.txt.gz 취득 후 동일하게 first/last를 측정해 이 표를 채울 것."
+  },
+  "verification_procedure": [
+    "크기만으로 완결성을 판단하지 않는다. Chrome이 이어받기에 실패해 1,370MB에서 551MB로 줄었던 전례가 있다.",
+    "GzipStream으로 전체를 해제한다. 스트림 끝에서 CRC32와 ISIZE를 검증하므로 절단 파일은 예외를 던진다.",
+    "마지막 레코드의 타임스탬프가 5011199(58일)에 도달하는지 확인한다."
+  ],
+  "notes": [
+    "CC0라 재배포 제약이 없다. 논문 부록에 실을 수 있는 유일한 후보.",
+    "실제 국립연구소 운영망 기반이라 정상 트래픽의 결이 인공적이지 않다."
+  ]
+}
+

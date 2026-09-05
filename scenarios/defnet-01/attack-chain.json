@@ -1,0 +1,83 @@
+{
+  "campaign_id": "CAMP-01",
+  "name": "피싱 기점 도메인 장악 및 군수DB 유출",
+  "victim_entry": "WKS003",
+  "actor_account": "park.bh",
+  "note": "가상 시나리오. ATT&CK 기법 ID는 실제 기법 체계를 따른다. 한글 문자열은 반드시 이 데이터 파일에 두고 스크립트 소스에는 넣지 않는다 — PowerShell 5.1이 BOM 없는 UTF-8 소스를 잘못 읽어 문자열이 깨진다.",
+
+  "chain": [
+    { "off": 0, "host": "WKS003", "user": "park.bh", "class": "process",
+      "msg": "outlook.exe spawned wscript.exe",
+      "extra": { "process_name": "wscript.exe", "parent": "outlook.exe", "cmdline": "wscript.exe /e:vbs update.vbs", "integrity": "medium" },
+      "gt": { "technique": "T1566.001", "tactic": "initial-access", "stage": "초기 침해" } },
+
+    { "off": 180, "host": "WKS003", "user": "park.bh", "class": "process",
+      "msg": "encoded powershell launched",
+      "extra": { "process_name": "powershell.exe", "parent": "wscript.exe", "cmdline": "powershell -enc JABjAGwAaQBlAG4AdAA9AE4AZQB3AC0ATwBiAGoAZQBjAHQA", "integrity": "medium" },
+      "gt": { "technique": "T1059.001", "tactic": "execution", "stage": "실행" } },
+
+    { "off": 420, "host": "WKS003", "user": "park.bh", "class": "network",
+      "msg": "beacon to external host",
+      "extra": { "dst_host": "203.0.113.44", "dst_port": 443, "bytes_out": 1200, "bytes_in": 340, "interval_sec": 60, "geo_country": "XX" },
+      "gt": { "technique": "T1071.001", "tactic": "command-and-control", "stage": "C2 수립" } },
+
+    { "off": 900, "host": "WKS003", "user": "park.bh", "class": "process",
+      "msg": "lsass memory access",
+      "extra": { "process_name": "rundll32.exe", "target": "lsass.exe", "cmdline": "rundll32 comsvcs.dll MiniDump", "integrity": "high" },
+      "gt": { "technique": "T1003.001", "tactic": "credential-access", "stage": "자격증명 탈취" } },
+
+    { "off": 1200, "host": "WKS003", "user": "svc_backup", "class": "network",
+      "msg": "SMB enumeration sweep",
+      "extra": { "dst_host": "SW01", "dst_port": 445, "distinct_targets": 14, "bytes_out": 8800 },
+      "gt": { "technique": "T1046", "tactic": "discovery", "stage": "내부 정찰" } },
+
+    { "off": 1800, "host": "DC01", "user": "svc_backup", "class": "auth",
+      "msg": "remote logon from workstation",
+      "extra": { "logon_type": "network", "src_host": "WKS003", "result": "success" },
+      "gt": { "technique": "T1021.002", "tactic": "lateral-movement", "stage": "측면 이동 (DC01)" } },
+
+    { "off": 2400, "host": "DC01", "user": "svc_backup", "class": "process",
+      "msg": "ntdsutil invoked",
+      "extra": { "process_name": "ntdsutil.exe", "cmdline": "ntdsutil ac i ntds ifm create full C:\\temp", "integrity": "system" },
+      "gt": { "technique": "T1003.003", "tactic": "credential-access", "stage": "도메인 자격증명 탈취" } },
+
+    { "off": 3300, "host": "DC02", "user": "svc_backup", "class": "auth",
+      "msg": "remote logon from DC01",
+      "extra": { "logon_type": "network", "src_host": "DC01", "result": "success" },
+      "gt": { "technique": "T1021.002", "tactic": "lateral-movement", "stage": "측면 이동 (DC02)" } },
+
+    { "off": 4200, "host": "DB01", "user": "svc_backup", "class": "auth",
+      "msg": "service account logon to database",
+      "extra": { "logon_type": "network", "src_host": "DC01", "result": "success" },
+      "gt": { "technique": "T1078.002", "tactic": "defense-evasion", "stage": "유효 계정 악용" } },
+
+    { "off": 4800, "host": "DB01", "user": "svc_backup", "class": "file",
+      "msg": "bulk table export",
+      "extra": { "path": "/var/tmp/log_dump.csv", "action": "write", "size_bytes": 734000000 },
+      "gt": { "technique": "T1005", "tactic": "collection", "stage": "데이터 수집" } },
+
+    { "off": 5400, "host": "DB01", "user": "svc_backup", "class": "network",
+      "msg": "large outbound transfer",
+      "extra": { "dst_host": "203.0.113.44", "dst_port": 443, "bytes_out": 734000000, "bytes_in": 2100, "geo_country": "XX" },
+      "gt": { "technique": "T1048.003", "tactic": "exfiltration", "stage": "유출" } },
+
+    { "off": 6000, "host": "DC01", "user": "svc_backup", "class": "process",
+      "msg": "security event log cleared",
+      "extra": { "process_name": "wevtutil.exe", "cmdline": "wevtutil cl Security", "integrity": "system" },
+      "gt": { "technique": "T1070.001", "tactic": "defense-evasion", "stage": "흔적 삭제" } }
+  ],
+
+  "_states_note": "결정론 계층이 각 시점에 내렸을 자산 침해 판정. Invoke-MissionPropagation.ps1 의 입력이 된다. LLM이 만드는 값이 아니다 (ADR-0003).",
+  "states": [
+    { "off": 0,    "label": "초기 침해",            "state": { "WKS003": 0.3 } },
+    { "off": 180,  "label": "실행 확인",            "state": { "WKS003": 0.6 } },
+    { "off": 420,  "label": "C2 수립",              "state": { "WKS003": 0.9 } },
+    { "off": 900,  "label": "자격증명 탈취",        "state": { "WKS003": 1.0 } },
+    { "off": 1800, "label": "DC01 측면이동",        "state": { "WKS003": 1.0, "DC01": 0.7 } },
+    { "off": 2400, "label": "도메인 자격증명 탈취", "state": { "WKS003": 1.0, "DC01": 1.0 } },
+    { "off": 3300, "label": "DC02 측면이동",        "state": { "WKS003": 1.0, "DC01": 1.0, "DC02": 0.7 } },
+    { "off": 4200, "label": "DB01 접근",            "state": { "WKS003": 1.0, "DC01": 1.0, "DC02": 1.0, "DB01": 0.6 } },
+    { "off": 4800, "label": "데이터 수집",          "state": { "WKS003": 1.0, "DC01": 1.0, "DC02": 1.0, "DB01": 1.0 } },
+    { "off": 5400, "label": "유출",                 "state": { "WKS003": 1.0, "DC01": 1.0, "DC02": 1.0, "DB01": 1.0 } }
+  ]
+}

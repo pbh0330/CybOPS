@@ -1,0 +1,47 @@
+{
+  "dataset": "ait-lds-v2",
+  "title": "AIT Log Data Set V2.0",
+  "publisher": "Austrian Institute of Technology",
+  "source_url": "https://zenodo.org/records/5789064",
+  "doi": "10.5281/zenodo.5789063",
+  "record_doi": "10.5281/zenodo.5789064",
+  "published": "2022-02-24",
+  "license": "CC BY-NC-SA 4.0",
+  "redistributable": "conditional (attribution, non-commercial, share-alike)",
+  "auth_required": false,
+  "url_pattern": "https://zenodo.org/records/5789064/files/{file}?download=1",
+  "local_root": "F:\\mc-cycop-data\\raw\\ait-lds-v2",
+  "total_compressed_gb": 130.6,
+  "total_unpacked_gb": 206,
+  "acquisition_log": [
+    {
+      "file": "russellmitchell.zip",
+      "content_length_bytes": 7128000000,
+      "content_length_note": "HEAD 응답 기준 6.64 GiB",
+      "started_at": "2026-09-05",
+      "completed_at": null,
+      "sha256": null,
+      "status": "paused",
+      "bytes_on_disk": 2352601936,
+      "paused_at": "2026-09-05T19:15+09:00",
+      "paused_reason": "사용자 지시 — LANL 취득 우선. scripts/fetch-ait.ps1 재실행하면 이 지점부터 이어받는다.",
+      "reason": "8개 테스트베드 중 최소 용량. 파이프라인 개발 및 검증용 1순위."
+    }
+  ],
+  "not_acquired": [
+    "santos.zip", "fox.zip", "harrison.zip", "wardbeck.zip",
+    "shaw.zip", "wheeler.zip", "wilson.zip"
+  ],
+  "notes": [
+    "8개 테스트베드 각각이 메일서버/파일공유/WordPress/VPN/방화벽을 갖춘 소규모 기업망 모사.",
+    "그라운드트루스가 별도 파일로 제공되어 공격 관련 이벤트가 라벨링되어 있음.",
+    "모델 기반 테스트베드 자동 생성으로 재생성 가능 — 토폴로지를 국방망 형태로 변형 가능.",
+    "원본 삭제 후에도 이 매니페스트만 있으면 재취득 가능 (ADR-0010)."
+  ],
+  "todo_on_completion": [
+    "sha256 계산 후 기록",
+    "completed_at 기록, status=acquired",
+    "docs/01-datasets.md 및 configs/datasets.yaml 상태 갱신",
+    "압축 해제 없이 스트리밍 처리 가능한지 먼저 확인 (14GB 해제 회피)"
+  ]
+}
