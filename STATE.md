@@ -8,9 +8,25 @@
 |---|---|
 | 저장소(코드·문서) | `F:\F\other_class\CybOPS` |
 | 데이터 | `F:\mc-cycop-data\raw\` |
+| 원격 | `https://github.com/pbh0330/CybOPS.git` |
 
 > 2026-09-05 저장소를 `C:\Users\qwert\Documents\mc-cycop`에서 옮겼다. 41개 파일 전량 이동했고
 > 구 경로는 삭제했다. 문서에 남아 있던 구 경로 참조도 정리했다.
+
+**버전 관리 시작됨.** Git 2.55.0.3 설치, `git init -b main`, 첫 커밋 완료(43개 파일).
+아직 **푸시는 안 됐다** — GitHub 자격증명 입력이 필요하다:
+
+```powershell
+cd F:\F\other_class\CybOPS
+git push -u origin main     # 브라우저로 GitHub 로그인 창이 뜬다
+```
+
+`.gitignore` 주의: `data/`가 아니라 `data/*`로 써야 한다. 디렉터리를 통째로 제외하면
+Git이 그 안을 보지 않아 `!data/README.md` 예외가 무시된다. 첫 커밋 때 이 문제로
+`data/README.md`가 빠질 뻔했다.
+
+원본 데이터는 저장소 밖(`F:\mc-cycop-data`)이라 커밋 대상이 아니다. 저장소는 3.7 MB이고
+그중 3.5 MB가 `scenarios/defnet-01/synthetic/events.jsonl`(합성 텔레메트리)이다.
 
 ## 한 줄 요약
 
