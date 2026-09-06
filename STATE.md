@@ -240,11 +240,17 @@ scenarios/defnet-01/         임무 온톨로지 + 공격 시나리오 + 합성 
 scripts/                     생성기·전파엔진·리플레이·검증기 (1.5절)
 ```
 
-**개발 환경 제약**: Python / Node / Java / dotnet 전부 미설치. `python.exe`는 Microsoft
-Store 스텁이라 실행하면 exit 9009. 인터넷 복구 후 Python 설치 필요. 그때까지 참조 구현은
-PowerShell로 유지한다.
+**개발 환경** (2026-09-06 갱신)
 
-**git 미설치.** 설치 후 `git init` 필요. 현재 버전 관리 없음 — 이 디렉터리를 지우면 전부 사라진다.
+| 도구 | 상태 |
+|---|---|
+| Python | ✅ **3.12.10** (`%LOCALAPPDATA%\Programs\Python\Python312`), pip 25.0.1, User PATH 등록 |
+| Git | ✅ **2.55.0.3** (`C:\Program Files\Git\cmd`), Machine PATH 등록 |
+| Node / Java / dotnet | 미설치 |
+
+PowerShell 참조 구현은 그대로 유지한다. 대용량 스캔은 PowerShell 루프로는 불가능해
+`Add-Type`으로 C#을 인라인 컴파일해 쓴다 — 10.5억 행을 약 11분에 훑는다
+(`scripts/Measure-AuthJoin.ps1`). Python 포팅 시에도 이 성능 요구는 그대로다.
 
 ---
 
@@ -253,11 +259,27 @@ PowerShell로 유지한다.
 인터넷 없이 가능한 것과 아닌 것을 나눠 적는다.
 
 **완료 (2026-09-06)**
-0. **LANL 그라운드트루스 실측** → `docs/08-lanl-ground-truth.md`, ADR-0011.
-   749건을 열어보니 출발지 호스트가 4개뿐이고 목적지와 **교집합이 0**이었다.
-   측면이동 연쇄가 라벨에 없다. C1과 E1을 재정의했고, `04-evaluation.md`에
-   자명 베이스라인(recall 100%)을 필수 보고 항목으로 넣었다.
-   재현: `.\scripts\Measure-RedteamGroundTruth.ps1`
+0. **LANL 그라운드트루스 실측 + auth 조인** → `docs/08-lanl-ground-truth.md`, ADR-0011.
+
+   | 확인한 것 | 결과 |
+   |---|---|
+   | 라벨에 측면이동이 있는가 | **없다.** 출발지 4개와 목적지 301개의 교집합이 0 |
+   | 레드팀 이벤트 수 | 749줄이지만 **고유 715개** (중복 34줄) |
+   | `auth.txt` 레코드 수 | **1,051,430,459** — 문서값과 차이 0, 파싱 실패 0 |
+   | 라벨 조인 | 4필드 701/715, 3필드 715/715 (목적지만 14건 불일치) |
+   | 자명 베이스라인 | recall 100%, **precision 1.46%** (참 1건당 오탐 67건) |
+   | 침해 계정 104개 | 정상 인증 1,953만 행, 라벨 비율 0.0036% |
+
+   C1과 E1을 재정의했고(ADR-0011), `04-evaluation.md`에 자명 베이스라인과
+   조인 키 명시를 필수 보고 항목으로 넣었다.
+
+   재현(전체 약 25분, C# 인라인 컴파일로 초당 160만 행):
+   ```powershell
+   .\scripts\Measure-RedteamGroundTruth.ps1 -OutJson analysis\lanl\redteam-profile.json
+   .\scripts\Measure-AuthJoin.ps1 -OutJson analysis\lanl\auth-join.json
+   .\scripts\Export-AuthRedteamSlice.ps1
+   ```
+   추출된 CSV(16 MB)는 gitignore 대상이다. 요약 JSON만 커밋한다.
 
 **오프라인에서 가능**
 1. **Q1 확정: 국방망 vs 전술망** (`docs/99-open-questions.md`) — 판단만 하면 되는 일이고

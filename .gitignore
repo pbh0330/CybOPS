@@ -4,6 +4,10 @@
 data/*
 !data/README.md
 
+# 분석용 슬라이스는 원본에서 12분이면 재생성된다 (scripts/Export-AuthRedteamSlice.ps1).
+# 요약 JSON은 커밋하고 대용량 CSV는 제외한다.
+analysis/**/*.csv
+
 # 모델 가중치, 인덱스
 models/
 *.gguf

@@ -1,0 +1,184 @@
+﻿{
+    "auth_path":  "F:\\mc-cycop-data\\raw\\lanl-cyber1\\auth.txt.gz",
+    "records":  1051430459,
+    "records_documented":  1051430459,
+    "records_match":  true,
+    "malformed":  0,
+    "min_time":  1,
+    "max_time":  5011199,
+    "scan_seconds":  646.2,
+    "redteam_events":  749,
+    "redteam_matched":  701,
+    "join_complete":  false,
+    "baseline":  {
+                     "hosts":  [
+                                   "C17693",
+                                   "C18025",
+                                   "C19932",
+                                   "C22409"
+                               ],
+                     "auth_rows":  48079,
+                     "labeled_rows":  702,
+                     "recall_pct":  100,
+                     "precision_pct":  1.4601,
+                     "fp_per_tp":  67,
+                     "per_host":  [
+                                      {
+                                          "host":  "C17693",
+                                          "auth_rows":  1717,
+                                          "labeled":  670,
+                                          "failures":  476
+                                      },
+                                      {
+                                          "host":  "C18025",
+                                          "auth_rows":  101,
+                                          "labeled":  3,
+                                          "failures":  10
+                                      },
+                                      {
+                                          "host":  "C19932",
+                                          "auth_rows":  10008,
+                                          "labeled":  19,
+                                          "failures":  17
+                                      },
+                                      {
+                                          "host":  "C22409",
+                                          "auth_rows":  36253,
+                                          "labeled":  10,
+                                          "failures":  61
+                                      }
+                                  ]
+                 },
+    "accounts":  {
+                     "count":  104,
+                     "auth_rows":  19531920,
+                     "labeled":  702,
+                     "top":  [
+                                 {
+                                     "user":  "U66@DOM1",
+                                     "auth_rows":  11182081,
+                                     "labeled":  118
+                                 },
+                                 {
+                                     "user":  "U13@DOM1",
+                                     "auth_rows":  1503038,
+                                     "labeled":  2
+                                 },
+                                 {
+                                     "user":  "U24@DOM1",
+                                     "auth_rows":  987332,
+                                     "labeled":  5
+                                 },
+                                 {
+                                     "user":  "U78@DOM1",
+                                     "auth_rows":  675968,
+                                     "labeled":  2
+                                 },
+                                 {
+                                     "user":  "U12@DOM1",
+                                     "auth_rows":  461235,
+                                     "labeled":  6
+                                 },
+                                 {
+                                     "user":  "U1289@DOM1",
+                                     "auth_rows":  321030,
+                                     "labeled":  3
+                                 },
+                                 {
+                                     "user":  "U293@DOM1",
+                                     "auth_rows":  241473,
+                                     "labeled":  31
+                                 },
+                                 {
+                                     "user":  "U679@DOM1",
+                                     "auth_rows":  204636,
+                                     "labeled":  2
+                                 },
+                                 {
+                                     "user":  "U453@DOM1",
+                                     "auth_rows":  161338,
+                                     "labeled":  2
+                                 },
+                                 {
+                                     "user":  "U86@DOM1",
+                                     "auth_rows":  149095,
+                                     "labeled":  8
+                                 },
+                                 {
+                                     "user":  "U1164@DOM1",
+                                     "auth_rows":  140465,
+                                     "labeled":  1
+                                 },
+                                 {
+                                     "user":  "U20@DOM1",
+                                     "auth_rows":  131854,
+                                     "labeled":  1
+                                 },
+                                 {
+                                     "user":  "U250@DOM1",
+                                     "auth_rows":  121003,
+                                     "labeled":  1
+                                 },
+                                 {
+                                     "user":  "U1450@DOM1",
+                                     "auth_rows":  118361,
+                                     "labeled":  11
+                                 },
+                                 {
+                                     "user":  "U1653@DOM1",
+                                     "auth_rows":  115645,
+                                     "labeled":  15
+                                 },
+                                 {
+                                     "user":  "U3406@DOM1",
+                                     "auth_rows":  110412,
+                                     "labeled":  1
+                                 },
+                                 {
+                                     "user":  "U207@DOM1",
+                                     "auth_rows":  109029,
+                                     "labeled":  2
+                                 },
+                                 {
+                                     "user":  "U1480@DOM1",
+                                     "auth_rows":  105354,
+                                     "labeled":  12
+                                 },
+                                 {
+                                     "user":  "U342@DOM1",
+                                     "auth_rows":  104757,
+                                     "labeled":  12
+                                 },
+                                 {
+                                     "user":  "U1106@DOM1",
+                                     "auth_rows":  91203,
+                                     "labeled":  2
+                                 },
+                                 {
+                                     "user":  "U1723@DOM1",
+                                     "auth_rows":  88996,
+                                     "labeled":  19
+                                 },
+                                 {
+                                     "user":  "U1592@DOM1",
+                                     "auth_rows":  86541,
+                                     "labeled":  6
+                                 },
+                                 {
+                                     "user":  "U9407@DOM1",
+                                     "auth_rows":  83828,
+                                     "labeled":  1
+                                 },
+                                 {
+                                     "user":  "U5254@DOM1",
+                                     "auth_rows":  78398,
+                                     "labeled":  3
+                                 },
+                                 {
+                                     "user":  "U212@DOM1",
+                                     "auth_rows":  74188,
+                                     "labeled":  4
+                                 }
+                             ]
+                 }
+}
