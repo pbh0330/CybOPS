@@ -1,0 +1,32 @@
+{
+  "_note": "브리핑 근거 팩에 들어가는 한글 문구다. 스크립트 소스에 한글을 넣으면 PowerShell 5.1이 BOM 없는 UTF-8을 잘못 읽는다(CLAUDE.md 인코딩 규칙 3). 여기 두고 -Encoding utf8 로 읽는다. {0},{1}... 은 .NET 형식 자리표시자다.",
+
+  "time": "{0} 시각 {1} (t+{2}분). 활성 단계: {3}",
+  "time_no_phase": "{0} 시각 {1} (t+{2}분). 활성 단계 없음",
+
+  "mission_degradation": "임무 {0}({1}, 우선순위 {2})의 저하도는 {3}%다",
+  "attribution": "임무 {0}의 원인 분해: 공격 단독 {1}%, 환경 단독 {2}%, 상호작용 {3}%",
+  "attribution_hint_interaction": "상호작용이 크면 어느 원인 하나만으로는 이 저하가 생기지 않는다는 뜻이다",
+
+  "outage_asset": "자산 {0}이(가) 비가용이다. 원인 {1}. 비고: {2}",
+  "outage_link": "링크 {0}({1}<->{2}, {3})이(가) 단절됐다. 원인 {4}. 비고: {5}",
+  "compromise": "자산 {0}의 침해 수준은 {1}%다",
+
+  "task_degradation": "작업 {0}({1}, 수행 위치 {2})의 저하도는 {3}%다",
+  "task_degradation_nowhere": "작업 {0}({1})의 저하도는 {2}%다",
+  "service_degradation": "서비스 {0}({1}, {2})의 저하도는 {3}%다",
+
+  "containment_cost": "{0}을(를) 격리하면 임무 저하도가 {1} 변한다",
+  "containment_cost_zero": "{0}을(를) 격리해도 임무 저하도는 변하지 않는다(추가 비용 0)",
+
+  "redundant": "이중화 {0}",
+  "single": "단일 경로",
+
+  "cause_names": {
+    "attack": "공격",
+    "mobility": "기동",
+    "terrain": "지형",
+    "maintenance": "정비",
+    "unknown": "미상"
+  }
+}

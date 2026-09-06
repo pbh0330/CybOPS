@@ -10,6 +10,8 @@ import cytoscape from 'cytoscape'
 import dagre from 'cytoscape-dagre'
 import { loadSymbology, unmappedTypes } from './symbols.js'
 import { buildElements, stylesheet, LAYOUTS, CAUSE_COLOR, degColor } from './graph.js'
+import { runStep, containmentCandidates } from './engine.js'
+import { createEditor } from './editor.js'
 
 cytoscape.use(dagre)
 
@@ -33,6 +35,15 @@ const el = {
   legend: document.getElementById('legend'),
   fit: document.getElementById('fit-btn'),
   labels: document.getElementById('toggle-labels'),
+  palette: document.getElementById('palette'),
+  editState: document.getElementById('edit-state'),
+  exportBtn: document.getElementById('export-btn'),
+  resetBtn: document.getElementById('reset-btn'),
+  helpBtn: document.getElementById('help-btn'),
+  onboard: document.getElementById('onboard'),
+  onboardClose: document.getElementById('onboard-close'),
+  onboardStart: document.getElementById('onboard-start'),
+  onboardSkip: document.getElementById('onboard-skip'),
 }
 
 let cy = null
@@ -40,6 +51,15 @@ let payload = null
 let idx = 0
 let view = 'dependency'
 let timer = null
+
+// Editing state. `graph` is the working copy: identical to payload.graph until
+// someone edits it, after which every number on screen is recomputed locally
+// by engine.js instead of read from the precomputed export. The parity test
+// (tools/parity.mjs) is what keeps those two paths agreeing.
+let mode = 'observe'
+let graph = null
+let edited = false
+let editor = null
 
 init().catch((e) => {
   console.error(e)
@@ -62,6 +82,23 @@ async function init() {
   bindControls()
   renderLegend()
   await load(list[0])
+  maybeShowOnboard()
+}
+
+// Onboarding. Someone seeing this screen for the first time has to be told the
+// one thing that is not guessable: the layout is a dependency graph, not a map.
+// Everything else follows from that.
+function maybeShowOnboard() {
+  let seen = false
+  try { seen = localStorage.getItem('mccycop:onboard:seen') === '1' } catch { /* ignore */ }
+  if (!seen) showOnboard(false)
+}
+function showOnboard() { el.onboard.hidden = false }
+function closeOnboard() {
+  el.onboard.hidden = true
+  if (el.onboardSkip.checked) {
+    try { localStorage.setItem('mccycop:onboard:seen', '1') } catch { /* ignore */ }
+  }
 }
 
 async function load(id) {
@@ -73,14 +110,24 @@ async function load(id) {
   const missing = unmappedTypes()
   if (missing.length) console.warn('[symbols] SIDC 미매핑 타입:', missing.join(', '))
 
+  graph = structuredClone(payload.graph)
+  edited = false
+  restoreEdits(id)
+
   if (cy) cy.destroy()
   cy = cytoscape({
     container: el.cy,
-    elements: buildElements(payload.graph),
+    elements: buildElements(graph),
     style: stylesheet(),
     wheelSensitivity: 0.2,
   })
-  cy.on('tap', 'node', (evt) => inspect(evt.target))
+  cy.on('tap', 'node', (evt) => {
+    if (editor && mode === 'edit' && editor.handleTap(evt.target)) return
+    inspect(evt.target)
+  })
+  cy.on('tap', 'edge', (evt) => {
+    if (editor && mode === 'edit') editor.handleTap(evt.target)
+  })
   cy.on('tap', (evt) => { if (evt.target === cy) clearInspect() })
 
   idx = 0
@@ -90,6 +137,141 @@ async function load(id) {
   buildRibbon()
   applyView(view)
   render()
+}
+
+// ---------------------------------------------------------------- edit mode
+//
+// An edited scenario has no precomputed export, so its numbers come from the
+// local engine port. Everything else on screen behaves the same, which is the
+// point: you edit the graph and watch the mission bars move.
+
+function currentStep() {
+  const base = payload.steps[idx]
+  if (!edited) return base
+  const t = base && base.t !== undefined && base.t !== null ? Number(base.t) : -1
+  const compromise = (base && base.compromise) || {}
+  const computed = runStep(graph, compromise, {
+    t,
+    method: payload.method || 'weighted',
+    candidates: containmentCandidates(graph, compromise),
+  })
+  return { ...computed, label: base?.label, note: base?.note, time_iso: base?.time_iso, t }
+}
+
+function markEdited(info) {
+  edited = true
+  rebuildElements()
+  persistEdits()
+  el.editState.hidden = false
+  const added = (graph.assets || []).filter((a) => a._added).length
+  const links = (graph.links || []).filter((l) => l._added).length
+  el.editState.textContent = `편집됨 (자산 +${added}, 링크 +${links}) · 값은 브라우저 엔진이 재계산`
+  render()
+  if (info && info.id && cy.$id(info.id).length) cy.$id(info.id).select()
+}
+
+// Rebuild the cytoscape graph after a structural edit, keeping the positions
+// of nodes that already existed. Re-laying out the whole graph on every click
+// makes the canvas jump and the edit unreadable.
+function rebuildElements() {
+  const pos = {}
+  for (const n of cy.nodes()) pos[n.id()] = { ...n.position() }
+  const elements = buildElements(graph)
+  cy.elements().remove()
+  cy.add(elements)
+  const fresh = []
+  for (const n of cy.nodes()) {
+    if (pos[n.id()]) n.position(pos[n.id()])
+    else fresh.push(n)
+  }
+  // place new nodes near the middle of the current viewport
+  const ext = cy.extent()
+  let k = 0
+  for (const n of fresh) {
+    n.position({
+      x: (ext.x1 + ext.x2) / 2 + (k % 4) * 90 - 135,
+      y: (ext.y1 + ext.y2) / 2 + Math.floor(k / 4) * 90,
+    })
+    k++
+  }
+  applyViewVisibility()
+}
+
+function applyViewVisibility() {
+  const transport = cy.edges('.transport')
+  const structural = cy.edges().not('.transport')
+  const nonAssets = cy.nodes('[kind != "asset"]')
+  if (view === 'transport') {
+    transport.removeClass('hidden'); structural.addClass('hidden'); nonAssets.addClass('hidden')
+  } else {
+    transport.addClass('hidden'); structural.removeClass('hidden'); nonAssets.removeClass('hidden')
+  }
+}
+
+function storageKey() { return `mccycop:edit:${payload?.scenario_id}` }
+
+function persistEdits() {
+  try { localStorage.setItem(storageKey(), JSON.stringify(graph)) } catch { /* private mode */ }
+}
+
+function restoreEdits(id) {
+  try {
+    const raw = localStorage.getItem(`mccycop:edit:${id}`)
+    if (!raw) return
+    const saved = JSON.parse(raw)
+    if (saved && saved.scenario_id === id) {
+      graph = saved
+      edited = true
+    }
+  } catch { /* ignore */ }
+}
+
+function resetEdits() {
+  try { localStorage.removeItem(storageKey()) } catch { /* ignore */ }
+  graph = structuredClone(payload.graph)
+  edited = false
+  el.editState.hidden = true
+  rebuildElements()
+  cy.layout(LAYOUTS[view] || LAYOUTS.dependency).run()
+  render()
+}
+
+// The export is a mission.json the pipeline can take straight back:
+// Test-Ontology.ps1 validates it, Export-ReplayData.ps1 recomputes it. The
+// browser engine is for editing; PowerShell stays the reference (ADR-0003).
+function exportScenario() {
+  const clean = structuredClone(graph)
+  for (const a of clean.assets || []) delete a._added
+  for (const l of clean.links || []) delete l._added
+  clean.scenario_id = `${clean.scenario_id}-edit`
+  clean.authored = new Date().toISOString().slice(0, 10)
+  const blob = new Blob([JSON.stringify(clean, null, 2)], { type: 'application/json' })
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = `${clean.scenario_id}.mission.json`
+  a.click()
+  URL.revokeObjectURL(a.href)
+}
+
+function setMode(next) {
+  mode = next
+  for (const b of document.querySelectorAll('.mode-btn')) b.classList.toggle('is-on', b.dataset.mode === next)
+  for (const n of document.querySelectorAll('[data-edit-only]')) n.hidden = next !== 'edit'
+  el.palette.hidden = next !== 'edit'
+  document.body.classList.toggle('is-editing', next === 'edit')
+  if (next === 'edit') {
+    if (!editor) {
+      editor = createEditor({
+        paletteEl: el.palette,
+        getGraph: () => graph,
+        getCy: () => cy,
+        onChange: markEdited,
+      })
+    }
+    editor.renderPalette()
+    editor.setTool('select')
+  }
+  if (edited) el.editState.hidden = next !== 'edit'
 }
 
 function bindControls() {
@@ -119,6 +301,22 @@ function bindControls() {
     dragging = false
     el.ribbon.releasePointerCapture(e.pointerId)
   })
+
+  for (const btn of document.querySelectorAll('.mode-btn')) {
+    btn.addEventListener('click', () => setMode(btn.dataset.mode))
+  }
+  for (const btn of document.querySelectorAll('.tool-btn')) {
+    btn.addEventListener('click', () => editor && editor.setTool(btn.dataset.tool))
+  }
+  el.exportBtn.addEventListener('click', exportScenario)
+  el.resetBtn.addEventListener('click', () => {
+    if (confirm('편집한 내용을 버리고 원래 시나리오로 되돌린다.')) resetEdits()
+  })
+
+  el.helpBtn.addEventListener('click', () => showOnboard(true))
+  el.onboardClose.addEventListener('click', () => closeOnboard())
+  el.onboardStart.addEventListener('click', () => closeOnboard())
+  el.onboard.addEventListener('click', (e) => { if (e.target === el.onboard) closeOnboard() })
 
   let resizeTimer = null
   window.addEventListener('resize', () => {
@@ -170,13 +368,13 @@ function applyView(v) {
 
 function render() {
   if (!payload || !cy) return
-  const s = payload.steps[idx]
+  const s = currentStep()
   if (!s) return
 
   const assetOut = s.asset_outage || {}
   const linkOut = s.link_outage || {}
   const activePhases = new Set(s.active_phases || [])
-  const temporal = !!payload.graph.timeline
+  const temporal = !!graph.timeline
 
   cy.batch(() => {
     for (const n of cy.nodes()) {
@@ -231,7 +429,7 @@ function startFlow() {
 }
 
 function renderMissions(s) {
-  const missions = payload.graph.missions || []
+  const missions = graph.missions || []
   el.missions.innerHTML = missions
     .slice()
     .sort((a, b) => (a.priority || 9) - (b.priority || 9))
@@ -293,7 +491,7 @@ const requests = []
 
 function renderActions(s) {
   const wf = s.whatif || {}
-  const missions = payload.graph.missions || []
+  const missions = graph.missions || []
   const rows = Object.keys(wf).map((id) => {
     const w = wf[id]
     let worst = 0
@@ -346,8 +544,8 @@ function renderQueue() {
 
 function renderCuts(s, assetOut, linkOut) {
   const rows = []
-  const assets = payload.graph.assets || []
-  const links = payload.graph.links || []
+  const assets = graph.assets || []
+  const links = graph.links || []
   for (const a of assets) {
     const c = assetOut[a.id]
     if (c) rows.push({ what: a.id, cause: c, note: noteFor(a.outages, s.t) })
@@ -385,7 +583,7 @@ function renderClock(s, activePhases) {
     el.clock.textContent = '스냅샷'
     el.tOff.textContent = ''
   }
-  const names = (payload.graph.phases || [])
+  const names = (graph.phases || [])
     .filter((p) => activePhases.has(p.id))
     .map((p) => p.name)
   el.phaseLine.innerHTML = names.length
@@ -404,7 +602,7 @@ function renderClock(s, activePhases) {
 const RIBBON = { padL: 4, padR: 4, laneH: 13, gap: 5 }
 
 function buildRibbon() {
-  const g = payload.graph
+  const g = graph
   const tl = g.timeline
   if (!tl) { el.ribbon.innerHTML = ''; return }
   const W = el.ribbon.clientWidth || 800
@@ -472,7 +670,7 @@ function buildRibbon() {
 }
 
 function updatePlayhead() {
-  const tl = payload?.graph?.timeline
+  const tl = graph?.timeline
   const head = el.ribbon.querySelector('#playhead')
   const knob = el.ribbon.querySelector('#playknob')
   if (!tl || !head) return
@@ -485,7 +683,7 @@ function updatePlayhead() {
 }
 
 function ribbonSeek(clientX) {
-  const tl = payload?.graph?.timeline
+  const tl = graph?.timeline
   if (!tl) return
   const r = el.ribbon.getBoundingClientRect()
   const frac = Math.min(1, Math.max(0, (clientX - r.left - RIBBON.padL) / (r.width - RIBBON.padL - RIBBON.padR)))

@@ -177,6 +177,9 @@ export function stylesheet() {
       style: { 'border-style': 'dashed' },
     },
     { selector: 'node.dim', style: { 'opacity': 0.32 } },
+    // the first endpoint picked with the link tool, so it is obvious what the
+    // next click will connect to
+    { selector: 'node.link-src', style: { 'border-color': '#35e0ff', 'border-width': 3 } },
     { selector: 'node:selected', style: { 'border-color': '#4da3ff', 'border-width': 3 } },
 
     {

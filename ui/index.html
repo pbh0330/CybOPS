@@ -16,15 +16,37 @@
           <label for="scenario">시나리오</label>
           <select id="scenario"></select>
         </div>
+        <div class="mode-switch" role="group" aria-label="모드">
+          <button type="button" class="mode-btn is-on" data-mode="observe">관측</button>
+          <button type="button" class="mode-btn" data-mode="edit">편집</button>
+        </div>
         <div class="topbar-note" id="phase-line">-</div>
+        <button type="button" id="help-btn" class="help-btn" title="이 화면 읽는 법">?</button>
       </header>
 
+      <div class="explainer">
+        <b>지도가 아니라 임무 의존 그래프다.</b>
+        위에서 아래로 <span class="ex-chip">임무 → 작업 → 서비스 → 자산</span> 순으로 읽는다.
+        <span class="ex-sep"></span>
+        노드 <b>색</b>은 임무 저하도, <b>테두리</b>는 그 원인이다.
+        <span class="ex-sep"></span>
+        아래 시간 막대를 끌면 그 시각의 상황이 나온다.
+      </div>
+
       <main class="layout">
+        <aside class="palette" id="palette" hidden></aside>
         <section class="graph-pane">
           <div class="graph-toolbar">
             <button type="button" data-view="dependency" class="view-btn is-on">임무 의존</button>
             <button type="button" data-view="transport" class="view-btn">전송로</button>
+            <span class="tool-sep" data-edit-only hidden></span>
+            <button type="button" class="tool-btn is-on" data-tool="select" data-edit-only hidden>선택</button>
+            <button type="button" class="tool-btn" data-tool="link" data-edit-only hidden>연결</button>
+            <button type="button" class="tool-btn danger" data-tool="delete" data-edit-only hidden>삭제</button>
             <span class="spacer"></span>
+            <span class="edit-state" id="edit-state" hidden></span>
+            <button type="button" id="export-btn" data-edit-only hidden>시나리오 내보내기</button>
+            <button type="button" id="reset-btn" data-edit-only hidden>편집 취소</button>
             <label class="chk"><input type="checkbox" id="toggle-labels" checked /> 라벨</label>
             <button type="button" id="fit-btn">화면 맞춤</button>
           </div>
@@ -87,6 +109,46 @@
         </div>
       </footer>
     </div>
+    <div class="onboard" id="onboard" hidden>
+      <div class="onboard-card">
+        <div class="onboard-head">
+          <h2>이 화면을 읽는 법</h2>
+          <button type="button" id="onboard-close" aria-label="닫기">✕</button>
+        </div>
+        <ol class="onboard-list">
+          <li>
+            <b>좌표계가 지도가 아니다.</b>
+            노드의 위치는 지리가 아니라 <em>무엇이 무엇을 떠받치는가</em>로 정해진다.
+            위에서 아래로 임무 → 작업 → 서비스 → 자산 순이다.
+          </li>
+          <li>
+            <b>붉은색은 공격에만 쓴다.</b>
+            전술망에서 링크가 죽는 흔한 이유는 공격이 아니라 기동과 지형이다.
+            그 둘을 같은 색으로 칠하면 상황도가 언덕을 적의 소행으로 보고하게 된다.
+          </li>
+          <li>
+            <b>임무 저하도는 공격 / 환경 / 상호작용으로 나뉜다.</b>
+            상호작용이 크다는 것은 <em>어느 원인 하나만으로는 이 저하가 생기지 않았다</em>는 뜻이다.
+            11:00 지점을 보면 공격 단독 0%, 환경 단독 0%인데 실제 저하는 52.6%다.
+          </li>
+          <li>
+            <b>봉쇄에도 비용이 있다.</b>
+            우측 "대응 후보"는 그 자산을 격리했을 때 임무가 얼마나 더 나빠지는지를 미리 계산한 값이다.
+            이 화면에는 실행 버튼이 없다. 차단은 사람이 별도 절차로 한다.
+          </li>
+          <li>
+            <b>편집 모드에서 직접 만들 수 있다.</b>
+            상단 <em>편집</em>을 누르면 좌측 팔레트에서 자산을 추가하고 링크로 연결할 수 있다.
+            바꾸는 즉시 임무 저하도가 다시 계산된다.
+          </li>
+        </ol>
+        <div class="onboard-foot">
+          <label class="chk"><input type="checkbox" id="onboard-skip" /> 다음부터 보지 않기</label>
+          <button type="button" id="onboard-start">시작</button>
+        </div>
+      </div>
+    </div>
+
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

@@ -74,9 +74,92 @@ button:active { transform: translateY(.5px); }
   background: rgba(90,169,255,.12);
 }
 
+.mode-switch { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.mode-btn { border: none; border-radius: 0; background: transparent; padding: 5px 14px; color: var(--fg-dim); }
+.mode-btn.is-on { background: rgba(53,224,255,.12); color: #bdeaff; }
+.mode-btn + .mode-btn { border-left: 1px solid var(--line); }
+
+.help-btn {
+  width: 26px; height: 26px; padding: 0; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 700; color: var(--fg-dim);
+}
+.help-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+/* one line that tells a first-time viewer what they are looking at */
+.explainer {
+  flex: none; padding: 8px 18px; font-size: 11.5px; color: var(--fg-2);
+  background: rgba(53,224,255,.045); border-bottom: 1px solid var(--line-soft);
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+}
+.explainer b { color: var(--fg); }
+.ex-chip {
+  border: 1px solid var(--line); border-radius: 999px; padding: 1px 9px;
+  color: var(--fg); background: var(--bg-3);
+}
+.ex-sep { width: 1px; height: 12px; background: var(--line); display: inline-block; }
+
 /* ---------------------------------------------------------------- layout */
 
 .layout { flex: 1; display: grid; grid-template-columns: 1fr 356px; min-height: 0; }
+body.is-editing .layout { grid-template-columns: 210px 1fr 356px; }
+
+/* palette (edit mode) */
+.palette {
+  border-right: 1px solid var(--line); background: var(--bg-2);
+  overflow-y: auto; padding: 14px 12px; scrollbar-width: thin;
+}
+.palette-head h2 {
+  margin: 0 0 6px; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--fg-dim); font-weight: 600;
+}
+.palette-head p { margin: 0 0 14px; font-size: 11px; color: var(--fg-dim); line-height: 1.55; }
+.palette-group { margin-bottom: 14px; }
+.palette-group-name {
+  font-size: 10.5px; color: var(--fg-2); margin-bottom: 6px; letter-spacing: .04em;
+}
+.palette-items { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.palette-item {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 8px 4px 6px; border-radius: 6px; background: var(--bg-3);
+  border: 1px solid var(--line-soft); cursor: pointer;
+}
+.palette-item:hover { border-color: var(--accent); background: var(--bg-4); }
+.palette-item img { width: 26px; height: 26px; object-fit: contain; }
+.palette-blank {
+  width: 26px; height: 26px; border: 1px dashed var(--line); border-radius: 4px; display: block;
+}
+.palette-label { font-size: 10.5px; color: var(--fg-2); text-align: center; line-height: 1.3; }
+.palette-note {
+  font-size: 10.5px; color: var(--fg-dim); line-height: 1.6;
+  border-top: 1px dashed var(--line); padding-top: 10px;
+}
+
+.tool-sep { width: 1px; height: 18px; background: var(--line); display: inline-block; margin: 0 2px; }
+.tool-btn.is-on { border-color: rgba(53,224,255,.5); color: #bdeaff; background: rgba(53,224,255,.12); }
+.tool-btn.danger.is-on { border-color: rgba(255,77,94,.5); color: #ffc2c7; background: rgba(255,77,94,.12); }
+.edit-state { font-size: 11px; color: var(--unknown); }
+
+/* onboarding */
+.onboard {
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(3,5,8,.72); backdrop-filter: blur(3px);
+  display: grid; place-items: center; padding: 24px;
+}
+.onboard[hidden] { display: none; }
+.onboard-card {
+  width: min(720px, 100%); max-height: 86vh; overflow-y: auto;
+  background: var(--bg-2); border: 1px solid var(--line);
+  border-radius: 12px; box-shadow: var(--shadow); padding: 22px 24px 18px;
+}
+.onboard-head { display: flex; align-items: center; margin-bottom: 6px; }
+.onboard-head h2 { margin: 0; font-size: 17px; }
+.onboard-head button { margin-left: auto; border: none; background: transparent; color: var(--fg-dim); }
+.onboard-list { margin: 14px 0 18px; padding-left: 20px; }
+.onboard-list li { margin-bottom: 12px; color: var(--fg-2); line-height: 1.65; }
+.onboard-list b { color: var(--fg); }
+.onboard-list em { color: var(--accent); font-style: normal; }
+.onboard-foot { display: flex; align-items: center; gap: 14px; border-top: 1px solid var(--line-soft); padding-top: 14px; }
+.onboard-foot button { margin-left: auto; padding: 6px 20px; border-color: rgba(53,224,255,.4); color: #bdeaff; }
 
 .graph-pane { position: relative; display: flex; flex-direction: column; min-width: 0; }
 .graph-toolbar {
