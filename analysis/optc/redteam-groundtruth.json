@@ -1,0 +1,104 @@
+{
+  "days": {
+    "1": {
+      "title": "Plain PowerShell Empire",
+      "hosts": [
+        "DC1",
+        "SysClient0104",
+        "SysClient0170",
+        "SysClient0201",
+        "SysClient0205",
+        "SysClient0255",
+        "SysClient0321",
+        "SysClient0355",
+        "SysClient0402",
+        "SysClient0419",
+        "SysClient0462",
+        "SysClient0503",
+        "SysClient0559",
+        "SysClient0609",
+        "SysClient0660",
+        "SysClient0771",
+        "SysClient0874",
+        "SysClient0955"
+      ],
+      "mentions": 96
+    },
+    "2": {
+      "title": "Custom Powershell Empire",
+      "hosts": [
+        "DC1",
+        "SysClient0005",
+        "SysClient0010",
+        "SysClient0069",
+        "SysClient0203",
+        "SysClient0358",
+        "SysClient0501",
+        "SysClient0618",
+        "SysClient0811",
+        "SysClient0851",
+        "SysClient0974"
+      ],
+      "mentions": 75
+    },
+    "3": {
+      "title": "Malicious Upgrade",
+      "hosts": [
+        "SysClient0051",
+        "SysClient0351"
+      ],
+      "mentions": 18
+    }
+  },
+  "union_hosts": [
+    "DC1",
+    "SysClient0005",
+    "SysClient0010",
+    "SysClient0051",
+    "SysClient0069",
+    "SysClient0104",
+    "SysClient0170",
+    "SysClient0201",
+    "SysClient0203",
+    "SysClient0205",
+    "SysClient0255",
+    "SysClient0321",
+    "SysClient0351",
+    "SysClient0355",
+    "SysClient0358",
+    "SysClient0402",
+    "SysClient0419",
+    "SysClient0462",
+    "SysClient0501",
+    "SysClient0503",
+    "SysClient0559",
+    "SysClient0609",
+    "SysClient0618",
+    "SysClient0660",
+    "SysClient0771",
+    "SysClient0811",
+    "SysClient0851",
+    "SysClient0874",
+    "SysClient0955",
+    "SysClient0974"
+  ],
+  "dates": [
+    "09/23/19",
+    "09/24/19",
+    "09/25/19"
+  ],
+  "pivot_edges": [
+    {
+      "from": "SysClient0402",
+      "to": "SysClient0660"
+    },
+    {
+      "from": "SysClient0201",
+      "to": "SysClient0402"
+    },
+    {
+      "from": "SysClient0402",
+      "to": "SysClient0660"
+    }
+  ]
+}
