@@ -1,0 +1,241 @@
+{
+  "campaign_id": "RED-GREEDY",
+  "scenario_id": "tacnet-01",
+  "name": "적대 행위자 시뮬레이션 (greedy)",
+  "victim_entry": "CO2-VEH",
+  "generator": "ui/tools/redteam.mjs",
+  "strategy": "greedy",
+  "seed": 20260906,
+  "generated": "2026-09-06T13:31:38.039Z",
+  "note": "시뮬레이션 산출이다. 실제 네트워크에 접속하거나 명령을 실행하지 않는다(ADR-0019 7항). 환경 단절은 여기 넣지 않는다 - mission.json 의 outages 가 담당한다.",
+  "steps": [
+    {
+      "t": 0,
+      "label": "정상",
+      "state": {},
+      "note": "침해 없음"
+    },
+    {
+      "t": 150,
+      "label": "권한 상승 CO2-VEH",
+      "state": {
+        "CO2-VEH": 1
+      },
+      "gt": {
+        "technique": "T1078",
+        "tactic": "privilege-escalation"
+      },
+      "note": "greedy: 임무 저하도 증가분이 가장 큰 수"
+    },
+    {
+      "t": 180,
+      "label": "측면 이동 TOC-WS",
+      "state": {
+        "CO2-VEH": 1,
+        "TOC-WS": 0.5
+      },
+      "gt": {
+        "technique": "T1021",
+        "tactic": "lateral-movement"
+      },
+      "note": "greedy: 임무 저하도 증가분이 가장 큰 수"
+    },
+    {
+      "t": 240,
+      "label": "측면 이동 BN-CP",
+      "state": {
+        "CO2-VEH": 1,
+        "TOC-WS": 0.5,
+        "BN-CP": 0.5
+      },
+      "gt": {
+        "technique": "T1021",
+        "tactic": "lateral-movement"
+      },
+      "note": "greedy: 임무 저하도 증가분이 가장 큰 수"
+    },
+    {
+      "t": 330,
+      "label": "권한 상승 BN-CP",
+      "state": {
+        "CO2-VEH": 1,
+        "TOC-WS": 0.5,
+        "BN-CP": 1
+      },
+      "gt": {
+        "technique": "T1078",
+        "tactic": "privilege-escalation"
+      },
+      "note": "greedy: 임무 저하도 증가분이 가장 큰 수"
+    },
+    {
+      "t": 360,
+      "label": "측면 이동 FDC-TERM",
+      "state": {
+        "CO2-VEH": 1,
+        "TOC-WS": 0.5,
+        "BN-CP": 1,
+        "FDC-TERM": 0.5
+      },
+      "gt": {
+        "technique": "T1021",
+        "tactic": "lateral-movement"
+      },
+      "note": "greedy: 임무 저하도 증가분이 가장 큰 수"
+    }
+  ],
+  "log": [
+    {
+      "turn": 0,
+      "t": 150,
+      "action": "escalate",
+      "from": "CO2-VEH",
+      "target": "CO2-VEH",
+      "technique": "T1078",
+      "tactic": "privilege-escalation",
+      "p": 0.65,
+      "roll": 0.0628,
+      "success": true,
+      "gain": 0.107143,
+      "legal_count": 3,
+      "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+      "mission": {
+        "M-C2": 0.4285714285714285,
+        "M-FIRE": 0
+      }
+    },
+    {
+      "turn": 1,
+      "t": 180,
+      "action": "lateral_move",
+      "from": "CO2-VEH",
+      "target": "TOC-WS",
+      "technique": "T1021",
+      "tactic": "lateral-movement",
+      "p": 0.6,
+      "roll": 0.1634,
+      "success": true,
+      "gain": 0.160714,
+      "legal_count": 12,
+      "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+      "mission": {
+        "M-C2": 0.5892857142857142,
+        "M-FIRE": 0
+      }
+    },
+    {
+      "turn": 2,
+      "t": 210,
+      "action": "escalate",
+      "from": "TOC-WS",
+      "target": "TOC-WS",
+      "technique": "T1078",
+      "tactic": "privilege-escalation",
+      "p": 0.65,
+      "roll": 0.6644,
+      "success": false,
+      "gain": 0.160714,
+      "legal_count": 4,
+      "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+      "mission": {
+        "M-C2": 0.375,
+        "M-FIRE": 0
+      }
+    },
+    {
+      "turn": 3,
+      "t": 240,
+      "action": "lateral_move",
+      "from": "CO2-VEH",
+      "target": "BN-CP",
+      "technique": "T1021",
+      "tactic": "lateral-movement",
+      "p": 0.6,
+      "roll": 0.5668,
+      "success": true,
+      "gain": 0.5,
+      "legal_count": 14,
+      "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+      "mission": {
+        "M-C2": 0.5,
+        "M-FIRE": 0
+      }
+    },
+    {
+      "turn": 4,
+      "t": 270,
+      "action": "escalate",
+      "from": "BN-CP",
+      "target": "BN-CP",
+      "technique": "T1078",
+      "tactic": "privilege-escalation",
+      "p": 0.65,
+      "roll": 0.8378,
+      "success": false,
+      "gain": 0.5,
+      "legal_count": 15,
+      "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+      "mission": {
+        "M-C2": 0.5,
+        "M-FIRE": 0
+      }
+    },
+    {
+      "turn": 5,
+      "t": 300,
+      "action": "escalate",
+      "from": "BN-CP",
+      "target": "BN-CP",
+      "technique": "T1078",
+      "tactic": "privilege-escalation",
+      "p": 0.65,
+      "roll": 0.7904,
+      "success": false,
+      "gain": 0.5,
+      "legal_count": 11,
+      "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+      "mission": {
+        "M-C2": 0.5,
+        "M-FIRE": 0
+      }
+    },
+    {
+      "turn": 6,
+      "t": 330,
+      "action": "escalate",
+      "from": "BN-CP",
+      "target": "BN-CP",
+      "technique": "T1078",
+      "tactic": "privilege-escalation",
+      "p": 0.65,
+      "roll": 0.2546,
+      "success": true,
+      "gain": 0.5,
+      "legal_count": 11,
+      "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+      "mission": {
+        "M-C2": 1,
+        "M-FIRE": 0
+      }
+    },
+    {
+      "turn": 7,
+      "t": 360,
+      "action": "lateral_move",
+      "from": "BN-CP",
+      "target": "FDC-TERM",
+      "technique": "T1021",
+      "tactic": "lateral-movement",
+      "p": 0.6,
+      "roll": 0.2316,
+      "success": true,
+      "gain": 0.25,
+      "legal_count": 23,
+      "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+      "mission": {
+        "M-C2": 1,
+        "M-FIRE": 0.5
+      }
+    }
+  ]
+}
