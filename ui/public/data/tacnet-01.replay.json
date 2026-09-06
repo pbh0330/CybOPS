@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-09-06T23:11:06.7560493+09:00",
+    "generated":  "2026-09-07T00:08:30.6798706+09:00",
     "generator":  "scripts/Export-ReplayData.ps1",
     "contract":  1,
     "note":  "Precomputed by the deterministic engine. The UI displays these numbers and never recomputes them (ADR-0003).",
@@ -27,6 +27,156 @@
                                        "maintenance":  "계획된 정비·전원 차단.",
                                        "unknown":  "원인 미상. 공격으로 단정하지 않는다(ADR-0012 2항). 상황도에 \u0027미상\u0027으로 표기한다."
                                    },
+                  "geo":  {
+                              "_role":  "보조 레이어다. 기본 뷰는 임무-자산 의존성 그래프이며 지도는 토글 가능한 부가 뷰다(ADR-0001). 저하도·우선순위·색상 등급 어느 것도 이 블록을 읽지 않는다.",
+                              "_not_ip_geolocation":  "이 블록과 asset.geo 는 자산대장 정보다. 외부 IP 지오로케이션(enrichment.geo.country)과 다른 것이고, 같은 필드에 넣지 않는다. 후자는 이벤트에 붙고 판단에 쓰지 않는다(ADR-0002).",
+                              "frame":  {
+                                            "id":  "TACGRID-01",
+                                            "kind":  "local-plane",
+                                            "canonical":  true,
+                                            "unit":  "meter",
+                                            "axes":  {
+                                                         "x":  "east",
+                                                         "y":  "north",
+                                                         "z":  "elevation_msl"
+                                                     },
+                                            "extent":  {
+                                                           "x":  [
+                                                                     0,
+                                                                     24000
+                                                                 ],
+                                                           "y":  [
+                                                                     0,
+                                                                     18000
+                                                                 ],
+                                                           "z":  [
+                                                                     0,
+                                                                     600
+                                                                 ]
+                                                       },
+                                            "note":  "정본 좌표는 이 로컬 평면 하나뿐이다. 자산마다 위경도를 따로 저장하지 않는다 - 두 표현을 각각 저장하면 어긋난다."
+                                        },
+                              "georef":  {
+                                             "purpose":  "로컬 평면을 지도 위젯에 올리기 위한 앵커. 표시 전용이다.",
+                                             "datum":  "WGS84",
+                                             "epsg":  4326,
+                                             "anchor":  {
+                                                            "x":  0,
+                                                            "y":  0,
+                                                            "lat":  -49.05,
+                                                            "lon":  -123.6
+                                                        },
+                                             "rotation_deg":  0,
+                                             "method":  "equirectangular-local",
+                                             "formula":  {
+                                                             "lat":  "anchor.lat + y / 111320",
+                                                             "lon":  "anchor.lon + x / (111320 * cos(anchor.lat))",
+                                                             "inverse_lat":  "y = (lat - anchor.lat) * 111320",
+                                                             "inverse_lon":  "x = (lon - anchor.lon) * 111320 * cos(anchor.lat)"
+                                                         },
+                                             "approximation_error_m":  90,
+                                             "approximation_note":  "cos 를 앵커 위도에서 고정하므로 AO 북쪽 가장자리(y=18000)에서 동서 방향 최대 약 90 m 왜곡이 생긴다. 표시 레이어이므로 허용한다. 판단 로직은 로컬 평면 값만 쓴다.",
+                                             "mgrs":  {
+                                                          "store":  false,
+                                                          "display":  true,
+                                                          "derive_from":  "wgs84",
+                                                          "gzd":  "10F",
+                                                          "default_precision_digits":  8,
+                                                          "note":  "MGRS 는 WGS84 datum 기반이라 위경도에서 무손실로 파생된다. 반대로 MGRS 문자열을 정본으로 저장하면 자릿수가 곧 정밀도라 값이 잘리고 격자 경계에서 보간이 깨진다. 그래서 저장은 위경도, 표시는 MGRS 로 나눈다. GZD 는 AO 전체가 UTM zone 10, 위도대 F 에 들어가서 상수다."
+                                                      }
+                                         },
+                              "safety":  {
+                                             "claim":  "이 시나리오의 모든 좌표는 가상이다. 실제 부대 위치·실제 군사시설·실제 지명을 쓰지 않았다.",
+                                             "how":  [
+                                                         "앵커를 남태평양 공해 한가운데 무인 해역(육지 접근불가점 인근)에 두었다. AO 24 km x 18 km 전체가 외해상이라 어떤 실제 군사시설과도 겹칠 수 없다.",
+                                                         "가장 가까운 육지까지 수천 km 규모이므로 어느 국가의 영해·EEZ(200 해리) 안에도 들어가지 않는다.",
+                                                         "site 라벨(여단 TOC, 능선 중계소 등)은 전부 일반명사이고 실제 지명이 아니다.",
+                                                         "지형(terrain 블록)은 이 로컬 평면 안에서만 존재하는 창작물이다. 앵커 지점의 실제 해저지형과 무관하다."
+                                                     ],
+                                             "basemap_policy":  "위성영상·실지형 타일을 이 좌표에 깔고 \u0027이 지형이 시나리오 지형\u0027이라고 표시하지 않는다. 지도 레이어는 빈 배경 + 격자 + terrain 블록의 도식만 그린다.",
+                                             "verification_pending":  "\u0027육지 접근불가점 최근접 육지 약 2,700 km\u0027 수치는 2차 출처 기반이며 원문 대조 미완료다. 안전성 논거 자체는 이 수치가 반으로 줄어도 성립한다(200 해리 = 370 km)."
+                                         },
+                              "terrain":  {
+                                              "_note":  "표시·서술용 도식이다. 엔진은 읽지 않는다. 가시선·차폐를 좌표에서 계산하지 않는다 - outage 의 cause 는 저작된 값이고 이 블록은 그것과 수작업으로 정합을 맞춘 그림일 뿐이다.",
+                                              "features":  [
+                                                               {
+                                                                   "id":  "TF-RIDGE-A",
+                                                                   "kind":  "ridge",
+                                                                   "name":  "북쪽 능선",
+                                                                   "crest_elev_m":  420,
+                                                                   "polyline":  [
+                                                                                    [
+                                                                                        6800,
+                                                                                        9600
+                                                                                    ],
+                                                                                    [
+                                                                                        10400,
+                                                                                        10900
+                                                                                    ],
+                                                                                    [
+                                                                                        14200,
+                                                                                        12300
+                                                                                    ]
+                                                                                ]
+                                                               },
+                                                               {
+                                                                   "id":  "TF-VALLEY-B",
+                                                                   "kind":  "valley",
+                                                                   "name":  "동쪽 계곡",
+                                                                   "floor_elev_m":  60,
+                                                                   "polyline":  [
+                                                                                    [
+                                                                                        16200,
+                                                                                        12200
+                                                                                    ],
+                                                                                    [
+                                                                                        17400,
+                                                                                        13300
+                                                                                    ],
+                                                                                    [
+                                                                                        18600,
+                                                                                        14400
+                                                                                    ]
+                                                                                ]
+                                                               },
+                                                               {
+                                                                   "id":  "TF-REAR",
+                                                                   "kind":  "assembly-area",
+                                                                   "name":  "후방 집결지",
+                                                                   "elev_m":  90,
+                                                                   "polygon":  [
+                                                                                   [
+                                                                                       2400,
+                                                                                       3400
+                                                                                   ],
+                                                                                   [
+                                                                                       4400,
+                                                                                       3400
+                                                                                   ],
+                                                                                   [
+                                                                                       4400,
+                                                                                       5400
+                                                                                   ],
+                                                                                   [
+                                                                                       2400,
+                                                                                       5400
+                                                                                   ]
+                                                                               ]
+                                                               }
+                                                           ]
+                                          },
+                              "position_rule":  {
+                                                    "_note":  "시점 t 의 자산 위치를 뽑는 결정론적 규칙. 어떤 구현이든 이 규칙만 따르면 같은 값이 나와야 한다.",
+                                                    "steps":  [
+                                                                  "asset.geo.kind == \u0027fixed\u0027 이면 언제나 asset.geo.at 이다.",
+                                                                  "asset.geo.kind == \u0027track\u0027 이면 from \u003c= t \u003c to 인 구간을 segments 에서 찾는다. 구간은 서로 겹치지 않고 [0, timeline.horizon) 을 빈틈없이 덮는다.",
+                                                                  "mode == \u0027hold\u0027 이면 그 구간 내내 at 이다.",
+                                                                  "mode == \u0027move\u0027 이면 u = (t - from) / (to - from) 으로 at 과 to_at 을 성분별 선형보간한다. x, y, z 전부 같은 u 를 쓴다.",
+                                                                  "t 가 어떤 구간에도 들어가지 않으면 위치는 0 이나 마지막 값이 아니라 미정의다. 화면에 \u0027위치 미상\u0027으로 표기한다(ADR-0017 의 \u0027활성 단계 없음\u0027 처리와 같은 태도)."
+                                                              ],
+                                                    "orthogonality":  "geo 와 outages 는 직교한다. 자산이 outage 중이어도 위치는 계속 정의된다 - 미전개 장비도 어딘가에는 있다. 반대로 위치가 움직인다고 자동으로 outage 가 생기지도 않는다."
+                                                }
+                          },
                   "units":  [
                                 {
                                     "id":  "U-BDE",
@@ -216,6 +366,7 @@
                                    }
                                ],
                   "_transit_note":  "transit=false 인 자산은 종단 단말이다. 자기 트래픽만 주고받고 남의 트래픽을 중계하지 않는다. 이 필드가 없으면 관측반 태블릿이 위성 단절을 우회 중계하는 비현실적 경로가 생긴다(2026-09-06 실측으로 발견). 생략 시 기본값은 true 다.",
+                  "_geo_note":  "asset.geo 의 좌표계·보간 규칙·안전성 근거는 루트 geo 블록에 있다. kind 는 fixed 아니면 track 이고, 값은 전부 TACGRID-01 로컬 평면의 미터다.",
                   "assets":  [
                                  {
                                      "id":  "TOC-ESX",
@@ -224,7 +375,18 @@
                                      "site":  "여단 TOC",
                                      "os":  "esxi",
                                      "mobility":  "static",
-                                     "transit":  true
+                                     "transit":  true,
+                                     "geo":  {
+                                                 "kind":  "fixed",
+                                                 "frame":  "TACGRID-01",
+                                                 "source":  "asset-register",
+                                                 "accuracy_m":  10,
+                                                 "at":  {
+                                                            "x":  3180,
+                                                            "y":  4240,
+                                                            "z":  92
+                                                        }
+                                             }
                                  },
                                  {
                                      "id":  "TOC-SRV",
@@ -233,7 +395,18 @@
                                      "site":  "여단 TOC",
                                      "os":  "linux",
                                      "mobility":  "static",
-                                     "transit":  true
+                                     "transit":  true,
+                                     "geo":  {
+                                                 "kind":  "fixed",
+                                                 "frame":  "TACGRID-01",
+                                                 "source":  "asset-register",
+                                                 "accuracy_m":  10,
+                                                 "at":  {
+                                                            "x":  3205,
+                                                            "y":  4232,
+                                                            "z":  92
+                                                        }
+                                             }
                                  },
                                  {
                                      "id":  "TOC-WS",
@@ -242,7 +415,18 @@
                                      "site":  "여단 TOC",
                                      "os":  "windows",
                                      "mobility":  "static",
-                                     "transit":  false
+                                     "transit":  false,
+                                     "geo":  {
+                                                 "kind":  "fixed",
+                                                 "frame":  "TACGRID-01",
+                                                 "source":  "asset-register",
+                                                 "accuracy_m":  10,
+                                                 "at":  {
+                                                            "x":  3162,
+                                                            "y":  4211,
+                                                            "z":  92
+                                                        }
+                                             }
                                  },
                                  {
                                      "id":  "BFT-GW",
@@ -251,7 +435,18 @@
                                      "site":  "여단 TOC",
                                      "os":  "linux",
                                      "mobility":  "static",
-                                     "transit":  true
+                                     "transit":  true,
+                                     "geo":  {
+                                                 "kind":  "fixed",
+                                                 "frame":  "TACGRID-01",
+                                                 "source":  "asset-register",
+                                                 "accuracy_m":  10,
+                                                 "at":  {
+                                                            "x":  3221,
+                                                            "y":  4258,
+                                                            "z":  93
+                                                        }
+                                             }
                                  },
                                  {
                                      "id":  "FDC-SRV",
@@ -260,7 +455,18 @@
                                      "site":  "포병 FDC",
                                      "os":  "linux",
                                      "mobility":  "static",
-                                     "transit":  true
+                                     "transit":  true,
+                                     "geo":  {
+                                                 "kind":  "fixed",
+                                                 "frame":  "TACGRID-01",
+                                                 "source":  "asset-register",
+                                                 "accuracy_m":  10,
+                                                 "at":  {
+                                                            "x":  7420,
+                                                            "y":  6140,
+                                                            "z":  128
+                                                        }
+                                             }
                                  },
                                  {
                                      "id":  "FDC-TERM",
@@ -269,7 +475,18 @@
                                      "site":  "포병 FDC",
                                      "os":  "windows",
                                      "mobility":  "static",
-                                     "transit":  false
+                                     "transit":  false,
+                                     "geo":  {
+                                                 "kind":  "fixed",
+                                                 "frame":  "TACGRID-01",
+                                                 "source":  "asset-register",
+                                                 "accuracy_m":  10,
+                                                 "at":  {
+                                                            "x":  7396,
+                                                            "y":  6118,
+                                                            "z":  128
+                                                        }
+                                             }
                                  },
                                  {
                                      "id":  "RELAY-1",
@@ -278,7 +495,19 @@
                                      "site":  "능선 중계소",
                                      "os":  "appliance",
                                      "mobility":  "static",
-                                     "transit":  true
+                                     "transit":  true,
+                                     "geo":  {
+                                                 "kind":  "fixed",
+                                                 "frame":  "TACGRID-01",
+                                                 "source":  "asset-register",
+                                                 "accuracy_m":  15,
+                                                 "at":  {
+                                                            "x":  10400,
+                                                            "y":  10900,
+                                                            "z":  418
+                                                        },
+                                                 "note":  "TF-RIDGE-A 능선마루. 중계소가 왜 거기 있는지가 좌표로 설명된다"
+                                             }
                                  },
                                  {
                                      "id":  "BN-SRV",
@@ -295,7 +524,53 @@
                                                          "cause":  "mobility",
                                                          "note":  "지휘소 이동(철수-전개)"
                                                      }
-                                                 ]
+                                                 ],
+                                     "geo":  {
+                                                 "kind":  "track",
+                                                 "frame":  "TACGRID-01",
+                                                 "source":  "asset-register",
+                                                 "accuracy_m":  25,
+                                                 "segments":  [
+                                                                  {
+                                                                      "from":  0,
+                                                                      "to":  95,
+                                                                      "mode":  "hold",
+                                                                      "at":  {
+                                                                                 "x":  8640,
+                                                                                 "y":  8180,
+                                                                                 "z":  146
+                                                                             },
+                                                                      "note":  "1차 지휘소"
+                                                                  },
+                                                                  {
+                                                                      "from":  95,
+                                                                      "to":  125,
+                                                                      "mode":  "move",
+                                                                      "at":  {
+                                                                                 "x":  8640,
+                                                                                 "y":  8180,
+                                                                                 "z":  146
+                                                                             },
+                                                                      "to_at":  {
+                                                                                    "x":  13860,
+                                                                                    "y":  12420,
+                                                                                    "z":  205
+                                                                                },
+                                                                      "note":  "지휘소 이동 - outage(mobility) 와 같은 구간"
+                                                                  },
+                                                                  {
+                                                                      "from":  125,
+                                                                      "to":  420,
+                                                                      "mode":  "hold",
+                                                                      "at":  {
+                                                                                 "x":  13860,
+                                                                                 "y":  12420,
+                                                                                 "z":  205
+                                                                             },
+                                                                      "note":  "2차 지휘소"
+                                                                  }
+                                                              ]
+                                             }
                                  },
                                  {
                                      "id":  "BN-CP",
@@ -312,7 +587,50 @@
                                                          "cause":  "mobility",
                                                          "note":  "지휘소 이동(철수-전개)"
                                                      }
-                                                 ]
+                                                 ],
+                                     "geo":  {
+                                                 "kind":  "track",
+                                                 "frame":  "TACGRID-01",
+                                                 "source":  "asset-register",
+                                                 "accuracy_m":  25,
+                                                 "segments":  [
+                                                                  {
+                                                                      "from":  0,
+                                                                      "to":  95,
+                                                                      "mode":  "hold",
+                                                                      "at":  {
+                                                                                 "x":  8622,
+                                                                                 "y":  8192,
+                                                                                 "z":  146
+                                                                             }
+                                                                  },
+                                                                  {
+                                                                      "from":  95,
+                                                                      "to":  125,
+                                                                      "mode":  "move",
+                                                                      "at":  {
+                                                                                 "x":  8622,
+                                                                                 "y":  8192,
+                                                                                 "z":  146
+                                                                             },
+                                                                      "to_at":  {
+                                                                                    "x":  13842,
+                                                                                    "y":  12432,
+                                                                                    "z":  205
+                                                                                }
+                                                                  },
+                                                                  {
+                                                                      "from":  125,
+                                                                      "to":  420,
+                                                                      "mode":  "hold",
+                                                                      "at":  {
+                                                                                 "x":  13842,
+                                                                                 "y":  12432,
+                                                                                 "z":  205
+                                                                             }
+                                                                  }
+                                                              ]
+                                             }
                                  },
                                  {
                                      "id":  "SAT-TERM",
@@ -329,7 +647,50 @@
                                                          "cause":  "mobility",
                                                          "note":  "위성단말 철수-재전개"
                                                      }
-                                                 ]
+                                                 ],
+                                     "geo":  {
+                                                 "kind":  "track",
+                                                 "frame":  "TACGRID-01",
+                                                 "source":  "asset-register",
+                                                 "accuracy_m":  25,
+                                                 "segments":  [
+                                                                  {
+                                                                      "from":  0,
+                                                                      "to":  95,
+                                                                      "mode":  "hold",
+                                                                      "at":  {
+                                                                                 "x":  8662,
+                                                                                 "y":  8171,
+                                                                                 "z":  147
+                                                                             }
+                                                                  },
+                                                                  {
+                                                                      "from":  95,
+                                                                      "to":  125,
+                                                                      "mode":  "move",
+                                                                      "at":  {
+                                                                                 "x":  8662,
+                                                                                 "y":  8171,
+                                                                                 "z":  147
+                                                                             },
+                                                                      "to_at":  {
+                                                                                    "x":  13882,
+                                                                                    "y":  12411,
+                                                                                    "z":  206
+                                                                                }
+                                                                  },
+                                                                  {
+                                                                      "from":  125,
+                                                                      "to":  420,
+                                                                      "mode":  "hold",
+                                                                      "at":  {
+                                                                                 "x":  13882,
+                                                                                 "y":  12411,
+                                                                                 "z":  206
+                                                                             }
+                                                                  }
+                                                              ]
+                                             }
                                  },
                                  {
                                      "id":  "CO1-VEH",
@@ -338,7 +699,81 @@
                                      "site":  "1중대 지휘차",
                                      "os":  "windows",
                                      "mobility":  "mobile",
-                                     "transit":  false
+                                     "transit":  false,
+                                     "geo":  {
+                                                 "kind":  "track",
+                                                 "frame":  "TACGRID-01",
+                                                 "source":  "asset-register",
+                                                 "accuracy_m":  50,
+                                                 "segments":  [
+                                                                  {
+                                                                      "from":  0,
+                                                                      "to":  90,
+                                                                      "mode":  "hold",
+                                                                      "at":  {
+                                                                                 "x":  6240,
+                                                                                 "y":  7380,
+                                                                                 "z":  112
+                                                                             }
+                                                                  },
+                                                                  {
+                                                                      "from":  90,
+                                                                      "to":  150,
+                                                                      "mode":  "move",
+                                                                      "at":  {
+                                                                                 "x":  6240,
+                                                                                 "y":  7380,
+                                                                                 "z":  112
+                                                                             },
+                                                                      "to_at":  {
+                                                                                    "x":  11460,
+                                                                                    "y":  12880,
+                                                                                    "z":  166
+                                                                                }
+                                                                  },
+                                                                  {
+                                                                      "from":  150,
+                                                                      "to":  195,
+                                                                      "mode":  "move",
+                                                                      "at":  {
+                                                                                 "x":  11460,
+                                                                                 "y":  12880,
+                                                                                 "z":  166
+                                                                             },
+                                                                      "to_at":  {
+                                                                                    "x":  12980,
+                                                                                    "y":  14260,
+                                                                                    "z":  131
+                                                                                },
+                                                                      "note":  "TF-RIDGE-A 북사면 사각지대 통과 - L-VHF-CO1 의 terrain outage 와 같은 구간"
+                                                                  },
+                                                                  {
+                                                                      "from":  195,
+                                                                      "to":  260,
+                                                                      "mode":  "move",
+                                                                      "at":  {
+                                                                                 "x":  12980,
+                                                                                 "y":  14260,
+                                                                                 "z":  131
+                                                                             },
+                                                                      "to_at":  {
+                                                                                    "x":  15240,
+                                                                                    "y":  15420,
+                                                                                    "z":  198
+                                                                                }
+                                                                  },
+                                                                  {
+                                                                      "from":  260,
+                                                                      "to":  420,
+                                                                      "mode":  "hold",
+                                                                      "at":  {
+                                                                                 "x":  15240,
+                                                                                 "y":  15420,
+                                                                                 "z":  198
+                                                                             }
+                                                                  }
+                                                              ]
+                                             }
                                  },
                                  {
                                      "id":  "CO2-VEH",
@@ -347,7 +782,66 @@
                                      "site":  "2중대 지휘차",
                                      "os":  "windows",
                                      "mobility":  "mobile",
-                                     "transit":  false
+                                     "transit":  false,
+                                     "geo":  {
+                                                 "kind":  "track",
+                                                 "frame":  "TACGRID-01",
+                                                 "source":  "asset-register",
+                                                 "accuracy_m":  50,
+                                                 "segments":  [
+                                                                  {
+                                                                      "from":  0,
+                                                                      "to":  100,
+                                                                      "mode":  "hold",
+                                                                      "at":  {
+                                                                                 "x":  5480,
+                                                                                 "y":  6420,
+                                                                                 "z":  104
+                                                                             }
+                                                                  },
+                                                                  {
+                                                                      "from":  100,
+                                                                      "to":  205,
+                                                                      "mode":  "move",
+                                                                      "at":  {
+                                                                                 "x":  5480,
+                                                                                 "y":  6420,
+                                                                                 "z":  104
+                                                                             },
+                                                                      "to_at":  {
+                                                                                    "x":  11020,
+                                                                                    "y":  11640,
+                                                                                    "z":  222
+                                                                                }
+                                                                  },
+                                                                  {
+                                                                      "from":  205,
+                                                                      "to":  235,
+                                                                      "mode":  "move",
+                                                                      "at":  {
+                                                                                 "x":  11020,
+                                                                                 "y":  11640,
+                                                                                 "z":  222
+                                                                             },
+                                                                      "to_at":  {
+                                                                                    "x":  13480,
+                                                                                    "y":  13060,
+                                                                                    "z":  186
+                                                                                },
+                                                                      "note":  "L-VHF-CO2 의 mobility outage 와 같은 구간 - 기동간 안테나 미전개"
+                                                                  },
+                                                                  {
+                                                                      "from":  235,
+                                                                      "to":  420,
+                                                                      "mode":  "hold",
+                                                                      "at":  {
+                                                                                 "x":  13480,
+                                                                                 "y":  13060,
+                                                                                 "z":  186
+                                                                             }
+                                                                  }
+                                                              ]
+                                             }
                                  },
                                  {
                                      "id":  "FO-TAB",
@@ -364,7 +858,97 @@
                                                          "cause":  "mobility",
                                                          "note":  "관측반 미전개 - 표적획득 단계 이전"
                                                      }
-                                                 ]
+                                                 ],
+                                     "geo":  {
+                                                 "kind":  "track",
+                                                 "frame":  "TACGRID-01",
+                                                 "source":  "asset-register",
+                                                 "accuracy_m":  50,
+                                                 "segments":  [
+                                                                  {
+                                                                      "from":  0,
+                                                                      "to":  120,
+                                                                      "mode":  "hold",
+                                                                      "at":  {
+                                                                                 "x":  3460,
+                                                                                 "y":  4720,
+                                                                                 "z":  95
+                                                                             },
+                                                                      "note":  "후방 집결지 대기. outage 중이지만 위치는 정의된다"
+                                                                  },
+                                                                  {
+                                                                      "from":  120,
+                                                                      "to":  180,
+                                                                      "mode":  "move",
+                                                                      "at":  {
+                                                                                 "x":  3460,
+                                                                                 "y":  4720,
+                                                                                 "z":  95
+                                                                             },
+                                                                      "to_at":  {
+                                                                                    "x":  9820,
+                                                                                    "y":  9640,
+                                                                                    "z":  352
+                                                                                }
+                                                                  },
+                                                                  {
+                                                                      "from":  180,
+                                                                      "to":  255,
+                                                                      "mode":  "move",
+                                                                      "at":  {
+                                                                                 "x":  9820,
+                                                                                 "y":  9640,
+                                                                                 "z":  352
+                                                                             },
+                                                                      "to_at":  {
+                                                                                    "x":  16040,
+                                                                                    "y":  12180,
+                                                                                    "z":  214
+                                                                                }
+                                                                  },
+                                                                  {
+                                                                      "from":  255,
+                                                                      "to":  275,
+                                                                      "mode":  "move",
+                                                                      "at":  {
+                                                                                 "x":  16040,
+                                                                                 "y":  12180,
+                                                                                 "z":  214
+                                                                             },
+                                                                      "to_at":  {
+                                                                                    "x":  17280,
+                                                                                    "y":  13240,
+                                                                                    "z":  68
+                                                                                },
+                                                                      "note":  "TF-VALLEY-B 진입 - L-VHF-FO 의 terrain outage 와 같은 구간"
+                                                                  },
+                                                                  {
+                                                                      "from":  275,
+                                                                      "to":  330,
+                                                                      "mode":  "move",
+                                                                      "at":  {
+                                                                                 "x":  17280,
+                                                                                 "y":  13240,
+                                                                                 "z":  68
+                                                                             },
+                                                                      "to_at":  {
+                                                                                    "x":  18420,
+                                                                                    "y":  14380,
+                                                                                    "z":  146
+                                                                                }
+                                                                  },
+                                                                  {
+                                                                      "from":  330,
+                                                                      "to":  420,
+                                                                      "mode":  "hold",
+                                                                      "at":  {
+                                                                                 "x":  18420,
+                                                                                 "y":  14380,
+                                                                                 "z":  146
+                                                                             }
+                                                                  }
+                                                              ]
+                                             }
                                  }
                              ],
                   "links":  [

@@ -24,7 +24,7 @@
 | `Phase` | 작전 단계 | id, mission_id, sequence, start/end |
 | `Task` | 작업 | id, phase_id, criticality, min_capability |
 | `Service` | 논리 서비스 (지휘통제, 통신, 정보공유 등) | id, name, **kind**, sla, redundancy_group |
-| `Asset` | 물리·논리 자산 (호스트, 네트워크 장비, 앱) | id, type, owner_unit, geo(참고용), ocsf_ids |
+| `Asset` | 물리·논리 자산 (호스트, 네트워크 장비, 앱) | id, type, owner_unit, geo(8절), ocsf_ids |
 | `Unit` | 부대·조직 | id, echelon, parent_unit |
 
 `Service.kind`는 서비스의 종류다: `messaging`, `voice`, `fire-control`, `position-reporting`,
@@ -34,6 +34,8 @@
 
 `Asset.geo`는 **자산의 물리적 위치**다. 외부 IP 지오로케이션과 혼동하지 않는다.
 전자는 신뢰할 수 있는 대장 정보, 후자는 판단에 쓰지 않는 참고값이다. (ADR-0002)
+전술망에서는 이 값이 시간축을 탄다. 스키마는 8절, 설계 근거는
+[17-geo-layer.md](17-geo-layer.md)에 있다.
 
 ## 3. 엣지 타입
 
@@ -111,6 +113,7 @@ ADR-0012로 대상 망이 전술망으로 확정되면서 정적 그래프로는
 | `Asset` | `outages[]` | `{from, to, cause, note}` 비가용 구간 |
 | `Asset` | `mobility` | `static` / `mobile` (표시·설명용) |
 | `Asset` | `transit` | 남의 트래픽을 중계하는가. 기본 true, **종단 단말은 false** |
+| `Asset` | `geo` | 위치. 정지는 고정 좌표, 기동은 구간별 좌표. 8절 |
 | `Task` | `performed_at` | 작업이 수행되는 자산. 도달성 계산의 출발점 |
 | 루트 | `links[]` | `{id, a, b, bearer, outages}`. 전술망에서 `communicates_with`를 대체 |
 
@@ -145,7 +148,87 @@ ADR-0012로 대상 망이 전술망으로 확정되면서 정적 그래프로는
 - `performed_at` 존재 여부
 - **정적 도달성**: 모든 링크가 살아 있다고 가정해도 작업이 요구 서비스에 닿지 못하면 오류
 
-## 8. 열린 질문
+## 8. 지리 스키마 (보조 레이어)
+
+**기본 뷰는 여전히 임무 그래프다(ADR-0001).** 지리는 토글 가능한 보조 레이어이고,
+지도를 주화면으로 만드는 설계를 하지 않는다. 어떤 판단 로직도 이 절의 필드를 읽지 않는다.
+설계 근거·안전성 논거·한계는 [17-geo-layer.md](17-geo-layer.md)에 있다. 스키마만 적는다.
+
+### 8.1 좌표계는 3층이고 저장하는 것은 하나다
+
+| 층 | 값 | 저장 |
+|---|---|---|
+| 정본 | 로컬 평면 (미터, x=동, y=북, z=표고 MSL) | **그렇다** |
+| 지도 배치 | WGS84 위경도 | 아니다. 앵커 + 변환식에서 파생 |
+| 표시 | MGRS 문자열 | 아니다. 위경도에서 파생 |
+
+자산마다 두 표현을 각각 저장하면 어긋난다. **자산당 정본 좌표는 하나다.**
+MGRS는 WGS84 datum 기반이라 위경도에서 무손실로 파생되지만, 반대로 저장 정본으로 쓰면
+자릿수가 곧 정밀도라 값이 잘리고 격자 경계에서 보간이 깨진다. 그래서 표시 전용이다.
+
+### 8.2 루트 `geo` 블록
+
+| 필드 | 의미 |
+|---|---|
+| `geo.frame` | 정본 평면 정의: `id`, `kind: "local-plane"`, `unit`, `axes`, `extent` |
+| `geo.georef` | 평면 -> WGS84 앵커와 변환식, 근사 오차, `mgrs` 표시 정책 |
+| `geo.safety` | 가상 좌표임을 보증하는 논거와 **배경지도 정책** |
+| `geo.terrain` | 능선·계곡 등 도식. **서술 전용. 엔진이 읽지 않는다** |
+| `geo.position_rule` | 시점 t의 좌표를 뽑는 결정론 규칙(8.4)을 데이터로 중복 기재 |
+
+### 8.3 `Asset.geo` - 정지와 기동
+
+정지 자산은 고정 좌표, 기동 자산은 ADR-0017의 반열린구간 `[from, to)` 표기를 그대로 쓴다.
+
+```json
+"geo": {"kind": "fixed", "frame": "TACGRID-01", "source": "asset-register",
+        "accuracy_m": 15, "at": {"x": 10400, "y": 10900, "z": 418}}
+```
+
+```json
+"geo": {"kind": "track", "frame": "TACGRID-01", "source": "asset-register",
+        "accuracy_m": 25, "segments": [
+  {"from": 0,   "to": 95,  "mode": "hold", "at": {"x": 8622, "y": 8192, "z": 146}},
+  {"from": 95,  "to": 125, "mode": "move", "at":    {"x": 8622,  "y": 8192,  "z": 146},
+                                           "to_at": {"x": 13842, "y": 12432, "z": 205}},
+  {"from": 125, "to": 420, "mode": "hold", "at": {"x": 13842, "y": 12432, "z": 205}}
+]}
+```
+
+`kind` 는 `mobility` 와 대응한다: `static` -> `fixed`, `mobile` -> `track`.
+`source` 는 이 값이 어디서 왔는지다(`asset-register`). 8.6절 참조.
+
+### 8.4 시점 t의 좌표 (결정론)
+
+1. `fixed` 이면 언제나 `at`.
+2. `track` 이면 `from <= t < to` 인 구간을 찾는다. 구간은 겹치지 않고 `[0, horizon)` 을
+   빈틈없이 덮는다.
+3. `hold` 이면 구간 내내 `at`.
+4. `move` 이면 `u = (t - from) / (to - from)` 으로 `at` 과 `to_at` 을 성분별 선형보간한다.
+   x, y, z 전부 같은 `u`.
+5. 어떤 구간에도 없으면 0도 마지막 값도 아닌 **미정의**다. "위치 미상"으로 표기한다.
+   ADR-0017의 "활성 단계 없으면 저하도 미정의"와 같은 태도다. 마지막 위치를 그대로 찍는
+   상황도는 없어진 부대를 살아 있는 것처럼 그린다.
+
+### 8.5 `geo` 와 `outages` 는 직교한다
+
+**outage 중이어도 위치는 정의된다.** 미전개 장비도 어딘가에는 있다. 반대로 좌표가
+움직인다고 outage 가 생기지도 않는다. 두 값의 정합은 저작자가 수작업으로 맞춘 것이고
+계산되지 않는다. **가시선·차폐를 좌표에서 유도하지 않는다** - 기하가 원인 라벨을 만들기
+시작하면 "지형인가 재밍인가"를 구분할 수 없어지고, 이는 ADR-0017 3항의 취지를 깎는다.
+
+### 8.6 `Asset.geo` 는 IP 지오로케이션이 아니다
+
+| | `Asset.geo` | `enrichment.geo.country` |
+|---|---|---|
+| 붙는 곳 | 자산 (mission.json) | 이벤트 (OCSF 정규화 결과) |
+| 출처 | 자산대장 / 기동계획 | 외부 IP 지오로케이션 DB |
+| 정밀도 | 미터 (`accuracy_m`) | **국가 코드까지만** |
+| 판단에 쓰는가 | 아니다. 임무 중요도는 그래프가 낸다 | 아니다. 값이 체계적으로 틀린다 (ADR-0002) |
+
+**둘을 같은 필드에 넣지 않는다.** 스키마상으로도 파일이 분리되어 있다.
+
+## 9. 열린 질문
 
 - 심볼 체계는 MIL-STD-2525 준용으로 확정됐다(ADR-0013). `Asset.type` → SIDC 매핑 테이블이
   이 스키마의 일부로 들어와야 한다.
