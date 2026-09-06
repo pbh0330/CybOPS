@@ -275,7 +275,7 @@ PowerShell 5.1뿐이었다.** (지금은 Python 3.12가 있다 - 2절 개발환�
 나중에 Python으로 포팅해도 그대로 쓴다.
 
 ```
-scenarios/defnet-01/mission.json       임무 온톨로지 (자산 16, 서비스 5, 작업 4, 임무 2)
+scenarios/defnet-01/mission.json       임무 온톨로지 (자산 16, 서비스 5, 작업 4, 임무 2, 링크 15)
 scenarios/defnet-01/attack-chain.json  12단계 침투 시나리오 + 상태 궤적
 scenarios/defnet-01/synthetic/         생성 결과 (events 8,012 / labels 12 / states 10)
 scenarios/tacnet-01/mission.json        전술망 온톨로지 + 시간축 (자산 13, 링크 12, 작업 8)
@@ -306,8 +306,14 @@ scripts/Add-Bom.ps1                    PS 5.1 인코딩 사고 방지
 **합성 데이터로 탐지 성능을 주장하지 않는다.** 악성 비율 0.15%로 실데이터보다 두 자릿수
 높다. 용도는 개발·회귀 테스트·구성 타당성 검사까지. 상세는 `docs/07-synthetic-data.md` 6절.
 
-미해결 경고 2건: `FW01`, `SW01`이 어떤 엣지에도 연결되지 않았다. 방화벽·스위치를
-의존 그래프에 어떻게 넣을지 미정.
+~~미해결 경고 2건: `FW01`, `SW01`이 어떤 엣지에도 연결되지 않았다.~~
+**해소됨 (2026-09-07).** 답은 의존 그래프가 아니라 전송로 계층이었다. ADR-0017의
+`links[]`와 `transit`을 defnet-01에도 적용해 두 장비를 중계 노드로 세웠다. 링크 15개,
+`SW01`이 전산실 코어이고 `FW01`이 사용자 구간과 전산실 구간의 경계다. 작업 4개에
+`performed_at`을 채웠다. `communicates_with`(논리 통신)는 복사하지 않고 별도 층으로
+남겼다. 검증기 오류 0, 경고 0. 기준값 3개(DC01 단독 0.0%, DC01+DC02 M-C2 80.5%,
+ESX01 격리 70.1%)는 소수점까지 동일하고 JS 엔진 parity도 통과했다.
+상세는 `docs/07-synthetic-data.md` 3.0.1절.
 
 ## 2. 문서 현황 - 완료
 

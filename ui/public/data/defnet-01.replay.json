@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-09-06T23:11:06.9370340+09:00",
+    "generated":  "2026-09-07T00:06:13.3759678+09:00",
     "generator":  "scripts/Export-ReplayData.ps1",
     "contract":  1,
     "note":  "Precomputed by the deterministic engine. The UI displays these numbers and never recomputes them (ADR-0003).",
@@ -11,8 +11,10 @@
                   "name":  "국방망 지휘통제/군수지원 축약 시나리오",
                   "network_type":  "defense-enterprise",
                   "authored":  "2026-09-05",
+                  "revised":  "2026-09-07",
                   "classification":  "가상. 공개 자료와 일반 교리 수준으로만 구성. 실제 부대편성·임무계획·자산대장 미사용.",
-                  "assumption":  "docs/99-open-questions.md Q1 미확정 상태에서 국방망(엔터프라이즈 유사)을 가정했다. 전술망으로 확정되면 시간축(temporal edge)이 추가되어야 한다.",
+                  "assumption":  "docs/99-open-questions.md Q1 미확정 상태에서 국방망(엔터프라이즈 유사)을 가정했다. 대상 망은 이후 ADR-0012로 전술망으로 확정됐고, 시간축 시나리오는 scenarios/tacnet-01 이 담당한다. 이 시나리오는 timeline 이 없는 단일 스냅샷으로 유지한다(ADR-0017 1항).",
+                  "revision_note":  "2026-09-07: ADR-0017 의 전송로 계층(links[])과 transit 속성을 도입했다. 그 전까지 FW01/SW01 은 어떤 엣지에도 붙지 않아 검증기 경고 2건으로 남아 있었다. timeline 은 추가하지 않는다.",
                   "units":  [
                                 {
                                     "id":  "U-HQ",
@@ -73,30 +75,35 @@
                                      "name":  "보급실시"
                                  }
                              ],
+                  "_performed_at_note":  "작업이 실제로 수행되는 단말이다(ADR-0017 5항). 도달성 판정의 출발점이고, 동시에 작업 저하도의 하한이다. 작업은 자기가 돌아가는 단말보다 좋을 수 없다(ADR-0017 6항). 지휘통제 작업은 지휘소 워크스테이션에서, 군수 작업은 군수대대 워크스테이션에서 수행한다. WKS003/WKS004(1대대)는 명령을 받는 쪽이고 모델된 작업을 수행하지 않는다.",
                   "tasks":  [
                                 {
                                     "id":  "T-SITREP",
                                     "phase":  "PH-C2-1",
                                     "name":  "상황보고 수신",
-                                    "criticality":  1.0
+                                    "criticality":  1.0,
+                                    "performed_at":  "WKS001"
                                 },
                                 {
                                     "id":  "T-ORDER",
                                     "phase":  "PH-C2-2",
                                     "name":  "작전명령 배포",
-                                    "criticality":  1.0
+                                    "criticality":  1.0,
+                                    "performed_at":  "WKS002"
                                 },
                                 {
                                     "id":  "T-REQ",
                                     "phase":  "PH-LOG-1",
                                     "name":  "소요 집계",
-                                    "criticality":  0.8
+                                    "criticality":  0.8,
+                                    "performed_at":  "WKS005"
                                 },
                                 {
                                     "id":  "T-ISSUE",
                                     "phase":  "PH-LOG-2",
                                     "name":  "보급 지시",
-                                    "criticality":  0.9
+                                    "criticality":  0.9,
+                                    "performed_at":  "WKS005"
                                 }
                             ],
                   "services":  [
@@ -131,120 +138,230 @@
                                        "redundancy_group":  null
                                    }
                                ],
+                  "_transit_note":  "transit=false 인 자산은 종단 단말이다. 자기 트래픽만 주고받고 남의 트래픽을 중계하지 않는다(ADR-0017 5항). 워크스테이션만 false 이고 서버·하이퍼바이저·방화벽·스위치는 true 다. 생략 시 기본값은 true 다.",
                   "assets":  [
                                  {
                                      "id":  "DC01",
                                      "type":  "domain-controller",
                                      "unit":  "U-HQ",
                                      "site":  "본부 전산실",
-                                     "os":  "windows-server"
+                                     "os":  "windows-server",
+                                     "transit":  true
                                  },
                                  {
                                      "id":  "DC02",
                                      "type":  "domain-controller",
                                      "unit":  "U-HQ",
                                      "site":  "예비 전산실",
-                                     "os":  "windows-server"
+                                     "os":  "windows-server",
+                                     "transit":  true
                                  },
                                  {
                                      "id":  "MAIL01",
                                      "type":  "mail-server",
                                      "unit":  "U-HQ",
                                      "site":  "본부 전산실",
-                                     "os":  "linux"
+                                     "os":  "linux",
+                                     "transit":  true
                                  },
                                  {
                                      "id":  "FS01",
                                      "type":  "file-server",
                                      "unit":  "U-HQ",
                                      "site":  "본부 전산실",
-                                     "os":  "windows-server"
+                                     "os":  "windows-server",
+                                     "transit":  true
                                  },
                                  {
                                      "id":  "DB01",
                                      "type":  "database",
                                      "unit":  "U-LOG",
                                      "site":  "본부 전산실",
-                                     "os":  "linux"
+                                     "os":  "linux",
+                                     "transit":  true
                                  },
                                  {
                                      "id":  "DB02",
                                      "type":  "database",
                                      "unit":  "U-LOG",
                                      "site":  "예비 전산실",
-                                     "os":  "linux"
+                                     "os":  "linux",
+                                     "transit":  true
                                  },
                                  {
                                      "id":  "WEB01",
                                      "type":  "web-server",
                                      "unit":  "U-HQ",
                                      "site":  "본부 전산실",
-                                     "os":  "linux"
+                                     "os":  "linux",
+                                     "transit":  true
                                  },
                                  {
                                      "id":  "ESX01",
                                      "type":  "hypervisor",
                                      "unit":  "U-HQ",
                                      "site":  "본부 전산실",
-                                     "os":  "esxi"
+                                     "os":  "esxi",
+                                     "transit":  true
                                  },
                                  {
                                      "id":  "ESX02",
                                      "type":  "hypervisor",
                                      "unit":  "U-HQ",
                                      "site":  "예비 전산실",
-                                     "os":  "esxi"
+                                     "os":  "esxi",
+                                     "transit":  true
                                  },
                                  {
                                      "id":  "FW01",
                                      "type":  "firewall",
                                      "unit":  "U-HQ",
                                      "site":  "본부 전산실",
-                                     "os":  "appliance"
+                                     "os":  "appliance",
+                                     "transit":  true
                                  },
                                  {
                                      "id":  "SW01",
                                      "type":  "switch",
                                      "unit":  "U-HQ",
                                      "site":  "본부 전산실",
-                                     "os":  "appliance"
+                                     "os":  "appliance",
+                                     "transit":  true
                                  },
                                  {
                                      "id":  "WKS001",
                                      "type":  "workstation",
                                      "unit":  "U-HQ",
                                      "site":  "지휘소",
-                                     "os":  "windows"
+                                     "os":  "windows",
+                                     "transit":  false
                                  },
                                  {
                                      "id":  "WKS002",
                                      "type":  "workstation",
                                      "unit":  "U-HQ",
                                      "site":  "지휘소",
-                                     "os":  "windows"
+                                     "os":  "windows",
+                                     "transit":  false
                                  },
                                  {
                                      "id":  "WKS003",
                                      "type":  "workstation",
                                      "unit":  "U-1BN",
                                      "site":  "1대대",
-                                     "os":  "windows"
+                                     "os":  "windows",
+                                     "transit":  false
                                  },
                                  {
                                      "id":  "WKS004",
                                      "type":  "workstation",
                                      "unit":  "U-1BN",
                                      "site":  "1대대",
-                                     "os":  "windows"
+                                     "os":  "windows",
+                                     "transit":  false
                                  },
                                  {
                                      "id":  "WKS005",
                                      "type":  "workstation",
                                      "unit":  "U-LOG",
                                      "site":  "군수대대",
-                                     "os":  "windows"
+                                     "os":  "windows",
+                                     "transit":  false
                                  }
                              ],
+                  "_links_note":  "물리 전송로다. 아래 communicates_with(논리 통신 관계)와 다른 층이며 서로 복사본이 아니다. 전산실 구간은 SW01 이 잇고, 지휘소·대대 구간은 FW01 에 붙어 전산실로 들어간다. 부대별 액세스 스위치는 모델링하지 않는다. 이 추상 수준에서 FW01 이 사용자 구간의 집선·정책 지점 역할을 겸한다.",
+                  "links":  [
+                                {
+                                    "id":  "L-SW-DC01",
+                                    "a":  "SW01",
+                                    "b":  "DC01",
+                                    "bearer":  "wired"
+                                },
+                                {
+                                    "id":  "L-SW-MAIL01",
+                                    "a":  "SW01",
+                                    "b":  "MAIL01",
+                                    "bearer":  "wired"
+                                },
+                                {
+                                    "id":  "L-SW-FS01",
+                                    "a":  "SW01",
+                                    "b":  "FS01",
+                                    "bearer":  "wired"
+                                },
+                                {
+                                    "id":  "L-SW-DB01",
+                                    "a":  "SW01",
+                                    "b":  "DB01",
+                                    "bearer":  "wired"
+                                },
+                                {
+                                    "id":  "L-SW-WEB01",
+                                    "a":  "SW01",
+                                    "b":  "WEB01",
+                                    "bearer":  "wired"
+                                },
+                                {
+                                    "id":  "L-SW-ESX01",
+                                    "a":  "SW01",
+                                    "b":  "ESX01",
+                                    "bearer":  "wired"
+                                },
+                                {
+                                    "id":  "L-SW-ESX02",
+                                    "a":  "SW01",
+                                    "b":  "ESX02",
+                                    "bearer":  "wired"
+                                },
+                                {
+                                    "id":  "L-SW-DC02",
+                                    "a":  "SW01",
+                                    "b":  "DC02",
+                                    "bearer":  "wired"
+                                },
+                                {
+                                    "id":  "L-SW-DB02",
+                                    "a":  "SW01",
+                                    "b":  "DB02",
+                                    "bearer":  "wired"
+                                },
+                                {
+                                    "id":  "L-SW-FW01",
+                                    "a":  "SW01",
+                                    "b":  "FW01",
+                                    "bearer":  "wired"
+                                },
+                                {
+                                    "id":  "L-FW-WKS001",
+                                    "a":  "FW01",
+                                    "b":  "WKS001",
+                                    "bearer":  "wired"
+                                },
+                                {
+                                    "id":  "L-FW-WKS002",
+                                    "a":  "FW01",
+                                    "b":  "WKS002",
+                                    "bearer":  "wired"
+                                },
+                                {
+                                    "id":  "L-FW-WKS003",
+                                    "a":  "FW01",
+                                    "b":  "WKS003",
+                                    "bearer":  "wired"
+                                },
+                                {
+                                    "id":  "L-FW-WKS004",
+                                    "a":  "FW01",
+                                    "b":  "WKS004",
+                                    "bearer":  "wired"
+                                },
+                                {
+                                    "id":  "L-FW-WKS005",
+                                    "a":  "FW01",
+                                    "b":  "WKS005",
+                                    "bearer":  "wired"
+                                }
+                            ],
                   "edges":  {
                                 "requires":  [
                                                  {
@@ -405,6 +522,7 @@
                                                            "group":  "db"
                                                        }
                                                    ],
+                                "_communicates_with_note":  "논리 통신 관계다. 누가 누구와 말을 섞는가만 나타내며 어느 회선을 타는지는 말하지 않는다. 물리 경로는 위의 links[] 에 있다.",
                                 "communicates_with":  [
                                                           {
                                                               "a":  "WKS001",
@@ -482,7 +600,11 @@
                   "notes":  [
                                 "S-DIR과 S-DB만 이중화되어 있다. 이중화 처리를 빼먹으면 DC01 침해만으로 임무가 붉게 뜨는 과잉경보가 난다.",
                                 "ESX01에 DC01/MAIL01/FS01/WEB01/DB01이 몰려 있다. 단일 장애점이며 what-if 실험의 핵심 소재다.",
-                                "M-C2는 S-MSG에 강하게 의존하는데 MAIL01은 이중화가 없다."
+                                "M-C2는 S-MSG에 강하게 의존하는데 MAIL01은 이중화가 없다.",
+                                "전송로 구조(2026-09-07 추가). 2계층이다. (1) 전산실 구간: SW01이 코어 스위치로 DC01/DC02/MAIL01/FS01/DB01/DB02/WEB01/ESX01/ESX02를 전부 문다. (2) 사용자 구간: 지휘소(WKS001/002), 1대대(WKS003/004), 군수대대(WKS005)가 FW01에 붙고 FW01-SW01 한 회선으로 전산실에 들어간다. 방화벽을 두 구간의 경계에 놓은 것은 국방망의 통상적인 구간 분리 형태이면서, 동시에 \u0027워크스테이션에서 서버로 가는 모든 트래픽이 반드시 지나는 지점\u0027을 그래프에 명시하기 위해서다. 침해가 사용자 구간에서 서버 구간으로 넘어가는 길목을 상황도에서 한 노드로 가리킬 수 있게 된다.",
+                                "communicates_with를 그대로 옮기지 않은 이유. 논리 통신 관계(누가 누구와 말하는가)와 물리 전송로(어느 회선을 타는가)는 다른 층이다. WKS001-DC01은 논리적으로 직결이지만 물리적으로는 FW01과 SW01을 경유한다. 그대로 복사했다면 워크스테이션끼리 서버를 우회 중계하는 경로가 생기고 중계 노드로서의 FW01/SW01은 여전히 아무 역할도 하지 못했을 것이다. 두 층은 병존시킨다.",
+                                "SW01은 두 전산실을 모두 잇는 단일 스위치다. 예비 전산실용 스위치(SW02)를 두지 않았으므로 이 모델에서 SW01 단절은 DC02/DB02까지 끊어 이중화를 무의미하게 만든다. 현재 시나리오에는 outage가 없어 산출 수치에는 영향이 없지만, 전송로 이중화 자체를 다루려면 SW02와 대체 회선을 추가해야 한다. 알면서 넣지 않은 한계다.",
+                                "links[] 추가로 엔진의 도달성 판정이 켜졌다(hasLinks=true). 정적 위상에서 모든 작업 단말이 모든 서비스 제공 자산에 도달하므로 기존 산출값은 그대로다. 실측 확인: DC01 단독 0.0%, DC01+DC02 M-C2 80.5%, ESX01 격리 첫 행 70.1%. 전송로 도입 전과 동일하다."
                             ]
               },
     "attack":  null,

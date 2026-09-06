@@ -147,48 +147,57 @@ if ($temporal) {
 
   if ($links.Count -eq 0) { Err "시간축 시나리오인데 links 가 없다 - 도달성 모델이 성립하지 않는다" }
 
-  # 정적 도달성: 모든 링크가 살아 있다고 가정해도 작업이 요구 서비스에 닿지 못하면 모델링 오류다.
-  # (경유 불가 단말 transit=false 는 남의 트래픽을 중계하지 않는다)
-  $transit = @{}
-  foreach ($a in $g.assets) {
-    $transit[$a.id] = $true
-    if ($null -ne $a.transit -and -not $a.transit) { $transit[$a.id] = $false }
-  }
-  $adj = @{}
-  foreach ($a in $g.assets) { $adj[$a.id] = New-Object System.Collections.ArrayList }
-  foreach ($l in $links) {
-    if (-not ($assetIds.ContainsKey($l.a) -and $assetIds.ContainsKey($l.b))) { continue }
-    [void]$adj[$l.a].Add($l.b); [void]$adj[$l.b].Add($l.a)
-  }
-  function Get-StaticReach($start, $adj, $transit) {
-    $seen = @{}; $seen[$start] = $true
-    $stack = New-Object System.Collections.Stack
-    foreach ($m in $adj[$start]) { if (-not $seen.ContainsKey($m)) { $seen[$m] = $true; if ($transit[$m]) { $stack.Push($m) } } }
-    while ($stack.Count -gt 0) {
-      $n = $stack.Pop()
-      foreach ($m in $adj[$n]) {
-        if ($seen.ContainsKey($m)) { continue }
-        $seen[$m] = $true
-        if ($transit[$m]) { $stack.Push($m) }
-      }
+}
+
+
+# ---------------------------------------------------------------- static reachability
+#
+# Runs whenever the scenario has a transport layer, temporal or not. The
+# check was originally inside the temporal block, which meant defnet-01 got
+# links and transit flags but was never asked whether a task could actually
+# reach the service it requires. A transport layer nobody checks is decoration.
+if ($links.Count -gt 0) {
+# 정적 도달성: 모든 링크가 살아 있다고 가정해도 작업이 요구 서비스에 닿지 못하면 모델링 오류다.
+# (경유 불가 단말 transit=false 는 남의 트래픽을 중계하지 않는다)
+$transit = @{}
+foreach ($a in $g.assets) {
+  $transit[$a.id] = $true
+  if ($null -ne $a.transit -and -not $a.transit) { $transit[$a.id] = $false }
+}
+$adj = @{}
+foreach ($a in $g.assets) { $adj[$a.id] = New-Object System.Collections.ArrayList }
+foreach ($l in $links) {
+  if (-not ($assetIds.ContainsKey($l.a) -and $assetIds.ContainsKey($l.b))) { continue }
+  [void]$adj[$l.a].Add($l.b); [void]$adj[$l.b].Add($l.a)
+}
+function Get-StaticReach($start, $adj, $transit) {
+  $seen = @{}; $seen[$start] = $true
+  $stack = New-Object System.Collections.Stack
+  foreach ($m in $adj[$start]) { if (-not $seen.ContainsKey($m)) { $seen[$m] = $true; if ($transit[$m]) { $stack.Push($m) } } }
+  while ($stack.Count -gt 0) {
+    $n = $stack.Pop()
+    foreach ($m in $adj[$n]) {
+      if ($seen.ContainsKey($m)) { continue }
+      $seen[$m] = $true
+      if ($transit[$m]) { $stack.Push($m) }
     }
-    return $seen
   }
-  foreach ($t in $g.tasks) {
-    if (-not $t.performed_at -or -not $assetIds.ContainsKey($t.performed_at)) { continue }
-    $reach = Get-StaticReach $t.performed_at $adj $transit
-    foreach ($r in @($g.edges.requires | Where-Object { $_.from -eq $t.id })) {
-      $ok = $false
-      foreach ($pr in @($g.edges.provided_by | Where-Object { $_.from -eq $r.to })) {
-        if ($reach.ContainsKey($pr.to)) { $ok = $true; break }
-      }
-      if (-not $ok) {
-        Err "task $($t.id)(@$($t.performed_at)) 가 요구 서비스 $($r.to) 의 어떤 제공 자산에도 도달할 수 없다 (모든 링크가 살아 있다고 가정해도)"
-      }
+  return $seen
+}
+foreach ($t in $g.tasks) {
+  if (-not $t.performed_at -or -not $assetIds.ContainsKey($t.performed_at)) { continue }
+  $reach = Get-StaticReach $t.performed_at $adj $transit
+  foreach ($r in @($g.edges.requires | Where-Object { $_.from -eq $t.id })) {
+    $ok = $false
+    foreach ($pr in @($g.edges.provided_by | Where-Object { $_.from -eq $r.to })) {
+      if ($reach.ContainsKey($pr.to)) { $ok = $true; break }
+    }
+    if (-not $ok) {
+      Err "task $($t.id)(@$($t.performed_at)) 가 요구 서비스 $($r.to) 의 어떤 제공 자산에도 도달할 수 없다 (모든 링크가 살아 있다고 가정해도)"
     }
   }
 }
-
+}
 # ---------------------------------------------------------------- redundancy bypass
 #
 # The mistake that cost real numbers on 2026-09-05: an asset-level depends_on
