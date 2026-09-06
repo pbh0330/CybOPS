@@ -8,8 +8,8 @@
 import './style.css'
 import cytoscape from 'cytoscape'
 import dagre from 'cytoscape-dagre'
-import { loadSymbology, unmappedTypes } from './symbols.js'
-import { buildElements, stylesheet, LAYOUTS, CAUSE_COLOR, degColor } from './graph.js'
+import { loadSymbology, unmappedTypes, symbolDataUriWithStatus, statusForState } from './symbols.js'
+import { buildElements, stylesheet, LAYOUTS, CAUSE_COLOR, degColor, SHAPE_LEGEND } from './graph.js'
 import { runStep, containmentCandidates } from './engine.js'
 import { createEditor } from './editor.js'
 
@@ -129,6 +129,9 @@ async function load(id) {
     if (editor && mode === 'edit') editor.handleTap(evt.target)
   })
   cy.on('tap', (evt) => { if (evt.target === cy) clearInspect() })
+
+  // dev-only handle so the graph can be inspected from the console
+  if (import.meta.env && import.meta.env.DEV) window.__cy = cy
 
   idx = 0
   el.scrub.min = 0
@@ -387,6 +390,16 @@ function render() {
 
       const cause = d.kind === 'asset' ? assetOut[d.id] : null
       const hit = d.kind === 'asset' && num(s.compromise?.[d.id]) > 0
+
+      // The standard already has a way to draw "this thing is damaged": the
+      // status digit of the SIDC. Attack damage gets 3/4 (bar, cross), an
+      // outage caused by movement or terrain gets 1 (dashed frame), and an
+      // unknown-cause outage is NOT escalated to damaged (ADR-0012).
+      if (d.kind === 'asset' && d.assetType) {
+        const st = statusForState({ compromise: num(s.compromise?.[d.id]), outageCause: cause })
+        paintSymbol(n, symbolDataUriWithStatus(d.assetType, st, { size: 44 }))
+      }
+
       n.style('background-color', degColor(v))
       n.style('border-color', cause ? (CAUSE_COLOR[cause] || '#2a3441') : (hit ? CAUSE_COLOR.attack : '#2a3441'))
       n.style('border-width', cause || hit ? 2.5 : 1.5)
@@ -426,6 +439,25 @@ function startFlow() {
     if (live.length) live.style('line-dash-offset', flowOffset)
   }
   flowRaf = requestAnimationFrame(tick)
+}
+
+// Draw the asset symbol, plus the owning unit as a small badge in the corner.
+// Both go on as element styles with literal URIs: an image array in the
+// stylesheet cannot use data() mappers.
+function paintSymbol(n, uri) {
+  if (!uri) return
+  const d = n.data()
+  if (uri !== d.symbol) n.data('symbol', uri)
+  if (!d.unitSymbol) return
+  n.style({
+    'background-image': [uri, d.unitSymbol],
+    'background-fit': ['contain', 'contain'],
+    'background-width': ['84%', '26%'],
+    'background-height': ['84%', '26%'],
+    'background-position-x': ['50%', '100%'],
+    'background-position-y': ['50%', '100%'],
+    'background-image-opacity': [1, 0.75],
+  })
 }
 
 function renderMissions(s) {
@@ -753,9 +785,22 @@ function renderLegend() {
     ['maintenance', '정비'],
     ['unknown', '미상'],
   ]
-  el.legend.innerHTML = causes
-    .map(([k, name]) => `<span class="item"><i class="dot" style="background:${CAUSE_COLOR[k]}"></i>${name}</span>`)
-    .join('') + '<span class="item">노드 색 = 임무 저하도, 테두리 = 원인</span>'
+  const shapeSvg = {
+    rectangle: '<rect x="1" y="3" width="14" height="10" />',
+    'round-rectangle': '<rect x="1" y="3" width="14" height="10" rx="3" />',
+    triangle: '<path d="M8 2 L15 14 L1 14 Z" />',
+    hexagon: '<path d="M4 3 L12 3 L15 8 L12 13 L4 13 L1 8 Z" />',
+    octagon: '<path d="M5 2 L11 2 L14 5 L14 11 L11 14 L5 14 L2 11 L2 5 Z" />',
+    barrel: '<path d="M2 4 q6 -3 12 0 v8 q-6 3 -12 0 Z" />',
+  }
+  el.legend.innerHTML =
+    '<span class="item legend-title">원인</span>' +
+    causes.map(([k, name]) => `<span class="item"><i class="dot" style="background:${CAUSE_COLOR[k]}"></i>${name}</span>`).join('') +
+    '<span class="sep"></span><span class="item legend-title">자산</span>' +
+    SHAPE_LEGEND.map((s) => `<span class="item">
+      <svg class="shape-ico" viewBox="0 0 16 16" aria-hidden="true">${shapeSvg[s.shape] || shapeSvg.rectangle}</svg>${s.label}
+    </span>`).join('') +
+    '<span class="sep"></span><span class="item">색 = 저하도, 테두리 = 원인, 심볼의 사선/X = 공격 손상</span>'
 }
 
 function num(v) { return typeof v === 'number' ? v : Number(v || 0) }

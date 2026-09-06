@@ -4,7 +4,41 @@
 // Node position comes from the graph; the 2525 symbol is only the picture
 // drawn on the node (ADR-0013 section 3).
 
-import { symbolDataUri, isVerified } from './symbols.js'
+import { symbolDataUri, isVerified, unitSymbolDataUri } from './symbols.js'
+
+// Shape carries the device class, so a server and a radio relay are told apart
+// before anyone reads a label. The 2525 cyber symbols are all a box with three
+// letters inside (HST, RTR, ...), which is correct and unreadable at a glance;
+// shape is the second channel that makes the picture scannable. The symbol
+// still carries the authoritative identity (ADR-0013).
+export const SHAPE_BY_TYPE = {
+  'c2-server': 'rectangle',
+  'fire-control-server': 'rectangle',
+  'database': 'barrel',
+  'file-server': 'rectangle',
+  'mail-server': 'rectangle',
+  'web-server': 'rectangle',
+  'domain-controller': 'rectangle',
+  'hypervisor': 'cut-rectangle',
+  'workstation': 'round-rectangle',
+  'terminal': 'round-rectangle',
+  'c2-terminal': 'round-rectangle',
+  'observer-terminal': 'round-diamond',
+  'radio-relay': 'triangle',
+  'satcom-terminal': 'round-triangle',
+  'gateway': 'hexagon',
+  'switch': 'hexagon',
+  'firewall': 'octagon',
+}
+
+export const SHAPE_LEGEND = [
+  { shape: 'rectangle', label: '서버' },
+  { shape: 'round-rectangle', label: '단말' },
+  { shape: 'triangle', label: '중계' },
+  { shape: 'hexagon', label: '망 장비' },
+  { shape: 'octagon', label: '방화벽' },
+  { shape: 'barrel', label: 'DB' },
+]
 
 export const CAUSE_COLOR = {
   attack: '#e5484d',
@@ -60,14 +94,20 @@ export function buildElements(g) {
       },
     })
   }
+  const echelonOf = {}
+  for (const u of g.units || []) echelonOf[u.id] = u.echelon
   for (const a of g.assets || []) {
-    const uri = symbolDataUri(a.type, { size: 40 })
+    const uri = symbolDataUri(a.type, { size: 44 })
+    const unitUri = a.unit ? unitSymbolDataUri(echelonOf[a.unit], { size: 20 }) : null
     els.push({
       data: {
         id: a.id, kind: 'asset', label: a.id, assetType: a.type,
-        unit: a.unit || '', site: a.site || '', mobility: a.mobility || 'static',
+        unit: a.unit || '', unitEchelon: echelonOf[a.unit] || '',
+        site: a.site || '', mobility: a.mobility || 'static',
         transit: a.transit === false ? false : true,
-        symbol: uri || '', symbolVerified: uri ? isVerified(a.type) : false,
+        shape: SHAPE_BY_TYPE[a.type] || 'round-rectangle',
+        symbol: uri || '', unitSymbol: unitUri || '',
+        symbolVerified: uri ? isVerified(a.type) : false,
       },
     })
   }
@@ -158,19 +198,25 @@ export function stylesheet() {
     },
     {
       selector: 'node[kind="asset"]',
-      style: { 'shape': 'round-rectangle', 'width': 54, 'height': 54 },
+      style: { 'shape': 'data(shape)', 'width': 62, 'height': 62 },
     },
     {
+      // the symbol is the node, not a decoration inside it: it is drawn large
+      // and the degradation colour sits behind it at low opacity so the glyph
+      // stays legible.
       selector: 'node[kind="asset"][symbol != ""]',
       style: {
         'background-image': 'data(symbol)',
         'background-fit': 'contain',
-        'background-opacity': 0.5,
-        'background-width': '78%',
-        'background-height': '78%',
+        'background-width': '86%',
+        'background-height': '86%',
         'background-image-opacity': 1,
+        'background-opacity': 0.38,
       },
     },
+    // The owning-unit badge is applied per element (see paintSymbol in
+    // main.js), not here: cytoscape does not resolve data() mappers inside an
+    // image array, it takes them as literal strings and draws nothing.
     {
       // an unverified symbol code must not look like a checked one
       selector: 'node[kind="asset"][?symbol][!symbolVerified]',
