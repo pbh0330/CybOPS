@@ -20,7 +20,7 @@
 
 | 데이터셋 | 우선순위 | 상태 | 크기 | 라이선스 | 비고 |
 |---|---|---|---|---|---|
-| **DARPA OpTC** | **1** | 그라운드트루스만 취득 | 전량 약 1TB → **부분 취득** | 퍼블릭 도메인 | 피벗 연쇄 보유. E1-b의 유일한 근거. [최소 세트](09-optc-acquisition.md) |
+| **DARPA OpTC** | **1** | 그라운드트루스만 취득 · **취득 계획 확정** | 전량 약 1TB → **부분 232.1GB (실측)** | **퍼블릭 도메인, 재배포 가능** | 피벗 연쇄 보유. E1-b의 유일한 근거. [최소 세트](09-optc-acquisition.md) |
 | **LANL Comprehensive** | **2** | ✅ **취득·검증 완료 5/5** | 11.3GB | **CC0** | 유일하게 완결된 실데이터 |
 | **AIT-LDS v2.0** | **3** | 부분 취득 중 | 130GB | CC BY-NC-SA | 기업 IT 테스트베드. 전술망 전이성 최저 |
 | DARPA TC | 4 | not-acquired | - | 확인 필요 | Google Drive |
@@ -36,7 +36,10 @@
   폼으로 제출**해야 접근 권한이 나온다. 자동화 불가 - 사용자가 직접 신청해야 한다.
   대신 **CC0(퍼블릭 도메인)**이라 재배포 제약이 없다. 논문 부록 활용 여지가 가장 크다.
 - **OpTC**: GitHub 저장소는 문서만 있고 실데이터는 **Google Drive 폴더** 호스팅이다
-  (약 1TB). curl로 직접 못 받는다. `gdown` 등 별도 도구가 필요하고, 전량 취득은 하지 않는다.
+  (약 1TB). 전량 취득은 하지 않는다. **2026-09-06 해소됨**: 로그인 없이 폴더 목록을 열거할 수
+  있고(`embeddedfolderview`), 파일도 `drive.usercontent.google.com/download?...&confirm=t`로
+  curl이 Range 이어받기까지 되는 것을 확인했다. `gdown`은 설치해 뒀지만 필수는 아니다.
+  계획은 `configs/manifests/optc.json`, 실행은 `scripts/fetch-optc.ps1`.
 - **AIT**: 유일하게 즉시 자동 다운로드가 되는 데이터셋. 테스트베드 단위 분할이라
   부분 취득도 깔끔하다. **파이프라인 개발 1순위인 이유가 여기서 한 번 더 확인된다.**
 
@@ -58,8 +61,15 @@
   다루기 위한 확장성 검증이었고, 평가는 National Cyber Range에서 수행. 군용 상황도 과제의
   정당화 근거로 인용 가치가 높다.
 - 배포 경로: `github.com/FiveDirections/OpTC-data` (공개). IEEE DataPort 경로는 구독 필요.
-- **부분 취득 전략**: eCAR 이벤트는 일자·호스트 단위로 분할되어 있다. 레드팀 활동 3일 구간과
-  그라운드트루스에 등장하는 호스트 위주로 받는다. 전체를 받지 않는다.
+- **라이선스: 퍼블릭 도메인. 재배포 가능(`redistributable: true`).** README 원문이
+  "DARPA is releasing these files in the public domain to stimulate further research"이고,
+  동봉 문서 하단이 전부 "Distribution A: Approved for public release: distribution unlimited"다.
+  LANL(CC0)과 함께 **논문 부록에 실을 수 있는 두 데이터셋 중 하나**이며,
+  비상업 조건이 걸린 AIT(CC BY-NC-SA)와 다르다.
+- **부분 취득 전략**: 레드팀 활동 3일 구간과 그라운드트루스 호스트로 한정한다. 다만
+  **eCAR 파일은 호스트 단위가 아니라 25대씩 묶인 `AIA-N-M` 번들 단위다**(2026-09-06 실측).
+  30/500 = 6%가 아니라 18/20 번들 = 90%를 받게 되고, 실측 총량은 **232.1GB / 1,001개 파일**이다.
+  상세와 단계별 분할은 `09-optc-acquisition.md`.
 
 ### LANL 데이터셋
 

@@ -6,7 +6,7 @@
 
 | | |
 |---|---|
-| 데이터 | LANL **5/5 완료·검증**, AIT **1/8 완료(의도된 범위)**, OpTC 그라운드트루스만 |
+| 데이터 | LANL **5/5 완료·검증**, AIT **1/8 완료(의도된 범위)**, OpTC 라벨 + **취득 계획 확정(232.1GB, 미착수)** |
 | 라벨 | 세 데이터셋 모두 확보. OpTC는 PDF→JSONL 구조화 완료(101건, 미분류 0) |
 | 결정 | **Q1~Q6 전부 확정**(ADR-0012~0018). 미결 없음 |
 | 모델 | **시간축 온톨로지 완료**(ADR-0017) - `scenarios/tacnet-01/`, 원인 분해 동작 |
@@ -215,17 +215,46 @@ while (($n = $gz.Read($buf,0,$buf.Length)) -gt 0) { $total += $n }
 마지막 레코드의 타임스탬프가 `5011199`(58일)에 도달하는지도 함께 본다.
 전체 스크립트는 `scripts/Test-GzipIntegrity.ps1`.
 
-### DARPA OpTC - 그라운드트루스만 확보, 본 데이터 미착수 ★다음 취득 대상
+### DARPA OpTC - 취득 준비 완료, 다운로드 미착수 ★다음 취득 대상
 
 - ✅ `OpTCRedTeamGroundTruth.pdf` + README/ecar.md/errata.md → `F:\mc-cycop-data\raw\optc\`
   (GitHub 저장소에 있어 Google Drive를 거치지 않았다)
 - ✅ **라벨 구조화 완료** → `analysis/optc/` (101건 전량 분류)
-- ❌ 본 데이터: Google Drive 약 1TB → **30개 호스트 × 3일 최소 세트**만 받는다
-  ([09-optc-acquisition.md](docs/09-optc-acquisition.md))
-- 선행 조건 두 가지:
-  1. Drive 폴더 목록 조회 - `ecar/evaluation/`의 분할 방식과 파일 크기 확인.
-     **대역폭을 거의 쓰지 않으므로 먼저 할 것.**
-  2. `gdown` 설치 (Python 3.12 준비됨: `pip install gdown`)
+- ✅ **Drive 폴더 전량 열거 + 파일별 정확한 바이트 수 실측 완료** (2026-09-06)
+- ✅ **취득 계획 확정** → `configs/manifests/optc.json` (1,001개 파일, **232.10 GB**, 6단계)
+- ✅ **취득 스크립트** → `scripts/fetch-optc.ps1` (재실행 안전, 이어받기, 축소 감지)
+- ❌ 본 데이터 다운로드: 아직 한 바이트도 받지 않았다
+
+**실측이 뒤집은 것 두 가지.**
+
+1. **eCAR은 호스트 단위가 아니라 25대씩 묶인 `AIA-N-M` 번들 단위다.** 레드팀 호스트 30개는
+   20개 번들 중 18개에 흩어져 있다. 그래서 "30/500 = 6%"가 아니라 **90%**다.
+   `ecar/evaluation/` 전량이 249.61GB인데 호스트 선별로 아끼는 양은 17.5GB뿐이다.
+   **줄이는 축은 호스트가 아니라 일자다.**
+2. **`gdown`은 결국 필요 없다.** 설치는 해뒀지만(6.2.0),
+   `drive.usercontent.google.com/download?id=<ID>&export=download&confirm=t`가
+   Range에 206으로 답해 `curl -C -` 이어받기가 그대로 된다.
+   Drive 목록 조회도 로그인 없이 `embeddedfolderview`로 된다.
+
+| 단계 | 대상 | 파일 | GB |
+|---|---|---|---|
+| 1 | `ecar-bro/evaluation/` 전량 | 80 | 0.61 |
+| 2 | `ecar/evaluation/23Sep19-red/` | 25 | 33.48 |
+| 3 | `ecar/evaluation/25Sept/` | 26 | 26.36 |
+| 4 | `ecar/evaluation/24Sep19/` | 42 | 95.54 |
+| 5 | `ecar/evaluation/23Sep-night(+Night)/` | 32 | 68.90 |
+| 6 | `bro/2019-09-23…25/` | 796 | 7.21 |
+
+```powershell
+.\scripts\fetch-optc.ps1 -List                  # 계획만 출력
+.\scripts\fetch-optc.ps1 -Phase 1,2 -Confirm    # 34.1GB, 약 10~16시간
+```
+
+`-Confirm` 없이는 절대 시작하지 않는다. 232GB 전량은 0.6~1.0 MB/s에서 **66~110시간**이다.
+
+**2단계를 받은 뒤 가장 먼저 확인할 것: `DC1`의 eCAR이 실제로 있는가.** 번들 이름이
+`SysClientNNNN` 번호 기준이라 `DC1`은 추론이 안 된다. 없으면 Day 1 피벗 체인의 마지막
+구간(DC1 lsadump)이 엔드포인트 측에서 관측되지 않고, E1-b 주장의 강도가 달라진다.
 
 ### 미착수
 
@@ -297,7 +326,7 @@ docs/05-data-lifecycle.md    수명주기 + 볼륨 배치 정책 + ACQUIRE 실�
 docs/06-design-workflow.md   Figma
 docs/07-synthetic-data.md    오프라인 합성 트랙 + 인코딩 함정
 docs/08-lanl-ground-truth.md LANL 라벨 실측 - 측면이동 없음, 베이스라인 precision 1.46%
-docs/09-optc-acquisition.md  OpTC 최소 취득 세트 + 라벨 구조화
+docs/09-optc-acquisition.md  OpTC 최소 취득 세트(실측 232.1GB) + 라벨 구조화
 docs/10-limitations.md       못하는 것 (구조적 / 자원 / 미결)
 docs/11-tactical-time-axis.md 전술망 시간축 실측 - 원인 분해, 도달성, 잡은 오류 2건
 docs/13-adversary-comparison.md 공격자 3종 비교 실측 - **LLM이 greedy에 0승 6패(0.57배)**
@@ -307,6 +336,7 @@ docs/adr/0001~0017           결정 기록 (0017 = 시간축 임무 그래프)
 scripts/
   fetch-ait.ps1              AIT 취득 (범위 축소됨, $deferred 참조)
   fetch-lanl.ps1             LANL 서명 URL 취득
+  fetch-optc.ps1             OpTC 취득 (계획은 configs/manifests/optc.json, -Confirm 필수)
   Invoke-AcquireChain.ps1    무인 취득 체인 (현재 미실행)
   Get-DataRoot.ps1           볼륨 배치 (F: 우선, C: 예비)
   Test-GzipIntegrity.ps1     크기가 아니라 CRC로 검증
@@ -411,8 +441,8 @@ PowerShell 참조 구현은 그대로 유지한다. 대용량 스캔은 PowerShe
 6. 탐지 실험 E1 - 논문 자산. 화면에는 거의 안 보인다
 
 **병행 가능 (대역폭만 씀)**
-- OpTC Drive 폴더 목록 조회 → 최소 세트 실제 용량 확정 (`09-optc-acquisition.md`)
-- `pip install gdown` 후 30개 호스트 × 3일 취득
+- ✅ OpTC Drive 목록 조회·용량 실측·계획 확정 완료 (232.10GB / 1,001개 파일)
+- OpTC 취득 실행: `.\scripts\fetch-optc.ps1 -Phase 1,2 -Confirm` (34.1GB, 약 10~16시간)
 
 **남은 자잘한 것**
 - `FW01`/`SW01`이 어떤 엣지에도 연결되지 않았다 - 검증기 경고 2건 미해결

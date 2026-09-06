@@ -98,7 +98,7 @@ foreach ($model in $Models) {
         wall_ms          = [int]$sw.Elapsed.TotalMilliseconds
       })
 
-      Write-Output ("  t+{0,-4} {1}  문장 {2,-2} 인용 {3,6:P0} 위반 {4}  {5,6} ms" -f `
+      Write-Output ("  t+{0,-4} {1}  sent {2,-2} cite {3,6:P0} viol {4}  {5,6} ms" -f `
         $t, $(if ($ok) { 'PASS' } else { 'FAIL' }), $c.sentences_total, $c.citation_rate, $c.violations, $b.latency_ms)
     }
   }
@@ -140,7 +140,7 @@ foreach ($model in $Models) {
 $payload = [ordered]@{
   generated = (Get-Date).ToString('o')
   generator = 'scripts/Compare-BriefingModels.ps1'
-  note      = 'ADR-0016 이 남긴 7~8B vs 12~14B 질문에 대한 실측. 산문 품질이 아니라 검증기 위반 수와 지연으로 비교한다.'
+  note      = 'Measurement for the 7-8B vs 12-14B question left open by ADR-0016. Compared on verifier violations and latency, not on prose quality.'
   scenario  = 'tacnet-01'
   times     = $Times
   repeats   = $Repeats
