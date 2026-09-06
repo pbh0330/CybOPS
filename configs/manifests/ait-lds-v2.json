@@ -50,12 +50,12 @@
       "회선 실측 약 1 MB/s에서 123GB는 며칠이고, 그 시간은 OpTC 최소 세트에 쓰는 편이 낫다."
     ],
     "how_to_resume": "scripts/fetch-ait.ps1의 $deferred 목록에서 $files로 파일명을 옮기고 재실행한다. 완료 파일은 건너뛰고 부분 파일은 이어받는다.",
-    "partial_removed": "santos.zip 527,933,440 B — 중단 시점의 부분 파일을 삭제했다."
+    "partial_removed": "santos.zip 527,933,440 B - 중단 시점의 부분 파일을 삭제했다."
   },
   "notes": [
     "8개 테스트베드 각각이 메일서버/파일공유/WordPress/VPN/방화벽을 갖춘 소규모 기업망 모사.",
     "그라운드트루스가 labels/ 트리로 제공되어 공격 관련 이벤트가 줄 단위로 라벨링되어 있다.",
-    "테스트베드 재생성(Kyoushi)은 OpenStack에 30 vCPU / 디스크 800GB / RAM 60GB를 요구한다. 가용 장비로는 불가능하다 — ADR-0012 5항.",
+    "테스트베드 재생성(Kyoushi)은 OpenStack에 30 vCPU / 디스크 800GB / RAM 60GB를 요구한다. 가용 장비로는 불가능하다 - ADR-0012 5항.",
     "원본 삭제 후에도 이 매니페스트만 있으면 재취득 가능 (ADR-0010)."
   ],
   "todo": [

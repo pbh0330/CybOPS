@@ -100,7 +100,7 @@ foreach ($l in $links) {
 if ($temporal) {
   $horizon = [double]$g.timeline.horizon
   if ($horizon -le 0) { Err "timeline.horizon 이 양수가 아니다: $horizon" }
-  if (-not $g.timeline.unit) { Warn "timeline.unit 이 없다 — 시간 단위가 문서화되지 않는다" }
+  if (-not $g.timeline.unit) { Warn "timeline.unit 이 없다 - 시간 단위가 문서화되지 않는다" }
 
   function Test-Window($w, $label, $horizon) {
     if ($null -eq $w) { return }
@@ -111,7 +111,7 @@ if ($temporal) {
   }
 
   foreach ($p in $g.phases) {
-    if ($null -eq $p.window) { Err "phase $($p.id) 에 window 가 없다 — 시간축 시나리오에서는 필수다"; continue }
+    if ($null -eq $p.window) { Err "phase $($p.id) 에 window 가 없다 - 시간축 시나리오에서는 필수다"; continue }
     Test-Window $p.window "phase $($p.id)" $horizon
   }
 
@@ -123,11 +123,11 @@ if ($temporal) {
     foreach ($p in $mp) { $covered += ([double]$p.window.to - [double]$p.window.from) }
     $span = (($mp | ForEach-Object { [double]$_.window.to } | Measure-Object -Maximum).Maximum -
              ($mp | ForEach-Object { [double]$_.window.from } | Measure-Object -Minimum).Minimum)
-    if ($covered -lt $span) { Warn "임무 $($m.id) 의 단계 사이에 빈 시간이 있다 — 그 구간에는 저하도가 정의되지 않는다" }
+    if ($covered -lt $span) { Warn "임무 $($m.id) 의 단계 사이에 빈 시간이 있다 - 그 구간에는 저하도가 정의되지 않는다" }
   }
 
   foreach ($t in $g.tasks) {
-    if (-not $t.performed_at) { Err "task $($t.id) 에 performed_at 이 없다 — 도달성을 계산할 수 없다"; continue }
+    if (-not $t.performed_at) { Err "task $($t.id) 에 performed_at 이 없다 - 도달성을 계산할 수 없다"; continue }
     if (-not $assetIds.ContainsKey($t.performed_at)) { Err "task $($t.id).performed_at 없는 자산: $($t.performed_at)" }
   }
 
@@ -140,12 +140,12 @@ if ($temporal) {
       $c = 'unknown'
       if ($o.cause) { $c = [string]$o.cause }
       if ($CAUSES -notcontains $c) { Err "$($ow[0]) outage 의 cause 가 정의되지 않았다: $c (허용: $($CAUSES -join ', '))" }
-      if (-not $o.cause) { Warn "$($ow[0]) outage 에 cause 가 없다 — unknown 으로 처리된다" }
+      if (-not $o.cause) { Warn "$($ow[0]) outage 에 cause 가 없다 - unknown 으로 처리된다" }
       if ($c -eq 'attack') { Err "$($ow[0]) outage 에 cause=attack 을 쓰지 않는다. 공격 상태는 attack-timeline 입력으로 넣는다" }
     }
   }
 
-  if ($links.Count -eq 0) { Err "시간축 시나리오인데 links 가 없다 — 도달성 모델이 성립하지 않는다" }
+  if ($links.Count -eq 0) { Err "시간축 시나리오인데 links 가 없다 - 도달성 모델이 성립하지 않는다" }
 
   # 정적 도달성: 모든 링크가 살아 있다고 가정해도 작업이 요구 서비스에 닿지 못하면 모델링 오류다.
   # (경유 불가 단말 transit=false 는 남의 트래픽을 중계하지 않는다)

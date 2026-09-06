@@ -1,4 +1,4 @@
-# 03. 임무-자산 온톨로지 (L2) — 상황도의 좌표계
+# 03. 임무-자산 온톨로지 (L2) - 상황도의 좌표계
 
 공개 데이터에 존재하지 않으므로 자체 정의한다. 이것이 이 과제에서 **기술적으로 가장 어렵지는
 않지만 공수가 가장 많이 드는 공정**이다.
@@ -34,13 +34,13 @@
 
 | 엣지 | 방향 | 의미 | 가중치 |
 |---|---|---|---|
-| `part_of` | Phase→Mission, Task→Phase | 구성 | — |
+| `part_of` | Phase→Mission, Task→Phase | 구성 | - |
 | `requires` | Task→Service | 작업이 서비스를 요구 | 필수도 w∈[0,1] |
 | `provided_by` | Service→Asset | 서비스가 자산 위에서 제공됨 | 기여도 |
 | `depends_on` | Asset→Asset | 자산 간 의존 (DB→앱 등) | 강도 |
-| `hosted_on` | Asset→Asset | VM→호스트, 컨테이너→노드 | — |
-| `communicates_with` | Asset↔Asset | 통신 경로 (공격 확산 경로 후보) | — |
-| `redundant_with` | Asset↔Asset | 이중화 그룹 | — |
+| `hosted_on` | Asset→Asset | VM→호스트, 컨테이너→노드 | - |
+| `communicates_with` | Asset↔Asset | 통신 경로 (공격 확산 경로 후보) | - |
+| `redundant_with` | Asset↔Asset | 이중화 그룹 | - |
 
 `redundant_with`가 저하도 계산의 난이도를 결정한다. 이중화가 있으면 자산 1개 침해가 임무
 저하로 직결되지 않는다. 이 처리를 빼먹으면 상황도가 과잉 경보를 낸다.
@@ -67,7 +67,7 @@ mission_degradation(m, t) ∈ [0, 1]
   + 확신도 (근거 이벤트의 확신도에서 유래)
 ```
 
-## 5. 데이터 조달 — 어떻게 만들 것인가
+## 5. 데이터 조달 - 어떻게 만들 것인가
 
 L2에는 공개 데이터가 없으므로 아래 순서로 **합성**한다.
 
@@ -109,10 +109,10 @@ ADR-0012로 대상 망이 전술망으로 확정되면서 정적 그래프로는
 | `Task` | `performed_at` | 작업이 수행되는 자산. 도달성 계산의 출발점 |
 | 루트 | `links[]` | `{id, a, b, bearer, outages}`. 전술망에서 `communicates_with`를 대체 |
 
-시간 값은 전부 `t0_iso`로부터의 경과(분)다. 절대시각을 쓰지 않는다 — 시나리오를 다른
+시간 값은 전부 `t0_iso`로부터의 경과(분)다. 절대시각을 쓰지 않는다 - 시나리오를 다른
 날짜로 재사용할 수 있어야 한다.
 
-### 7.2 원인 라벨 — 이것이 전술망의 핵심 요구다
+### 7.2 원인 라벨 - 이것이 전술망의 핵심 요구다
 
 `attack` / `mobility` / `terrain` / `maintenance` / `unknown`.
 

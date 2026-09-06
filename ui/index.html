@@ -16,7 +16,7 @@
           <label for="scenario">시나리오</label>
           <select id="scenario"></select>
         </div>
-        <div class="topbar-note" id="phase-line">—</div>
+        <div class="topbar-note" id="phase-line">-</div>
       </header>
 
       <main class="layout">
@@ -59,11 +59,20 @@
       </main>
 
       <footer class="timebar">
-        <button type="button" id="play">▶</button>
-        <input type="range" id="scrub" min="0" max="0" value="0" step="1" />
+        <div class="transport-controls">
+          <button type="button" id="play" title="재생 / 정지 (Space)">▶</button>
+          <span class="micro">시간축</span>
+        </div>
+        <div class="ribbon-wrap">
+          <svg id="ribbon" role="img" aria-label="단계와 단절 타임라인"></svg>
+          <input type="range" id="scrub" min="0" max="0" value="0" step="1" hidden />
+        </div>
         <div class="clock">
-          <span id="clock">--:--</span>
-          <span id="step-label" class="step-label">—</span>
+          <div class="clock-time" id="clock">--:--</div>
+          <div class="clock-sub">
+            <span id="step-label">-</span>
+            <span class="t-off" id="t-off"></span>
+          </div>
         </div>
       </footer>
     </div>

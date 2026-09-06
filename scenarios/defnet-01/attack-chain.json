@@ -3,7 +3,7 @@
   "name": "피싱 기점 도메인 장악 및 군수DB 유출",
   "victim_entry": "WKS003",
   "actor_account": "park.bh",
-  "note": "가상 시나리오. ATT&CK 기법 ID는 실제 기법 체계를 따른다. 한글 문자열은 반드시 이 데이터 파일에 두고 스크립트 소스에는 넣지 않는다 — PowerShell 5.1이 BOM 없는 UTF-8 소스를 잘못 읽어 문자열이 깨진다.",
+  "note": "가상 시나리오. ATT&CK 기법 ID는 실제 기법 체계를 따른다. 한글 문자열은 반드시 이 데이터 파일에 두고 스크립트 소스에는 넣지 않는다 - PowerShell 5.1이 BOM 없는 UTF-8 소스를 잘못 읽어 문자열이 깨진다.",
 
   "chain": [
     { "off": 0, "host": "WKS003", "user": "park.bh", "class": "process",

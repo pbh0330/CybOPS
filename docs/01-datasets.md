@@ -23,8 +23,8 @@
 | **DARPA OpTC** | **1** | 그라운드트루스만 취득 | 전량 약 1TB → **부분 취득** | 퍼블릭 도메인 | 피벗 연쇄 보유. E1-b의 유일한 근거. [최소 세트](09-optc-acquisition.md) |
 | **LANL Comprehensive** | **2** | ✅ **취득·검증 완료 5/5** | 11.3GB | **CC0** | 유일하게 완결된 실데이터 |
 | **AIT-LDS v2.0** | **3** | 부분 취득 중 | 130GB | CC BY-NC-SA | 기업 IT 테스트베드. 전술망 전이성 최저 |
-| DARPA TC | 4 | not-acquired | — | 확인 필요 | Google Drive |
-| Security Datasets (Mordor) | 보조 | not-acquired | 소용량 | — | GitHub |
+| DARPA TC | 4 | not-acquired | - | 확인 필요 | Google Drive |
+| Security Datasets (Mordor) | 보조 | not-acquired | 소용량 | - | GitHub |
 
 상태값: `not-acquired` / `blocked-manual` / `acquiring` / `acquired` / `distilled` / `verified` / `purged`
 
@@ -33,14 +33,14 @@
 ### 취득 장벽 (2026-09-05 확인)
 
 - **LANL**: 직접 다운로드 URL이 없다. `csr.lanl.gov/data/cyber1/`에서 **이메일과 사용 목적을
-  폼으로 제출**해야 접근 권한이 나온다. 자동화 불가 — 사용자가 직접 신청해야 한다.
+  폼으로 제출**해야 접근 권한이 나온다. 자동화 불가 - 사용자가 직접 신청해야 한다.
   대신 **CC0(퍼블릭 도메인)**이라 재배포 제약이 없다. 논문 부록 활용 여지가 가장 크다.
 - **OpTC**: GitHub 저장소는 문서만 있고 실데이터는 **Google Drive 폴더** 호스팅이다
   (약 1TB). curl로 직접 못 받는다. `gdown` 등 별도 도구가 필요하고, 전량 취득은 하지 않는다.
 - **AIT**: 유일하게 즉시 자동 다운로드가 되는 데이터셋. 테스트베드 단위 분할이라
   부분 취득도 깔끔하다. **파이프라인 개발 1순위인 이유가 여기서 한 번 더 확인된다.**
 
-## 1. L1 텔레메트리 — 주력
+## 1. L1 텔레메트리 - 주력
 
 ### DARPA OpTC (Operationally Transparent Cyber)
 
@@ -71,7 +71,7 @@
 - 포맷이 단순 CSV라 파이프라인 부담이 낮다. 압축 대비 규모가 커서 **불균형 실험용으로
   비용 대비 효율이 가장 좋다.**
 
-### AIT Log Data Set v2.0 — 재생성 가능성이 핵심 가치
+### AIT Log Data Set v2.0 - 재생성 가능성이 핵심 가치
 
 - 8개 테스트베드 각각이 메일서버, 파일공유, WordPress, VPN, 방화벽을 갖춘 소규모 기업망을
   모사. 전 호스트에서 Apache·인증·DNS·VPN·감사·Suricata 로그와 패킷 캡처 수집. 별도
@@ -111,7 +111,7 @@
 - **Security Datasets (구 Mordor)**: 공격 기법별 에뮬레이션 로그. 소용량이라 상시 보관 가능.
   ATT&CK 기법 단위 스모크 테스트 입력으로 유용하다.
 
-## 2. L3 시뮬레이터 — 국방 오픈소스
+## 2. L3 시뮬레이터 - 국방 오픈소스
 
 이 부분이 가장 좋은 소식이다. 영국 Dstl의 자율 회복탄력적 사이버 방어(ARCD) 프로그램
 산출물들이 공개되어 있어, **국방 프로그램 산출물이라는 점 자체가 과제 정당화 근거가 된다.**

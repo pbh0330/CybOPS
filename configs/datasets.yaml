@@ -40,7 +40,7 @@ datasets:
     acquired_parts:
       - {file: 'redteam.txt.gz', bytes: 4846, verified: 'gzip magic 1F 8B 확인', status: acquired}
     source: 'https://csr.lanl.gov/data/cyber1/'
-    license: 'CC0 (퍼블릭 도메인)'   # 재배포 제약 없음 — 논문 부록 활용 여지가 가장 큼
+    license: 'CC0 (퍼블릭 도메인)'   # 재배포 제약 없음 - 논문 부록 활용 여지가 가장 큼
     redistributable: true
     auth_required: true
     # 직접 다운로드 URL이 없다. 이메일과 사용 목적을 폼으로 제출해야 접근 권한이 나온다.
@@ -59,7 +59,7 @@ datasets:
     priority: 3
     status: not-acquired
     source: 'https://github.com/darpa-i2o/Transparent-Computing'
-    license: 'TBD — 취득 시 확인'
+    license: 'TBD - 취득 시 확인'
     auth_required: false
     notes: 'Google Drive 호스팅. 서브셋(CADETS/THEIA/TRACE/FiveDirections) 단위 취득.
             각 캠페인에 ATT&CK 단계 정렬 그라운드트루스 매니페스트 포함.'
@@ -68,8 +68,8 @@ datasets:
     priority: 4
     status: not-acquired
     source: 'https://github.com/FiveDirections/OpTC-data'
-    hosting: 'Google Drive — https://drive.google.com/drive/u/0/folders/1n3kkS3KR31KUegn42yk3-e6JkZvf0Caa'
-    license: 'TBD — 취득 시 확인'
+    hosting: 'Google Drive - https://drive.google.com/drive/u/0/folders/1n3kkS3KR31KUegn42yk3-e6JkZvf0Caa'
+    license: 'TBD - 취득 시 확인'
     auth_required: false
     total_compressed_gb: 1000     # 약 1TB. 17억+ 이벤트.
     notes: |

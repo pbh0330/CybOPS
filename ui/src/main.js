@@ -22,7 +22,9 @@ const el = {
   cuts: document.getElementById('cuts'),
   inspect: document.getElementById('inspect'),
   scrub: document.getElementById('scrub'),
+  ribbon: document.getElementById('ribbon'),
   clock: document.getElementById('clock'),
+  tOff: document.getElementById('t-off'),
   stepLabel: document.getElementById('step-label'),
   phaseLine: document.getElementById('phase-line'),
   play: document.getElementById('play'),
@@ -83,6 +85,7 @@ async function load(id) {
   el.scrub.min = 0
   el.scrub.max = Math.max(0, payload.steps.length - 1)
   el.scrub.value = 0
+  buildRibbon()
   applyView(view)
   render()
 }
@@ -102,6 +105,25 @@ function bindControls() {
       applyView(btn.dataset.view)
     })
   }
+  let dragging = false
+  el.ribbon.addEventListener('pointerdown', (e) => {
+    dragging = true
+    el.ribbon.setPointerCapture(e.pointerId)
+    stopPlay()
+    ribbonSeek(e.clientX)
+  })
+  el.ribbon.addEventListener('pointermove', (e) => { if (dragging) ribbonSeek(e.clientX) })
+  el.ribbon.addEventListener('pointerup', (e) => {
+    dragging = false
+    el.ribbon.releasePointerCapture(e.pointerId)
+  })
+
+  let resizeTimer = null
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer)
+    resizeTimer = setTimeout(() => { buildRibbon(); updatePlayhead() }, 150)
+  })
+
   document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') { idx = Math.min(idx + 1, payload.steps.length - 1); el.scrub.value = idx; render() }
     if (e.key === 'ArrowLeft') { idx = Math.max(idx - 1, 0); el.scrub.value = idx; render() }
@@ -183,6 +205,7 @@ function render() {
   renderMissions(s)
   renderCuts(s, assetOut, linkOut)
   renderClock(s, activePhases)
+  updatePlayhead()
   if (cy.$(':selected').length) inspect(cy.$(':selected').first())
 }
 
@@ -269,17 +292,133 @@ function noteFor(outages, t) {
 }
 
 function renderClock(s, activePhases) {
-  el.stepLabel.textContent = s.label || '—'
+  el.stepLabel.textContent = s.label || '-'
   if (s.time_iso) {
     const d = new Date(s.time_iso)
     el.clock.textContent = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+    el.tOff.textContent = `+${s.t}분`
   } else {
     el.clock.textContent = '스냅샷'
+    el.tOff.textContent = ''
   }
   const names = (payload.graph.phases || [])
     .filter((p) => activePhases.has(p.id))
     .map((p) => p.name)
-  el.phaseLine.textContent = names.length ? `활성 단계: ${names.join(' · ')}` : '활성 단계 없음'
+  el.phaseLine.innerHTML = names.length
+    ? `활성 단계 <b>${names.join(' · ')}</b>`
+    : '활성 단계 없음'
+}
+
+// ---------------------------------------------------------------- ribbon
+//
+// The strip under the graph is the argument this project is making, drawn as
+// one picture: phases on top, cause-coloured outage bands in the middle,
+// attack steps at the bottom. Where a red tick sits inside an amber band, the
+// operator can see for themselves that two different things are happening at
+// once - which is the whole point of separating the causes (ADR-0012).
+
+const RIBBON = { padL: 4, padR: 4, laneH: 13, gap: 5 }
+
+function buildRibbon() {
+  const g = payload.graph
+  const tl = g.timeline
+  if (!tl) { el.ribbon.innerHTML = ''; return }
+  const W = el.ribbon.clientWidth || 800
+  const H = 66
+  const horizon = Number(tl.horizon)
+  const x = (t) => RIBBON.padL + (t / horizon) * (W - RIBBON.padL - RIBBON.padR)
+
+  const missions = (g.missions || []).slice().sort((a, b) => (a.priority || 9) - (b.priority || 9))
+  const parts = []
+
+  // hour grid
+  const tickEvery = horizon > 240 ? 60 : 30
+  for (let t = 0; t <= horizon; t += tickEvery) {
+    parts.push(`<line x1="${x(t)}" y1="0" x2="${x(t)}" y2="${H}" stroke="#1a2husk" />`.replace('#1a2husk', '#18202b'))
+    const d = tl.t0_iso ? new Date(new Date(tl.t0_iso).getTime() + t * 60000) : null
+    if (d) {
+      parts.push(`<text x="${x(t) + 3}" y="${H - 2}" fill="#5c6b7d" font-size="9">${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}</text>`)
+    }
+  }
+
+  // phase lanes, one per mission
+  let y = 4
+  for (const m of missions) {
+    for (const ph of (g.phases || []).filter((p) => p.mission === m.id && p.window)) {
+      const x0 = x(ph.window.from)
+      const w = Math.max(2, x(ph.window.to) - x0)
+      parts.push(`<rect x="${x0}" y="${y}" width="${w}" height="${RIBBON.laneH}" rx="3"
+        fill="${m.priority === 1 ? 'rgba(90,169,255,.16)' : 'rgba(180,137,232,.14)'}"
+        stroke="${m.priority === 1 ? 'rgba(90,169,255,.4)' : 'rgba(180,137,232,.35)'}" />`)
+      if (w > 46) {
+        parts.push(`<text x="${x0 + 5}" y="${y + RIBBON.laneH - 3.5}" fill="#9fb0c4" font-size="9.5">${esc(ph.name)}</text>`)
+      }
+    }
+    y += RIBBON.laneH + 3
+  }
+
+  // outage bands, cause-coloured
+  const bandY = y + 2
+  const bands = []
+  for (const a of g.assets || []) for (const o of a.outages || []) bands.push({ o, what: a.id })
+  for (const l of g.links || []) for (const o of l.outages || []) bands.push({ o, what: l.id })
+  for (const b of bands) {
+    const c = CAUSE_COLOR[b.o.cause] || CAUSE_COLOR.unknown
+    const x0 = x(b.o.from)
+    const w = Math.max(2, x(b.o.to) - x0)
+    parts.push(`<rect x="${x0}" y="${bandY}" width="${w}" height="9" rx="2" fill="${c}" fill-opacity=".55">
+      <title>${esc(b.what)} · ${esc(b.o.cause)} · ${esc(b.o.note || '')}</title></rect>`)
+  }
+
+  // attack steps
+  const atkY = bandY + 12
+  for (const st of (payload.attack?.steps || [])) {
+    if (!st.state || Object.keys(st.state).length === 0) continue
+    const px = x(st.t)
+    parts.push(`<path d="M${px} ${atkY} l4 4 l-4 4 l-4 -4 z" fill="${CAUSE_COLOR.attack}">
+      <title>${esc(st.label || '')}</title></path>`)
+  }
+
+  parts.push(`<line id="playhead" x1="0" y1="0" x2="0" y2="${H}" stroke="#e6ecf4" stroke-width="1.5" />`)
+  parts.push(`<circle id="playknob" cx="0" cy="${H - 6}" r="4" fill="#e6ecf4" />`)
+
+  el.ribbon.setAttribute('viewBox', `0 0 ${W} ${H}`)
+  el.ribbon.setAttribute('preserveAspectRatio', 'none')
+  el.ribbon.innerHTML = parts.join('')
+}
+
+function updatePlayhead() {
+  const tl = payload?.graph?.timeline
+  const head = el.ribbon.querySelector('#playhead')
+  const knob = el.ribbon.querySelector('#playknob')
+  if (!tl || !head) return
+  const W = el.ribbon.clientWidth || 800
+  const horizon = Number(tl.horizon)
+  const t = payload.steps[idx]?.t ?? 0
+  const px = RIBBON.padL + (t / horizon) * (W - RIBBON.padL - RIBBON.padR)
+  head.setAttribute('x1', px); head.setAttribute('x2', px)
+  knob.setAttribute('cx', px)
+}
+
+function ribbonSeek(clientX) {
+  const tl = payload?.graph?.timeline
+  if (!tl) return
+  const r = el.ribbon.getBoundingClientRect()
+  const frac = Math.min(1, Math.max(0, (clientX - r.left - RIBBON.padL) / (r.width - RIBBON.padL - RIBBON.padR)))
+  const t = frac * Number(tl.horizon)
+  let best = 0
+  let bestD = Infinity
+  payload.steps.forEach((s, i) => {
+    const d = Math.abs(Number(s.t) - t)
+    if (d < bestD) { bestD = d; best = i }
+  })
+  idx = best
+  el.scrub.value = idx
+  render()
+}
+
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
 }
 
 function inspect(node) {
@@ -302,7 +441,7 @@ function inspect(node) {
     add('저하도(전역)', pct(num(s.service?.[d.id])))
   } else if (d.kind === 'task') {
     add('단계', `${d.phaseName} (${d.phase})`)
-    add('수행 위치', d.performedAt || '—')
+    add('수행 위치', d.performedAt || '-')
     add('중요도', d.criticality)
     add('저하도', pct(num(s.task?.[d.id])))
   } else if (d.kind === 'mission') {

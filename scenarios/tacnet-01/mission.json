@@ -16,8 +16,8 @@
 
   "cause_labels": {
     "attack": "적대 행위에 의한 침해·거부. 침해 상태 입력(attack-timeline.json)에서만 발생한다.",
-    "mobility": "기동에 의한 단절 — 지휘소 이동, 안테나 미전개, 장비 미전개.",
-    "terrain": "지형에 의한 단절 — 능선 차폐, 계곡 진입, 가시선 상실.",
+    "mobility": "기동에 의한 단절 - 지휘소 이동, 안테나 미전개, 장비 미전개.",
+    "terrain": "지형에 의한 단절 - 능선 차폐, 계곡 진입, 가시선 상실.",
     "maintenance": "계획된 정비·전원 차단.",
     "unknown": "원인 미상. 공격으로 단정하지 않는다(ADR-0012 2항). 상황도에 '미상'으로 표기한다."
   },
@@ -83,7 +83,7 @@
     {"id": "CO1-VEH",  "type": "c2-terminal",         "unit": "U-1CO", "site": "1중대 지휘차", "os": "windows",  "mobility": "mobile", "transit": false},
     {"id": "CO2-VEH",  "type": "c2-terminal",         "unit": "U-2CO", "site": "2중대 지휘차", "os": "windows",  "mobility": "mobile", "transit": false},
     {"id": "FO-TAB",   "type": "observer-terminal",   "unit": "U-FA",  "site": "관측반",       "os": "android",  "mobility": "mobile", "transit": false,
-     "outages": [{"from": 0, "to": 120, "cause": "mobility", "note": "관측반 미전개 — 표적획득 단계 이전"}]}
+     "outages": [{"from": 0, "to": 120, "cause": "mobility", "note": "관측반 미전개 - 표적획득 단계 이전"}]}
   ],
 
   "links": [
@@ -95,7 +95,7 @@
     {"id": "L-BN-LAN",   "a": "BN-SRV",   "b": "BN-CP",    "bearer": "wired"},
 
     {"id": "L-SAT-TOC",  "a": "SAT-TERM", "b": "TOC-SRV",  "bearer": "satcom",
-     "outages": [{"from": 300, "to": 345, "cause": "unknown", "note": "신호 단절. 재밍/기상 구분 불가 — 공격으로 단정하지 않는다"}]},
+     "outages": [{"from": 300, "to": 345, "cause": "unknown", "note": "신호 단절. 재밍/기상 구분 불가 - 공격으로 단정하지 않는다"}]},
 
     {"id": "L-VHF-RLY",  "a": "BN-SRV",   "b": "RELAY-1",  "bearer": "vhf"},
     {"id": "L-VHF-CO1",  "a": "CO1-VEH",  "b": "RELAY-1",  "bearer": "vhf",

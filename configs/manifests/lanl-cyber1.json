@@ -23,10 +23,10 @@
       "status": "acquired",
       "acquired_at": "2026-09-05",
       "method": "browser (Chrome)",
-      "integrity": "gzip 전체 해제 성공 — CRC32 + ISIZE 검증 통과. 압축해제 22,986 B.",
+      "integrity": "gzip 전체 해제 성공 - CRC32 + ISIZE 검증 통과. 압축해제 22,986 B.",
       "sha256": "606635837C684AD11E464075ECF97BC5DF325FF7D7F64614D2D8C8AF18051669",
       "last_timestamp": 2557047,
-      "note": "그라운드트루스. 가장 중요한 파일. 레드팀 활동은 30일차에 끝나므로 마지막 타임스탬프가 5011199가 아닌 2557047인 것이 정상이다 — 절단이 아니다."
+      "note": "그라운드트루스. 가장 중요한 파일. 레드팀 활동은 30일차에 끝나므로 마지막 타임스탬프가 5011199가 아닌 2557047인 것이 정상이다 - 절단이 아니다."
     },
     {
       "file": "dns.txt.gz",
@@ -34,7 +34,7 @@
       "status": "acquired",
       "acquired_at": "2026-09-05",
       "method": "browser (Chrome)",
-      "integrity": "gzip 전체 해제 성공 — CRC32 + ISIZE 검증 통과. 압축해제 812,736,592 B (0.76 GB).",
+      "integrity": "gzip 전체 해제 성공 - CRC32 + ISIZE 검증 통과. 압축해제 812,736,592 B (0.76 GB).",
       "sha256": "3E1CB718BAA6BE7AF7BD376324285BE45D99EE2563D22BC4ABF023572120CAB9",
       "last_timestamp": 5011199
     },
@@ -44,7 +44,7 @@
       "status": "acquired",
       "acquired_at": "2026-09-05",
       "method": "browser (Chrome)",
-      "integrity": "gzip 전체 해제 성공 — CRC32 + ISIZE 검증 통과. 압축해제 5,237,189,507 B (4.88 GB). 파일 트레일러 ISIZE(942222211)와 실제 해제 바이트의 mod 2^32가 일치하므로 단일 멤버 전체를 읽은 것이 확정됐다 — 즉 절단이 아니라 원본 자체가 짧다.",
+      "integrity": "gzip 전체 해제 성공 - CRC32 + ISIZE 검증 통과. 압축해제 5,237,189,507 B (4.88 GB). 파일 트레일러 ISIZE(942222211)와 실제 해제 바이트의 mod 2^32가 일치하므로 단일 멤버 전체를 읽은 것이 확정됐다 - 즉 절단이 아니라 원본 자체가 짧다.",
       "sha256": "60E0CFEAE74F820E7DAD42A06291941BD329B547439F12705435927278082F98",
       "last_timestamp": 3126928,
       "note": "마지막 타임스탬프가 3126928(36.2일차)이다. auth/proc/dns가 58일 전체를 덮는 것과 달리 flows만 36일에서 끝난다. 다운로드 사고가 아님을 ISIZE 대조로 확인했다."
@@ -55,7 +55,7 @@
       "status": "acquired",
       "acquired_at": "2026-09-05",
       "method": "browser (Chrome), 재부팅 후 재취득",
-      "integrity": "gzip 전체 해제 성공 — CRC32 + ISIZE 검증 통과. 압축해제 15,397,551,964 B (14.34 GB). 마지막 레코드 t=5011199 (수집기간 58일의 마지막 초)로 절단 없음 확인.",
+      "integrity": "gzip 전체 해제 성공 - CRC32 + ISIZE 검증 통과. 압축해제 15,397,551,964 B (14.34 GB). 마지막 레코드 t=5011199 (수집기간 58일의 마지막 초)로 절단 없음 확인.",
       "sha256": "AF82F47EBF3FFC6DC392A01F890CAA6157A5C7581A2CF0B1821801347F293AE4",
       "note": "프로세스 시작/종료 이벤트. 형식: time,user@domain,computer,process,start/end"
     },
@@ -65,7 +65,7 @@
       "status": "acquired",
       "acquired_at": "2026-09-06",
       "method": "browser (Chrome), 3차 시도에 성공",
-      "integrity": "gzip 전체 해제 성공 — CRC32 + ISIZE 검증 통과. 압축해제 73,413,019,178 B (68.37 GB). 마지막 레코드 t=5011199로 절단 없음 확인.",
+      "integrity": "gzip 전체 해제 성공 - CRC32 + ISIZE 검증 통과. 압축해제 73,413,019,178 B (68.37 GB). 마지막 레코드 t=5011199로 절단 없음 확인.",
       "sha256": "9C6B0CC261B0EDD19324F6FD1839743224938A7F644ED202CA70BD70A89BF672",
       "last_timestamp": 5011199,
       "note": "이 데이터셋에서 가장 큰 파일이자 라벨이 붙는 유일한 파일. redteam.txt.gz 749건은 전부 auth 이벤트다.",
@@ -73,14 +73,14 @@
         "1차: Chrome이 260MB에서 정체 후 실패.",
         "2차: 7,619,951,433 B(99.91%)까지 갔다가 이어받기에 실패하고 처음부터 재시작. 6.5MB를 남기고 7.62GB를 잃었다.",
         "3차: 성공. 소요 약 3.4시간, 평균 0.61 MB/s.",
-        "curl 동시 연결은 굶어 죽었다 — LANL은 토큰당 동시 연결을 1개만 허용하는 것으로 보인다. Range 재개 자체는 206으로 정상 지원한다."
+        "curl 동시 연결은 굶어 죽었다 - LANL은 토큰당 동시 연결을 1개만 허용하는 것으로 보인다. Range 재개 자체는 206으로 정상 지원한다."
       ]
     }
   ],
   "status": "complete (5/5)",
   "todo": [
     "auth.txt.gz의 실제 레코드 수가 1,051,430,459인지 확인 (현재는 LANL 문서 인용값)",
-    "redteam 749건이 전부 auth.txt에 대응 레코드를 갖는지 — 라벨 조인 무결성",
+    "redteam 749건이 전부 auth.txt에 대응 레코드를 갖는지 - 라벨 조인 무결성",
     "C17693이 발생시킨 정상 인증 건수 → 자명 베이스라인의 precision 상한 (docs/04-evaluation.md)"
   ],
   "temporal_coverage": {

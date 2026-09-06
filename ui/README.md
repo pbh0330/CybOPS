@@ -1,4 +1,4 @@
-# ui — 상황도 (정적 웹 번들)
+# ui - 상황도 (정적 웹 번들)
 
 스택은 [ADR-0018](../docs/adr/0018-ui-stack-cytoscape-static-bundle.md)에서 확정했다:
 **Cytoscape.js + milsymbol + Vite 정적 번들.** 서버가 없어도 열린다.
