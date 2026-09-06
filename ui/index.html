@@ -45,8 +45,10 @@
             <button type="button" class="tool-btn danger" data-tool="delete" data-edit-only hidden>삭제</button>
             <span class="spacer"></span>
             <span class="edit-state" id="edit-state" hidden></span>
+            <button type="button" id="undo-btn" data-edit-only hidden title="되돌리기 (Ctrl+Z)">되돌리기</button>
+            <button type="button" id="redo-btn" data-edit-only hidden title="다시 실행 (Ctrl+Shift+Z)">다시 실행</button>
             <button type="button" id="export-btn" data-edit-only hidden>시나리오 내보내기</button>
-            <button type="button" id="reset-btn" data-edit-only hidden>편집 취소</button>
+            <button type="button" id="reset-btn" data-edit-only hidden class="danger">시나리오 초기화</button>
             <label class="chk"><input type="checkbox" id="toggle-labels" checked /> 라벨</label>
             <button type="button" id="fit-btn">화면 맞춤</button>
           </div>

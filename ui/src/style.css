@@ -366,3 +366,41 @@ body.is-editing .layout { grid-template-columns: 210px 1fr 356px; }
 .legend[open] summary::after { content: ' ▾'; }
 .legend[open] summary { margin-bottom: 8px; }
 .legend-body { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+
+/* mission linkage block in the inspector */
+.linkage { margin-top: 12px; border-top: 1px dashed var(--line); padding-top: 10px; }
+.lk-head {
+  font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--fg-dim); margin-bottom: 7px;
+}
+.lk-row { font-size: 11.5px; color: var(--fg-2); margin-bottom: 4px; }
+.lk-k { color: var(--fg-dim); margin-right: 6px; }
+.lk-warn {
+  font-size: 11px; line-height: 1.55; color: var(--unknown);
+  background: rgba(255,176,32,.07); border: 1px solid rgba(255,176,32,.22);
+  border-radius: 6px; padding: 7px 9px; margin: 6px 0;
+}
+.lk-group { margin-top: 9px; }
+.lk-sub { font-size: 10.5px; color: var(--fg-dim); margin-bottom: 5px; }
+.lk-chk {
+  display: flex; align-items: center; gap: 6px; font-size: 11.5px;
+  color: var(--fg-2); padding: 2px 0; cursor: pointer;
+}
+.lk-id { color: var(--fg-dim); font-size: 10.5px; margin-left: auto; }
+
+/* what an edit did to the numbers */
+.toast {
+  position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%) translateY(8px);
+  background: rgba(12,17,24,.96); border: 1px solid var(--line);
+  border-radius: 999px; padding: 9px 18px; font-size: 12.5px; color: var(--fg);
+  box-shadow: var(--shadow); opacity: 0; pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease; z-index: 40;
+}
+.toast.is-on { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast b { color: var(--accent); }
+
+button.danger { border-color: rgba(255,77,94,.35); color: #ffc2c7; }
+button.danger:hover { border-color: rgba(255,77,94,.6); background: rgba(255,77,94,.1); }
+button:disabled { opacity: .38; cursor: default; }
+button:disabled:hover { border-color: var(--line); background: var(--bg-3); }
+button.is-armed { border-color: rgba(255,77,94,.7); background: rgba(255,77,94,.16); color: #ffd7da; }

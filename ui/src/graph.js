@@ -178,6 +178,11 @@ export function stylesheet() {
       style: { 'background-opacity': 0.34 },
     },
     { selector: 'node.dim', style: { 'opacity': 0.32 } },
+    // not attached to the mission layer: present, but nothing depends on it
+    {
+      selector: 'node.orphan',
+      style: { 'border-style': 'dotted', 'border-color': '#4a5568', 'opacity': 0.75 },
+    },
     // the first endpoint picked with the link tool, so it is obvious what the
     // next click will connect to
     { selector: 'node.link-src', style: { 'border-color': '#35e0ff', 'border-width': 3 } },

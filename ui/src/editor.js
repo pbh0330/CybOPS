@@ -123,6 +123,61 @@ export function createEditor({ paletteEl, onChange, getGraph, getCy }) {
     onChange({ reason: 'remove-link', id })
   }
 
+  // ------------------------------------------------------------ mission layer
+  //
+  // Wiring a box into the transport graph does not by itself make it matter to
+  // a mission. It matters in exactly two ways, and both need to be reachable
+  // from the UI or the two views really are separate drawings:
+  //
+  //   1. it carries traffic          - already handled by links, because
+  //                                    reachability feeds the propagation
+  //                                    engine (add a bridging relay across a
+  //                                    cut and the degradation drops)
+  //   2. it provides a service, or   - provided_by
+  //      work is performed on it     - Task.performed_at
+  //
+  // The second kind has to be stated; it cannot be inferred from a cable.
+
+  function setProvidedBy(assetId, serviceIds) {
+    const g = getGraph()
+    if (!g.edges) g.edges = {}
+    const keep = (g.edges.provided_by || []).filter((e) => e.to !== assetId)
+    for (const sid of serviceIds) keep.push({ from: sid, to: assetId, w: 1.0 })
+    g.edges.provided_by = keep
+    onChange({ reason: 'provided-by', id: assetId })
+  }
+
+  function setPerformedAt(taskId, assetId) {
+    const g = getGraph()
+    g.tasks = (g.tasks || []).map((t) => (t.id === taskId ? { ...t, performed_at: assetId || null } : t))
+    onChange({ reason: 'performed-at', id: assetId || taskId })
+  }
+
+  function setTransit(assetId, transit) {
+    const g = getGraph()
+    g.assets = (g.assets || []).map((a) => (a.id === assetId ? { ...a, transit: !!transit } : a))
+    onChange({ reason: 'transit', id: assetId })
+  }
+
+  function setLinkBearer(linkId, bearer) {
+    const g = getGraph()
+    g.links = (g.links || []).map((l) => (l.id === linkId ? { ...l, bearer } : l))
+    onChange({ reason: 'bearer', id: linkId })
+  }
+
+  // An asset nobody depends on and that provides nothing can still matter (as
+  // a relay), but it will never move a mission number on its own. Saying so is
+  // more useful than letting someone wonder why the bar did not move.
+  function missionLinkage(g, assetId) {
+    const E = g.edges || {}
+    const provides = (E.provided_by || []).filter((e) => e.to === assetId).map((e) => e.from)
+    const hosts = (g.tasks || []).filter((t) => t.performed_at === assetId).map((t) => t.id)
+    const dependedOn = (E.depends_on || []).filter((e) => e.to === assetId).map((e) => e.from)
+    const hostedOn = (E.hosted_on || []).filter((e) => e.to === assetId).map((e) => e.from)
+    const linked = provides.length + hosts.length + dependedOn.length + hostedOn.length > 0
+    return { provides, hosts, dependedOn, hostedOn, linked }
+  }
+
   function setTool(next) {
     tool = next
     linkFrom = null
@@ -191,5 +246,9 @@ export function createEditor({ paletteEl, onChange, getGraph, getCy }) {
     }
   }
 
-  return { renderPalette, setTool, handleTap, addLink, removeAsset, removeLink, get tool() { return tool }, BEARERS }
+  return {
+    renderPalette, setTool, handleTap, addLink, removeAsset, removeLink,
+    setProvidedBy, setPerformedAt, setTransit, setLinkBearer, missionLinkage,
+    get tool() { return tool }, BEARERS,
+  }
 }

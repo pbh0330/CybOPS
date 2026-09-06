@@ -40,6 +40,8 @@ const el = {
   editState: document.getElementById('edit-state'),
   exportBtn: document.getElementById('export-btn'),
   resetBtn: document.getElementById('reset-btn'),
+  undoBtn: document.getElementById('undo-btn'),
+  redoBtn: document.getElementById('redo-btn'),
   helpBtn: document.getElementById('help-btn'),
   onboard: document.getElementById('onboard'),
   onboardClose: document.getElementById('onboard-close'),
@@ -113,7 +115,10 @@ async function load(id) {
 
   graph = structuredClone(payload.graph)
   edited = false
+  history = []
+  future = []
   restoreEdits(id)
+  lastSnapshot = structuredClone(graph)
 
   if (cy) cy.destroy()
   cy = cytoscape({
@@ -162,16 +167,71 @@ function currentStep() {
   return { ...computed, label: base?.label, note: base?.note, time_iso: base?.time_iso, t }
 }
 
+// Undo history. Snapshots are whole-graph clones: the graph is a few hundred
+// objects, so the simple thing is also the fast thing, and a diff-based
+// history would be a second place for edits to go wrong.
+const HISTORY_MAX = 60
+let history = []
+let future = []
+let lastSnapshot = null
+
 function markEdited(info) {
+  // lastSnapshot is the graph as it was before this edit, which is exactly
+  // what "what did this change" needs. Computing the delta here rather than at
+  // each call site means every edit reports itself: palette adds, links drawn
+  // with the link tool, deletions, service attachments.
+  const prevGraph = lastSnapshot
+  if (lastSnapshot) {
+    history.push(lastSnapshot)
+    if (history.length > HISTORY_MAX) history.shift()
+  }
+  future = []
+  lastSnapshot = structuredClone(graph)
   edited = true
   rebuildElements()
   persistEdits()
+  updateHistoryButtons()
   el.editState.hidden = false
   const added = (graph.assets || []).filter((a) => a._added).length
   const links = (graph.links || []).filter((l) => l._added).length
   el.editState.textContent = `편집됨 (자산 +${added}, 링크 +${links}) · 값은 브라우저 엔진이 재계산`
   render()
-  if (info && info.id && cy.$id(info.id).length) cy.$id(info.id).select()
+  reportDelta(prevGraph)
+  // put the new node in the inspector straight away: that panel is where an
+  // asset gets attached to a service or a task, and a fresh box that is not
+  // attached to anything will not move a single number until it is
+  if (info && info.id && cy.$id(info.id).length) {
+    const n = cy.$id(info.id)
+    n.select()
+    if (n.isNode()) inspect(n)
+  }
+}
+
+// What the edit did to the mission numbers, said out loud. Without this the
+// editor is a drawing tool: you change the graph and nothing answers.
+function reportDelta(prevGraph) {
+  if (!prevGraph) return
+  const base = payload.steps[idx]
+  const t = base && base.t !== undefined && base.t !== null ? Number(base.t) : -1
+  const compromise = (base && base.compromise) || {}
+  const method = payload.method || 'weighted'
+  let before
+  try {
+    before = runStep(prevGraph, compromise, { t, method, candidates: [] })
+  } catch {
+    return
+  }
+  const after = currentStep()
+  const lines = []
+  for (const m of graph.missions || []) {
+    const a = num(before.mission?.[m.id])
+    const b = num(after.mission?.[m.id])
+    if (Math.abs(a - b) > 0.0005) {
+      const arrow = b < a ? '↓' : '↑'
+      lines.push(`${m.name} ${pct(a)} ${arrow} <b>${pct(b)}</b>`)
+    }
+  }
+  toast(lines.length ? lines.join(' · ') : '임무 저하도 변화 없음')
 }
 
 // Rebuild the cytoscape graph after a structural edit, keeping the positions
@@ -232,12 +292,52 @@ function restoreEdits(id) {
 
 function resetEdits() {
   try { localStorage.removeItem(storageKey()) } catch { /* ignore */ }
+  history = []
+  future = []
   graph = structuredClone(payload.graph)
+  lastSnapshot = structuredClone(graph)
   edited = false
   el.editState.hidden = true
   rebuildElements()
   cy.layout(LAYOUTS[view] || LAYOUTS.dependency).run()
   render()
+  updateHistoryButtons()
+  toast('시나리오를 원래 상태로 되돌렸다')
+}
+
+function applySnapshot(g) {
+  graph = g
+  lastSnapshot = structuredClone(graph)
+  edited = JSON.stringify(graph) !== JSON.stringify(payload.graph)
+  rebuildElements()
+  persistEdits()
+  el.editState.hidden = !edited || mode !== 'edit'
+  if (edited) {
+    const added = (graph.assets || []).filter((a) => a._added).length
+    const links = (graph.links || []).filter((l) => l._added).length
+    el.editState.textContent = `편집됨 (자산 +${added}, 링크 +${links}) · 값은 브라우저 엔진이 재계산`
+  }
+  render()
+  updateHistoryButtons()
+}
+
+function undo() {
+  if (!history.length) { toast('되돌릴 편집이 없다'); return }
+  future.push(structuredClone(graph))
+  applySnapshot(history.pop())
+  toast('되돌렸다')
+}
+
+function redo() {
+  if (!future.length) { toast('다시 실행할 편집이 없다'); return }
+  history.push(structuredClone(graph))
+  applySnapshot(future.pop())
+  toast('다시 실행했다')
+}
+
+function updateHistoryButtons() {
+  if (el.undoBtn) el.undoBtn.disabled = history.length === 0
+  if (el.redoBtn) el.redoBtn.disabled = future.length === 0
 }
 
 // The export is a mission.json the pipeline can take straight back:
@@ -313,9 +413,30 @@ function bindControls() {
     btn.addEventListener('click', () => editor && editor.setTool(btn.dataset.tool))
   }
   el.exportBtn.addEventListener('click', exportScenario)
+  // Two-step instead of a browser confirm(): a modal dialog blocks the page,
+  // and this action is undoable in spirit anyway (the original scenario is
+  // always on disk).
+  let resetArmed = null
   el.resetBtn.addEventListener('click', () => {
-    if (confirm('편집한 내용을 버리고 원래 시나리오로 되돌린다.')) resetEdits()
+    if (resetArmed) {
+      clearTimeout(resetArmed)
+      resetArmed = null
+      el.resetBtn.textContent = '시나리오 초기화'
+      el.resetBtn.classList.remove('is-armed')
+      resetEdits()
+      return
+    }
+    el.resetBtn.textContent = '한 번 더 누르면 초기화'
+    el.resetBtn.classList.add('is-armed')
+    toast('편집 내용과 되돌리기 기록을 전부 버린다. 취소하려면 4초 기다린다')
+    resetArmed = setTimeout(() => {
+      resetArmed = null
+      el.resetBtn.textContent = '시나리오 초기화'
+      el.resetBtn.classList.remove('is-armed')
+    }, 4000)
   })
+  el.undoBtn.addEventListener('click', undo)
+  el.redoBtn.addEventListener('click', redo)
 
   el.helpBtn.addEventListener('click', () => showOnboard(true))
   el.onboardClose.addEventListener('click', () => closeOnboard())
@@ -329,6 +450,13 @@ function bindControls() {
   })
 
   document.addEventListener('keydown', (e) => {
+    const key = (e.key || '').toLowerCase()
+    if ((e.ctrlKey || e.metaKey) && key === 'z') {
+      e.preventDefault()
+      if (e.shiftKey) redo(); else undo()
+      return
+    }
+    if ((e.ctrlKey || e.metaKey) && key === 'y') { e.preventDefault(); redo(); return }
     if (e.key === 'ArrowRight') { idx = Math.min(idx + 1, payload.steps.length - 1); el.scrub.value = idx; render() }
     if (e.key === 'ArrowLeft') { idx = Math.max(idx - 1, 0); el.scrub.value = idx; render() }
     if (e.key === ' ') { e.preventDefault(); timer ? stopPlay() : startPlay() }
@@ -405,6 +533,12 @@ function render() {
 
       const inactive = temporal && d.kind === 'task' && d.phase && !activePhases.has(d.phase)
       n.toggleClass('dim', inactive)
+
+      // An asset with no tie to the mission layer is drawn as unattached. It
+      // may still matter as a relay, but nothing about it will move a mission
+      // number on its own, and a node that silently does nothing is worse than
+      // one that says so.
+      if (d.kind === 'asset') n.toggleClass('orphan', !linkageOf(d.id).linked)
     }
     for (const e of cy.edges('.transport')) {
       const cause = linkOut[e.id()]
@@ -745,7 +879,7 @@ function esc(s) {
 
 function inspect(node) {
   const d = node.data()
-  const s = payload.steps[idx]
+  const s = currentStep()
   const rows = []
   const add = (k, v) => rows.push(`<dt>${k}</dt><dd>${v}</dd>`)
   add('종류', d.kind)
@@ -776,7 +910,96 @@ function inspect(node) {
   }
   el.inspect.className = ''
   el.inspect.innerHTML = `<div class="kv-head"><b>${d.label}</b> <span class="mission-pri">${d.id}</span></div>
-    <dl class="kv">${rows.join('')}</dl>`
+    <dl class="kv">${rows.join('')}</dl>` +
+    (d.kind === 'asset' ? missionLinkBlock(d) : '')
+  wireMissionLinkControls(d)
+}
+
+// Wiring a box into the transport graph does not make it matter to a mission.
+// It can matter by carrying traffic (links already do that, through
+// reachability), but to provide a service or host work it has to be said.
+// This block says what the asset is currently attached to, and in edit mode
+// lets someone attach it.
+function missionLinkBlock(d) {
+  const link = linkageOf(d.id)
+  const parts = []
+
+  if (link.provides.length) parts.push(`<div class="lk-row"><span class="lk-k">서비스 제공</span> ${link.provides.join(', ')}</div>`)
+  if (link.hosts.length) parts.push(`<div class="lk-row"><span class="lk-k">작업 수행</span> ${link.hosts.join(', ')}</div>`)
+  if (link.dependedOn.length) parts.push(`<div class="lk-row"><span class="lk-k">피의존</span> ${link.dependedOn.join(', ')}</div>`)
+  if (link.hostedOn.length) parts.push(`<div class="lk-row"><span class="lk-k">게스트</span> ${link.hostedOn.join(', ')}</div>`)
+
+  if (!link.linked) {
+    parts.push(`<div class="lk-warn">임무 계층에 연결되지 않았다. 중계 경로로는 기여할 수 있으나,
+      이 자산 자체가 죽어도 임무 저하도는 움직이지 않는다.</div>`)
+  }
+
+  if (mode !== 'edit') {
+    return `<div class="linkage"><div class="lk-head">임무 연결</div>${parts.join('') || '<div class="lk-row">없음</div>'}</div>`
+  }
+
+  const services = (graph.services || []).map((s) => {
+    const on = link.provides.includes(s.id)
+    return `<label class="lk-chk"><input type="checkbox" data-svc="${s.id}" ${on ? 'checked' : ''} /> ${s.name} <span class="lk-id">${s.id}</span></label>`
+  }).join('')
+
+  const tasks = (graph.tasks || []).map((t) => {
+    const on = t.performed_at === d.id
+    return `<label class="lk-chk"><input type="checkbox" data-task="${t.id}" ${on ? 'checked' : ''} /> ${t.name} <span class="lk-id">${t.id}</span></label>`
+  }).join('')
+
+  return `<div class="linkage">
+    <div class="lk-head">임무 연결</div>
+    ${parts.join('')}
+    <div class="lk-group"><div class="lk-sub">이 자산이 제공하는 서비스</div>${services}</div>
+    <div class="lk-group"><div class="lk-sub">이 자산에서 수행하는 작업</div>${tasks}</div>
+    <label class="lk-chk"><input type="checkbox" data-transit ${d.transit ? 'checked' : ''} /> 남의 트래픽을 중계한다</label>
+  </div>`
+}
+
+function linkageOf(assetId) {
+  const E = graph.edges || {}
+  const provides = (E.provided_by || []).filter((e) => e.to === assetId).map((e) => e.from)
+  const hosts = (graph.tasks || []).filter((t) => t.performed_at === assetId).map((t) => t.id)
+  const dependedOn = (E.depends_on || []).filter((e) => e.to === assetId).map((e) => e.from)
+  const hostedOn = (E.hosted_on || []).filter((e) => e.to === assetId).map((e) => e.from)
+  return { provides, hosts, dependedOn, hostedOn, linked: provides.length + hosts.length + dependedOn.length + hostedOn.length > 0 }
+}
+
+function wireMissionLinkControls(d) {
+  if (mode !== 'edit' || !editor || d.kind !== 'asset') return
+  const box = el.inspect.querySelector('.linkage')
+  if (!box) return
+
+  for (const cb of box.querySelectorAll('input[data-svc]')) {
+    cb.addEventListener('change', () => {
+      const chosen = [...box.querySelectorAll('input[data-svc]')].filter((x) => x.checked).map((x) => x.dataset.svc)
+      editor.setProvidedBy(d.id, chosen)
+    })
+  }
+  for (const cb of box.querySelectorAll('input[data-task]')) {
+    cb.addEventListener('change', () => {
+      editor.setPerformedAt(cb.dataset.task, cb.checked ? d.id : null)
+    })
+  }
+  const tr = box.querySelector('input[data-transit]')
+  if (tr) tr.addEventListener('change', () => editor.setTransit(d.id, tr.checked))
+}
+
+
+let toastTimer = null
+function toast(html) {
+  let box = document.getElementById('toast')
+  if (!box) {
+    box = document.createElement('div')
+    box.id = 'toast'
+    box.className = 'toast'
+    document.body.appendChild(box)
+  }
+  box.innerHTML = html
+  box.classList.add('is-on')
+  clearTimeout(toastTimer)
+  toastTimer = setTimeout(() => box.classList.remove('is-on'), 4200)
 }
 
 function clearInspect() {
