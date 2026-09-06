@@ -20,6 +20,8 @@ const el = {
   cy: document.getElementById('cy'),
   missions: document.getElementById('missions'),
   cuts: document.getElementById('cuts'),
+  actions: document.getElementById('actions'),
+  queue: document.getElementById('queue'),
   inspect: document.getElementById('inspect'),
   scrub: document.getElementById('scrub'),
   ribbon: document.getElementById('ribbon'),
@@ -186,10 +188,10 @@ function render() {
       else if (d.kind === 'mission') v = num(s.mission?.[d.id])
 
       const cause = d.kind === 'asset' ? assetOut[d.id] : null
+      const hit = d.kind === 'asset' && num(s.compromise?.[d.id]) > 0
       n.style('background-color', degColor(v))
-      n.style('border-color', cause ? CAUSE_COLOR[cause] || '#2a3441'
-        : (v > 0.001 && d.kind === 'asset' && num(s.compromise?.[d.id]) > 0 ? CAUSE_COLOR.attack : '#2a3441'))
-      n.style('border-width', cause || num(s.compromise?.[d.id]) > 0 ? 3 : 2)
+      n.style('border-color', cause ? (CAUSE_COLOR[cause] || '#2a3441') : (hit ? CAUSE_COLOR.attack : '#2a3441'))
+      n.style('border-width', cause || hit ? 2.5 : 1.5)
 
       const inactive = temporal && d.kind === 'task' && d.phase && !activePhases.has(d.phase)
       n.toggleClass('dim', inactive)
@@ -197,16 +199,35 @@ function render() {
     for (const e of cy.edges('.transport')) {
       const cause = linkOut[e.id()]
       e.toggleClass('cut', !!cause)
-      e.style('line-color', cause ? (CAUSE_COLOR[cause] || '#8a8f98') : '#3fa06a')
+      e.style('line-color', cause ? (CAUSE_COLOR[cause] || '#8a8f98') : '#2fd18b')
       e.style('label', cause ? `${e.data('bearer')} · ${cause}` : e.data('bearer'))
     }
   })
+  startFlow()
 
   renderMissions(s)
   renderCuts(s, assetOut, linkOut)
+  renderActions(s)
   renderClock(s, activePhases)
   updatePlayhead()
   if (cy.$(':selected').length) inspect(cy.$(':selected').first())
+}
+
+// Dashes crawling along a link mean traffic is moving on it. It is decoration
+// with one job: a cut link stops moving, so the eye finds the break before it
+// finds the label.
+let flowRaf = null
+let flowOffset = 0
+function startFlow() {
+  if (flowRaf) return
+  const tick = () => {
+    flowRaf = requestAnimationFrame(tick)
+    if (!cy || view !== 'transport') { return }
+    flowOffset = (flowOffset - 0.6) % 26
+    const live = cy.edges('.transport').not('.cut').not('.hidden')
+    if (live.length) live.style('line-dash-offset', flowOffset)
+  }
+  flowRaf = requestAnimationFrame(tick)
 }
 
 function renderMissions(s) {
@@ -258,6 +279,69 @@ function splitBar(att, env, inter, total) {
   if (total <= 0 || mag <= 0) return { attack: 0, env: 0, inter: 0 }
   const k = (total * 100) / mag
   return { attack: Math.abs(att) * k, env: Math.abs(env) * k, inter: Math.abs(inter) * k }
+}
+
+// Containment candidates, priced. The engine already ran the isolation
+// what-if for each of them at each step, so what is shown here is the real
+// cost of the action, not an estimate made up at render time.
+//
+// There is deliberately no execute path in this UI (ADR-0004). The button
+// records a request; a human performs the action elsewhere. A demo that
+// contains a one-click block would undo the argument the rest of the screen
+// is making.
+const requests = []
+
+function renderActions(s) {
+  const wf = s.whatif || {}
+  const missions = payload.graph.missions || []
+  const rows = Object.keys(wf).map((id) => {
+    const w = wf[id]
+    let worst = 0
+    const parts = []
+    for (const m of missions) {
+      const d = num(w.delta?.[m.id])
+      if (Math.abs(d) > 0.0005) parts.push({ id: m.id, name: m.name, d })
+      if (d > worst) worst = d
+    }
+    return { id, worst, parts, compromised: num(s.compromise?.[id]) > 0, fullyHit: num(s.compromise?.[id]) >= 0.999 }
+  })
+  rows.sort((a, b) => (b.compromised - a.compromised) || (a.worst - b.worst))
+
+  el.actions.innerHTML = rows.map((r) => {
+    const cost = r.parts.length
+      ? r.parts.map((p) => `<span class="${p.d > 0 ? 'cost-up' : 'cost-down'}">${p.id} ${p.d > 0 ? '+' : ''}${(p.d * 100).toFixed(1)}%p</span>`).join(' ')
+      : (r.fullyHit
+        ? '<span class="cost-none">이미 전면 침해. 격리해도 추가 임무 비용은 없다</span>'
+        : '<span class="cost-none">임무 영향 없음</span>')
+    return `<div class="action ${r.compromised ? 'is-hot' : ''}">
+      <div class="action-head">
+        <span class="action-id">${r.id}</span>
+        ${r.compromised ? '<span class="tag tag-hot">침해</span>' : ''}
+        <span class="action-cost">${(r.worst * 100).toFixed(1)}<small>%p</small></span>
+      </div>
+      <div class="action-detail">${cost}</div>
+      <button type="button" class="req-btn" data-req="${r.id}">승인 요청 기록</button>
+    </div>`
+  }).join('')
+
+  for (const b of el.actions.querySelectorAll('.req-btn')) {
+    b.addEventListener('click', () => {
+      const id = b.dataset.req
+      const st = payload.steps[idx]
+      requests.unshift({ id, t: st.t, when: new Date().toLocaleTimeString('ko-KR', { hour12: false }) })
+      renderQueue()
+    })
+  }
+  renderQueue()
+}
+
+function renderQueue() {
+  if (!requests.length) { el.queue.innerHTML = ''; return }
+  el.queue.innerHTML = `<div class="queue-head">승인 대기 (기록 전용, 실행 없음)</div>` +
+    requests.slice(0, 5).map((r) => `<div class="queue-row">
+      <span class="queue-id">${r.id} 격리</span>
+      <span class="queue-meta">t+${r.t}분 · ${r.when}</span>
+    </div>`).join('')
 }
 
 function renderCuts(s, assetOut, linkOut) {

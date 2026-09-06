@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-09-06T21:24:04.0216556+09:00",
+    "generated":  "2026-09-06T21:30:37.3829009+09:00",
     "generator":  "scripts/Export-ReplayData.ps1",
     "contract":  1,
     "note":  "Precomputed by the deterministic engine. The UI displays these numbers and never recomputes them (ADR-0003).",
@@ -788,6 +788,68 @@
                                       "M-C2":  0,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  false
@@ -877,6 +939,68 @@
                                       "M-C2":  0,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  false
@@ -966,6 +1090,68 @@
                                       "M-C2":  0,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  false
@@ -1055,6 +1241,68 @@
                                       "M-C2":  0,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  false
@@ -1144,6 +1392,68 @@
                                       "M-C2":  0,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  false
@@ -1233,6 +1543,68 @@
                                       "M-C2":  0,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  false
@@ -1322,6 +1694,68 @@
                                       "M-C2":  0,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.069875776397515535,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.069876,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.21428571428571425,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.214286,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  false
@@ -1411,6 +1845,68 @@
                                       "M-C2":  0.59989648033126275,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.80952380952380942,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.209627,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0.59989648033126275,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.59989648033126275,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.79037267080745333,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.190476,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0.59989648033126275,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.69513457556935809,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.095238,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  false
@@ -1500,6 +1996,68 @@
                                       "M-C2":  0.59989648033126275,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.80952380952380942,
+                                                                     "M-FIRE":  0.23529411764705885
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.209627,
+                                                                   "M-FIRE":  0.235294
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0.59989648033126275,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.59989648033126275,
+                                                                     "M-FIRE":  0.58823529411764708
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.588235
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.79037267080745333,
+                                                                     "M-FIRE":  0.41176470588235292
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.190476,
+                                                                   "M-FIRE":  0.411765
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0.59989648033126275,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.69513457556935809,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.095238,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  true
@@ -1590,6 +2148,68 @@
                                       "M-C2":  0,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.069875776397515535,
+                                                                     "M-FIRE":  0.23529411764705885
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.069876,
+                                                                   "M-FIRE":  0.235294
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0.58823529411764708
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.588235
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.21428571428571425,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.214286,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  true
@@ -1680,6 +2300,68 @@
                                       "M-C2":  0.32142857142857134,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.391304347826087,
+                                                                     "M-FIRE":  0.23529411764705885
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.069876,
+                                                                   "M-FIRE":  0.235294
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0.32142857142857134,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.32142857142857134,
+                                                                     "M-FIRE":  0.58823529411764708
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.588235
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.32142857142857134,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0.32142857142857134,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.42857142857142849,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.107143,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  true
@@ -1770,6 +2452,68 @@
                                       "M-C2":  0.32142857142857134,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.391304347826087,
+                                                                     "M-FIRE":  0.23529411764705885
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.069876,
+                                                                   "M-FIRE":  0.235294
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0.32142857142857134,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.32142857142857134,
+                                                                     "M-FIRE":  0.58823529411764708
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.588235
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.32142857142857134,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0.32142857142857134,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.42857142857142849,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.107143,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  true
@@ -1860,6 +2604,68 @@
                                       "M-C2":  0.32142857142857134,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.391304347826087,
+                                                                     "M-FIRE":  0.33193277310924368
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.069876,
+                                                                   "M-FIRE":  0.331933
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0.32142857142857134,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.32142857142857134,
+                                                                     "M-FIRE":  0.53221288515406162
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.532213
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.32142857142857134,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0.32142857142857134,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.42857142857142849,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.107143,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  true
@@ -1951,6 +2757,68 @@
                                       "M-C2":  0.10714285714285712,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.17701863354037267,
+                                                                     "M-FIRE":  0.33193277310924368
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.069876,
+                                                                   "M-FIRE":  0.331933
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0.10714285714285712,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.10714285714285712,
+                                                                     "M-FIRE":  0.53221288515406162
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.532213
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.10714285714285712,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0.10714285714285712,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.21428571428571425,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.107143,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  true
@@ -2042,6 +2910,68 @@
                                       "M-C2":  0.21428571428571425,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.28416149068322982,
+                                                                     "M-FIRE":  0.33193277310924368
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.069876,
+                                                                   "M-FIRE":  0.331933
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0.21428571428571425,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.21428571428571425,
+                                                                     "M-FIRE":  0.53221288515406162
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.532213
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.21428571428571425,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0.21428571428571425,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.21428571428571425,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  true
@@ -2133,6 +3063,68 @@
                                       "M-C2":  0.21428571428571425,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.28416149068322982,
+                                                                     "M-FIRE":  0.33193277310924368
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.069876,
+                                                                   "M-FIRE":  0.331933
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0.21428571428571425,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.21428571428571425,
+                                                                     "M-FIRE":  0.53221288515406162
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.532213
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.21428571428571425,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0.21428571428571425,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.21428571428571425,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  true
@@ -2224,6 +3216,68 @@
                                       "M-C2":  0,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0.33193277310924368
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.331933
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0.53221288515406162
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.532213
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  true
@@ -2315,6 +3369,68 @@
                                       "M-C2":  0,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0.33193277310924368
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.331933
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0.53221288515406162
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.532213
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  true
@@ -2407,6 +3523,68 @@
                                       "M-C2":  0,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.36842105263157893,
+                                                                     "M-FIRE":  0.43193277310924372
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.368421,
+                                                                   "M-FIRE":  0.431933
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0.53221288515406162
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.532213
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  true
@@ -2499,6 +3677,68 @@
                                       "M-C2":  0,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.36842105263157893,
+                                                                     "M-FIRE":  0.43193277310924372
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.368421,
+                                                                   "M-FIRE":  0.431933
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0.53221288515406162
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.532213
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  true
@@ -2591,6 +3831,68 @@
                                       "M-C2":  0.52631578947368418,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  0.7142857142857143
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.714286
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0.52631578947368418,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  0.47619047619047616
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.47619
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0.52631578947368418,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  true
@@ -2682,6 +3984,68 @@
                                       "M-C2":  0.52631578947368418,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  0.7142857142857143
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.714286
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0.52631578947368418,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  0.47619047619047616
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.47619
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0.52631578947368418,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  true
@@ -2773,6 +4137,68 @@
                                       "M-C2":  0.52631578947368418,
                                       "M-FIRE":  0
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  0.7142857142857143
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.714286
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0.52631578947368418,
+                                                                    "M-FIRE":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  0.47619047619047616
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.47619
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0.52631578947368418,
+                                                                      "M-FIRE":  0
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  0
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  true
@@ -2865,6 +4291,68 @@
                                       "M-C2":  0.31578947368421051,
                                       "M-FIRE":  0.42857142857142855
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  0.7142857142857143
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.210526,
+                                                                   "M-FIRE":  0.285714
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0.31578947368421051,
+                                                                    "M-FIRE":  0.42857142857142855
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.31578947368421051,
+                                                                     "M-FIRE":  0.79047619047619055
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.361905
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.31578947368421051,
+                                                                     "M-FIRE":  0.42857142857142855
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0.31578947368421051,
+                                                                      "M-FIRE":  0.42857142857142855
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.31578947368421051,
+                                                                     "M-FIRE":  0.42857142857142855
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  true
@@ -2957,6 +4445,68 @@
                                       "M-C2":  0.31578947368421051,
                                       "M-FIRE":  0.42857142857142855
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  0.7142857142857143
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.210526,
+                                                                   "M-FIRE":  0.285714
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0.31578947368421051,
+                                                                    "M-FIRE":  0.42857142857142855
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.31578947368421051,
+                                                                     "M-FIRE":  0.79047619047619055
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.361905
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.31578947368421051,
+                                                                     "M-FIRE":  0.42857142857142855
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0.31578947368421051,
+                                                                      "M-FIRE":  0.42857142857142855
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.31578947368421051,
+                                                                     "M-FIRE":  0.42857142857142855
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  true
@@ -3049,6 +4599,68 @@
                                       "M-C2":  0.31578947368421051,
                                       "M-FIRE":  0.42857142857142855
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  0.7142857142857143
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0.210526,
+                                                                   "M-FIRE":  0.285714
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0.31578947368421051,
+                                                                    "M-FIRE":  0.42857142857142855
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.31578947368421051,
+                                                                     "M-FIRE":  0.79047619047619055
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.361905
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.31578947368421051,
+                                                                     "M-FIRE":  0.42857142857142855
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0.31578947368421051,
+                                                                      "M-FIRE":  0.42857142857142855
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.31578947368421051,
+                                                                     "M-FIRE":  0.42857142857142855
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  true
@@ -3141,6 +4753,68 @@
                                       "M-C2":  0.52631578947368418,
                                       "M-FIRE":  0.7142857142857143
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  0.7142857142857143
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0.52631578947368418,
+                                                                    "M-FIRE":  0.7142857142857143
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  1
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.285714
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  0.7142857142857143
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0.52631578947368418,
+                                                                      "M-FIRE":  0.7142857142857143
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  0.7142857142857143
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  true
@@ -3233,6 +4907,68 @@
                                       "M-C2":  0.52631578947368418,
                                       "M-FIRE":  0.7142857142857143
                                   },
+                      "whatif":  {
+                                     "TOC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  0.7142857142857143
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "BN-SRV":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0.52631578947368418,
+                                                                    "M-FIRE":  0.7142857142857143
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-FIRE":  0
+                                                              }
+                                                },
+                                     "FDC-SRV":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  1
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0.285714
+                                                               }
+                                                 },
+                                     "RELAY-1":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  0.7142857142857143
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 },
+                                     "SAT-TERM":  {
+                                                      "mission":  {
+                                                                      "M-C2":  0.52631578947368418,
+                                                                      "M-FIRE":  0.7142857142857143
+                                                                  },
+                                                      "delta":  {
+                                                                    "M-C2":  0,
+                                                                    "M-FIRE":  0
+                                                                }
+                                                  },
+                                     "CO2-VEH":  {
+                                                     "mission":  {
+                                                                     "M-C2":  0.52631578947368418,
+                                                                     "M-FIRE":  0.7142857142857143
+                                                                 },
+                                                     "delta":  {
+                                                                   "M-C2":  0,
+                                                                   "M-FIRE":  0
+                                                               }
+                                                 }
+                                 },
                       "mission_active":  {
                                              "M-C2":  true,
                                              "M-FIRE":  true

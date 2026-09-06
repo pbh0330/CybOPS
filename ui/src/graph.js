@@ -18,11 +18,11 @@ export const CAUSE_COLOR = {
 // so the neutral ramp goes green -> amber -> slate-red and the CAUSE is what
 // decides the border.
 export function degColor(v) {
-  if (v <= 0.001) return '#2f6f4f'
-  if (v < 0.25) return '#4d7a46'
-  if (v < 0.5) return '#8a7a35'
-  if (v < 0.75) return '#a8632f'
-  return '#9b3b3f'
+  if (v <= 0.001) return '#12463a'
+  if (v < 0.25) return '#2c5c3f'
+  if (v < 0.5) return '#6b6330'
+  if (v < 0.75) return '#8f4f2c'
+  return '#8f2f39'
 }
 
 export function buildElements(g) {
@@ -206,7 +206,9 @@ export function stylesheet() {
       style: {
         'curve-style': 'straight',
         'target-arrow-shape': 'none',
-        'line-color': '#3fa06a',
+        'line-color': '#2fd18b',
+        'line-style': 'dashed',
+        'line-dash-pattern': [7, 6],
         'width': 2,
         'label': 'data(label)',
         'text-rotation': 'autorotate',
@@ -215,7 +217,9 @@ export function stylesheet() {
         'text-background-padding': 2,
       },
     },
-    { selector: 'edge.cut', style: { 'line-style': 'dashed', 'width': 3 } },
+    // a cut reads as broken, not as busy: short stubs with a wide gap, and no
+    // flow animation. Traffic that is not moving must not look like traffic.
+    { selector: 'edge.cut', style: { 'line-dash-pattern': [2, 10], 'width': 3, 'line-opacity': 0.95 } },
     { selector: '.hidden', style: { 'display': 'none' } },
   ]
 }
@@ -224,8 +228,8 @@ export const LAYOUTS = {
   dependency: {
     name: 'dagre',
     rankDir: 'TB',
-    nodeSep: 22,
-    rankSep: 78,
+    nodeSep: 38,
+    rankSep: 86,
     animate: false,
     fit: true,
     padding: 30,

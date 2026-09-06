@@ -10,8 +10,9 @@
 | 라벨 | 세 데이터셋 모두 확보. OpTC는 PDF→JSONL 구조화 완료(101건, 미분류 0) |
 | 결정 | **Q1~Q6 전부 확정**(ADR-0012~0018). 미결 없음 |
 | 모델 | **시간축 온톨로지 완료**(ADR-0017) - `scenarios/tacnet-01/`, 원인 분해 동작 |
-| 다음 | Node.js 설치 → 상황도 UI(Cytoscape.js + Vite 정적 번들, ADR-0018) |
-| 도구 | Figma **pro / Full 좌석**(2026-09-06 확인) - 월 20회 한도 해소, 편집 가능 |
+| UI | **동작함**. `ui/` Vite + Cytoscape 정적 번들, 시간축 리본 + 원인 분해 패널 |
+| 다음 | what-if 인터랙션 → LLM 브리핑 계층 → 지리 레이어 → 탐지 실험 E1 |
+| 도구 | Figma pro/Full 좌석. Node 24.20.0 **포터블 설치**, Python 3.12, Git 2.55 |
 
 ## 위치
 
@@ -328,7 +329,13 @@ scenarios/tacnet-01/         전술망 온톨로지 + 시간축 + 침해 궤적
 |---|---|
 | Python | ✅ **3.12.10** (`%LOCALAPPDATA%\Programs\Python\Python312`), pip 25.0.1, User PATH 등록 |
 | Git | ✅ **2.55.0.3** (`C:\Program Files\Git\cmd`), Machine PATH 등록 |
-| Node / Java / dotnet | 미설치 |
+| Node | ✅ **24.20.0 포터블** (`%LOCALAPPDATA%\Programs\nodejs-portable\node-v24.20.0-win-x64`), npm 11.19, User PATH 등록 |
+| Java / dotnet | 미설치 |
+
+> Node는 winget 설치가 11분간 진행되지 않아(MSI가 관리자 권한 프롬프트에서 막힌 것으로
+> 보인다) 공식 zip을 받아 사용자 폴더에 풀었다. 관리자 권한이 필요 없고 지우기도 쉽다.
+> npm 11은 설치 스크립트를 기본 차단하므로 `npm install-scripts approve esbuild`가
+> 한 번 필요하다(`ui/package.json`의 `allowScripts`에 기록됨).
 
 PowerShell 참조 구현은 그대로 유지한다. 대용량 스캔은 PowerShell 루프로는 불가능해
 `Add-Type`으로 C#을 인라인 컴파일해 쓴다 - 10.5억 행을 약 11분에 훑는다
@@ -377,9 +384,7 @@ PowerShell 참조 구현은 그대로 유지한다. 대용량 스캔은 PowerShe
 
 ## 다음에 할 일 - 데모 기준 순서 (ADR-0014)
 
-**0. Q5 확정이 임계 경로다.** 남은 미결이 이것 하나이고 데모 전체가 여기서 시작한다.
-   ADR-0013이 이미 "2525 렌더러가 있는 웹 스택"으로 좁혀놨다. 선정 기준:
-   심볼 렌더링 **포함** 성능(노드 수천 개), 저대역폭 델타 동기화, 오프라인 동작.
+**0.** ~~Q5 확정이 임계 경로다.~~ → **완료 (ADR-0018)**. Cytoscape.js + Vite 정적 번들.
 
 1. ~~**시간축 임무 온톨로지**~~ → **완료 (2026-09-06, ADR-0017)**
 

@@ -47,6 +47,8 @@ if ($Timeline -and (Test-Path $Timeline)) {
   $tl = Get-Content $Timeline -Raw -Encoding utf8 | ConvertFrom-Json
 }
 
+function AsArrayLocal($x) { if ($null -eq $x) { return @() } return @($x) }
+
 function Get-StateAt($tl, $t) {
   $state = @{}; $label = ''; $note = ''
   if ($null -eq $tl) { return @{ state = $state; label = $label; note = $note } }
@@ -73,6 +75,20 @@ if ($temporal) {
   $times = @(-1)   # single snapshot
 }
 
+# Containment candidates: the assets an operator would plausibly be asked to
+# isolate. Crown jewels plus whatever the attack timeline touches. Keeping the
+# list short keeps the export honest about what was actually computed.
+$candidates = New-Object System.Collections.ArrayList
+foreach ($cj in (AsArrayLocal $g.crown_jewels)) { if (-not $candidates.Contains($cj)) { [void]$candidates.Add($cj) } }
+if ($tl) {
+  foreach ($s in $tl.steps) {
+    foreach ($p in $s.state.PSObject.Properties) {
+      if (-not $candidates.Contains($p.Name)) { [void]$candidates.Add($p.Name) }
+    }
+  }
+}
+Write-Output ("containment candidates: {0}" -f ($candidates -join ', '))
+
 $steps = @()
 foreach ($t in $times) {
   $st = Get-StateAt $tl $t
@@ -91,6 +107,29 @@ foreach ($t in $times) {
     $iso = ([datetime]$g.timeline.t0_iso).AddMinutes($t).ToString('o')
   }
 
+  # Containment what-if. Isolating an asset means it stops serving, so the
+  # engine models it as full unavailability. The point is that containment has
+  # a mission cost of its own and the operator must see it BEFORE approving
+  # anything (ADR-0004). Precomputed here because the UI never runs the engine.
+  $whatif = [ordered]@{}
+  foreach ($cand in $candidates) {
+    $isoState = @{}
+    foreach ($k in $st.state.Keys) { $isoState[$k] = $st.state[$k] }
+    $isoState[$cand] = 1.0
+    $pairs2 = @()
+    foreach ($k in $isoState.Keys) { $pairs2 += "$k=$($isoState[$k])" }
+    if ($temporal) {
+      $wj = & $engine -Scenario $Scenario -State ($pairs2 -join ',') -Method $Method -At $t -Json | ConvertFrom-Json
+    } else {
+      $wj = & $engine -Scenario $Scenario -State ($pairs2 -join ',') -Method $Method -Json | ConvertFrom-Json
+    }
+    $delta = [ordered]@{}
+    foreach ($m in $g.missions) {
+      $delta[$m.id] = [math]::Round(([double]$wj.mission.($m.id) - [double]$json.mission.($m.id)), 6)
+    }
+    $whatif[$cand] = [ordered]@{ mission = $wj.mission; delta = $delta }
+  }
+
   $row = [ordered]@{
     t          = $t
     time_iso   = $iso
@@ -101,6 +140,7 @@ foreach ($t in $times) {
     service    = $json.service
     task       = $json.task
     mission    = $json.mission
+    whatif     = $whatif
   }
   if ($temporal) {
     $row.mission_active = $json.mission_active
