@@ -1,0 +1,56 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-06T23:02:20.7426424+09:00",
+    "briefing":  "analysis\\briefing\\tacnet-01-t390.ollama.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\tacnet-01-t390.pack.json",
+    "prompt_version":  "briefing.ko v1",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  4,
+    "citation_rate":  1,
+    "citations_total":  6,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "12:30 (t+390분)에 활성 단계는 목표 확보와 화력 유도가 진행 중이다 [F1]."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2,F3",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무인 M-C2의 저하도는 52.63%이며, 이는 공격 단독으로 인해 발생한 것으로 판단된다 [F2][F3]."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F8,F11",
+                          "abstain":  false,
+                          "text":  "TOC-SRV의 침해 수준이 100%로 가장 높은 수준이며, 이 자산의 상태는 임무 M-C2의 저하에 영향을 미칠 수 있다 [F8][F11]."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F21",
+                          "abstain":  false,
+                          "text":  "TOC-SRV을 격리해도 임무 저하도는 변하지 않으므로, 추가 비용은 발생하지 않는다 [F21]."
+                      }
+                  ]
+}

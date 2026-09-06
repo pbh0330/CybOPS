@@ -552,6 +552,7 @@ function render() {
   renderMissions(s)
   renderCuts(s, assetOut, linkOut)
   renderActions(s)
+  renderBrief(s)
   renderClock(s, activePhases)
   updatePlayhead()
   if (cy.$(':selected').length) inspect(cy.$(':selected').first())
@@ -714,6 +715,78 @@ function renderQueue() {
       <span class="queue-id">${r.id} 격리</span>
       <span class="queue-meta">t+${r.t}분 · ${r.when}</span>
     </div>`).join('')
+}
+
+// ---------------------------------------------------------------- briefing
+//
+// The one part of this screen a language model wrote. It is kept in its own
+// panel, away from the numbers, and every sentence has to point at the fact it
+// came from (ADR-0009). A sentence with no citation is labelled 미검증 rather
+// than hidden: hiding it would make the panel look better than it is.
+//
+// The text is generated offline (scripts/Invoke-Briefing.ps1) and checked
+// offline (scripts/Test-BriefingCitations.ps1). Nothing here calls a model.
+
+const briefCache = new Map()
+
+async function loadBrief(scenarioId, t) {
+  const key = `${scenarioId}|${t}`
+  if (briefCache.has(key)) return briefCache.get(key)
+  const p = { brief: null, pack: null }
+  try {
+    const [b, k] = await Promise.all([
+      fetch(`./data/${scenarioId}-t${t}.brief.json`).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+      fetch(`./data/${scenarioId}-t${t}.pack.json`).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+    ])
+    p.brief = b
+    p.pack = k
+  } catch { /* offline bundle without briefings */ }
+  briefCache.set(key, p)
+  return p
+}
+
+function renderBrief(s) {
+  const panel = document.getElementById('brief-panel')
+  if (!panel) return
+  const t = s && s.t !== undefined && s.t !== null ? Number(s.t) : null
+  if (t === null || edited) {
+    // an edited graph no longer matches the briefing that was written about it
+    panel.hidden = true
+    return
+  }
+  loadBrief(payload.scenario_id, t).then(({ brief, pack }) => {
+    if (!brief || !brief.text) { panel.hidden = true; return }
+    panel.hidden = false
+    const facts = new Map((pack?.facts || []).map((f) => [f.id, f.text]))
+    const sentences = String(brief.text).split(/(?<=[.!?])\s+/).filter((x) => x.trim())
+
+    const body = sentences.map((raw) => {
+      const cites = [...raw.matchAll(/\[(F\d+)\]/g)].map((m) => m[1])
+      const text = raw.replace(/\[(F\d+)\]/g, '').replace(/\s+([.,])/g, '$1').trim()
+      const chips = cites.map((c) => {
+        const tip = facts.get(c) || '근거를 찾지 못했다'
+        const bad = facts.has(c) ? '' : ' is-bad'
+        return `<button type="button" class="cite-chip${bad}" data-fact="${c}" title="${esc(tip)}">${c}</button>`
+      }).join('')
+      const unver = cites.length ? '' : '<span class="unverified">미검증</span>'
+      return `<p class="brief-s">${esc(text)} ${chips}${unver}</p>`
+    }).join('')
+
+    const meta = `<div class="brief-meta">
+      <span>${esc(brief.model || '')}</span>
+      <span>${esc(brief.prompt_version || '')}</span>
+      <span>${sentences.length}문장 · 인용 ${sentences.filter((x) => /\[F\d+\]/.test(x)).length}건</span>
+    </div>`
+
+    document.getElementById('brief').innerHTML = body + meta
+
+    for (const btn of document.querySelectorAll('#brief .cite-chip')) {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.fact
+        toast(`<b>${id}</b> ${esc(facts.get(id) || '근거 없음')}`)
+      })
+    }
+  })
 }
 
 function renderCuts(s, assetOut, linkOut) {

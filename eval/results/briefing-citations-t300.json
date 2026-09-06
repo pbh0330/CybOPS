@@ -1,0 +1,56 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-06T23:02:17.6280559+09:00",
+    "briefing":  "analysis\\briefing\\tacnet-01-t300.ollama.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\tacnet-01-t300.pack.json",
+    "prompt_version":  "briefing.ko v1",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  4,
+    "citation_rate":  1,
+    "citations_total":  5,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "11:00 (t+300분)에 활성 단계는 목표 확보와 화력 유도이다 [F1]."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2,F3",
+                          "abstain":  false,
+                          "text":  "임무 M-C2의 저하도는 52.63%이며, 이는 상호작용으로 인해 발생한다 [F2][F3]."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F6",
+                          "abstain":  false,
+                          "text":  "링크 L-SAT-TOC가 단절되어 있으며, 원인은 구분 불가하다 [F6]."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F16",
+                          "abstain":  false,
+                          "text":  "BN-SRV의 격리 비용은 0이다 [F16]."
+                      }
+                  ]
+}

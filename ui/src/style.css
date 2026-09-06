@@ -404,3 +404,28 @@ button.danger:hover { border-color: rgba(255,77,94,.6); background: rgba(255,77,
 button:disabled { opacity: .38; cursor: default; }
 button:disabled:hover { border-color: var(--line); background: var(--bg-3); }
 button.is-armed { border-color: rgba(255,77,94,.7); background: rgba(255,77,94,.16); color: #ffd7da; }
+
+/* briefing panel: the only text on this screen written by a model */
+.brief-s {
+  margin: 0 0 9px; font-size: 12.5px; line-height: 1.7; color: var(--fg);
+  padding-left: 10px; border-left: 2px solid var(--line);
+}
+.cite-chip {
+  font-size: 10px; padding: 1px 6px; margin-left: 3px; border-radius: 4px;
+  background: rgba(53,224,255,.1); border: 1px solid rgba(53,224,255,.3);
+  color: #bdeaff; vertical-align: 1px;
+}
+.cite-chip:hover { background: rgba(53,224,255,.2); }
+.cite-chip.is-bad { background: rgba(255,77,94,.12); border-color: rgba(255,77,94,.4); color: #ffc2c7; }
+.unverified {
+  font-size: 10px; margin-left: 5px; padding: 1px 6px; border-radius: 4px;
+  background: rgba(255,176,32,.14); border: 1px solid rgba(255,176,32,.35); color: var(--unknown);
+}
+.brief-meta {
+  display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px;
+  font-size: 10.5px; color: var(--fg-dim);
+}
+.cite-chip-ex {
+  font-size: 10px; padding: 1px 6px; border-radius: 4px;
+  background: rgba(53,224,255,.1); border: 1px solid rgba(53,224,255,.3); color: #bdeaff;
+}

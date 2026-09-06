@@ -1,0 +1,50 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-06T23:02:15.6003918+09:00",
+    "briefing":  "analysis\\briefing\\tacnet-01-t120.ollama.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\tacnet-01-t120.pack.json",
+    "prompt_version":  "briefing.ko v1",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  3,
+    "sentences_cited":  3,
+    "citation_rate":  1,
+    "citations_total":  5,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "08:00 (t+120분) 시각에 활성 단계는 기동과 표적 획득이다 [F1]."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2,F3",
+                          "abstain":  false,
+                          "text":  "임무 M-C2의 저하도는 59.99%로, 이는 환경 단독 요인으로 인해 발생한다 [F2][F3]."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F15,F1",
+                          "abstain":  false,
+                          "text":  "수행 위치 BN-CP와 TOC-WS의 작업들 중 TOC-WS의 작업 T-ORDER와 T-SITREP가 저하되어 있으며, TOC-SRV의 격리는 임무 M-C2와 M-FIRE의 저하도를 각각 21.0%p와 23.5%p 증가시킬 수 있다 [F15][F1]."
+                      }
+                  ]
+}
