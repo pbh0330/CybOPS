@@ -151,7 +151,41 @@ $bogus        = New-Object System.Collections.ArrayList
 $numBad       = New-Object System.Collections.ArrayList
 $numOffCite   = New-Object System.Collections.ArrayList
 $escalations  = New-Object System.Collections.ArrayList
+$langBad      = New-Object System.Collections.ArrayList
 $perSentence  = New-Object System.Collections.ArrayList
+
+# ---------------------------------------------------------------- 5. script
+#
+# The briefing is written in Korean. A 7B model does not always stay there:
+# measured on the adversary run, 5 of 48 accepted rationales contained Chinese
+# (docs/13-adversary-comparison.md section 5). Nobody reads a briefing they
+# cannot read, and a sentence in the wrong script is not "mostly fine" - it is
+# an uncontrolled output that happens to have passed the other four checks.
+#
+# Allowed: Hangul, ASCII (identifiers like M-C2, L-SAT-TOC, percentages),
+# and the punctuation the labels already use. Anything in the CJK ideograph,
+# kana or Cyrillic ranges is a violation, reported with the offending characters
+# so the failure is diagnosable rather than just red.
+# Ranges are written as \u escapes so this file stays ASCII (encoding rule 1).
+$scriptRanges = @(
+  @{ name = 'CJK ideograph'; re = [regex]'[\u4E00-\u9FFF\u3400-\u4DBF]' },
+  @{ name = 'kana';          re = [regex]'[\u3040-\u30FF]' },
+  @{ name = 'Cyrillic';      re = [regex]'[\u0400-\u04FF]' },
+  @{ name = 'Arabic';        re = [regex]'[\u0600-\u06FF]' },
+  @{ name = 'Thai';          re = [regex]'[\u0E00-\u0E7F]' }
+)
+
+function Get-ScriptViolations($text) {
+  $hits = @()
+  foreach ($r in $scriptRanges) {
+    $m = $r.re.Matches($text)
+    if ($m.Count -gt 0) {
+      $chars = ($m | ForEach-Object { $_.Value } | Select-Object -Unique) -join ''
+      $hits += [ordered]@{ script = $r.name; count = $m.Count; chars = $chars }
+    }
+  }
+  return $hits
+}
 
 $idx = 0
 foreach ($s in $sentences) {
@@ -166,6 +200,14 @@ foreach ($s in $sentences) {
   $isAbstain = $false
   foreach ($term in @($KW.abstain_terms)) { if ($s.Contains([string]$term)) { $isAbstain = $true; break } }
   if ($isAbstain) { $abstained++ }
+
+  # -- 5. script. a sentence in the wrong script is unreadable to the reader it
+  # was written for, whatever else it got right.
+  foreach ($hit in (Get-ScriptViolations $s)) {
+    [void]$langBad.Add([ordered]@{
+      sentence_no = $idx; script = $hit.script; count = $hit.count; chars = $hit.chars; sentence = $s
+    })
+  }
 
   # -- 2. bogus citations
   foreach ($id in $ids) {
@@ -225,7 +267,7 @@ $rate  = 0.0
 if ($total -gt 0) { $rate = [math]::Round($cited / [double]$total, 4) }
 
 $rateFail = ($total -gt 0 -and $rate -lt $MinCitationRate)
-$violations = $bogus.Count + $numBad.Count + $escalations.Count
+$violations = $bogus.Count + $numBad.Count + $escalations.Count + $langBad.Count
 if ($rateFail) { $violations++ }
 
 # ---------------------------------------------------------------- report
@@ -253,6 +295,7 @@ Write-Output ('{0,-30}  {1}' -f 'bogus citations',        $bogus.Count)
 Write-Output ('{0,-30}  {1}' -f 'number mismatches',      $numBad.Count)
 Write-Output ('{0,-30}  {1}' -f 'unknown escalations',    $escalations.Count)
 Write-Output ('{0,-30}  {1}' -f 'off-citation numbers',   $numOffCite.Count)
+Write-Output ('{0,-30}  {1}' -f 'script violations',     $langBad.Count)
 
 if ($total -eq 0) {
   Write-Section 'note'
@@ -274,6 +317,13 @@ if ($escalations.Count -gt 0) {
   Write-Section 'VIOLATION  unknown-cause outage narrated as attack (ADR-0012)'
   foreach ($b in $escalations) {
     Write-Output ('  s{0}  [{1}] via "{2}"   {3}' -f $b.sentence_no, $b.subject, $b.term, $b.sentence)
+  }
+}
+
+if ($langBad.Count -gt 0) {
+  Write-Section 'VIOLATION  text outside Korean/ASCII'
+  foreach ($b in $langBad) {
+    Write-Output ('  s{0}  {1} x{2}  [{3}]   {4}' -f $b.sentence_no, $b.script, $b.count, $b.chars, $b.sentence)
   }
 }
 
@@ -321,6 +371,7 @@ if ($OutJson) {
     bogus_citations       = @($bogus)
     number_mismatches     = @($numBad)
     unknown_escalations   = @($escalations)
+    script_violations     = @($langBad)
     off_citation_numbers  = @($numOffCite)
     citation_rate_below_min = $rateFail
     violations            = $violations

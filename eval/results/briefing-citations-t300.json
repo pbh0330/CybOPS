@@ -1,6 +1,6 @@
 {
     "check_version":  1,
-    "checked":  "2026-09-06T23:02:17.6280559+09:00",
+    "checked":  "2026-09-06T23:25:12.0497052+09:00",
     "briefing":  "analysis\\briefing\\tacnet-01-t300.ollama.brief.json",
     "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\tacnet-01-t300.pack.json",
     "prompt_version":  "briefing.ko v1",
@@ -21,6 +21,9 @@
     "unknown_escalations":  [
 
                             ],
+    "script_violations":  [
+
+                          ],
     "off_citation_numbers":  [
 
                              ],
