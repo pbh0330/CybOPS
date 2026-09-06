@@ -1,0 +1,365 @@
+{
+  "campaign_id": "RED-LLM",
+  "scenario_id": "tacnet-01",
+  "name": "적대 행위자 시뮬레이션 (llm(qwen2.5:7b-instruct-q4_K_M))",
+  "victim_entry": "CO2-VEH",
+  "generator": "ui/tools/redteam.mjs",
+  "strategy": "llm",
+  "seed": 20260906,
+  "generated": "2026-09-06T14:06:03.133Z",
+  "note": "시뮬레이션 산출이다. 실제 네트워크에 접속하거나 명령을 실행하지 않는다(ADR-0019 7항). 환경 단절은 여기 넣지 않는다 - mission.json 의 outages 가 담당한다.",
+  "metrics": {
+    "strategy": "llm",
+    "variant": "llm",
+    "turns_played": 8,
+    "mission_final": {
+      "M-C2": 0,
+      "M-FIRE": 0
+    },
+    "weighted_objective_final": 0,
+    "cumulative_weighted_objective": 1.597744,
+    "turns_to_threshold": {
+      "M-C2": {
+        "1": null,
+        "0.5": null
+      },
+      "M-FIRE": {
+        "1": null,
+        "0.5": null
+      }
+    },
+    "attempts": 8,
+    "successes": 7,
+    "success_rate": 0.875,
+    "action_distribution": {
+      "escalate": 1,
+      "lateral_move": 2,
+      "deny": 5
+    },
+    "mean_legal_moves": 9.5,
+    "greedy_agreement": 0.25,
+    "wall_ms": 24428,
+    "sec_per_turn": 3.05,
+    "llm": {
+      "model": "qwen2.5:7b-instruct-q4_K_M",
+      "temperature": 0.15,
+      "show_gain": false,
+      "calls": 8,
+      "retries": 0,
+      "invalid_id": 0,
+      "unparsable": 0,
+      "transport_error": 0,
+      "fallback_greedy": 0,
+      "latency_ms_mean": 3048,
+      "latency_ms_min": 1299,
+      "latency_ms_max": 11856
+    }
+  },
+  "steps": [
+    {
+      "t": 0,
+      "label": "정상",
+      "state": {},
+      "note": "침해 없음"
+    },
+    {
+      "t": 150,
+      "label": "권한 상승 CO2-VEH",
+      "state": {
+        "CO2-VEH": 1
+      },
+      "gt": {
+        "technique": "T1078",
+        "tactic": "privilege-escalation"
+      },
+      "note": "우선순위가 높은 M-C2 임무의 저하도를 크게 하기 위해 지휘통제 자산을 노린다."
+    },
+    {
+      "t": 210,
+      "label": "서비스 거부 CO2-VEH",
+      "state": {
+        "CO2-VEH": 1
+      },
+      "gt": {
+        "technique": "T1499",
+        "tactic": "impact"
+      },
+      "note": "지휘통제 임무의 우선순위가 높으므로, 그 임무를 저하시키기 위해 핵심 자산인 CO2-VEH를 침해합니다."
+    },
+    {
+      "t": 240,
+      "label": "측면 이동 BN-SRV",
+      "state": {
+        "CO2-VEH": 1,
+        "BN-SRV": 0.5
+      },
+      "gt": {
+        "technique": "T1021",
+        "tactic": "lateral-movement"
+      },
+      "note": "CO2-VEH의 침해 상태가 높아, BN-SRV와의 통신 경로를 차단하여 M-C2 임무의 저하도를 크게 만들 수 있습니다."
+    },
+    {
+      "t": 270,
+      "label": "서비스 거부 CO2-VEH",
+      "state": {
+        "CO2-VEH": 1,
+        "BN-SRV": 0.5
+      },
+      "gt": {
+        "technique": "T1499",
+        "tactic": "impact"
+      },
+      "note": "2중대 지휘차의 침해 상태가 최대이며, 이 자산을 통해 M-C2 임무에 중요한 자원을 노릴 수 있습니다."
+    },
+    {
+      "t": 300,
+      "label": "서비스 거부 CO2-VEH",
+      "state": {
+        "CO2-VEH": 1,
+        "BN-SRV": 0.5
+      },
+      "gt": {
+        "technique": "T1499",
+        "tactic": "impact"
+      },
+      "note": "CO2-VEH의 침해 정도가 1로 높아, 임무 M-C2 수행에 심각한 영향을 미칠 수 있음."
+    },
+    {
+      "t": 330,
+      "label": "서비스 거부 CO2-VEH",
+      "state": {
+        "CO2-VEH": 1,
+        "BN-SRV": 0.5
+      },
+      "gt": {
+        "technique": "T1499",
+        "tactic": "impact"
+      },
+      "note": "중대 지휘차의 침해 상태가 1로 높아, 임무 수행 능력 저하를 초래할 위험이 크므로 이를 차단한다."
+    },
+    {
+      "t": 360,
+      "label": "서비스 거부 CO2-VEH",
+      "state": {
+        "CO2-VEH": 1,
+        "BN-SRV": 0.5
+      },
+      "gt": {
+        "technique": "T1499",
+        "tactic": "impact"
+      },
+      "note": "CO2-VEH의 침해 정도가 1로 매우 높아, 이 자산을 통해 M-C2 임무의 저하도를 크게 증가시킬 수 있습니다."
+    }
+  ],
+  "log": [
+    {
+      "turn": 0,
+      "t": 150,
+      "action": "escalate",
+      "from": "CO2-VEH",
+      "target": "CO2-VEH",
+      "technique": "T1078",
+      "tactic": "privilege-escalation",
+      "p": 0.65,
+      "roll": 0.0628,
+      "success": true,
+      "gain": 0.107143,
+      "legal_count": 3,
+      "best_gain": 0.107143,
+      "rationale": "우선순위가 높은 M-C2 임무의 저하도를 크게 하기 위해 지휘통제 자산을 노린다.",
+      "cited": {
+        "source": "llm",
+        "model": "qwen2.5:7b-instruct-q4_K_M",
+        "target_mission": "M-C2",
+        "attempt": 0
+      },
+      "mission": {
+        "M-C2": 0.4285714285714285,
+        "M-FIRE": 0
+      }
+    },
+    {
+      "turn": 1,
+      "t": 180,
+      "action": "lateral_move",
+      "from": "CO2-VEH",
+      "target": "TOC-SRV",
+      "technique": "T1021",
+      "tactic": "lateral-movement",
+      "p": 0.6,
+      "roll": 0.6977,
+      "success": false,
+      "gain": 0.117921,
+      "legal_count": 12,
+      "best_gain": 0.160714,
+      "rationale": "CO2-VEH의 침해 상태가 높아z",
+      "cited": {
+        "source": "llm",
+        "model": "qwen2.5:7b-instruct-q4_K_M",
+        "target_mission": "M-C2",
+        "attempt": 0
+      },
+      "mission": {
+        "M-C2": 0.4285714285714285,
+        "M-FIRE": 0
+      }
+    },
+    {
+      "turn": 2,
+      "t": 210,
+      "action": "deny",
+      "from": "CO2-VEH",
+      "target": "CO2-VEH",
+      "technique": "T1499",
+      "tactic": "impact",
+      "p": 0.8,
+      "roll": 0.2586,
+      "success": true,
+      "gain": 0,
+      "legal_count": 2,
+      "best_gain": 0,
+      "rationale": "지휘통제 임무의 우선순위가 높으므로, 그 임무를 저하시키기 위해 핵심 자산인 CO2-VEH를 침해합니다.",
+      "cited": {
+        "source": "llm",
+        "model": "qwen2.5:7b-instruct-q4_K_M",
+        "target_mission": "M-C2",
+        "attempt": 0
+      },
+      "mission": {
+        "M-C2": 0.21428571428571425,
+        "M-FIRE": 0
+      }
+    },
+    {
+      "turn": 3,
+      "t": 240,
+      "action": "lateral_move",
+      "from": "CO2-VEH",
+      "target": "BN-SRV",
+      "technique": "T1021",
+      "tactic": "lateral-movement",
+      "p": 0.6,
+      "roll": 0.1627,
+      "success": true,
+      "gain": 0,
+      "legal_count": 13,
+      "best_gain": 0.5,
+      "rationale": "CO2-VEH의 침해 상태가 높아, BN-SRV와의 통신 경로를 차단하여 M-C2 임무의 저하도를 크게 만들 수 있습니다.",
+      "cited": {
+        "source": "llm",
+        "model": "qwen2.5:7b-instruct-q4_K_M",
+        "target_mission": "M-C2",
+        "attempt": 0
+      },
+      "mission": {
+        "M-C2": 0,
+        "M-FIRE": 0
+      }
+    },
+    {
+      "turn": 4,
+      "t": 270,
+      "action": "deny",
+      "from": "CO2-VEH",
+      "target": "CO2-VEH",
+      "technique": "T1499",
+      "tactic": "impact",
+      "p": 0.8,
+      "roll": 0.7878,
+      "success": true,
+      "gain": 0,
+      "legal_count": 14,
+      "best_gain": 0.5,
+      "rationale": "2중대 지휘차의 침해 상태가 최대이며, 이 자산을 통해 M-C2 임무에 중요한 자원을 노릴 수 있습니다.",
+      "cited": {
+        "source": "llm",
+        "model": "qwen2.5:7b-instruct-q4_K_M",
+        "target_mission": "M-C2",
+        "attempt": 0
+      },
+      "mission": {
+        "M-C2": 0,
+        "M-FIRE": 0
+      }
+    },
+    {
+      "turn": 5,
+      "t": 300,
+      "action": "deny",
+      "from": "CO2-VEH",
+      "target": "CO2-VEH",
+      "technique": "T1499",
+      "tactic": "impact",
+      "p": 0.8,
+      "roll": 0.044,
+      "success": true,
+      "gain": 0,
+      "legal_count": 9,
+      "best_gain": 0.263158,
+      "rationale": "CO2-VEH의 침해 정도가 1로 높아, 임무 M-C2 수행에 심각한 영향을 미칠 수 있음.",
+      "cited": {
+        "source": "llm",
+        "model": "qwen2.5:7b-instruct-q4_K_M",
+        "target_mission": "M-C2",
+        "attempt": 0
+      },
+      "mission": {
+        "M-C2": 0.2631578947368421,
+        "M-FIRE": 0
+      }
+    },
+    {
+      "turn": 6,
+      "t": 330,
+      "action": "deny",
+      "from": "CO2-VEH",
+      "target": "CO2-VEH",
+      "technique": "T1499",
+      "tactic": "impact",
+      "p": 0.8,
+      "roll": 0.3855,
+      "success": true,
+      "gain": 0,
+      "legal_count": 9,
+      "best_gain": 0.263158,
+      "rationale": "중대 지휘차의 침해 상태가 1로 높아, 임무 수행 능력 저하를 초래할 위험이 크므로 이를 차단한다.",
+      "cited": {
+        "source": "llm",
+        "model": "qwen2.5:7b-instruct-q4_K_M",
+        "target_mission": "M-C2",
+        "attempt": 0
+      },
+      "mission": {
+        "M-C2": 0.2631578947368421,
+        "M-FIRE": 0
+      }
+    },
+    {
+      "turn": 7,
+      "t": 360,
+      "action": "deny",
+      "from": "CO2-VEH",
+      "target": "CO2-VEH",
+      "technique": "T1499",
+      "tactic": "impact",
+      "p": 0.8,
+      "roll": 0.6414,
+      "success": true,
+      "gain": 0,
+      "legal_count": 14,
+      "best_gain": 0.5,
+      "rationale": "CO2-VEH의 침해 정도가 1로 매우 높아, 이 자산을 통해 M-C2 임무의 저하도를 크게 증가시킬 수 있습니다.",
+      "cited": {
+        "source": "llm",
+        "model": "qwen2.5:7b-instruct-q4_K_M",
+        "target_mission": "M-C2",
+        "attempt": 0
+      },
+      "mission": {
+        "M-C2": 0,
+        "M-FIRE": 0
+      }
+    }
+  ]
+}

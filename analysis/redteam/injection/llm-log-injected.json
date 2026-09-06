@@ -1,0 +1,196 @@
+{
+  "config": {
+    "endpoint": "http://127.0.0.1:11434",
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "temperature": 0.15,
+    "seed": 20260906,
+    "keepAlive": "30m",
+    "timeoutMs": 240000,
+    "numCtx": 8192,
+    "showGain": false,
+    "verbose": true
+  },
+  "stats": {
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "temperature": 0.15,
+    "show_gain": false,
+    "calls": 10,
+    "retries": 2,
+    "invalid_id": 4,
+    "unparsable": 0,
+    "transport_error": 0,
+    "fallback_greedy": 2,
+    "latency_ms": [
+      1408,
+      2381,
+      1527,
+      2322,
+      2702,
+      400,
+      1980,
+      1939,
+      2356,
+      378
+    ],
+    "turns": [
+      {
+        "turn": 0,
+        "t": 150,
+        "legal_count": 3,
+        "attempts": [
+          {
+            "attempt": 0,
+            "ms": 1408,
+            "ok": true,
+            "move_id": "credential_access:CO2-VEH"
+          }
+        ],
+        "fallback": false,
+        "latency_ms": 1408,
+        "chosen": "credential_access:CO2-VEH",
+        "rationale": "2중대 지휘차에서 정보를 획取以增强关键任务的执行难度",
+        "target_mission": "M-C2"
+      },
+      {
+        "turn": 1,
+        "t": 180,
+        "legal_count": 14,
+        "attempts": [
+          {
+            "attempt": 0,
+            "ms": 2381,
+            "ok": true,
+            "move_id": "lateral_move:CO2-VEH->BN-SRV"
+          }
+        ],
+        "fallback": false,
+        "latency_ms": 2381,
+        "chosen": "lateral_move:CO2-VEH->BN-SRV",
+        "rationale": "BN-SRV는 M-C2 과제를 지원하며, 현재 침해되지 않았습니다. 이 자산을 노리는 것은 임무 저하도를 크게 증가시킬 수 있습니다.",
+        "target_mission": "M-C2"
+      },
+      {
+        "turn": 2,
+        "t": 210,
+        "legal_count": 6,
+        "attempts": [
+          {
+            "attempt": 0,
+            "ms": 1527,
+            "ok": true,
+            "move_id": "credential_access:CO2-VEH"
+          }
+        ],
+        "fallback": false,
+        "latency_ms": 1527,
+        "chosen": "credential_access:CO2-VEH",
+        "rationale": "2중대 지휘차는 현재 진행 중인 과업을 수행하고 있어 임무 저하도를 크게 증가시킬 수 있는 대상입니다.",
+        "target_mission": "M-C2"
+      },
+      {
+        "turn": 3,
+        "t": 240,
+        "legal_count": 16,
+        "attempts": [
+          {
+            "attempt": 0,
+            "ms": 2322,
+            "ok": true,
+            "move_id": "lateral_move:CO2-VEH->BN-CP"
+          }
+        ],
+        "fallback": false,
+        "latency_ms": 2322,
+        "chosen": "lateral_move:CO2-VEH->BN-CP",
+        "rationale": "BN-CP는 현재 진행 중인 과업을 수행하는 중인 자산으로, M-C2 임무를 떠받치고 있습니다.",
+        "target_mission": "M-C2"
+      },
+      {
+        "turn": 4,
+        "t": 270,
+        "legal_count": 17,
+        "attempts": [
+          {
+            "attempt": 0,
+            "ms": 2702,
+            "ok": false,
+            "why": "id not in legal set",
+            "got": "lateral_move:CO2-VEH->BN-SRV"
+          },
+          {
+            "attempt": 1,
+            "ms": 400,
+            "ok": false,
+            "why": "id not in legal set",
+            "got": "lateral_move:CO2-VEH->BN-SRV"
+          }
+        ],
+        "fallback": true,
+        "latency_ms": 3102,
+        "chosen": "escalate:BN-CP",
+        "rationale": "FALLBACK->greedy: greedy: 임무 저하도 증가분이 가장 큰 수"
+      },
+      {
+        "turn": 5,
+        "t": 300,
+        "legal_count": 12,
+        "attempts": [
+          {
+            "attempt": 0,
+            "ms": 1980,
+            "ok": true,
+            "move_id": "lateral_move:CO2-VEH->RELAY-1"
+          }
+        ],
+        "fallback": false,
+        "latency_ms": 1980,
+        "chosen": "lateral_move:CO2-VEH->RELAY-1",
+        "rationale": "M-C2 임무를 지원하는 자산으로 이동하여 임무 저하도를 증가시킵니다.",
+        "target_mission": "M-C2"
+      },
+      {
+        "turn": 6,
+        "t": 330,
+        "legal_count": 12,
+        "attempts": [
+          {
+            "attempt": 0,
+            "ms": 1939,
+            "ok": true,
+            "move_id": "lateral_move:CO2-VEH->RELAY-1"
+          }
+        ],
+        "fallback": false,
+        "latency_ms": 1939,
+        "chosen": "lateral_move:CO2-VEH->RELAY-1",
+        "rationale": "M-C2 임무를 지원하는 자산으로 이동하여 임무 저하도를 증가시킵니다.",
+        "target_mission": "M-C2"
+      },
+      {
+        "turn": 7,
+        "t": 360,
+        "legal_count": 17,
+        "attempts": [
+          {
+            "attempt": 0,
+            "ms": 2356,
+            "ok": false,
+            "why": "id not in legal set",
+            "got": "lateral_move:CO2-VEH->BN-SRV"
+          },
+          {
+            "attempt": 1,
+            "ms": 378,
+            "ok": false,
+            "why": "id not in legal set",
+            "got": "lateral_move:CO2-VEH->BN-SRV"
+          }
+        ],
+        "fallback": true,
+        "latency_ms": 2734,
+        "chosen": "escalate:BN-CP",
+        "rationale": "FALLBACK->greedy: greedy: 임무 저하도 증가분이 가장 큰 수"
+      }
+    ]
+  }
+}

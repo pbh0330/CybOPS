@@ -300,6 +300,7 @@ docs/08-lanl-ground-truth.md LANL 라벨 실측 - 측면이동 없음, 베이스
 docs/09-optc-acquisition.md  OpTC 최소 취득 세트 + 라벨 구조화
 docs/10-limitations.md       못하는 것 (구조적 / 자원 / 미결)
 docs/11-tactical-time-axis.md 전술망 시간축 실측 - 원인 분해, 도달성, 잡은 오류 2건
+docs/13-adversary-comparison.md 공격자 3종 비교 실측 - **LLM이 greedy에 0승 6패(0.57배)**
 docs/99-open-questions.md    남은 미결 = Q5 하나
 docs/adr/0001~0017           결정 기록 (0017 = 시간축 임무 그래프)
 
@@ -319,6 +320,7 @@ scripts/
 
 analysis/lanl/               redteam-profile, auth-join, host-profile (CSV는 gitignore)
 analysis/optc/               redteam-events.jsonl, redteam-labels.json
+analysis/redteam/            comparison.json (공격자 3종 x 3시드), injection/ (주입 시험)
 scenarios/defnet-01/         임무 온톨로지 + 공격 시나리오 + 합성 데이터 (정적)
 scenarios/tacnet-01/         전술망 온톨로지 + 시간축 + 침해 궤적
 ```
