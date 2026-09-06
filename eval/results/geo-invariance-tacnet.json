@@ -1,0 +1,156 @@
+{
+    "generated":  "2026-09-07T00:32:44.7531776+09:00",
+    "generator":  "scripts/Test-GeoInvariance.ps1",
+    "adr":  [
+                "ADR-0001",
+                "ADR-0002"
+            ],
+    "scenario":  "tacnet-01",
+    "method":  "weighted",
+    "state":  "TOC-SRV=1.0,BN-SRV=0.6",
+    "time_points":  28,
+    "values_compared":  168,
+    "mutations":  [
+                      {
+                          "mutation":  "assets displaced 1000 km",
+                          "compared":  168,
+                          "differences":  0,
+                          "expect_difference":  false,
+                          "pass":  true,
+                          "detail":  [
+
+                                     ]
+                      },
+                      {
+                          "mutation":  "Asset.geo removed",
+                          "compared":  168,
+                          "differences":  0,
+                          "expect_difference":  false,
+                          "pass":  true,
+                          "detail":  [
+
+                                     ]
+                      },
+                      {
+                          "mutation":  "grid anchor moved to land",
+                          "compared":  168,
+                          "differences":  0,
+                          "expect_difference":  false,
+                          "pass":  true,
+                          "detail":  [
+
+                                     ]
+                      },
+                      {
+                          "mutation":  "hostile country codes injected",
+                          "compared":  168,
+                          "differences":  0,
+                          "expect_difference":  false,
+                          "pass":  true,
+                          "detail":  [
+
+                                     ]
+                      },
+                      {
+                          "mutation":  "SELFTEST: extra task added",
+                          "compared":  168,
+                          "differences":  18,
+                          "expect_difference":  true,
+                          "pass":  true,
+                          "detail":  [
+                                         {
+                                             "key":  "t0.M-C2",
+                                             "baseline":  0.37499999999999994,
+                                             "mutated":  0.6875
+                                         },
+                                         {
+                                             "key":  "t0.atk.M-C2",
+                                             "baseline":  0.37499999999999994,
+                                             "mutated":  0.6875
+                                         },
+                                         {
+                                             "key":  "t0.env.M-C2",
+                                             "baseline":  0,
+                                             "mutated":  0.5
+                                         },
+                                         {
+                                             "key":  "t15.M-C2",
+                                             "baseline":  0.37499999999999994,
+                                             "mutated":  0.6875
+                                         },
+                                         {
+                                             "key":  "t15.atk.M-C2",
+                                             "baseline":  0.37499999999999994,
+                                             "mutated":  0.6875
+                                         },
+                                         {
+                                             "key":  "t15.env.M-C2",
+                                             "baseline":  0,
+                                             "mutated":  0.5
+                                         },
+                                         {
+                                             "key":  "t30.M-C2",
+                                             "baseline":  0.37499999999999994,
+                                             "mutated":  0.6875
+                                         },
+                                         {
+                                             "key":  "t30.atk.M-C2",
+                                             "baseline":  0.37499999999999994,
+                                             "mutated":  0.6875
+                                         },
+                                         {
+                                             "key":  "t30.env.M-C2",
+                                             "baseline":  0,
+                                             "mutated":  0.5
+                                         },
+                                         {
+                                             "key":  "t45.M-C2",
+                                             "baseline":  0.37499999999999994,
+                                             "mutated":  0.6875
+                                         },
+                                         {
+                                             "key":  "t45.atk.M-C2",
+                                             "baseline":  0.37499999999999994,
+                                             "mutated":  0.6875
+                                         },
+                                         {
+                                             "key":  "t45.env.M-C2",
+                                             "baseline":  0,
+                                             "mutated":  0.5
+                                         },
+                                         {
+                                             "key":  "t60.M-C2",
+                                             "baseline":  0.37499999999999994,
+                                             "mutated":  0.6875
+                                         },
+                                         {
+                                             "key":  "t60.atk.M-C2",
+                                             "baseline":  0.37499999999999994,
+                                             "mutated":  0.6875
+                                         },
+                                         {
+                                             "key":  "t60.env.M-C2",
+                                             "baseline":  0,
+                                             "mutated":  0.5
+                                         },
+                                         {
+                                             "key":  "t75.M-C2",
+                                             "baseline":  0.37499999999999994,
+                                             "mutated":  0.6875
+                                         },
+                                         {
+                                             "key":  "t75.atk.M-C2",
+                                             "baseline":  0.37499999999999994,
+                                             "mutated":  0.6875
+                                         },
+                                         {
+                                             "key":  "t75.env.M-C2",
+                                             "baseline":  0,
+                                             "mutated":  0.5
+                                         }
+                                     ]
+                      }
+                  ],
+    "failures":  0,
+    "pass":  true
+}

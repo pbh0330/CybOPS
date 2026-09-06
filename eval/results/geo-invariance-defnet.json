@@ -1,0 +1,61 @@
+{
+    "generated":  "2026-09-07T00:32:44.9871909+09:00",
+    "generator":  "scripts/Test-GeoInvariance.ps1",
+    "adr":  [
+                "ADR-0001",
+                "ADR-0002"
+            ],
+    "scenario":  "defnet-01",
+    "method":  "weighted",
+    "state":  "DC01=1.0,DC02=0.6",
+    "time_points":  1,
+    "values_compared":  2,
+    "mutations":  [
+                      {
+                          "mutation":  "assets displaced 1000 km",
+                          "compared":  2,
+                          "differences":  0,
+                          "expect_difference":  false,
+                          "pass":  true,
+                          "detail":  [
+
+                                     ]
+                      },
+                      {
+                          "mutation":  "Asset.geo removed",
+                          "compared":  2,
+                          "differences":  0,
+                          "expect_difference":  false,
+                          "pass":  true,
+                          "detail":  [
+
+                                     ]
+                      },
+                      {
+                          "mutation":  "hostile country codes injected",
+                          "compared":  2,
+                          "differences":  0,
+                          "expect_difference":  false,
+                          "pass":  true,
+                          "detail":  [
+
+                                     ]
+                      },
+                      {
+                          "mutation":  "SELFTEST: extra task added",
+                          "compared":  2,
+                          "differences":  1,
+                          "expect_difference":  true,
+                          "pass":  true,
+                          "detail":  [
+                                         {
+                                             "key":  "t.M-C2",
+                                             "baseline":  0.47810454545454545,
+                                             "mutated":  0.652069696969697
+                                         }
+                                     ]
+                      }
+                  ],
+    "failures":  0,
+    "pass":  true
+}
