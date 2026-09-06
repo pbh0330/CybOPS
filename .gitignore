@@ -47,3 +47,9 @@ desktop.ini
 # Claude Code 로컬 설정
 .claude/settings.local.json
 CLAUDE.local.md
+
+# 무인 실행 로그는 계속 자란다. 결과 JSON만 커밋한다.
+analysis/overnight*.log
+analysis/ollama-pull-*.log
+analysis/ollama-pull-*.log.err
+analysis/briefing/compare/
