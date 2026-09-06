@@ -34,7 +34,10 @@ param(
     [int]    $IntervalSeconds = 60,
 
     # Consecutive zero-growth polls before giving up on Chrome.
-    [int]    $StallPolls = 15
+    [int]    $StallPolls = 15,
+
+    # After auth fails, how long to wait for a retry before starting AIT anyway.
+    [int]    $GraceMinutes = 45
 )
 
 $ErrorActionPreference = 'Continue'
@@ -63,12 +66,17 @@ function Get-LiveLength([string] $p) {
     }
 }
 
-$deadline = [DateTimeOffset]::FromUnixTimeSeconds($DeadlineUnix).ToLocalTime().DateTime
+# 0 means "no known deadline" - use it when Chrome holds a URL we were not given.
+$deadline = $null
+if ($DeadlineUnix -gt 0) {
+    $deadline = [DateTimeOffset]::FromUnixTimeSeconds($DeadlineUnix).ToLocalTime().DateTime
+}
 
 Log '=========================================================='
 Log '=== acquire chain start ==='
 Log ("  step 1: wait for {0} ({1:N2} GB)" -f $AuthName, ($AuthExpectedBytes/1GB))
-Log ("  url deadline {0}" -f $deadline.ToString('MM-dd HH:mm:ss'))
+if ($deadline) { Log ("  url deadline {0}" -f $deadline.ToString('MM-dd HH:mm:ss')) }
+else           { Log '  url deadline unknown (Chrome holds the link)' }
 Log '  step 2: file + verify   step 3: resume AIT'
 
 $final = Join-Path $DownloadDir $AuthName
@@ -83,6 +91,7 @@ $last = -1
 $lastTime = Get-Date
 $stall = 0
 $authOk = $false
+$tracked = $null
 
 while ($true) {
 
@@ -137,10 +146,39 @@ while ($true) {
         break
     }
 
-    $p = $parts[0]
+    # Pin the file we picked first. Downloads unrelated to auth.txt.gz can sit
+    # in the same folder, and on 2026-09-06 the auth partial collapsed from
+    # 7.62 GB and the watcher silently began tracking an abandoned 11 MB file
+    # instead - reporting "0.2%" for a download that no longer existed.
+    if ($tracked) {
+        $hit = @($parts | Where-Object { $_.Path -eq $tracked })
+        if ($hit.Count -eq 0) {
+            Log ("  tracked partial vanished: {0}" -f (Split-Path $tracked -Leaf))
+            Log '  (it either completed under another name, or Chrome discarded it)'
+            $tracked = $null
+            continue    # re-check for a finished file at the top of the loop
+        }
+        $p = $hit[0]
+    } else {
+        $p = $parts[0]
+        $tracked = $p.Path
+        Log ("  tracking {0} ({1:N0} MB)" -f (Split-Path $tracked -Leaf), ($p.Size/1MB))
+    }
+
     $now = Get-Date
     $size = $p.Size
     if ($size -lt 0) { Log '  could not stat the partial file, retrying'; Start-Sleep -Seconds $IntervalSeconds; continue }
+
+    # A large drop means Chrome restarted the transfer rather than resuming.
+    # Say so immediately instead of spending 15 polls looking "stalled".
+    if ($peak -gt 0 -and $size -lt ($peak * 0.5)) {
+        Log ("  *** RESTARTED FROM SCRATCH: {0:N0} MB, was {1:N0} MB ({2:N2}% of target) ***" -f `
+             ($size/1MB), ($peak/1MB), ($peak/$AuthExpectedBytes*100))
+        Log '  Chrome does not resume this download reliably. Prefer scripts\fetch-lanl.ps1.'
+        $peak = $size
+        $last = -1
+    }
+
     $secs = [math]::Max(1, ($now - $lastTime).TotalSeconds)
 
     if ($last -ge 0) {
@@ -160,7 +198,6 @@ while ($true) {
             $stall++
             if ($stall -ge $StallPolls) {
                 Log ("  *** STALLED: {0} polls with no growth at {1:N0} MB ***" -f $stall, ($size/1MB))
-                Log '  NOT starting AIT - keep the line free to retry auth.txt.gz.'
                 Log '  To take over: cancel the Chrome download, then run'
                 Log '    .\scripts\fetch-lanl.ps1 -Name auth.txt.gz -Url "<fresh data-fence url>"'
                 break
@@ -174,7 +211,7 @@ while ($true) {
     $last = $size
     $lastTime = $now
 
-    if ((Get-Date) -gt $deadline) {
+    if ($deadline -and (Get-Date) -gt $deadline) {
         Log '  *** URL DEADLINE PASSED - request a fresh link from csr.lanl.gov ***'
         break
     }
@@ -182,12 +219,46 @@ while ($true) {
     Start-Sleep -Seconds $IntervalSeconds
 }
 
-# ---------------------------------------------------------------- step 2
+# ---------------------------------------------------------------- step 1b
+# Grace window before giving up on auth.
+#
+# The first version of this script refused to start AIT whenever auth failed,
+# reasoning that the line should stay free for an immediate retry. On
+# 2026-09-06 auth died at 01:14 and the chain stopped at 01:26 - then nothing
+# ran for fourteen hours, because the retry needed a human who was asleep.
+# Idle bandwidth is not saved bandwidth. Wait a while for a retry, then put
+# the line to work on AIT, which is resumable and can be interrupted freely.
 if (-not $authOk) {
-    Log '=== chain stopped: auth.txt.gz not acquired. AIT not started. ==='
-    exit 1
+    Log ("=== step 1b: auth not acquired. Waiting {0} min for a retry ===" -f $GraceMinutes)
+    $graceEnd = (Get-Date).AddMinutes($GraceMinutes)
+    while ((Get-Date) -lt $graceEnd) {
+        Start-Sleep -Seconds $IntervalSeconds
+        if (Test-Path -LiteralPath $dest) {
+            if ((Get-LiveLength $dest) -ge $AuthExpectedBytes) { $authOk = $true; break }
+        }
+        $cand = @(Get-ChildItem -LiteralPath $DownloadDir -Filter 'auth*.txt.gz' -File -Force -ErrorAction SilentlyContinue |
+                  Where-Object { (Get-LiveLength $_.FullName) -eq $AuthExpectedBytes })
+        if ($cand.Count -gt 0) {
+            Move-Item -LiteralPath $cand[0].FullName -Destination $dest -Force
+            Log ('  retry finished, moved -> ' + $dest)
+            $authOk = $true
+            break
+        }
+        $growing = @(Get-ChildItem -LiteralPath $DownloadDir -Filter *.crdownload -Force -ErrorAction SilentlyContinue |
+                     Where-Object { (Get-LiveLength $_.FullName) -gt 100MB })
+        if ($growing.Count -gt 0) {
+            Log '  a large partial reappeared - a retry is running, extending the wait'
+            $graceEnd = (Get-Date).AddMinutes($GraceMinutes)
+        }
+    }
+    if (-not $authOk) {
+        Log '  no retry completed. Starting AIT so the line is not idle.'
+        Log '  auth.txt.gz still needs a fresh data-fence URL -> scripts\fetch-lanl.ps1'
+    }
 }
 
+# ---------------------------------------------------------------- step 2
+if ($authOk) {
 Log '=== step 2: integrity check ==='
 $verifier = Join-Path $Repo 'scripts\Test-GzipIntegrity.ps1'
 $vlog = Join-Path $LanlDir '_auth-verify.log'
@@ -198,18 +269,19 @@ $verifyExit = $LASTEXITCODE
 Get-Content $vlog | ForEach-Object { Log ('  ' + $_) }
 
 if ($verifyExit -ne 0) {
-    Log '=== chain stopped: auth.txt.gz FAILED integrity check. Re-download it. ==='
-    Log '  AIT not started - the line is needed for the retry.'
-    exit 1
-}
-Log '  auth.txt.gz verified. LANL cyber1 is complete (5/5).'
+    Log '  *** auth.txt.gz FAILED integrity check. It must be re-downloaded. ***'
+    Log '  Continuing to AIT anyway - a corrupt file is not a reason to idle the line.'
+} else {
+    Log '  auth.txt.gz verified. LANL cyber1 is complete (5/5).'
 
-# Park the abandoned curl fragment; it is no longer a useful seed.
-$frag = Join-Path $LanlDir 'auth.txt.gz.curl-partial'
-if (Test-Path -LiteralPath $frag) {
-    Remove-Item -LiteralPath $frag -Force
-    Log '  removed auth.txt.gz.curl-partial (no longer needed)'
+    # Park the abandoned curl fragment; it is no longer a useful seed.
+    $frag = Join-Path $LanlDir 'auth.txt.gz.curl-partial'
+    if (Test-Path -LiteralPath $frag) {
+        Remove-Item -LiteralPath $frag -Force
+        Log '  removed auth.txt.gz.curl-partial (no longer needed)'
+    }
 }
+}   # end if ($authOk)
 
 # ---------------------------------------------------------------- step 3
 Log '=== step 3: resume AIT-LDS v2.0 ==='
