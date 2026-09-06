@@ -7,7 +7,7 @@
     "step_label":  "BN-SRV 장악",
     "method":  "weighted",
     "source":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
-    "generated":  "2026-09-06T21:40:19.9149910+09:00",
+    "generated":  "2026-09-06T22:16:04.7563275+09:00",
     "facts":  [
                   {
                       "id":  "F1",
@@ -48,7 +48,7 @@
                       "id":  "F6",
                       "kind":  "outage_link",
                       "subject":  "L-SAT-TOC",
-                      "text":  "링크 L-SAT-TOC(SAT-TERM\u003c-\u003eTOC-SRV, satcom)이(가) 단절됐다. 원인 원인 미상. 비고: 신호 단절. 재밍/기상 구분 불가 - 공격으로 단정하지 않는다",
+                      "text":  "링크 L-SAT-TOC(SAT-TERM\u003c-\u003eTOC-SRV, satcom)이(가) 단절됐다. 원인 미상. 비고: 신호 단절. 재밍/기상 구분 불가 - 공격으로 단정하지 않는다",
                       "value":  1
                   },
                   {

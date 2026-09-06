@@ -128,6 +128,13 @@ foreach ($id in $factText.Keys) {
 # split after . ! ? followed by whitespace, and on newlines. the lookbehind is
 # why the prompt puts citations BEFORE the period: "52.63%" must not split.
 $normalized = $briefText -replace "`r`n", "`n"
+
+# tolerate the other convention. a model that closes a sentence with the period
+# first and the marker after it ("... 52.63%. [F2]") is citing THAT sentence,
+# not the next one; pull the marker back inside so the split does not hand the
+# citation to the following sentence and depress the rate for a formatting nit.
+$normalized = [regex]::Replace($normalized, '([.!?])[ \t]*((?:\[F\d+\])+)', '$2$1')
+
 $rawParts   = [regex]::Split($normalized, '(?<=[.!?])\s+|\n+')
 $sentences  = @()
 foreach ($p in $rawParts) {

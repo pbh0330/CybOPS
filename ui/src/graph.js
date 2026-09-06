@@ -6,39 +6,10 @@
 
 import { symbolDataUri, isVerified, unitSymbolDataUri } from './symbols.js'
 
-// Shape carries the device class, so a server and a radio relay are told apart
-// before anyone reads a label. The 2525 cyber symbols are all a box with three
-// letters inside (HST, RTR, ...), which is correct and unreadable at a glance;
-// shape is the second channel that makes the picture scannable. The symbol
-// still carries the authoritative identity (ADR-0013).
-export const SHAPE_BY_TYPE = {
-  'c2-server': 'rectangle',
-  'fire-control-server': 'rectangle',
-  'database': 'barrel',
-  'file-server': 'rectangle',
-  'mail-server': 'rectangle',
-  'web-server': 'rectangle',
-  'domain-controller': 'rectangle',
-  'hypervisor': 'cut-rectangle',
-  'workstation': 'round-rectangle',
-  'terminal': 'round-rectangle',
-  'c2-terminal': 'round-rectangle',
-  'observer-terminal': 'round-diamond',
-  'radio-relay': 'triangle',
-  'satcom-terminal': 'round-triangle',
-  'gateway': 'hexagon',
-  'switch': 'hexagon',
-  'firewall': 'octagon',
-}
-
-export const SHAPE_LEGEND = [
-  { shape: 'rectangle', label: '서버' },
-  { shape: 'round-rectangle', label: '단말' },
-  { shape: 'triangle', label: '중계' },
-  { shape: 'hexagon', label: '망 장비' },
-  { shape: 'octagon', label: '방화벽' },
-  { shape: 'barrel', label: 'DB' },
-]
+// Node shape used to carry the device class. It does not need to any more: the
+// device icon says what the machine is, and a canvas of triangles, hexagons and
+// barrels next to icons was two competing systems for one message. Every asset
+// is a rounded box now, and the icon inside it does the identifying.
 
 export const CAUSE_COLOR = {
   attack: '#e5484d',
@@ -105,7 +76,6 @@ export function buildElements(g) {
         unit: a.unit || '', unitEchelon: echelonOf[a.unit] || '',
         site: a.site || '', mobility: a.mobility || 'static',
         transit: a.transit === false ? false : true,
-        shape: SHAPE_BY_TYPE[a.type] || 'round-rectangle',
         symbol: uri || '', unitSymbol: unitUri || '',
         symbolVerified: uri ? isVerified(a.type) : false,
       },
@@ -198,29 +168,14 @@ export function stylesheet() {
     },
     {
       selector: 'node[kind="asset"]',
-      style: { 'shape': 'data(shape)', 'width': 62, 'height': 62 },
+      style: { 'shape': 'round-rectangle', 'width': 60, 'height': 60 },
     },
     {
-      // the symbol is the node, not a decoration inside it: it is drawn large
-      // and the degradation colour sits behind it at low opacity so the glyph
-      // stays legible.
-      selector: 'node[kind="asset"][symbol != ""]',
-      style: {
-        'background-image': 'data(symbol)',
-        'background-fit': 'contain',
-        'background-width': '86%',
-        'background-height': '86%',
-        'background-image-opacity': 1,
-        'background-opacity': 0.38,
-      },
-    },
-    // The owning-unit badge is applied per element (see paintSymbol in
-    // main.js), not here: cytoscape does not resolve data() mappers inside an
-    // image array, it takes them as literal strings and draws nothing.
-    {
-      // an unverified symbol code must not look like a checked one
-      selector: 'node[kind="asset"][?symbol][!symbolVerified]',
-      style: { 'border-style': 'dashed' },
+      // The device icon is painted per element (paintSymbol in main.js) so its
+      // colour can follow the state. The node fill stays low so the icon reads
+      // on top of it.
+      selector: 'node[kind="asset"]',
+      style: { 'background-opacity': 0.34 },
     },
     { selector: 'node.dim', style: { 'opacity': 0.32 } },
     // the first endpoint picked with the link tool, so it is obvious what the

@@ -8,8 +8,8 @@
 import './style.css'
 import cytoscape from 'cytoscape'
 import dagre from 'cytoscape-dagre'
-import { loadSymbology, unmappedTypes, symbolDataUriWithStatus, statusForState } from './symbols.js'
-import { buildElements, stylesheet, LAYOUTS, CAUSE_COLOR, degColor, SHAPE_LEGEND } from './graph.js'
+import { loadSymbology, unmappedTypes } from './symbols.js'
+import { buildElements, stylesheet, LAYOUTS, CAUSE_COLOR, degColor } from './graph.js'
 import { runStep, containmentCandidates } from './engine.js'
 import { createEditor } from './editor.js'
 import { deviceIconDataUri, iconSvgMarkup } from './icons.js'
@@ -392,18 +392,16 @@ function render() {
       const cause = d.kind === 'asset' ? assetOut[d.id] : null
       const hit = d.kind === 'asset' && num(s.compromise?.[d.id]) > 0
 
-      // The standard already has a way to draw "this thing is damaged": the
-      // status digit of the SIDC. Attack damage gets 3/4 (bar, cross), an
-      // outage caused by movement or terrain gets 1 (dashed frame), and an
-      // unknown-cause outage is NOT escalated to damaged (ADR-0012).
       if (d.kind === 'asset' && d.assetType) {
-        const st = statusForState({ compromise: num(s.compromise?.[d.id]), outageCause: cause })
-        paintSymbol(n, symbolDataUriWithStatus(d.assetType, st, { size: 44 }))
+        paintSymbol(n, hit ? 'attack' : cause ? 'outage' : 'ok')
       }
 
       n.style('background-color', degColor(v))
       n.style('border-color', cause ? (CAUSE_COLOR[cause] || '#2a3441') : (hit ? CAUSE_COLOR.attack : '#2a3441'))
       n.style('border-width', cause || hit ? 2.5 : 1.5)
+      // a dashed frame is the standard's way of saying "not present as planned",
+      // which is what a mobility or terrain outage is (ADR-0012)
+      n.style('border-style', cause ? 'dashed' : 'solid')
 
       const inactive = temporal && d.kind === 'task' && d.phase && !activePhases.has(d.phase)
       n.toggleClass('dim', inactive)
@@ -442,38 +440,31 @@ function startFlow() {
   flowRaf = requestAnimationFrame(tick)
 }
 
-// A node carries three pictures at once, each answering a different question:
-//   device icon  - what kind of machine is this (large, the thing you actually
-//                  recognise across the room)
-//   2525 symbol  - the standard identity, and its status marks: a diagonal bar
-//                  for attack damage, a cross for destroyed, a dashed frame for
-//                  not-deployed (ADR-0013)
-//   unit badge   - which unit owns it (X = brigade, II = battalion)
-// They go on as element styles with literal URIs: an image array in the
-// stylesheet cannot use data() mappers.
-function paintSymbol(n, symUri) {
+// One picture per node: the device icon. Stacking the 2525 symbol and a unit
+// badge on top of it turned every node into a collage, and a node you have to
+// decode is worse than one that says less.
+//
+// State therefore rides on colour, not on extra glyphs:
+//   attack      icon goes red, border red
+//   outage      icon goes grey, border the cause colour, frame dashed
+//   otherwise   icon pale, border neutral
+//
+// The 2525 identity and the owning unit are still on the node's data and show
+// in the inspector panel when a node is selected, so ADR-0013 traceability is
+// kept without paying for it on the canvas.
+function paintSymbol(n, state) {
   const d = n.data()
-  const dev = deviceIconDataUri(d.assetType, { size: 44, color: '#e6f0fb' })
-  if (symUri && symUri !== d.symbol) n.data('symbol', symUri)
-
-  const imgs = []
-  const w = []
-  const px = []
-  const py = []
-  const op = []
-  if (dev) { imgs.push(dev); w.push('62%'); px.push('50%'); py.push('42%'); op.push(1) }
-  if (symUri) { imgs.push(symUri); w.push('30%'); px.push('4%'); py.push('98%'); op.push(0.95) }
-  if (d.unitSymbol) { imgs.push(d.unitSymbol); w.push('26%'); px.push('98%'); py.push('98%'); op.push(0.7) }
-  if (!imgs.length) return
-
+  const color = state === 'attack' ? '#ffb4ba' : state === 'outage' ? '#93a6ba' : '#e6f0fb'
+  const dev = deviceIconDataUri(d.assetType, { size: 44, color })
+  if (!dev) return
   n.style({
-    'background-image': imgs,
-    'background-fit': imgs.map(() => 'contain'),
-    'background-width': w,
-    'background-height': w,
-    'background-position-x': px,
-    'background-position-y': py,
-    'background-image-opacity': op,
+    'background-image': dev,
+    'background-fit': 'contain',
+    'background-width': '64%',
+    'background-height': '64%',
+    'background-position-x': '50%',
+    'background-position-y': '50%',
+    'background-image-opacity': 1,
   })
 }
 
@@ -817,7 +808,7 @@ function renderLegend() {
     causes.map(([k, name]) => `<span class="item"><i class="dot" style="background:${CAUSE_COLOR[k]}"></i>${name}</span>`).join('') +
     '<span class="sep"></span><span class="item legend-title">자산</span>' +
     devices.map(([t, label]) => `<span class="item">${iconSvgMarkup(t, { size: 17 })}${label}</span>`).join('') +
-    '<span class="sep"></span><span class="item">색 = 저하도, 테두리 = 원인, 좌하단 2525 심볼의 사선/X = 공격 손상</span>'
+    '<span class="sep"></span><span class="item">아이콘 색: 흰=정상, <b style="color:#ffb4ba">붉음=공격</b>, 회색+점선 테두리=단절</span>'
 }
 
 function num(v) { return typeof v === 'number' ? v : Number(v || 0) }
