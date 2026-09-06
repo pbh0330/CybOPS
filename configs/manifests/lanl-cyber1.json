@@ -61,14 +61,27 @@
     },
     {
       "file": "auth.txt.gz",
-      "expected_size": "7.2G",
-      "status": "in_progress",
-      "note": "2026-09-05 21:43 기준 Chrome이 재취득 중 (약 160MB, 0.38 MB/s). 가장 중요 — 레드팀 이벤트가 인증 로그와 맞물려야 측면이동 탐지가 성립한다."
+      "bytes": 7626505158,
+      "status": "acquired",
+      "acquired_at": "2026-09-06",
+      "method": "browser (Chrome), 3차 시도에 성공",
+      "integrity": "gzip 전체 해제 성공 — CRC32 + ISIZE 검증 통과. 압축해제 73,413,019,178 B (68.37 GB). 마지막 레코드 t=5011199로 절단 없음 확인.",
+      "sha256": "9C6B0CC261B0EDD19324F6FD1839743224938A7F644ED202CA70BD70A89BF672",
+      "last_timestamp": 5011199,
+      "note": "이 데이터셋에서 가장 큰 파일이자 라벨이 붙는 유일한 파일. redteam.txt.gz 749건은 전부 auth 이벤트다.",
+      "acquisition_incidents": [
+        "1차: Chrome이 260MB에서 정체 후 실패.",
+        "2차: 7,619,951,433 B(99.91%)까지 갔다가 이어받기에 실패하고 처음부터 재시작. 6.5MB를 남기고 7.62GB를 잃었다.",
+        "3차: 성공. 소요 약 3.4시간, 평균 0.61 MB/s.",
+        "curl 동시 연결은 굶어 죽었다 — LANL은 토큰당 동시 연결을 1개만 허용하는 것으로 보인다. Range 재개 자체는 206으로 정상 지원한다."
+      ]
     }
   ],
+  "status": "complete (5/5)",
   "todo": [
-    "auth.txt.gz 취득 완료 → 전체 해제로 CRC 검증 후 SHA256 기록 (proc.txt.gz와 동일 절차)",
-    "Chrome이 또 끊기면 직접 URL로 curl 기반 취득 (scripts/fetch-ait.ps1 구조 재사용)"
+    "auth.txt.gz의 실제 레코드 수가 1,051,430,459인지 확인 (현재는 LANL 문서 인용값)",
+    "redteam 749건이 전부 auth.txt에 대응 레코드를 갖는지 — 라벨 조인 무결성",
+    "C17693이 발생시킨 정상 인증 건수 → 자명 베이스라인의 precision 상한 (docs/04-evaluation.md)"
   ],
   "temporal_coverage": {
     "note": "파일마다 커버리지가 다르다. 실험 구간을 정할 때 반드시 확인할 것. 타임스탬프는 수집 시작 이후 경과 초.",
@@ -78,7 +91,7 @@
       "dns.txt.gz":     {"first": 2,      "last": 5011199, "days": "0.00 ~ 58.00"},
       "flows.txt.gz":   {"first": 1,      "last": 3126928, "days": "0.00 ~ 36.19"},
       "redteam.txt.gz": {"first": 150885, "last": 2557047, "days": "1.75 ~ 29.60"},
-      "auth.txt.gz":    {"first": null,   "last": null,    "days": "미취득 — 확인 필요"}
+      "auth.txt.gz":    {"first": 1,      "last": 5011199, "days": "0.00 ~ 58.00"}
     },
     "implication": "레드팀 구간(1.75~29.60일)이 flows 범위(0~36.19일) 안에 완전히 들어간다. 따라서 flows가 58일을 못 덮는 것은 그라운드트루스 기반 실험에 지장이 없다. 다만 '정상만 있는 구간'을 음성 샘플로 쓸 때 29.60일 이후로 잡으면 flows는 36.19일까지만 쓸 수 있다.",
     "todo": "auth.txt.gz 취득 후 동일하게 first/last를 측정해 이 표를 채울 것."
