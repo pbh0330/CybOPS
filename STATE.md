@@ -452,7 +452,12 @@ PowerShell 참조 구현은 그대로 유지한다. 대용량 스캔은 PowerShe
 
 **남은 자잘한 것**
 - `FW01`/`SW01`이 어떤 엣지에도 연결되지 않았다 - 검증기 경고 2건 미해결
-- 전파 함수 3종(max/weighted/noisyor) 비교 → E2 (`noisyor`가 99.9%로 과하게 나온다)
+- ~~전파 함수 3종(max/weighted/noisyor) 비교 → E2~~ → **완료**.
+  `noisyor` 의심은 사실이었다(defnet DC01+DC02에서 99.9%, 입력 절반에서 이미 64.5%).
+  원인은 noisy-OR가 작업·임무 두 계층에 연달아 적용되는 것. 단조성 204/204 통과,
+  이중화는 세 방법 전부 동일(서비스 계층이 방법과 무관). **기본값 `weighted` 유지 권고.**
+  → `docs/15-propagation-functions.md`, `eval/results/propagation-comparison.json`,
+  `scripts/Compare-Propagation.ps1`
 - OCSF 매핑 스펙 - AIT `labels/` 트리 형식 확인 후 착수
 
 ---
