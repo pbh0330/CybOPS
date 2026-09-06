@@ -7,18 +7,31 @@
 | | 경로 |
 |---|---|
 | 저장소(코드·문서) | `F:\F\other_class\CybOPS` |
-| 데이터 | `F:\mc-cycop-data\raw\` |
-| 원격 | `https://github.com/pbh0330/CybOPS.git` |
+| 데이터 1순위 | `F:\mc-cycop-data\raw\` |
+| 데이터 예비 | `C:\mc-cycop-data\raw\` (F: 여유가 부족할 때만) |
+| 원격 | `git@github.com:pbh0330/CybOPS.git` — **푸시 완료** |
+
+**저장 위치는 `scripts/Get-DataRoot.ps1`이 정한다.** F: 우선, 예비 50GB를 남기고
+부족하면 C:로 넘어간다. 데이터셋을 두 볼륨에 쪼개지 않는다. 상세는
+`docs/05-data-lifecycle.md` [0] PLACE.
+
+```powershell
+.\scripts\Get-DataRoot.ps1 -Report                      # 용량 현황
+$root = .\scripts\Get-DataRoot.ps1 -Dataset optc -NeedGB 60
+```
 
 > 2026-09-05 저장소를 `C:\Users\qwert\Documents\mc-cycop`에서 옮겼다. 41개 파일 전량 이동했고
 > 구 경로는 삭제했다. 문서에 남아 있던 구 경로 참조도 정리했다.
 
-**버전 관리 시작됨.** Git 2.55.0.3 설치, `git init -b main`, 첫 커밋 완료(43개 파일).
-아직 **푸시는 안 됐다** — GitHub 자격증명 입력이 필요하다:
+**버전 관리 동작 중.** Git 2.55.0.3, `main` 브랜치, `origin/main`과 동기.
+
+인증은 **SSH 키**를 쓴다(`~/.ssh/id_ed25519_github`, `~/.ssh/config`에 github.com 항목).
+HTTPS + 비밀번호는 GitHub이 2021년 8월에 막았으므로 쓸 수 없고, 자격증명 관리자(GCM)는
+이 세션 셸에 tty가 없어 프롬프트를 띄우지 못한다. SSH는 그 두 문제를 모두 우회한다.
 
 ```powershell
 cd F:\F\other_class\CybOPS
-git push -u origin main     # 브라우저로 GitHub 로그인 창이 뜬다
+git push        # 추가 입력 없이 동작한다
 ```
 
 `.gitignore` 주의: `data/`가 아니라 `data/*`로 써야 한다. 디렉터리를 통째로 제외하면
