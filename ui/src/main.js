@@ -12,6 +12,7 @@ import { loadSymbology, unmappedTypes, symbolDataUriWithStatus, statusForState }
 import { buildElements, stylesheet, LAYOUTS, CAUSE_COLOR, degColor, SHAPE_LEGEND } from './graph.js'
 import { runStep, containmentCandidates } from './engine.js'
 import { createEditor } from './editor.js'
+import { deviceIconDataUri, iconSvgMarkup } from './icons.js'
 
 cytoscape.use(dagre)
 
@@ -441,22 +442,38 @@ function startFlow() {
   flowRaf = requestAnimationFrame(tick)
 }
 
-// Draw the asset symbol, plus the owning unit as a small badge in the corner.
-// Both go on as element styles with literal URIs: an image array in the
+// A node carries three pictures at once, each answering a different question:
+//   device icon  - what kind of machine is this (large, the thing you actually
+//                  recognise across the room)
+//   2525 symbol  - the standard identity, and its status marks: a diagonal bar
+//                  for attack damage, a cross for destroyed, a dashed frame for
+//                  not-deployed (ADR-0013)
+//   unit badge   - which unit owns it (X = brigade, II = battalion)
+// They go on as element styles with literal URIs: an image array in the
 // stylesheet cannot use data() mappers.
-function paintSymbol(n, uri) {
-  if (!uri) return
+function paintSymbol(n, symUri) {
   const d = n.data()
-  if (uri !== d.symbol) n.data('symbol', uri)
-  if (!d.unitSymbol) return
+  const dev = deviceIconDataUri(d.assetType, { size: 44, color: '#e6f0fb' })
+  if (symUri && symUri !== d.symbol) n.data('symbol', symUri)
+
+  const imgs = []
+  const w = []
+  const px = []
+  const py = []
+  const op = []
+  if (dev) { imgs.push(dev); w.push('62%'); px.push('50%'); py.push('42%'); op.push(1) }
+  if (symUri) { imgs.push(symUri); w.push('30%'); px.push('4%'); py.push('98%'); op.push(0.95) }
+  if (d.unitSymbol) { imgs.push(d.unitSymbol); w.push('26%'); px.push('98%'); py.push('98%'); op.push(0.7) }
+  if (!imgs.length) return
+
   n.style({
-    'background-image': [uri, d.unitSymbol],
-    'background-fit': ['contain', 'contain'],
-    'background-width': ['84%', '26%'],
-    'background-height': ['84%', '26%'],
-    'background-position-x': ['50%', '100%'],
-    'background-position-y': ['50%', '100%'],
-    'background-image-opacity': [1, 0.75],
+    'background-image': imgs,
+    'background-fit': imgs.map(() => 'contain'),
+    'background-width': w,
+    'background-height': w,
+    'background-position-x': px,
+    'background-position-y': py,
+    'background-image-opacity': op,
   })
 }
 
@@ -785,22 +802,22 @@ function renderLegend() {
     ['maintenance', '정비'],
     ['unknown', '미상'],
   ]
-  const shapeSvg = {
-    rectangle: '<rect x="1" y="3" width="14" height="10" />',
-    'round-rectangle': '<rect x="1" y="3" width="14" height="10" rx="3" />',
-    triangle: '<path d="M8 2 L15 14 L1 14 Z" />',
-    hexagon: '<path d="M4 3 L12 3 L15 8 L12 13 L4 13 L1 8 Z" />',
-    octagon: '<path d="M5 2 L11 2 L14 5 L14 11 L11 14 L5 14 L2 11 L2 5 Z" />',
-    barrel: '<path d="M2 4 q6 -3 12 0 v8 q-6 3 -12 0 Z" />',
-  }
+  const devices = [
+    ['c2-server', '서버'],
+    ['database', 'DB'],
+    ['c2-terminal', '단말'],
+    ['radio-relay', '중계소'],
+    ['satcom-terminal', '위성'],
+    ['gateway', '라우터'],
+    ['firewall', '방화벽'],
+    ['observer-terminal', '관측 단말'],
+  ]
   el.legend.innerHTML =
     '<span class="item legend-title">원인</span>' +
     causes.map(([k, name]) => `<span class="item"><i class="dot" style="background:${CAUSE_COLOR[k]}"></i>${name}</span>`).join('') +
     '<span class="sep"></span><span class="item legend-title">자산</span>' +
-    SHAPE_LEGEND.map((s) => `<span class="item">
-      <svg class="shape-ico" viewBox="0 0 16 16" aria-hidden="true">${shapeSvg[s.shape] || shapeSvg.rectangle}</svg>${s.label}
-    </span>`).join('') +
-    '<span class="sep"></span><span class="item">색 = 저하도, 테두리 = 원인, 심볼의 사선/X = 공격 손상</span>'
+    devices.map(([t, label]) => `<span class="item">${iconSvgMarkup(t, { size: 17 })}${label}</span>`).join('') +
+    '<span class="sep"></span><span class="item">색 = 저하도, 테두리 = 원인, 좌하단 2525 심볼의 사선/X = 공격 손상</span>'
 }
 
 function num(v) { return typeof v === 'number' ? v : Number(v || 0) }

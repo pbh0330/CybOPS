@@ -352,3 +352,7 @@ body.is-editing .layout { grid-template-columns: 210px 1fr 356px; }
   width: 13px; height: 13px;
   fill: none; stroke: var(--fg-2); stroke-width: 1.4;
 }
+
+.dev-ico { color: var(--fg-2); flex: none; }
+.palette-item .dev-ico { color: #cfe0f2; width: 26px; height: 26px; }
+.palette-item:hover .dev-ico { color: var(--accent); }

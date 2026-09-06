@@ -11,7 +11,8 @@
 // exported as a mission.json the pipeline can take back. Nothing here writes
 // to the repository.
 
-import { symbolDataUri } from './symbols.js'
+import { symbolDataUri } from './symbols.js' // eslint-disable-line no-unused-vars
+import { iconSvgMarkup } from './icons.js'
 
 // The palette. Types match configs/symbology-2525.json so a placed node gets a
 // real symbol rather than a blank box.
@@ -167,9 +168,9 @@ export function createEditor({ paletteEl, onChange, getGraph, getCy }) {
           <div class="palette-group-name">${grp.group}</div>
           <div class="palette-items">
             ${grp.items.map((it) => {
-              const uri = symbolDataUri(it.type, { size: 34 })
+              const ico = iconSvgMarkup(it.type, { size: 26 })
               return `<button type="button" class="palette-item" data-type="${it.type}" title="${it.label} (${it.type})">
-                ${uri ? `<img src="${uri}" alt="" />` : '<span class="palette-blank"></span>'}
+                ${ico || '<span class="palette-blank"></span>'}
                 <span class="palette-label">${it.label}</span>
               </button>`
             }).join('')}
