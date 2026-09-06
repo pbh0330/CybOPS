@@ -15,9 +15,15 @@
 | 데이터셋 | 우선순위 | 상태 | 전체 용량 | 라이선스 | 취득 방식 |
 |---|---|---|---|---|---|
 | AIT-LDS v2.0 | 1 | **acquiring** (russellmitchell 6.64GB) | 130.6GB (8개 zip) | CC BY-NC-SA 4.0 | Zenodo 직접 다운로드 ✅ |
-| LANL Comprehensive | 2 | **blocked-manual** | 10.7GB | **CC0** | 폼 제출 필요 ⚠️ |
-| DARPA TC | 3 | not-acquired | — | 확인 필요 | Google Drive |
-| DARPA OpTC | 4 | not-acquired | **약 1TB** | 확인 필요 | Google Drive ⚠️ |
+> **순위는 2026-09-06 전술망 확정으로 재조정됐다** ([ADR-0012](adr/0012-target-network-is-tactical.md)).
+> 아래 표의 "우선순위" 열이 갱신본이다.
+
+| 데이터셋 | 우선순위 | 상태 | 크기 | 라이선스 | 비고 |
+|---|---|---|---|---|---|
+| **DARPA OpTC** | **1** | 그라운드트루스만 취득 | 전량 약 1TB → **부분 취득** | 퍼블릭 도메인 | 피벗 연쇄 보유. E1-b의 유일한 근거. [최소 세트](09-optc-acquisition.md) |
+| **LANL Comprehensive** | **2** | ✅ **취득·검증 완료 5/5** | 11.3GB | **CC0** | 유일하게 완결된 실데이터 |
+| **AIT-LDS v2.0** | **3** | 부분 취득 중 | 130GB | CC BY-NC-SA | 기업 IT 테스트베드. 전술망 전이성 최저 |
+| DARPA TC | 4 | not-acquired | — | 확인 필요 | Google Drive |
 | Security Datasets (Mordor) | 보조 | not-acquired | 소용량 | — | GitHub |
 
 상태값: `not-acquired` / `blocked-manual` / `acquiring` / `acquired` / `distilled` / `verified` / `purged`

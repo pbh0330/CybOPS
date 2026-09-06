@@ -26,3 +26,8 @@
 | [0009](0009-evidence-citation-required.md) | LLM 응답의 근거 스팬 인용 강제 | 채택 |
 | [0010](0010-dataset-lifecycle-purge.md) | 데이터셋 원본은 임시 자원, 파생 후 삭제 | 채택 |
 | [0011](0011-lanl-labels-have-no-lateral-movement.md) | LANL 라벨로는 측면이동을 평가하지 않는다 | 채택 |
+| [0012](0012-target-network-is-tactical.md) | 대상 망은 전술망이다 | 채택 |
+| [0013](0013-adopt-mil-std-2525-symbology.md) | MIL-STD-2525 심볼 체계를 준용한다 | 채택 |
+| [0014](0014-demo-first-then-paper.md) | 산출물 1순위는 프로토타입 데모 | 채택 |
+| [0015](0015-no-human-subject-evaluation.md) | 전문가 평가 없이 계산 가능한 대조로 대체 | 채택 |
+| [0016](0016-local-gpu-llm-sizing.md) | LLM은 로컬 GPU에서 4비트 7~14B | 채택 |
