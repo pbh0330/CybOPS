@@ -1,0 +1,789 @@
+{
+  "_file": "configs/ocsf-mapping.json",
+  "_purpose": "ADR-0005가 요구한 OCSF 정규화 매핑 규칙의 기계 판독 절반. 사람이 읽는 절반은 docs/16-ocsf-mapping.md.",
+  "_pair": "docs/16-ocsf-mapping.md",
+  "schema_version": "0.1.0",
+  "generated": "2026-09-07",
+  "status": "draft",
+  "encoding": "UTF-8 (no BOM)",
+
+  "_warning": "이 파일의 OCSF 클래스 번호·속성명·열거값은 아래 pinned_commit의 스키마 원본 JSON에서 직접 확인한 것이다. 그러나 verified=true는 '그 이름이 OCSF 1.9.0에 실존한다'는 뜻일 뿐, '이 소스 필드를 그 속성에 넣는 것이 의미상 옳다'는 뜻이 아니다. 후자는 semantics_reviewed로 따로 표시한다. CLAUDE.md '인용·수치 취급 주의' 적용 대상이다.",
+
+  "flag_semantics": {
+    "verified": "OCSF 목표(class_uid / 속성명 / 열거값)가 pinned_commit의 스키마 파일에 실존함을 원문에서 확인했다. true는 웹으로 확인한 것만 붙인다.",
+    "semantics_reviewed": "이 소스 필드를 그 OCSF 속성에 넣는 것이 도메인 의미상 타당한지 사람이 검토했다. 현재 전 항목 false이며 구현 전에 채운다.",
+    "src_seen": "원본 필드를 어디서 확인했는지. file=로컬 원본 파일 실측, doc=배포처 공식 문서, none=미확인(추정)."
+  },
+
+  "ocsf": {
+    "pinned_version": "1.9.0",
+    "pinned_commit": "856d462bd20dc46cc1ffed2dfffe3b91ef0fbeba",
+    "release_published_at": "2026-08-03T14:39:07Z",
+    "verified": true,
+    "why_pinned": "클래스 번호는 버전마다 바뀔 수 있으므로 릴리스 태그가 아니라 커밋 SHA에 고정한다. GitHub의 v1.9.0은 브랜치이고 헤드가 움직일 수 있다. 태그 1.9.0과 브랜치 v1.9.0이 현재 같은 커밋(856d462b)을 가리키는 것을 확인했고, 그 커밋의 version.json이 \"1.9.0\"임을 확인했다.",
+    "raw_base_url": "https://raw.githubusercontent.com/ocsf/ocsf-schema/856d462bd20dc46cc1ffed2dfffe3b91ef0fbeba/",
+    "sources": [
+      "https://schema.ocsf.io/1.9.0/",
+      "https://github.com/ocsf/ocsf-schema",
+      "https://api.github.com/repos/ocsf/ocsf-schema/git/refs/tags/1.9.0",
+      "https://raw.githubusercontent.com/ocsf/ocsf-schema/856d462bd20dc46cc1ffed2dfffe3b91ef0fbeba/version.json"
+    ],
+    "uid_formula": {
+      "class_uid": "category_uid * 1000 + (클래스 정의 파일의 uid)",
+      "type_uid": "class_uid * 100 + activity_id",
+      "verified": true,
+      "source": "dictionary.json - type_uid 설명에 'Producers and mappers must compute this as class_uid * 100 + activity_id', class_uid 설명에 'Detection Finding is 2004'"
+    },
+    "base_event_required": {
+      "verified": true,
+      "source": "events/base_event.json",
+      "required": ["time", "class_uid", "category_uid", "type_uid", "activity_id", "severity_id", "metadata"],
+      "recommended": ["message", "observables", "status", "status_code", "status_detail", "status_id", "timezone_offset"],
+      "optional_used_here": ["enrichments", "raw_data", "unmapped", "start_time", "end_time", "count", "duration"],
+      "note": "status_id는 required가 아니라 recommended다. time은 '반드시 UTC epoch 밀리초'라고 명시되어 있다."
+    },
+    "profiles_used": {
+      "host": {
+        "verified": true,
+        "source": "profiles/host.json",
+        "note": "actor와 device를 모든 클래스에 붙인다. 설명에 'All event classes include this profile by default through the base event'라고 되어 있다. 그래도 metadata.profiles에 명시적으로 선언한다."
+      },
+      "datetime": {
+        "verified": true,
+        "source": "profiles/datetime.json",
+        "note": "timestamp_t 속성마다 RFC-3339 문자열 형제(time -> time_dt)를 추가한다. 합성 트랙의 time_iso가 가야 할 곳이다."
+      },
+      "security_control": {
+        "verified": true,
+        "source": "profiles/security_control.json",
+        "note": "action_id / disposition_id / attacks / is_alert. Suricata 경보와 방화벽 차단 로그에만 쓴다."
+      }
+    },
+    "categories": {
+      "verified": true,
+      "source": "categories.json",
+      "values": {"system": 1, "findings": 2, "iam": 3, "network": 4, "discovery": 5, "application": 6, "remediation": 7, "unmanned_systems": 8}
+    }
+  },
+
+  "classes": [
+    {
+      "caption": "File System Activity",
+      "name": "file_activity",
+      "category": "system",
+      "category_uid": 1,
+      "class_index_uid": 1,
+      "class_uid": 1001,
+      "verified": true,
+      "source": "events/system/file_activity.json",
+      "activity_id": {
+        "1": "Create", "2": "Read", "3": "Update", "4": "Delete", "5": "Rename",
+        "6": "Set Attributes", "7": "Set Security", "8": "Get Attributes", "9": "Get Security",
+        "10": "Encrypt", "11": "Decrypt", "12": "Mount", "13": "Unmount", "14": "Open",
+        "0": "Unknown (dictionary.json 기본값)", "99": "Other (dictionary.json 기본값)"
+      },
+      "key_attributes": ["file", "actor", "device", "access_mask", "create_mask", "file_diff", "file_result", "component", "connection_uid"]
+    },
+    {
+      "caption": "Process Activity",
+      "name": "process_activity",
+      "category": "system",
+      "category_uid": 1,
+      "class_index_uid": 7,
+      "class_uid": 1007,
+      "verified": true,
+      "source": "events/system/process_activity.json",
+      "activity_id": {
+        "1": "Launch", "2": "Terminate", "3": "Open", "4": "Inject", "5": "Set User ID",
+        "0": "Unknown (dictionary.json 기본값)", "99": "Other (dictionary.json 기본값)"
+      },
+      "key_attributes": ["process", "actor", "device", "exit_code", "injection_type_id", "launch_type_id", "module", "requested_permissions", "actual_permissions"]
+    },
+    {
+      "caption": "Authentication",
+      "name": "authentication",
+      "category": "iam",
+      "category_uid": 3,
+      "class_index_uid": 2,
+      "class_uid": 3002,
+      "verified": true,
+      "source": "events/iam/authentication.json",
+      "activity_id": {
+        "1": "Logon", "2": "Logoff", "3": "Authentication Ticket", "4": "Service Ticket Request",
+        "5": "Service Ticket Renew", "6": "Preauth", "7": "Account Switch",
+        "0": "Unknown (dictionary.json 기본값)", "99": "Other (dictionary.json 기본값)"
+      },
+      "key_attributes": ["user", "src_endpoint", "dst_endpoint", "service", "session", "logon_type", "logon_type_id", "auth_protocol", "auth_protocol_id", "is_remote", "is_cleartext", "is_mfa", "account_switch_type_id", "status_detail"],
+      "constraint": {
+        "at_least_one": ["service", "dst_endpoint"],
+        "verified": true,
+        "note": "user는 required다. actor가 아니다. 인증 주체를 actor.user에 넣으면 스키마 위반이다."
+      }
+    },
+    {
+      "caption": "Network Activity",
+      "name": "network_activity",
+      "category": "network",
+      "category_uid": 4,
+      "class_index_uid": 1,
+      "class_uid": 4001,
+      "verified": true,
+      "source": "events/network/network_activity.json",
+      "activity_id": {
+        "1": "Open", "2": "Close", "3": "Reset", "4": "Fail", "5": "Refuse", "6": "Traffic", "7": "Listen",
+        "0": "Unknown (dictionary.json 기본값)", "99": "Other (dictionary.json 기본값)"
+      },
+      "key_attributes": ["src_endpoint", "dst_endpoint", "connection_info", "traffic", "cumulative_traffic", "app_protocol_name", "url", "initiator_id", "observation_point_id", "tls"],
+      "constraint": {
+        "at_least_one": ["dst_endpoint", "src_endpoint"],
+        "verified": true,
+        "source": "events/network/network.json"
+      }
+    },
+    {
+      "caption": "DNS Activity",
+      "name": "dns_activity",
+      "category": "network",
+      "category_uid": 4,
+      "class_index_uid": 3,
+      "class_uid": 4003,
+      "verified": true,
+      "source": "events/network/dns_activity.json",
+      "activity_id": {
+        "1": "Query", "2": "Response", "6": "Traffic",
+        "0": "Unknown (dictionary.json 기본값)", "99": "Other (dictionary.json 기본값)"
+      },
+      "key_attributes": ["query", "answers", "authority", "rcode", "rcode_id", "opcode_id", "flag_ids", "query_time", "response_time", "transaction_id", "src_endpoint", "dst_endpoint", "connection_info", "traffic"],
+      "note": "activity_id에 3,4,5가 없다. 1,2,6만 정의되어 있다. dnsmasq의 'forwarded'는 대응 값이 없어 99로 간다."
+    },
+    {
+      "caption": "HTTP Activity",
+      "name": "http_activity",
+      "category": "network",
+      "category_uid": 4,
+      "class_index_uid": 2,
+      "class_uid": 4002,
+      "verified": true,
+      "source": "events/network/http_activity.json",
+      "activity_id_subset": {
+        "1": "Connect", "2": "Delete", "3": "Get", "4": "Head", "5": "Options",
+        "6": "Post", "7": "Put", "8": "Trace", "9": "Patch",
+        "_note": "10~40은 WebDAV 등 확장 메서드. 전체 목록은 클래스 파일 참조."
+      },
+      "key_attributes": ["http_request", "http_response", "http_status", "http_cookies", "file", "src_endpoint", "dst_endpoint"]
+    },
+    {
+      "caption": "Tunnel Activity",
+      "name": "tunnel_activity",
+      "category": "network",
+      "category_uid": 4,
+      "class_index_uid": 14,
+      "class_uid": 4014,
+      "verified": true,
+      "source": "events/network/tunnel_activity.json",
+      "activity_id": {"0": "Unknown", "1": "Open", "2": "Close", "3": "Renew", "99": "Other"},
+      "key_attributes": ["user", "src_endpoint", "dst_endpoint", "tunnel_interface", "tunnel_type_id", "session", "protocol_name", "connection_info", "traffic", "device"],
+      "tunnel_type_id": {"0": "Unknown", "1": "Split Tunnel", "2": "Full Tunnel", "99": "Other"}
+    },
+    {
+      "caption": "Email Activity",
+      "name": "email_activity",
+      "category": "network",
+      "category_uid": 4,
+      "class_index_uid": 9,
+      "class_uid": 4009,
+      "verified": true,
+      "source": "events/network/email_activity.json",
+      "note": "AIT exim4/mainlog, mail.log 대상. 이번 스펙에서는 클래스 번호만 확정하고 필드 매핑은 다음 단계로 미룬다."
+    },
+    {
+      "caption": "Detection Finding",
+      "name": "detection_finding",
+      "category": "findings",
+      "category_uid": 2,
+      "class_index_uid": 4,
+      "class_uid": 2004,
+      "verified": true,
+      "source": "events/findings/detection_finding.json",
+      "key_attributes": ["finding_info", "confidence_id", "impact_id", "risk_level_id", "evidences", "resources", "is_alert", "malware", "vulnerabilities"],
+      "note": "Suricata 경보 전용. class_uid 2004는 dictionary.json의 class_uid 설명이 예시로 직접 언급한다."
+    }
+  ],
+
+  "shared_enums": {
+    "severity_id": {
+      "verified": true, "source": "dictionary.json",
+      "values": {"0": "Unknown", "1": "Informational", "2": "Low", "3": "Medium", "4": "High", "5": "Critical", "6": "Fatal", "99": "Other"},
+      "policy": "severity_id는 소스가 제공한 값만 옮긴다. 우선순위·임무 저하도와 무관하다. 상황도 색상은 결정론 계층이 별도로 산출한다 (ADR-0003)."
+    },
+    "status_id": {
+      "verified": true, "source": "events/base_event.json",
+      "values": {"0": "Unknown", "1": "Success", "2": "Failure", "99": "Other"}
+    },
+    "logon_type_id": {
+      "verified": true, "source": "dictionary.json",
+      "values": {"0": "Unknown", "1": "System", "2": "Interactive", "3": "Network", "4": "Batch", "5": "OS Service", "7": "Unlock", "8": "Network Cleartext", "9": "New Credentials", "10": "Remote Interactive", "11": "Cached Interactive", "12": "Cached Remote Interactive", "13": "Cached Unlock", "99": "Other"},
+      "note": "6이 없다. 값이 Windows 로그온 타입에서 유래하므로 Linux 소스에 쓰면 의미가 늘어난다."
+    },
+    "auth_protocol_id": {
+      "verified": true, "source": "dictionary.json",
+      "values": {"0": "Unknown", "1": "NTLM", "2": "Kerberos", "3": "Digest", "4": "OpenID", "5": "SAML", "6": "OAUTH 2.0", "7": "PAP", "8": "CHAP", "9": "EAP", "10": "RADIUS", "11": "Basic Authentication", "12": "LDAP", "99": "Other"},
+      "note": "Windows의 Negotiate(SPNEGO)와 SSH publickey에 대응 값이 없다. 둘 다 99로 가고 auth_protocol 문자열에 원값을 남긴다."
+    },
+    "integrity_id": {
+      "verified": true, "source": "dictionary.json",
+      "values": {"0": "Unknown", "1": "Untrusted", "2": "Low", "3": "Medium", "4": "High", "5": "System", "6": "Protected", "99": "Other"}
+    },
+    "file_type_id": {
+      "verified": true, "source": "objects/file.json",
+      "values": {"0": "Unknown", "1": "Regular File", "2": "Folder", "3": "Character Device", "4": "Block Device", "5": "Local Socket", "6": "Named Pipe", "7": "Symbolic Link", "8": "Executable File", "99": "Other"}
+    },
+    "dns_rcode_id_subset": {
+      "verified": true, "source": "events/network/dns_activity.json",
+      "values": {"0": "NoError", "1": "FormError", "2": "ServError", "3": "NXDomain", "4": "NotImp", "5": "Refused", "99": "Other"}
+    },
+    "observable_type_id": {
+      "verified": true, "source": "dictionary.json (types 섹션의 observable 마커)",
+      "values": {"1": "Hostname", "2": "IP Address", "3": "MAC Address", "4": "User Name", "5": "Email Address", "6": "URL String", "7": "File Name", "8": "Hash", "9": "Process Name", "10": "Resource UID", "11": "Port", "12": "Subnet", "13": "Command Line", "14": "Country", "15": "Process ID", "16": "User Agent", "19": "Credential UID", "45": "File Path"},
+      "usage": "I 계층 엔티티 해석(IP<->호스트<->계정)의 조인 키를 observables[]에 명시적으로 싣는다. L2 임무 온톨로지 조인은 이 배열을 읽는다."
+    }
+  },
+
+  "policy": {
+    "geolocation": {
+      "adr": "ADR-0002",
+      "ocsf_home": ["src_endpoint.location.country", "dst_endpoint.location.country", "device.location.country"],
+      "verified": true,
+      "source": "objects/endpoint.json (location), objects/device.json (location), dictionary.json (country = ISO 3166-1 Alpha-2)",
+      "rule": "국가 코드만 보관한다. lat/long/city/isp는 채우지 않는다.",
+      "prohibited_consumers": ["우선순위 스코어", "임무 저하도 전파", "자산 상태 판정", "자동 대응", "경량 ML 분류기 특징 벡터", "LLM 프롬프트 컨텍스트"],
+      "enforcement": "정규화 산출물의 소비자 코드에서 location.* 접근을 금지 목록으로 관리하고, 회귀 테스트에 지오 필드를 흔들어도 결정론 계층 출력이 불변임을 확인하는 케이스를 넣는다.",
+      "note": "합성 시나리오 attack-chain.json의 geo_country: \"XX\"가 이 규칙의 첫 시험 대상이다."
+    },
+    "unmapped": {
+      "adr": "ADR-0005",
+      "rule": "OCSF에 대응이 없는 원본 필드는 버리지 않고 unmapped 객체에 원래 키 이름 그대로 보존한다. unmapped는 base_event의 optional 속성이며 실존한다.",
+      "verified": true,
+      "source": "events/base_event.json",
+      "anti_rule": "대응이 없다고 해서 비슷해 보이는 속성에 억지로 넣지 않는다. 억지 매핑은 unmapped보다 나쁘다. 다운스트림이 그 값을 표준 의미로 읽기 때문이다."
+    },
+    "raw_preservation": {
+      "rule": "원본 로그 한 줄의 문자열은 raw_data에, 원본 타임스탬프 문자열은 metadata.original_time에 보존한다.",
+      "verified": true,
+      "source": "events/base_event.json (raw_data), dictionary.json (original_time)",
+      "note": "original_time 설명이 'preserved as a pass-through string in its native format (e.g., Syslog timestamp)'라 AIT의 연도·타임존 없는 syslog 타임스탬프에 정확히 맞는다.",
+      "size_caution": "raw_data를 전량 보존하면 정규화 산출물이 원본보다 커진다. 대용량 소스(LANL auth 10.5억 행)는 raw_data를 끄고 provenance만 남긴다."
+    },
+    "provenance": {
+      "rule": "모든 이벤트는 어느 파일 어느 줄에서 나왔는지 되짚을 수 있어야 한다. AIT 라벨 조인과 ADR-0009 근거 스팬 인용이 둘 다 여기에 의존한다.",
+      "fields": {
+        "metadata.log_name": {"value": "데이터셋 루트 기준 상대 경로", "verified": true, "source": "dictionary.json"},
+        "metadata.log_provider": {"value": "apache2 | auditd | sshd | dnsmasq | openvpn | suricata | lanl-auth | lanl-proc | lanl-flows | lanl-dns | mc-cycop-synth", "verified": true, "source": "dictionary.json"},
+        "metadata.uid": {"value": "<log_name>#<1-based line number> 또는 원본 이벤트 id", "verified": true, "source": "objects/metadata.json"},
+        "unmapped.src_line": {"value": "1-based 줄 번호(정수)", "verified": false, "reason": "OCSF에 '원본 줄 번호' 속성이 없다. metadata.uid 문자열에 섞어 넣으면 정수 비교 조인이 깨지므로 정수로도 따로 남긴다."}
+      }
+    },
+    "one_line_one_event": {
+      "rule": "원본 로그 한 줄은 OCSF 이벤트 하나로만 정규화한다. 한 줄이 두 클래스에 걸치면(예: sudo 한 줄이 계정 전환이자 프로세스 실행) 주 클래스를 하나 고르고 나머지는 unmapped에 남긴다.",
+      "why": "라벨이 줄 단위(AIT)이거나 행 단위(LANL redteam)이므로 1:N으로 늘리면 라벨 조인이 중복 계상된다. docs/08의 '중복 34줄로 4.5% 과다 계상' 사고와 같은 종류의 함정이다.",
+      "exception": "Suricata eve.json은 한 줄이 이미 하나의 event_type이므로 해당 없음."
+    },
+    "time_anchor": {
+      "rule": "OCSF time은 UTC epoch 밀리초가 필수다. 상대 시각만 있는 소스는 앵커를 명시적으로 주입하고 그 앵커를 산출물 메타에 기록한다.",
+      "verified": true,
+      "source": "events/base_event.json (time 설명: 'must be a UTC epoch value in milliseconds')",
+      "per_source": {
+        "lanl-cyber1": {"origin": "미상. LANL이 실제 수집 시점을 비공개로 유지한다", "anchor_policy": "합성 앵커 1970-01-01T00:00:00Z + t초. 절대 시각처럼 인용하지 않는다."},
+        "ait-lds-v2": {"origin": "실제 시각 있음(2022-01 구간). auditd는 epoch, syslog 계열은 연도·타임존 없음", "anchor_policy": "테스트베드 타임존 UTC 가정 + 파일별 연도 추정. 추정 근거를 metadata.labels에 기록."},
+        "synthetic-defnet-01": {"origin": "생성기가 2026-09-01T08:00:00을 기점으로 부여", "anchor_policy": "생성기 값 그대로. 타임존 표기가 없으므로 UTC로 고정한다."}
+      }
+    },
+    "labels": {
+      "rule": "그라운드트루스 라벨은 이벤트 본문이 아니라 별도 사이드카 파일에 유지한다. 정규화 이벤트에는 조인 키만 둔다.",
+      "why": "라벨을 이벤트에 인라인하면 탐지기 학습 시 라벨 누출 경로가 생긴다. ADR-0008/docs/08의 '자명 베이스라인' 문제와 겹치면 지표가 무의미해진다.",
+      "attack_labels": {
+        "ocsf_home": "attacks[] (security_control 프로파일), attack.technique.uid / attack.tactic.uid",
+        "verified": true,
+        "source": "profiles/security_control.json, objects/attack.json, objects/technique.json",
+        "restriction": "ATT&CK ID가 원본에 실제로 있는 경우에만 채운다. AIT 라벨 어휘(attacker_change_user, escalate, dnsteal, foothold)는 ATT&CK ID가 아니므로 자동 변환하지 않는다. 사람이 매핑표를 만들기 전까지는 metadata.labels에 원문 그대로 둔다."
+      },
+      "metadata_labels": {"verified": true, "source": "dictionary.json (labels: string_t array)"}
+    },
+    "llm_boundary": {
+      "adr": "ADR-0003",
+      "rule": "정규화 계층에 LLM을 넣지 않는다. 필드 매핑, 열거값 변환, 클래스 판별은 전부 규칙 테이블이다. LLM이 class_uid나 activity_id를 고르는 경로를 만들지 않는다.",
+      "why": "정규화 결과가 결정론 계층의 입력이다. 여기에 비결정성이 들어오면 감사 추적성이 그 지점에서 끊긴다."
+    },
+    "prompt_injection": {
+      "adr": "docs/00-architecture.md N 계층",
+      "rule": "process.cmd_line, file.path, http_request.user_agent, http_request.url, dns query.hostname, message는 공격자가 내용을 통제하는 필드다. LLM 컨텍스트에 실을 때 신뢰 불가 데이터로 감싼다.",
+      "example": "AIT dnsmasq 질의명에 base32 유사 페이로드가 그대로 들어 있다. 실측 확인함."
+    }
+  },
+
+  "sources": {
+    "synthetic-defnet-01": {
+      "path": "scenarios/defnet-01/synthetic/events.jsonl",
+      "generator": "scripts/New-SyntheticTelemetry.ps1",
+      "records": 8012,
+      "src_seen": "file",
+      "role": "OCSF 형태의 참조 구현. 실데이터가 기준이므로 어긋나면 합성 쪽을 고친다 (docs/07 7절).",
+      "conformance_gaps": [
+        {"issue": "category_uid 없음", "severity": "required 위반", "fix": "class_uid / 1000의 몫", "owner": "scripts/New-SyntheticTelemetry.ps1 (이번 스펙에서 수정하지 않음)"},
+        {"issue": "type_uid 없음", "severity": "required 위반", "fix": "class_uid * 100 + activity_id"},
+        {"issue": "activity_id 없음", "severity": "required 위반", "fix": "아래 스트림별 매핑표의 activity_id 규칙"},
+        {"issue": "event_uid는 OCSF 속성이 아니다", "severity": "비표준 최상위 키", "fix": "metadata.uid로 이동"},
+        {"issue": "time_iso는 OCSF 속성이 아니다", "severity": "비표준 최상위 키", "fix": "datetime 프로파일의 time_dt로 이동. 다만 현재 값에 타임존 지정자가 없어 RFC-3339가 아니다. Z를 붙여야 한다."},
+        {"issue": "metadata.version이 '1.1.0'", "severity": "버전 불일치", "fix": "'1.9.0'"},
+        {"issue": "Authentication(3002) 이벤트가 인증 주체를 actor.user에 넣는다", "severity": "스키마 위반", "fix": "user로 옮긴다. authentication 클래스에서 user는 required, actor는 host 프로파일의 optional이다."},
+        {"issue": "Authentication에 service도 dst_endpoint도 없다", "severity": "constraint at_least_one 위반", "fix": "dst_endpoint.hostname = 현재 device.hostname 값"},
+        {"issue": "status_id 없음", "severity": "recommended 누락", "fix": "unmapped.result 문자열에서 유도"},
+        {"issue": "metadata.profiles 선언 없음", "severity": "권고 누락", "fix": "[\"host\", \"datetime\"] 선언"}
+      ],
+      "streams": [
+        {
+          "stream": "process",
+          "class_uid": 1007,
+          "activity_id_rule": {"default": 1, "note": "생성기가 'process started'만 만든다. Terminate 이벤트가 없다.", "verified": true},
+          "fields": [
+            {"src": "unmapped.process_name", "ocsf": "process.name", "verified": true, "source": "objects/process_entity.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "unmapped.pid", "ocsf": "process.pid", "verified": true, "source": "objects/process_entity.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "unmapped.cmdline", "ocsf": "process.cmd_line", "verified": true, "source": "objects/process_entity.json", "src_seen": "file", "semantics_reviewed": false, "note": "공격 체인 이벤트에만 존재"},
+            {"src": "unmapped.integrity", "ocsf": "process.integrity + process.integrity_id", "transform": "medium->3, high->4, system->5", "verified": true, "source": "objects/process.json, dictionary.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "unmapped.parent", "ocsf": "process.parent_process.name", "verified": true, "source": "objects/process.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "device.hostname", "ocsf": "device.hostname", "verified": true, "source": "objects/device.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "actor.user.name", "ocsf": "actor.user.name", "verified": true, "source": "profiles/host.json, objects/user.json", "src_seen": "file", "semantics_reviewed": false}
+          ],
+          "unmapped": [
+            {"src": "unmapped.target", "reason": "'lsass.exe' 같은 대상 프로세스. 의미상 activity_id 3(Open)으로 재모델링하면 process=대상, actor.process=주체가 되지만 생성기가 activity를 Launch로 고정해 두어 현재 형태로는 대응 속성이 없다. 재모델링은 생성기 수정 사안이다."}
+          ]
+        },
+        {
+          "stream": "file",
+          "class_uid": 1001,
+          "activity_id_rule": {"map": {"read": 2, "write": 3}, "verified": true, "note": "'write'를 Update(3)로 볼지 Create(1)로 볼지는 원본만으로 결정 불가. 3으로 고정하고 손실 목록에 적는다."},
+          "fields": [
+            {"src": "unmapped.path", "ocsf": "file.path", "verified": true, "source": "objects/file.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "unmapped.path (basename)", "ocsf": "file.name", "verified": true, "source": "objects/file.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "(고정)", "ocsf": "file.type_id = 1 (Regular File)", "verified": true, "source": "objects/file.json", "src_seen": "none", "semantics_reviewed": false, "note": "원본에 파일 종류 정보가 없다. 추정값이므로 고정 주입임을 산출물에 표시한다."},
+            {"src": "unmapped.size_bytes", "ocsf": "file.size", "verified": true, "source": "objects/file.json", "src_seen": "file", "semantics_reviewed": false}
+          ],
+          "unmapped": []
+        },
+        {
+          "stream": "auth",
+          "class_uid": 3002,
+          "activity_id_rule": {"default": 1, "note": "생성기가 'logon success'만 만든다.", "verified": true},
+          "fields": [
+            {"src": "actor.user.name", "ocsf": "user.name", "verified": true, "source": "events/iam/authentication.json", "src_seen": "file", "semantics_reviewed": false, "note": "위치 이동이 필요한 항목. actor.user가 아니라 user다."},
+            {"src": "unmapped.src_host", "ocsf": "src_endpoint.hostname", "verified": true, "source": "objects/endpoint.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "device.hostname", "ocsf": "dst_endpoint.hostname", "verified": true, "source": "objects/endpoint.json", "src_seen": "file", "semantics_reviewed": false, "note": "at_least_one(service, dst_endpoint) 제약을 이것으로 만족시킨다."},
+            {"src": "unmapped.logon_type", "ocsf": "logon_type + logon_type_id", "transform": "interactive->2, network->3, service->5", "verified": true, "source": "dictionary.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "unmapped.result", "ocsf": "status_id", "transform": "success->1, failure->2", "verified": true, "source": "events/base_event.json", "src_seen": "file", "semantics_reviewed": false}
+          ],
+          "unmapped": []
+        },
+        {
+          "stream": "network",
+          "class_uid": 4001,
+          "activity_id_rule": {"default": 6, "note": "Traffic. 생성기는 플로우 요약만 만들고 연결 개시/종료를 구분하지 않는다.", "verified": true},
+          "fields": [
+            {"src": "device.hostname", "ocsf": "src_endpoint.hostname", "verified": true, "source": "objects/endpoint.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "unmapped.dst_host", "ocsf": "dst_endpoint.hostname (호스트명일 때) / dst_endpoint.ip (IP 문자열일 때)", "verified": true, "source": "objects/endpoint.json", "src_seen": "file", "semantics_reviewed": false, "note": "공격 체인의 '203.0.113.44'는 IP다. 같은 필드에 두 종류가 섞여 있으므로 판별 규칙이 필요하다."},
+            {"src": "unmapped.dst_port", "ocsf": "dst_endpoint.port", "verified": true, "source": "objects/network_endpoint.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "unmapped.bytes_out", "ocsf": "traffic.bytes_out", "verified": true, "source": "objects/network_traffic.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "unmapped.bytes_in", "ocsf": "traffic.bytes_in", "verified": true, "source": "objects/network_traffic.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "unmapped.geo_country", "ocsf": "dst_endpoint.location.country", "verified": true, "source": "objects/endpoint.json, objects/location.json", "src_seen": "file", "semantics_reviewed": false, "adr": "ADR-0002", "note": "보관만 한다. 판단 경로 금지."}
+          ],
+          "unmapped": [
+            {"src": "unmapped.interval_sec", "reason": "비콘 주기(초). OCSF에 주기성/비콘 간격 속성이 없다. connection_info에도 traffic에도 대응이 없다. 이것은 단일 이벤트 속성이 아니라 이벤트 열의 통계량이므로 정규화 계층이 아니라 결정론 계층의 파생 특징으로 다뤄야 한다."},
+            {"src": "unmapped.distinct_targets", "reason": "고유 목적지 수. base_event의 count는 '집계된 이벤트 수'이지 '고유 대상 수'가 아니다. 의미가 달라 억지로 넣으면 다운스트림이 오독한다. 스캔 폭은 결정론 계층에서 재계산한다."},
+            {"src": "unmapped.victim_entry", "reason": "시나리오 서술용 메타. 텔레메트리가 아니다."}
+          ]
+        }
+      ],
+      "labels_file": {
+        "path": "scenarios/defnet-01/synthetic/labels.jsonl",
+        "join_key": "event_uid",
+        "fields": {
+          "technique": {"ocsf": "attacks[].technique.uid", "verified": true, "source": "objects/technique.json"},
+          "tactic": {"ocsf": "attacks[].tactic.uid", "verified": true, "source": "objects/attack.json"},
+          "campaign": {"ocsf": "metadata.correlation_uid", "verified": true, "source": "objects/metadata.json", "semantics_reviewed": false, "note": "OCSF에 캠페인 전용 속성이 없다. correlation_uid는 '상관 식별자'라 근사치다."},
+          "stage": {"ocsf": null, "verified": false, "reason": "공격 단계(킬체인 스텝) 이름. finding_info.kill_chain은 Detection Finding 전용이라 텔레메트리 이벤트에 붙일 수 없다. metadata.labels에 문자열로 남긴다."}
+        }
+      }
+    },
+
+    "lanl-cyber1": {
+      "path": "F:\\mc-cycop-data\\raw\\lanl-cyber1",
+      "manifest": "configs/manifests/lanl-cyber1.json",
+      "format": "gzip CSV, 헤더 없음",
+      "src_seen": "file + doc",
+      "src_doc": "https://csr.lanl.gov/data/cyber1/",
+      "records_doc": 1648275307,
+      "deidentification": {
+        "note": "이 데이터셋의 정규화 난점 전부가 여기서 나온다. LANL 문서 원문: 'All other users, computers, process, ports, times, and other details were de-identified as a unified set across all the data elements'.",
+        "consequences": [
+          "IP 주소가 아예 없다. 호스트는 C###, 계정은 U###@DOM1, 프로세스는 P###, 포트는 N#### 형태의 가명이다.",
+          "예외: 잘 알려진 시스템 계정(SYSTEM, Local Service)과 잘 알려진 포트(80, 443 등)는 가명화하지 않았다. 즉 한 필드 안에 가명과 실값이 섞여 있다.",
+          "시각은 수집 시작 이후 경과 초이고 실제 시점은 비공개다."
+        ]
+      },
+      "streams": [
+        {
+          "stream": "auth.txt",
+          "class_uid": 3002,
+          "columns": ["time", "src_user@domain", "dst_user@domain", "src_computer", "dst_computer", "auth_type", "logon_type", "auth_orientation", "success/failure"],
+          "columns_verified": true,
+          "columns_source": "https://csr.lanl.gov/data/cyber1/ 개별 파일 설명 + 로컬 auth.txt.gz 선두 행 실측",
+          "null_token": "?",
+          "fields": [
+            {"src": "time", "ocsf": "time", "transform": "(t + anchor_epoch_s) * 1000", "verified": true, "source": "events/base_event.json", "src_seen": "file", "semantics_reviewed": false, "caution": "앵커는 임의값이다. 절대 시각으로 인용 금지."},
+            {"src": "time", "ocsf": "metadata.original_time", "transform": "원값 문자열 그대로", "verified": true, "source": "dictionary.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "src_user@domain", "ocsf": "actor.user.name + actor.user.domain", "transform": "'@' 기준 분리", "verified": true, "source": "objects/user.json", "src_seen": "file", "semantics_reviewed": false, "caution": "도메인 자리에 컴퓨터 id가 오는 경우가 있다 (예: U1723@C1759). user.domain에 호스트가 들어간다."},
+            {"src": "dst_user@domain", "ocsf": "user.name + user.domain", "verified": true, "source": "events/iam/authentication.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "src_computer", "ocsf": "src_endpoint.hostname", "verified": true, "source": "objects/endpoint.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "dst_computer", "ocsf": "dst_endpoint.hostname", "verified": true, "source": "objects/endpoint.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "auth_type", "ocsf": "auth_protocol + auth_protocol_id", "transform": "NTLM->1, Kerberos->2, Negotiate->99(+auth_protocol='Negotiate'), ?->0", "verified": true, "source": "dictionary.json", "src_seen": "file", "semantics_reviewed": false, "measured_values": {"Negotiate": 20040, "Kerberos": 18386, "NTLM": 2676, "?": 7094}, "measured_on": "analysis/lanl/auth-rtsrc-hosts.csv (48,196행 슬라이스)"},
+            {"src": "logon_type", "ocsf": "logon_type + logon_type_id", "transform": "Interactive->2, Network->3, Batch->4, Service->5, Unlock->7, NetworkCleartext->8, NewCredentials->9, RemoteInteractive->10, CachedInteractive->11, ?->0", "verified": true, "source": "dictionary.json", "src_seen": "file", "semantics_reviewed": false, "measured_values": {"Network": 21814, "Service": 19811, "?": 6250, "Interactive": 98, "Unlock": 94, "RemoteInteractive": 46, "NewCredentials": 44, "CachedInteractive": 39}, "measured_on": "analysis/lanl/auth-rtsrc-hosts.csv"},
+            {"src": "auth_orientation", "ocsf": "activity_id", "transform": "LogOn->1, LogOff->2, TGT->3, TGS->4, AuthMap->99, ScreenLock->99, ScreenUnlock->99", "verified": true, "source": "events/iam/authentication.json", "src_seen": "file", "semantics_reviewed": false, "measured_values": {"LogOn": 41131, "TGS": 5435, "LogOff": 844, "TGT": 660, "AuthMap": 100, "ScreenLock": 17, "ScreenUnlock": 9}, "measured_on": "analysis/lanl/auth-rtsrc-hosts.csv", "caution": "7개 중 3개가 99로 간다. activity_name에 원값을 반드시 남긴다."},
+            {"src": "success/failure", "ocsf": "status_id", "transform": "Success->1, Fail->2", "verified": true, "source": "events/base_event.json", "src_seen": "file", "semantics_reviewed": false, "measured_values": {"Success": 47625, "Fail": 571}}
+          ],
+          "unmapped": [
+            {"src": "(전 필드의 가명성)", "reason": "OCSF에 '이 식별자는 가명이다'를 표시하는 속성이 없다. user.name에 U620@DOM1을 넣으면 다운스트림은 실제 계정명으로 읽는다. 프로젝트 규약으로 metadata.labels에 'pseudonymized'를 붙이고, 엔티티 해석기가 이 라벨을 보면 외부 자산 대장 조인을 시도하지 않도록 한다."},
+            {"src": "(IP 부재)", "reason": "src_endpoint.ip / dst_endpoint.ip를 채울 값이 원본에 없다. docs/00의 I 계층 필수 기능인 'IP <-> 호스트 <-> 계정 통합'이 LANL에서는 성립하지 않는다. 호스트 id만으로 조인한다."},
+            {"src": "auth_orientation=AuthMap", "reason": "Windows 인증 매핑 이벤트. OCSF activity_id에 대응 값이 없다."},
+            {"src": "auth_orientation=ScreenLock/ScreenUnlock", "reason": "화면 잠금/해제. logon_type_id에 Unlock(7)이 있지만 그것은 로그온 종류이지 활동이 아니다. 활동 축에는 대응이 없다."}
+          ]
+        },
+        {
+          "stream": "proc.txt",
+          "class_uid": 1007,
+          "columns": ["time", "user@domain", "computer", "process_name", "start/end"],
+          "columns_verified": true,
+          "columns_source": "https://csr.lanl.gov/data/cyber1/ + 로컬 실측 (1,C1$@DOM1,C1,P16,Start)",
+          "fields": [
+            {"src": "time", "ocsf": "time", "transform": "앵커 + t", "verified": true, "source": "events/base_event.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "user@domain", "ocsf": "actor.user.name + actor.user.domain", "verified": true, "source": "objects/user.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "computer", "ocsf": "device.hostname", "verified": true, "source": "objects/device.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "process_name", "ocsf": "process.name", "verified": true, "source": "objects/process_entity.json", "src_seen": "file", "semantics_reviewed": false, "caution": "P16 같은 가명이다. 실행 파일명이 아니다."},
+            {"src": "start/end", "ocsf": "activity_id", "transform": "Start->1(Launch), End->2(Terminate)", "verified": true, "source": "events/system/process_activity.json", "src_seen": "file", "semantics_reviewed": false}
+          ],
+          "unmapped": [
+            {"src": "(pid 부재)", "reason": "process.pid를 채울 값이 없다. 같은 호스트에서 같은 프로세스가 여러 번 뜨면 인스턴스를 구분할 수 없다. 부모-자식 계보(process.parent_process) 복원이 불가능하다."},
+            {"src": "(cmd_line 부재)", "reason": "process.cmd_line이 비어 있다. ATT&CK 기법 판별의 주 근거가 커맨드라인인데 그것이 없다. LANL로 프로세스 기반 기법 매핑을 하겠다는 계획은 성립하지 않는다."},
+            {"src": "(파일 경로 부재)", "reason": "process.file.path가 없다. 실행 위치 기반 탐지 불가."}
+          ]
+        },
+        {
+          "stream": "flows.txt",
+          "class_uid": 4001,
+          "columns": ["time", "duration", "src_computer", "src_port", "dst_computer", "dst_port", "protocol", "packet_count", "byte_count"],
+          "columns_verified": true,
+          "columns_source": "https://csr.lanl.gov/data/cyber1/ + 로컬 실측 (1,0,C1065,389,C3799,N10451,6,10,5323)",
+          "activity_id_rule": {"default": 6, "note": "Traffic. 플로우 요약이므로 Open/Close를 알 수 없다.", "verified": true},
+          "fields": [
+            {"src": "time", "ocsf": "time", "transform": "앵커 + t", "verified": true, "source": "events/base_event.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "duration", "ocsf": "duration", "transform": "초 -> 밀리초 (x1000)", "verified": true, "source": "events/base_event.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "src_computer", "ocsf": "src_endpoint.hostname", "verified": true, "source": "objects/endpoint.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "dst_computer", "ocsf": "dst_endpoint.hostname", "verified": true, "source": "objects/endpoint.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "src_port", "ocsf": "src_endpoint.port", "transform": "숫자일 때만. N 접두 가명은 매핑하지 않는다.", "verified": true, "source": "objects/network_endpoint.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "dst_port", "ocsf": "dst_endpoint.port", "transform": "숫자일 때만", "verified": true, "source": "objects/network_endpoint.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "protocol", "ocsf": "connection_info.protocol_num", "verified": true, "source": "objects/network_connection_info.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "packet_count", "ocsf": "traffic.packets", "verified": true, "source": "objects/network_traffic.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "byte_count", "ocsf": "traffic.bytes", "verified": true, "source": "objects/network_traffic.json", "src_seen": "file", "semantics_reviewed": false}
+          ],
+          "unmapped": [
+            {"src": "src_port / dst_port 의 'N####' 값", "reason": "OCSF port는 port_t(정수형)다. 'N10451'은 정수가 아니므로 타입 위반이다. 억지로 10451로 잘라 넣으면 실제 포트 10451과 구별할 수 없게 되어 다운스트림이 오독한다. unmapped.src_port_raw / unmapped.dst_port_raw에 원문자열로 보존하고 port는 null로 둔다. 잘 알려진 포트(80, 443, 389 등)만 정수로 채워진다."},
+            {"src": "(방향 정보 부재)", "reason": "connection_info.direction_id를 결정할 근거가 없다. 라우터 관측이라 내부/외부 경계 판정도 불가(boundary_id)."},
+            {"src": "(바이트 방향 분해 부재)", "reason": "byte_count는 총합이다. traffic.bytes에는 넣을 수 있지만 bytes_in/bytes_out으로 쪼갤 수 없다."}
+          ]
+        },
+        {
+          "stream": "dns.txt",
+          "class_uid": 4003,
+          "columns": ["time", "src_computer", "computer_resolved"],
+          "columns_verified": true,
+          "columns_source": "https://csr.lanl.gov/data/cyber1/ + 로컬 실측 (2,C4653,C5030)",
+          "activity_id_rule": {"default": 1, "note": "Query. 응답 정보가 없으므로 Response(2)를 만들 수 없다.", "verified": true},
+          "fields": [
+            {"src": "time", "ocsf": "time", "transform": "앵커 + t", "verified": true, "source": "events/base_event.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "src_computer", "ocsf": "src_endpoint.hostname", "verified": true, "source": "objects/endpoint.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "computer_resolved", "ocsf": "query.hostname", "verified": true, "source": "objects/dns_query.json", "src_seen": "file", "semantics_reviewed": false, "caution": "도메인명이 아니라 해석된 컴퓨터의 가명이다. query.hostname이 hostname_t라 타입은 맞지만 의미가 다르다."}
+          ],
+          "unmapped": [
+            {"src": "(질의명 부재)", "reason": "실제 질의 도메인 문자열이 없다. DGA 탐지, DNS 터널링 탐지, 도메인 평판 조회가 전부 불가능하다. AIT의 dnsteal 시나리오 같은 것을 LANL에서 재현할 수 없다."},
+            {"src": "(rrtype/rcode/answers 부재)", "reason": "query.type, rcode_id, answers[]를 채울 값이 없다. NXDomain 급증 같은 기본 신호도 못 만든다."},
+            {"src": "(DNS 서버 부재)", "reason": "dst_endpoint(어느 DNS 서버가 처리했는지)가 없다."}
+          ]
+        },
+        {
+          "stream": "redteam.txt",
+          "class_uid": null,
+          "role": "라벨. OCSF 이벤트로 정규화하지 않는다.",
+          "columns": ["time", "user@domain", "src_computer", "dst_computer"],
+          "columns_verified": true,
+          "columns_source": "https://csr.lanl.gov/data/cyber1/ + 로컬 실측",
+          "join": {
+            "target_stream": "auth.txt",
+            "default_key": ["time", "user@domain", "src_computer", "dst_computer"],
+            "default_key_match": "701 / 715",
+            "alt_key": ["time", "user@domain", "src_computer"],
+            "alt_key_match": "715 / 715",
+            "chosen": "4필드",
+            "why": "3필드를 쓰면 14건이 목적지가 다른 행에 붙어 dst_endpoint 기반 특징에 잘못된 학습 신호를 준다. 근거는 docs/08-lanl-ground-truth.md 3.5절.",
+            "dedup": "원본 749줄 중 34줄이 (시각, 계정, 출발지, 목적지) 기준 중복이다. 고유 715건을 쓴다."
+          },
+          "ocsf_target": {"field": "사이드카 라벨 파일", "note": "attacks[]를 쓰지 않는다. LANL 라벨에는 ATT&CK 기법 id가 없다."}
+        }
+      ]
+    },
+
+    "ait-lds-v2": {
+      "path": "F:\\mc-cycop-data\\raw\\ait-lds-v2\\russellmitchell.zip",
+      "manifest": "configs/manifests/ait-lds-v2.json",
+      "scope": "8개 테스트베드 중 russellmitchell 1개만 (ADR-0012, ADR-0014)",
+      "src_seen": "file",
+      "src_note": "zip을 해제하지 않고 엔트리 스트림으로 직접 표본을 읽어 확인했다. 원본 무수정 (CLAUDE.md 작업 규칙).",
+      "hosts": ["attacker_0", "cloud_share", "davey_mail", "ext_user_0..2", "inet-dns", "inet-firewall", "internal_employee_0..3", "internal_share", "intranet_server", "mail", "monitoring", "morris_mail", "remote_employee_0..2", "vpn", "webserver"],
+      "labels": {
+        "tree": "labels/<host>/logs/<원본과 동일한 상대 경로>",
+        "format": "JSON Lines. {\"line\": <1-based 줄번호>, \"labels\": [문자열...], \"rules\": {라벨: [규칙 id...]}}",
+        "verified": true,
+        "src_seen": "file",
+        "example": "{\"line\": 145, \"labels\": [\"attacker_change_user\", \"escalate\"], \"rules\": {\"escalate\": [\"attacker.escalate.su.login\"]}}",
+        "covered_files": [
+          "labels/inet-firewall/logs/dnsmasq.log",
+          "labels/internal_share/logs/audit/audit.log",
+          "labels/intranet_server/logs/apache2/intranet.smith.russellmitchell.com-access.log.N",
+          "labels/intranet_server/logs/apache2/intranet.smith.russellmitchell.com-error.log.N",
+          "labels/intranet_server/logs/audit/audit.log",
+          "labels/intranet_server/logs/auth.log",
+          "labels/monitoring/logs/logstash/intranet-server/DATE-system.cpu.log",
+          "labels/vpn/logs/openvpn.log"
+        ],
+        "coverage_warning": "라벨이 붙은 파일은 8종뿐이다. 나머지 로그(mail, syslog, suricata 등)는 비라벨이다. 라벨 없는 파일을 음성으로 간주하면 안 된다.",
+        "join_key": ["host", "log 상대 경로", "1-based 줄 번호"],
+        "implication": "정규화기가 줄 번호를 보존하지 않으면 AIT 그라운드트루스 전량이 조인 불가가 된다. policy.provenance 참조.",
+        "ocsf_target": "metadata.labels (문자열 배열). attacks[]로 자동 변환하지 않는다.",
+        "ocsf_target_verified": true,
+        "ocsf_target_source": "dictionary.json"
+      },
+      "streams": [
+        {
+          "stream": "auth.log (Linux syslog auth)",
+          "example_path": "gather/intranet_server/logs/auth.log",
+          "src_seen": "file",
+          "sample": "Jan 23 16:30:46 intranet-server sshd[25184]: Accepted publickey for jhall from 172.19.131.174 port 49828 ssh2: RSA SHA256:8wFbi...",
+          "class_uid": 3002,
+          "activity_id_rule": {
+            "sshd Accepted/Failed": 1,
+            "sshd session closed / pam_unix session closed": 2,
+            "su / sudo (계정 전환)": 7,
+            "그 외": 99,
+            "verified": true,
+            "source": "events/iam/authentication.json"
+          },
+          "fields": [
+            {"src": "syslog 타임스탬프 (예: 'Jan 23 16:30:46')", "ocsf": "time", "transform": "연도 외부 주입 + UTC 가정 -> epoch ms", "verified": true, "source": "events/base_event.json", "src_seen": "file", "semantics_reviewed": false, "caution": "연도와 타임존이 원본에 없다. 주입값이므로 산출물에 근거를 남긴다."},
+            {"src": "원본 타임스탬프 문자열", "ocsf": "metadata.original_time", "verified": true, "source": "dictionary.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "호스트명 필드 (예: 'intranet-server')", "ocsf": "device.hostname", "verified": true, "source": "objects/device.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "프로그램[pid] (예: 'sshd[25184]')", "ocsf": "actor.process.name + actor.process.pid", "verified": true, "source": "objects/process_entity.json, profiles/host.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "'for <user>' / 'for user <user>'", "ocsf": "user.name", "verified": true, "source": "events/iam/authentication.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "'from <ip> port <n>'", "ocsf": "src_endpoint.ip + src_endpoint.port", "verified": true, "source": "objects/endpoint.json, objects/network_endpoint.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "'publickey' / 'password'", "ocsf": "auth_protocol + auth_protocol_id", "transform": "둘 다 99(Other). 원값은 auth_protocol 문자열에.", "verified": true, "source": "dictionary.json", "src_seen": "file", "semantics_reviewed": false, "caution": "OCSF auth_protocol_id 열거에 SSH 공개키/비밀번호가 없다."},
+            {"src": "'Accepted' / 'Failed'", "ocsf": "status_id", "transform": "Accepted->1, Failed->2", "verified": true, "source": "events/base_event.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "sudo 'USER=root'", "ocsf": "user.name (전환 대상)", "verified": true, "source": "events/iam/authentication.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "sudo 'jhall :' (호출자)", "ocsf": "actor.user.name", "verified": true, "source": "profiles/host.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "(전체 원문 줄)", "ocsf": "raw_data", "verified": true, "source": "events/base_event.json", "src_seen": "file", "semantics_reviewed": false}
+          ],
+          "unmapped": [
+            {"src": "sudo 'COMMAND=/bin/cat /etc/shadow'", "reason": "한 줄이 계정 전환이자 프로세스 실행이다. one_line_one_event 정책상 주 클래스를 Authentication으로 고르므로 커맨드라인은 이 이벤트에 들어갈 자리가 없다. Authentication 클래스에 process도 cmd_line도 없다. unmapped.sudo_command로 보존한다. 이 정보가 필요한 탐지는 audit.log의 EXECVE 레코드를 쓴다."},
+            {"src": "sudo 'TTY=pts/1', 'PWD=...'", "reason": "터미널과 작업 디렉터리. Authentication 클래스에 대응 속성이 없다. process.working_directory는 Process Activity 전용이다."},
+            {"src": "'RSA SHA256:8wFbi...' 공개키 지문", "reason": "인증에 쓰인 키의 지문. authentication의 certificate/authentication_token은 인증서·토큰 객체이지 SSH 공개키 지문이 아니다. 억지로 넣지 않는다."},
+            {"src": "pam_unix(cron:session) 계열", "reason": "cron 세션 개폐는 인증이라기보다 세션 관리다. Authentication 1/2로 넣으면 로그온 통계가 cron 노이즈로 오염된다. 의미 검토 전까지 activity_id 99로 두거나 정규화 대상에서 제외한다. 이 판단은 semantics_reviewed 대상."}
+          ]
+        },
+        {
+          "stream": "audit/audit.log (auditd)",
+          "example_path": "gather/intranet_server/logs/audit/audit.log",
+          "src_seen": "file",
+          "sample": "type=USER_ACCT msg=audit(1642723741.072:375): pid=10125 uid=0 auid=4294967295 ses=4294967295 msg='op=PAM:accounting acct=\"root\" exe=\"/usr/sbin/cron\" hostname=? addr=? terminal=cron res=success'",
+          "class_routing": {
+            "USER_ACCT / USER_AUTH / USER_LOGIN / CRED_ACQ / CRED_DISP / LOGIN": 3002,
+            "EXECVE / SYSCALL(execve)": 1007,
+            "PATH / SYSCALL(open,openat,unlink,rename)": 1001,
+            "verified": true,
+            "note": "auditd는 하나의 논리 이벤트가 여러 type 줄로 쪼개져 나온다. one_line_one_event 정책과 충돌한다. 손실 목록 L-09 참조."
+          },
+          "fields": [
+            {"src": "audit(1642723741.072:375) 앞부분", "ocsf": "time", "transform": "epoch 초.밀리 -> epoch ms", "verified": true, "source": "events/base_event.json", "src_seen": "file", "semantics_reviewed": false, "note": "AIT 소스 중 유일하게 절대 시각이 온전하다. 다른 파일의 연도 추정을 교차 검증하는 기준으로 쓸 수 있다."},
+            {"src": "audit(...:375) 뒤 일련번호", "ocsf": "metadata.uid", "verified": true, "source": "objects/metadata.json", "src_seen": "file", "semantics_reviewed": false, "note": "같은 논리 이벤트의 여러 줄이 같은 일련번호를 공유한다. 재조립 키다."},
+            {"src": "pid=", "ocsf": "actor.process.pid", "verified": true, "source": "objects/process_entity.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "exe=\"...\"", "ocsf": "actor.process.file.path", "verified": true, "source": "objects/process.json, objects/file.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "acct=\"...\"", "ocsf": "user.name", "verified": true, "source": "events/iam/authentication.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "res=success|failed", "ocsf": "status_id", "transform": "success->1, failed->2", "verified": true, "source": "events/base_event.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "addr=", "ocsf": "src_endpoint.ip", "transform": "'?'이면 null", "verified": true, "source": "objects/endpoint.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "terminal=", "ocsf": "unmapped.terminal", "verified": false, "src_seen": "file", "reason": "OCSF에 터미널 속성이 없다."}
+          ],
+          "unmapped": [
+            {"src": "auid (audit user id)", "reason": "로그인 원 사용자 id. OCSF user 객체에 'audit uid' 개념이 없다. user.uid에 넣으면 실효 uid와 구별되지 않는다. 게다가 4294967295(-1, 미설정) 센티널이 흔하다. 그대로 user.uid에 넣으면 존재하지 않는 계정 id가 생긴다. unmapped.auid로 보존하고 센티널은 null로 접는다."},
+            {"src": "ses (세션 id)", "reason": "session.uid에 넣을 수 있어 보이지만 auditd 세션 id는 커널 로컬 값이라 OCSF session 객체(로그온 세션)와 수명 정의가 다르다. 센티널 4294967295도 동일 문제."},
+            {"src": "op=PAM:accounting 등 PAM 단계", "reason": "인증 절차 내부 단계. OCSF activity_id는 Logon/Logoff 수준이라 PAM 단계 구분이 사라진다."}
+          ]
+        },
+        {
+          "stream": "apache2/*access.log (combined)",
+          "example_path": "gather/intranet_server/logs/apache2/intranet.smith.russellmitchell.com-access.log.1",
+          "src_seen": "file",
+          "sample": "10.143.2.91 - - [24/Jan/2022:07:34:57 +0000] \"GET / HTTP/1.1\" 200 6203 \"-\" \"Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:86.0) Gecko/20100101 Firefox/86.0\"",
+          "class_uid": 4002,
+          "activity_id_rule": {"GET": 3, "POST": 6, "PUT": 7, "HEAD": 4, "DELETE": 2, "OPTIONS": 5, "PATCH": 9, "CONNECT": 1, "TRACE": 8, "verified": true, "source": "events/network/http_activity.json"},
+          "fields": [
+            {"src": "원격 IP", "ocsf": "src_endpoint.ip", "verified": true, "source": "objects/endpoint.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "[24/Jan/2022:07:34:57 +0000]", "ocsf": "time", "transform": "오프셋 포함 파싱 -> epoch ms", "verified": true, "source": "events/base_event.json", "src_seen": "file", "semantics_reviewed": false, "note": "Apache는 타임존 오프셋이 있다. syslog 계열과 달리 추정이 필요 없다."},
+            {"src": "요청 메서드", "ocsf": "http_request.http_method", "verified": true, "source": "objects/http_request.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "요청 경로", "ocsf": "http_request.url.path (+ url.query)", "verified": true, "source": "objects/http_request.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "HTTP/1.1", "ocsf": "http_request.version", "verified": true, "source": "objects/http_request.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "상태 코드 200", "ocsf": "http_response.code", "verified": true, "source": "objects/http_response.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "응답 크기 6203", "ocsf": "http_response.length", "verified": true, "source": "objects/http_response.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "리퍼러", "ocsf": "http_request.referrer", "transform": "'-'이면 null", "verified": true, "source": "objects/http_request.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "User-Agent", "ocsf": "http_request.user_agent", "verified": true, "source": "objects/http_request.json", "src_seen": "file", "semantics_reviewed": false, "caution": "공격자 통제 필드. LLM 컨텍스트에 넣을 때 신뢰 불가로 표시."},
+            {"src": "상태 코드", "ocsf": "status_id", "transform": "1xx/2xx/3xx->1, 4xx/5xx->2", "verified": true, "source": "events/base_event.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "vhost (파일명에서)", "ocsf": "dst_endpoint.hostname", "verified": true, "source": "objects/endpoint.json", "src_seen": "file", "semantics_reviewed": false, "note": "로그 줄이 아니라 파일 이름에서 얻는다. 파생 규칙임을 표시한다."}
+          ],
+          "unmapped": [
+            {"src": "identd 필드와 remote user 필드 ('- -')", "reason": "combined 포맷의 두 번째·세 번째 필드. 값이 항상 '-'라 정보가 없다."},
+            {"src": "(요청 처리 시간 부재)", "reason": "http_response.latency를 채울 값이 combined 포맷에 없다."}
+          ]
+        },
+        {
+          "stream": "dnsmasq.log",
+          "example_path": "gather/inet-firewall/logs/dnsmasq.log",
+          "src_seen": "file",
+          "sample": "Jan 21 00:00:09 dnsmasq[3468]: query[A] 3x6-.596-.<base32 유사>.customers_2017.xlsx.email-19.kennedy-mendoza.info from 10.143.0.103",
+          "class_uid": 4003,
+          "activity_id_rule": {"query[...]": 1, "reply ... is ...": 2, "forwarded ... to ...": 99, "verified": true, "source": "events/network/dns_activity.json", "note": "DNS Activity activity_id에 1,2,6만 있다. 'forwarded'와 'cached'는 대응이 없어 99 + activity_name 원값."},
+          "fields": [
+            {"src": "query[A] 뒤 이름", "ocsf": "query.hostname", "verified": true, "source": "objects/dns_query.json", "src_seen": "file", "semantics_reviewed": false, "caution": "이 데이터셋에서는 이 필드가 DNS 유출 페이로드를 담는다. 공격자 통제 필드."},
+            {"src": "query[A]의 A", "ocsf": "query.type", "verified": true, "source": "objects/dns_query.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "'from <ip>'", "ocsf": "src_endpoint.ip", "verified": true, "source": "objects/endpoint.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "'is <ip>' (reply 줄)", "ocsf": "answers[].rdata", "verified": true, "source": "objects/dns_answer.json -> objects/dns_resource_record.json (rdata, hostname, type, class, ttl)", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "'to <ip>' (forwarded 줄)", "ocsf": "dst_endpoint.ip", "verified": true, "source": "objects/endpoint.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "dnsmasq[3468]", "ocsf": "actor.process.name + actor.process.pid", "verified": true, "source": "objects/process_entity.json", "src_seen": "file", "semantics_reviewed": false}
+          ],
+          "unmapped": [
+            {"src": "(rcode 부재)", "reason": "dnsmasq 기본 로그에 응답 코드가 없다. rcode_id를 채울 수 없다. NXDomain 급증 신호를 못 만든다."},
+            {"src": "(트랜잭션 id 부재)", "reason": "transaction_id가 없어 query 줄과 reply 줄을 확정적으로 짝지을 수 없다. 이름 문자열 매칭에 의존해야 한다. 같은 이름을 여러 클라이언트가 동시에 질의하면 짝짓기가 모호해진다."},
+            {"src": "(응답 시간 부재)", "reason": "query_time/response_time을 별도로 못 채운다. 줄 단위 시각만 있다."}
+          ]
+        },
+        {
+          "stream": "openvpn.log",
+          "example_path": "gather/vpn/logs/openvpn.log",
+          "src_seen": "file",
+          "sample": "2022-01-21 06:30:01 192.168.230.95:60795 [twhite] Peer Connection Initiated with [AF_INET]192.168.230.95:60795",
+          "class_uid": 4014,
+          "activity_id_rule": {"Peer Connection Initiated": 1, "client-instance restarting / soft reset": 3, "SIGTERM / client disconnected": 2, "그 외(VERIFY, TLS 단계)": 99, "verified": true, "source": "events/network/tunnel_activity.json"},
+          "fields": [
+            {"src": "'2022-01-21 06:30:01'", "ocsf": "time", "transform": "타임존 UTC 가정 -> epoch ms", "verified": true, "source": "events/base_event.json", "src_seen": "file", "semantics_reviewed": false, "caution": "연도는 있으나 타임존이 없다."},
+            {"src": "[twhite] 또는 'twhite/'", "ocsf": "user.name", "verified": true, "source": "events/network/tunnel_activity.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "192.168.230.95:60795", "ocsf": "src_endpoint.ip + src_endpoint.port", "verified": true, "source": "objects/endpoint.json, objects/network_endpoint.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "(VPN 게이트웨이 호스트)", "ocsf": "device.hostname", "transform": "파일 경로의 호스트 디렉터리명('vpn')", "verified": true, "source": "objects/device.json", "src_seen": "file", "semantics_reviewed": false}
+          ],
+          "unmapped": [
+            {"src": "'TLS: soft reset sec=3308/3308 bytes=45748/-1 pkts=649/0'", "reason": "누적 바이트/패킷이지만 '-1'과 '0'이 섞인 방향 불명 값이다. traffic.bytes_out에 45748을 넣는 것은 추정이다. 억지 매핑하지 않고 원문 보존."},
+            {"src": "'VERIFY OK: depth=1, C=AT, ST=Vienna, ... CN=OpenVPN CA'", "reason": "인증서 체인 검증 단계. Tunnel Activity에 certificate 속성이 없다. Authentication 클래스에는 있지만 이 줄은 터널 이벤트라 클래스가 다르다. 한 세션의 여러 줄을 하나로 접는 상태기계를 만들기 전에는 매핑 대상이 아니다."},
+            {"src": "tunnel_type_id", "reason": "split/full 터널 여부가 로그에 없다. 0(Unknown)으로 둔다. 추정해서 채우지 않는다."},
+            {"src": "(할당된 VPN 내부 IP 부재)", "reason": "표본 줄에 클라이언트에 할당된 터널 내부 주소가 없다. tunnel_interface를 채울 수 없어 VPN IP <-> 사설 IP 상관이 끊긴다. 이것이 AIT에서 VPN 경유 공격자를 내부 이벤트와 잇는 데 필요한 고리다."}
+          ]
+        },
+        {
+          "stream": "suricata/eve.json",
+          "example_path": "gather/inet-firewall/logs/suricata/eve.json",
+          "src_seen": "file",
+          "format": "JSON Lines. event_type으로 분기한다.",
+          "class_routing": {
+            "alert": 2004,
+            "dns": 4003,
+            "http": 4002,
+            "flow / netflow": 4001,
+            "tls": 4001,
+            "stats": null,
+            "verified": true
+          },
+          "fields": [
+            {"src": "timestamp (ISO8601 +0000)", "ocsf": "time", "verified": true, "source": "events/base_event.json", "src_seen": "file", "semantics_reviewed": false, "note": "타임존 포함. 추정 불필요."},
+            {"src": "src_ip / src_port", "ocsf": "src_endpoint.ip + src_endpoint.port", "verified": true, "source": "objects/endpoint.json, objects/network_endpoint.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "dest_ip / dest_port", "ocsf": "dst_endpoint.ip + dst_endpoint.port", "verified": true, "source": "objects/endpoint.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "proto ('UDP','TCP')", "ocsf": "connection_info.protocol_name", "verified": true, "source": "objects/network_connection_info.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "flow_id", "ocsf": "connection_info.uid", "verified": true, "source": "objects/network_connection_info.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "alert.signature", "ocsf": "finding_info.title", "verified": true, "source": "objects/finding_info.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "alert.signature_id", "ocsf": "finding_info.uid", "verified": true, "source": "objects/finding_info.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "alert.action ('allowed','blocked')", "ocsf": "action + action_id", "transform": "allowed->1, blocked->2", "verified": true, "source": "profiles/security_control.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "(경보임)", "ocsf": "is_alert = true", "verified": true, "source": "events/findings/detection_finding.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "dns.rrname / dns.rrtype", "ocsf": "query.hostname / query.type", "verified": true, "source": "objects/dns_query.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "dns.rcode ('NOERROR')", "ocsf": "rcode + rcode_id", "transform": "NOERROR->0, NXDOMAIN->3, REFUSED->5, SERVFAIL->2, FORMERR->1, NOTIMP->4", "verified": true, "source": "events/network/dns_activity.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "dns.id", "ocsf": "transaction_id", "verified": true, "source": "events/network/dns_activity.json", "src_seen": "file", "semantics_reviewed": false},
+            {"src": "in_iface", "ocsf": "device.interface_name", "verified": true, "source": "objects/device.json (extends endpoint) -> objects/endpoint.json (interface_name)", "src_seen": "file", "semantics_reviewed": false}
+          ],
+          "unmapped": [
+            {"src": "alert.category ('Potentially Bad Traffic'), alert.severity, Priority", "reason": "ET 룰셋의 자체 분류다. OCSF severity_id 6단계로 접으면 원 등급이 사라진다. 접기 규칙을 사람이 정하기 전까지 severity_id는 0으로 두고 원값을 보존한다. 임의로 매핑하면 우선순위 계산에 근거 없는 값이 흘러든다 (ADR-0003)."},
+            {"src": "alert.gid / alert.rev", "reason": "룰 생성기 id와 개정 번호. finding_info에 대응 속성이 없다."},
+            {"src": "(ATT&CK 기법 부재)", "reason": "ET 오픈 룰에 ATT&CK 매핑이 없다. attacks[]를 채우지 않는다. 채우면 근거 없는 인용이 된다."},
+            {"src": "event_type=stats 전체", "reason": "성능 계측 지표다. 보안 이벤트가 아니므로 정규화 대상에서 제외한다. 이 결정 자체를 산출물 통계에 기록한다."},
+            {"src": "fast.log 전체", "reason": "eve.json alert의 저해상도 중복이다. 둘 다 정규화하면 경보가 두 배로 계상된다. eve.json만 쓴다."}
+          ]
+        },
+        {
+          "stream": "attacker_0/logs/* (attacks.log, dnsteal.log, sm.log)",
+          "src_seen": "file",
+          "class_uid": null,
+          "decision": "정규화하지 않는다.",
+          "why": "공격자 측 실행 기록과 Kyoushi 상태기계 로그다. 방어 측 텔레메트리가 아니다. 이것을 탐지 입력에 섞으면 라벨 누출이 된다. docs/08 5절 '이들로 라벨을 만들면 순환 논리'와 같은 함정이다. 그라운드트루스 보조 자료로만 쓴다."
+        },
+        {
+          "stream": "journal/*.journal, *.pcap",
+          "src_seen": "file",
+          "class_uid": null,
+          "decision": "이번 범위에서 제외한다.",
+          "why": "journal은 바이너리이고 syslog 계열과 내용이 중복된다. pcap은 패킷 계층이라 Suricata 산출물로 대체한다. 필요해지면 별도 어댑터를 만든다."
+        }
+      ]
+    }
+  },
+
+  "loss_register": [
+    {"id": "L-01", "source": "lanl", "loss": "실제 신원", "detail": "U###/C###/P### 가명. 자산 대장·임무 온톨로지와의 조인이 임의 부여에 의존한다.", "recoverable": false, "impact": "L1<->L2 조인이 실증이 아니라 가정이 된다. 논문에서 'LANL 자산을 임무에 매핑했다'고 쓰면 안 된다."},
+    {"id": "L-02", "source": "lanl", "loss": "IP 주소 전체", "detail": "src_endpoint.ip / dst_endpoint.ip를 채울 값이 없다.", "recoverable": false, "impact": "I 계층 필수 기능인 IP<->호스트 통합이 LANL에서 성립하지 않는다. DHCP 재할당 처리 로직을 LANL로 검증할 수 없다."},
+    {"id": "L-03", "source": "lanl", "loss": "절대 시각", "detail": "수집 시점 비공개. epoch 앵커가 합성값이다.", "recoverable": false, "impact": "타임존·근무시간·주말 같은 시간 특징이 무의미하다. 상황도 타임라인은 상대 시각으로만 표시한다."},
+    {"id": "L-04", "source": "lanl", "loss": "포트 값 (가명화분)", "detail": "N#### 형태는 port_t 정수형에 넣을 수 없다. 잘 알려진 포트만 남는다.", "recoverable": false, "impact": "서비스 식별이 잘 알려진 포트로만 가능. 비표준 포트 C2 탐지 불가."},
+    {"id": "L-05", "source": "lanl", "loss": "프로세스 맥락", "detail": "pid, cmd_line, 경로, 부모 프로세스 전부 없음. 프로세스명도 가명.", "recoverable": false, "impact": "ATT&CK 실행 계열 기법을 LANL로 판별할 수 없다. 기법 라벨링은 OpTC/AIT 몫이다."},
+    {"id": "L-06", "source": "lanl", "loss": "DNS 질의명", "detail": "해석 대상이 도메인이 아니라 컴퓨터 가명.", "recoverable": false, "impact": "DNS 기반 탐지 전 계열 불가."},
+    {"id": "L-07", "source": "lanl", "loss": "라벨 14건의 목적지 일치", "detail": "4필드 조인 시 715 중 701만 매칭. 14건 탈락.", "recoverable": "부분", "impact": "라벨 1.96% 손실을 감수하고 목적지 특징 오염을 피한다. 근거 docs/08 3.5절."},
+    {"id": "L-08", "source": "ait", "loss": "연도와 타임존", "detail": "syslog·dnsmasq·auth.log에 연도가 없고 openvpn에 타임존이 없다.", "recoverable": "부분", "impact": "auditd의 epoch 값으로 교차 보정 가능. 보정 근거를 산출물에 기록하지 않으면 재현 불가."},
+    {"id": "L-09", "source": "ait", "loss": "auditd 다중 줄 이벤트의 구조", "detail": "하나의 논리 이벤트가 SYSCALL/EXECVE/PATH/CWD 여러 줄로 나뉜다. one_line_one_event 정책과 충돌한다.", "recoverable": "부분", "impact": "줄 단위로 정규화하면 execve 인자와 대상 파일이 서로 다른 OCSF 이벤트로 흩어진다. 재조립하면 라벨(줄 번호) 조인이 1:N이 된다. 둘 중 하나를 포기해야 한다. 현재 결정: 줄 단위 유지 + 일련번호를 metadata.uid에 넣어 재조립 가능성만 남긴다."},
+    {"id": "L-10", "source": "ait", "loss": "Suricata 경보 등급의 원 해상도", "detail": "category/severity/priority를 OCSF severity_id 6단계로 접으면 원 등급이 사라진다.", "recoverable": "부분", "impact": "현재는 접지 않고 severity_id=0으로 둔다. 접기 규칙 확정 전까지 경보 등급 기반 정렬을 하지 않는다."},
+    {"id": "L-11", "source": "ait", "loss": "sudo 커맨드라인", "detail": "한 줄이 두 클래스에 걸치는데 주 클래스가 Authentication이라 커맨드라인이 갈 곳이 없다.", "recoverable": true, "impact": "audit.log EXECVE로 대체 가능. 단 두 로그의 시각 정합이 전제다."},
+    {"id": "L-12", "source": "ait", "loss": "VPN 내부 할당 IP", "detail": "터널 내부 주소가 표본 줄에 없다.", "recoverable": "미확인", "impact": "VPN 사용자와 내부 이벤트를 잇는 고리가 끊긴다. 전체 openvpn.log를 훑어 status 로그가 따로 있는지 확인해야 한다."},
+    {"id": "L-13", "source": "synthetic", "loss": "비콘 주기와 스캔 폭", "detail": "interval_sec, distinct_targets가 단일 이벤트 속성이 아니라 이벤트 열의 통계량.", "recoverable": true, "impact": "결정론 계층이 이벤트 열에서 재계산한다. 정규화 산출물에는 남지 않는다."},
+    {"id": "L-14", "source": "공통", "loss": "라벨 어휘의 원 의미", "detail": "AIT 라벨(attacker_change_user 등)을 ATT&CK로 자동 변환하면 근거 없는 기법 인용이 된다.", "recoverable": true, "impact": "metadata.labels에 원문 보존. 사람이 매핑표를 만든 뒤에만 attacks[]를 채운다."},
+    {"id": "L-15", "source": "공통", "loss": "파일 종류·크기 등 미제공 속성의 추정 주입", "detail": "file.type_id=1 같은 고정 주입값.", "recoverable": true, "impact": "추정 주입 필드 목록을 산출물 메타에 명시한다. 명시하지 않으면 관측값과 구별되지 않는다."}
+  ],
+
+  "coverage_plan": {
+    "definition": "매핑 커버리지 = (OCSF 표준 속성으로 매핑된 원본 필드 수) / (원본 필드 총수). ADR-0005 결과 항목이 요구한다.",
+    "rule": "unmapped에 보존한 필드는 분자에 넣지 않는다. 보존은 매핑이 아니다.",
+    "report_unit": "소스별, 스트림별로 따로 낸다. 합산 수치는 의미가 없다.",
+    "status": "미측정. 정규화기 구현 후 산출한다."
+  },
+
+  "todo": [
+    "Suricata alert.severity -> OCSF severity_id 접기 규칙을 사람이 확정",
+    "AIT 라벨 어휘 -> ATT&CK 기법 매핑표를 사람이 작성 (자동 변환 금지)",
+    "openvpn.log 전량에서 터널 내부 IP를 담는 줄 형식이 있는지 확인 (L-12)",
+    "OpTC eCAR -> OCSF 매핑을 별도 절로 추가 (이번 범위 밖)",
+    "AIT exim4/mainlog, mail.log -> Email Activity(4009) 필드 매핑",
+    "semantics_reviewed를 전 항목에 대해 채우기"
+  ]
+}
