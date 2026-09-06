@@ -1,6 +1,16 @@
-# 현재 상태 — 2026-09-05 (최종 갱신: 저장소 이전 + LANL auth.txt.gz 취득 착수)
+# 현재 상태 — 2026-09-06 세션 종료 시점
 
 작업 시작 전 이 파일부터 읽는다.
+
+## 한눈에
+
+| | |
+|---|---|
+| 데이터 | LANL **5/5 완료·검증**, AIT **1/8 완료(의도된 범위)**, OpTC 그라운드트루스만 |
+| 라벨 | 세 데이터셋 모두 확보. OpTC는 PDF→JSONL 구조화 완료(101건, 미분류 0) |
+| 결정 | Q1·Q2·Q3·Q4·Q6 확정(ADR-0012~0016). **남은 미결은 Q5(UI 스택) 하나** |
+| 다음 | Q5 확정 → 시간축 온톨로지 → 2525 심볼 → 상황도 UI (데모 1순위) |
+| 상태 | **실행 중인 작업 없음.** 작업트리 clean, `origin/main` 동기 |
 
 ## 위치
 
@@ -167,7 +177,8 @@ auth.txt.gz 완료 대기 -> lanl-cyber1로 이동 -> 무결성 검증 -> AIT �
     ForEach-Object { Stop-Process -Id $_.ProcessId -Force }
   ```
 
-auth가 실패하면 **AIT를 시작하지 않는다.** 회선을 auth 재시도에 남겨두기 위해서다.
+> **2026-09-06 기준 이 체인은 종료됐다.** LANL 5/5 완료, AIT 범위 축소 완료.
+> 아래는 다음 취득(OpTC) 때 재사용할 기록이다.
 
 #### 서명 URL은 만료된다
 
@@ -205,10 +216,21 @@ while (($n = $gz.Read($buf,0,$buf.Length)) -gt 0) { $total += $n }
 마지막 레코드의 타임스탬프가 `5011199`(58일)에 도달하는지도 함께 본다.
 전체 스크립트는 `scripts/Test-GzipIntegrity.ps1`.
 
+### DARPA OpTC — 그라운드트루스만 확보, 본 데이터 미착수 ★다음 취득 대상
+
+- ✅ `OpTCRedTeamGroundTruth.pdf` + README/ecar.md/errata.md → `F:\mc-cycop-data\raw\optc\`
+  (GitHub 저장소에 있어 Google Drive를 거치지 않았다)
+- ✅ **라벨 구조화 완료** → `analysis/optc/` (101건 전량 분류)
+- ❌ 본 데이터: Google Drive 약 1TB → **30개 호스트 × 3일 최소 세트**만 받는다
+  ([09-optc-acquisition.md](docs/09-optc-acquisition.md))
+- 선행 조건 두 가지:
+  1. Drive 폴더 목록 조회 — `ecar/evaluation/`의 분할 방식과 파일 크기 확인.
+     **대역폭을 거의 쓰지 않으므로 먼저 할 것.**
+  2. `gdown` 설치 (Python 3.12 준비됨: `pip install gdown`)
+
 ### 미착수
 
 - DARPA TC — Google Drive 호스팅, 서브셋 단위
-- DARPA OpTC — Google Drive, 약 1TB. 부분 취득 필요. `gdown` 등 별도 도구
 - Security Datasets (Mordor) — 소용량
 
 ### 디스크 여유
@@ -253,24 +275,42 @@ scripts/Add-Bom.ps1                    PS 5.1 인코딩 사고 방지
 ## 2. 문서 현황 — 완료
 
 ```
-CLAUDE.md                    확정 규칙 10개 + 작업 규칙
+CLAUDE.md                    확정 규칙 + 작업 규칙
 README.md
-STATE.md                     ← 이 파일
+STATE.md                     ← 이 파일. 작업 시작 전 먼저 읽는다
 configs/datasets.yaml        경로·URL·라이선스·상태
-configs/manifests/           재취득 지시서
-scripts/fetch-ait.ps1        AIT 취득 (재실행 안전)
+configs/manifests/           재취득 지시서 (원본 지워도 남는다)
 docs/00-architecture.md      계층도 + 3트랙
-docs/01-datasets.md          데이터셋 + 함정
-docs/02-research-plan.md     기여 C1~C5, 실험 E1~E4, 출처 검증 22항목
-docs/03-mission-ontology.md  L2 스키마
-docs/04-evaluation.md        평가 프로토콜
-docs/05-data-lifecycle.md    수명주기 + ACQUIRE 실전 교훈
-docs/06-design-workflow.md   Figma MCP
+docs/01-datasets.md          데이터셋 + 함정 (순위 전술망 기준으로 갱신됨)
+docs/02-research-plan.md     기여 C1~C5, 실험 E1~E4
+docs/03-mission-ontology.md  L2 스키마  ※ 시간축 추가 필요 (ADR-0012)
+docs/04-evaluation.md        평가 프로토콜 + 자명 베이스라인 + 조인 키 규칙
+docs/05-data-lifecycle.md    수명주기 + 볼륨 배치 정책 + ACQUIRE 실전 교훈
+docs/06-design-workflow.md   Figma
 docs/07-synthetic-data.md    오프라인 합성 트랙 + 인코딩 함정
-docs/99-open-questions.md    미확정 6건
-docs/adr/0001~0010           결정 기록
+docs/08-lanl-ground-truth.md LANL 라벨 실측 — 측면이동 없음, 베이스라인 precision 1.46%
+docs/09-optc-acquisition.md  OpTC 최소 취득 세트 + 라벨 구조화
+docs/10-limitations.md       못하는 것 (구조적 / 자원 / 미결)
+docs/99-open-questions.md    남은 미결 = Q5 하나
+docs/adr/0001~0016           결정 기록
+
+scripts/
+  fetch-ait.ps1              AIT 취득 (범위 축소됨, $deferred 참조)
+  fetch-lanl.ps1             LANL 서명 URL 취득
+  Invoke-AcquireChain.ps1    무인 취득 체인 (현재 미실행)
+  Get-DataRoot.ps1           볼륨 배치 (F: 우선, C: 예비)
+  Test-GzipIntegrity.ps1     크기가 아니라 CRC로 검증
+  Measure-RedteamGroundTruth.ps1  LANL 라벨 프로파일
+  Measure-AuthJoin.ps1       auth 10.5억 행 조인 (C# 인라인, 약 11분)
+  Export-AuthRedteamSlice.ps1     분석용 슬라이스 추출
+  Measure-HostProfile.ps1    17,666개 호스트 행동 프로파일
+  build_optc_labels.py       OpTC PDF → 기계 판독 라벨
+  New-SyntheticTelemetry.ps1 / Invoke-MissionPropagation.ps1 /
+  Show-MissionReplay.ps1 / Test-Ontology.ps1 / Add-Bom.ps1
+
+analysis/lanl/               redteam-profile, auth-join, host-profile (CSV는 gitignore)
+analysis/optc/               redteam-events.jsonl, redteam-labels.json
 scenarios/defnet-01/         임무 온톨로지 + 공격 시나리오 + 합성 데이터
-scripts/                     생성기·전파엔진·리플레이·검증기 (1.5절)
 ```
 
 **개발 환경** (2026-09-06 갱신)
@@ -314,36 +354,59 @@ PowerShell 참조 구현은 그대로 유지한다. 대용량 스캔은 PowerShe
    ```
    추출된 CSV(16 MB)는 gitignore 대상이다. 요약 JSON만 커밋한다.
 
-**오프라인에서 가능**
-1. **Q1 확정: 국방망 vs 전술망** (`docs/99-open-questions.md`) — 판단만 하면 되는 일이고
-   데이터셋 순위와 임무 그래프 구조를 동시에 결정한다. 다른 모든 작업의 선행 조건.
-2. 임무 온톨로지 확장 — 시나리오 2번째 추가, FW01/SW01 모델링 결정
-3. 전파 함수 3종(max/weighted/noisyor) 비교 실험 → `04-evaluation.md` E2
-4. OCSF 매핑 스펙 작성 (합성 events.jsonl을 기준으로)
-5. 상황도 UI 와이어프레임
+**결정 5건 확정 (2026-09-06)** — Q1/Q2/Q3/Q4/Q6이 한꺼번에 닫혔다.
 
-**인터넷 복구 후**
-6. Python 설치 → PowerShell 참조 구현을 포팅
-7. git 설치 + `git init` + 첫 커밋 (**현재 버전관리 없음 — 디렉터리 지우면 전부 소실**)
-8. LANL `auth.txt.gz` 취득 완료 → `.\scripts\Test-GzipIntegrity.ps1`로 검증 후 매니페스트 기록
-9. AIT 재개: `.\scripts\fetch-ait.ps1`
-10. Figma Education 신청 (아주대 이메일) — 현재 월 20회 한도
-
-`auth.txt.gz`가 들어오면 LANL이 완결되고, `redteam.txt.gz`(그라운드트루스)를 `auth`/`proc`/`flows`와
-시간축으로 조인하는 작업이 가능해진다. 이것이 실데이터 트랙(합성 트랙과 대비되는)의 출발점이다.
+| | 결정 | ADR |
+|---|---|---|
+| Q1 | 대상 망 = **전술망** | [0012](docs/adr/0012-target-network-is-tactical.md) |
+| Q2 | **MIL-STD-2525 준용** | [0013](docs/adr/0013-adopt-mil-std-2525-symbology.md) |
+| Q3 | **데모 1순위**, 논문 2순위 | [0014](docs/adr/0014-demo-first-then-paper.md) |
+| Q6 | 전문가 평가 **안 함** → 순위 불일치도로 대체 | [0015](docs/adr/0015-no-human-subject-evaluation.md) |
+| Q4 | LLM = **로컬 GPU, 4비트 7~14B** | [0016](docs/adr/0016-local-gpu-llm-sizing.md) |
 
 ---
 
-## 4. 재부팅 후 첫 확인 명령
+## 다음에 할 일 — 데모 기준 순서 (ADR-0014)
+
+**0. Q5 확정이 임계 경로다.** 남은 미결이 이것 하나이고 데모 전체가 여기서 시작한다.
+   ADR-0013이 이미 "2525 렌더러가 있는 웹 스택"으로 좁혀놨다. 선정 기준:
+   심볼 렌더링 **포함** 성능(노드 수천 개), 저대역폭 델타 동기화, 오프라인 동작.
+
+1. **시간축 임무 온톨로지** — `03-mission-ontology.md`에 유효 구간·임무 단계 스키마 추가.
+   전술망의 새 요구사항인 **기동/지형 단절 vs 공격 저하 구분**을 모델에 넣는다(ADR-0012 2항).
+   기존 `scenarios/defnet-01/`은 단일 스냅샷으로 재해석하고 그 위에 시간축을 얹는다.
+2. **`Asset.type` → SIDC 매핑 테이블** (ADR-0013)
+3. **상황도 UI + 시간축 리플레이** — 데모 그 자체
+4. **what-if 인터랙션** — 가장 설득력 있는 장면. 숫자는 이미 있다(ESX01 격리 = 70.1% 저하)
+5. **LLM 브리핑 계층** — Ollama 등 설치 후 7~8B 4비트부터
+6. 탐지 실험 E1 — 논문 자산. 화면에는 거의 안 보인다
+
+**병행 가능 (대역폭만 씀)**
+- OpTC Drive 폴더 목록 조회 → 최소 세트 실제 용량 확정 (`09-optc-acquisition.md`)
+- `pip install gdown` 후 30개 호스트 × 3일 취득
+
+**남은 자잘한 것**
+- `FW01`/`SW01`이 어떤 엣지에도 연결되지 않았다 — 검증기 경고 2건 미해결
+- 전파 함수 3종(max/weighted/noisyor) 비교 → E2 (`noisyor`가 99.9%로 과하게 나온다)
+- OCSF 매핑 스펙 — AIT `labels/` 트리 형식 확인 후 착수
+
+---
+
+## 4. 세션 시작 시 첫 확인 명령
 
 ```powershell
+cd F:\F\other_class\CybOPS
+git log --oneline | Select-Object -First 5
+git status -sb
+
 # 데이터 상태
+.\scripts\Get-DataRoot.ps1 -Report
 Get-ChildItem F:\mc-cycop-data\raw -Recurse -File |
   Select-Object FullName, @{n='MB';e={[math]::Round($_.Length/1MB,1)}}
 
-# AIT 로그 마지막
-Get-Content F:\mc-cycop-data\raw\ait-lds-v2\_acquire.log -Tail 20
-
-# Chrome 잔여 다운로드
-Get-ChildItem "$env:USERPROFILE\Downloads" -Filter *.crdownload
+# 백그라운드 취득이 돌고 있는지
+Get-CimInstance Win32_Process -Filter "Name='powershell.exe'" |
+  Where-Object { $_.CommandLine -like '*fetch-*' -or $_.CommandLine -like '*AcquireChain*' }
 ```
+
+2026-09-06 세션 종료 시점: **실행 중인 작업 없음, 작업트리 clean, origin/main과 동기.**
