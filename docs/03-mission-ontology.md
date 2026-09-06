@@ -23,9 +23,14 @@
 | `Mission` | 최상위 임무 | id, name, priority, commander, timeframe |
 | `Phase` | 작전 단계 | id, mission_id, sequence, start/end |
 | `Task` | 작업 | id, phase_id, criticality, min_capability |
-| `Service` | 논리 서비스 (지휘통제, 통신, 정보공유 등) | id, sla, redundancy_group |
+| `Service` | 논리 서비스 (지휘통제, 통신, 정보공유 등) | id, name, **kind**, sla, redundancy_group |
 | `Asset` | 물리·논리 자산 (호스트, 네트워크 장비, 앱) | id, type, owner_unit, geo(참고용), ocsf_ids |
 | `Unit` | 부대·조직 | id, echelon, parent_unit |
+
+`Service.kind`는 서비스의 종류다: `messaging`, `voice`, `fire-control`, `position-reporting`,
+`intel`, `directory`, `file`, `database`, `web`, `mail`, `logistics`. 화면에서 서비스를
+구분하는 근거이자, 시나리오를 편집할 때 **어떤 서비스가 서로 대체 가능한가**를 판단하는
+기준이다. 이름만으로는 그 판단을 할 수 없다.
 
 `Asset.geo`는 **자산의 물리적 위치**다. 외부 IP 지오로케이션과 혼동하지 않는다.
 전자는 신뢰할 수 있는 대장 정보, 후자는 판단에 쓰지 않는 참고값이다. (ADR-0002)

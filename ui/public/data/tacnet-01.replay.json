@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-09-06T21:30:37.3829009+09:00",
+    "generated":  "2026-09-06T23:11:06.7560493+09:00",
     "generator":  "scripts/Export-ReplayData.ps1",
     "contract":  1,
     "note":  "Precomputed by the deterministic engine. The UI displays these numbers and never recomputes them (ADR-0003).",
@@ -187,26 +187,31 @@
                                    {
                                        "id":  "S-C2MSG",
                                        "name":  "전술 C2 메시징",
+                                       "kind":  "messaging",
                                        "redundancy_group":  "c2"
                                    },
                                    {
                                        "id":  "S-BFT",
                                        "name":  "위치보고(BFT)",
+                                       "kind":  "position-reporting",
                                        "redundancy_group":  null
                                    },
                                    {
                                        "id":  "S-VOICE",
                                        "name":  "음성지휘",
+                                       "kind":  "voice",
                                        "redundancy_group":  "voice"
                                    },
                                    {
                                        "id":  "S-FIRE",
                                        "name":  "사격지휘",
+                                       "kind":  "fire-control",
                                        "redundancy_group":  null
                                    },
                                    {
                                        "id":  "S-INTEL",
                                        "name":  "정보공유",
+                                       "kind":  "intel",
                                        "redundancy_group":  null
                                    }
                                ],

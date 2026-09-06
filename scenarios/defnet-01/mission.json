@@ -32,11 +32,11 @@
   ],
 
   "services": [
-    {"id": "S-DIR",  "name": "디렉터리/인증", "redundancy_group": "dir"},
-    {"id": "S-MSG",  "name": "메시징",        "redundancy_group": null},
-    {"id": "S-FILE", "name": "파일공유",      "redundancy_group": null},
-    {"id": "S-DB",   "name": "군수 DB",       "redundancy_group": "db"},
-    {"id": "S-WEB",  "name": "상황portal",    "redundancy_group": null}
+    {"id": "S-DIR",  "name": "디렉터리/인증", "kind": "directory", "redundancy_group": "dir"},
+    {"id": "S-MSG",  "name": "메시징",        "kind": "messaging", "redundancy_group": null},
+    {"id": "S-FILE", "name": "파일공유",      "kind": "file",      "redundancy_group": null},
+    {"id": "S-DB",   "name": "군수 DB",       "kind": "database",  "redundancy_group": "db"},
+    {"id": "S-WEB",  "name": "상황portal",    "kind": "web",       "redundancy_group": null}
   ],
 
   "assets": [

@@ -55,11 +55,11 @@
   ],
 
   "services": [
-    {"id": "S-C2MSG", "name": "전술 C2 메시징", "redundancy_group": "c2"},
-    {"id": "S-BFT",   "name": "위치보고(BFT)",  "redundancy_group": null},
-    {"id": "S-VOICE", "name": "음성지휘",       "redundancy_group": "voice"},
-    {"id": "S-FIRE",  "name": "사격지휘",       "redundancy_group": null},
-    {"id": "S-INTEL", "name": "정보공유",       "redundancy_group": null}
+    {"id": "S-C2MSG", "name": "전술 C2 메시징", "kind": "messaging",           "redundancy_group": "c2"},
+    {"id": "S-BFT",   "name": "위치보고(BFT)",  "kind": "position-reporting", "redundancy_group": null},
+    {"id": "S-VOICE", "name": "음성지휘",       "kind": "voice",              "redundancy_group": "voice"},
+    {"id": "S-FIRE",  "name": "사격지휘",       "kind": "fire-control",       "redundancy_group": null},
+    {"id": "S-INTEL", "name": "정보공유",       "kind": "intel",              "redundancy_group": null}
   ],
 
   "_transit_note": "transit=false 인 자산은 종단 단말이다. 자기 트래픽만 주고받고 남의 트래픽을 중계하지 않는다. 이 필드가 없으면 관측반 태블릿이 위성 단절을 우회 중계하는 비현실적 경로가 생긴다(2026-09-06 실측으로 발견). 생략 시 기본값은 true 다.",

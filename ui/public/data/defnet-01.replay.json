@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-09-06T21:14:53.9745347+09:00",
+    "generated":  "2026-09-06T23:11:06.9370340+09:00",
     "generator":  "scripts/Export-ReplayData.ps1",
     "contract":  1,
     "note":  "Precomputed by the deterministic engine. The UI displays these numbers and never recomputes them (ADR-0003).",
@@ -103,26 +103,31 @@
                                    {
                                        "id":  "S-DIR",
                                        "name":  "디렉터리/인증",
+                                       "kind":  "directory",
                                        "redundancy_group":  "dir"
                                    },
                                    {
                                        "id":  "S-MSG",
                                        "name":  "메시징",
+                                       "kind":  "messaging",
                                        "redundancy_group":  null
                                    },
                                    {
                                        "id":  "S-FILE",
                                        "name":  "파일공유",
+                                       "kind":  "file",
                                        "redundancy_group":  null
                                    },
                                    {
                                        "id":  "S-DB",
                                        "name":  "군수 DB",
+                                       "kind":  "database",
                                        "redundancy_group":  "db"
                                    },
                                    {
                                        "id":  "S-WEB",
                                        "name":  "상황portal",
+                                       "kind":  "web",
                                        "redundancy_group":  null
                                    }
                                ],
@@ -524,7 +529,59 @@
                       "mission":  {
                                       "M-C2":  0,
                                       "M-LOG":  0
-                                  }
+                                  },
+                      "whatif":  {
+                                     "DC01":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DC02":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DB01":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DB02":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "MAIL01":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0.42727272727272725,
+                                                                    "M-LOG":  0.21799307958477507
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0.427273,
+                                                                  "M-LOG":  0.217993
+                                                              }
+                                                }
+                                 }
                   }
               ]
 }

@@ -5,6 +5,7 @@
 // drawn on the node (ADR-0013 section 3).
 
 import { symbolDataUri, isVerified, unitSymbolDataUri } from './symbols.js'
+import { serviceIconDataUri } from './icons.js'
 
 // Node shape used to carry the device class. It does not need to any more: the
 // device icon says what the machine is, and a canvas of triangles, hexagons and
@@ -61,7 +62,9 @@ export function buildElements(g) {
     els.push({
       data: {
         id: s.id, kind: 'service', label: s.name,
+        serviceKind: s.kind || '',
         redundancy: s.redundancy_group || '',
+        icon: serviceIconDataUri(s.kind, { size: 34 }) || '',
       },
     })
   }
@@ -164,7 +167,21 @@ export function stylesheet() {
     },
     {
       selector: 'node[kind="service"]',
-      style: { 'shape': 'diamond', 'width': 54, 'height': 54 },
+      style: { 'shape': 'round-diamond', 'width': 60, 'height': 60 },
+    },
+    {
+      // Each service kind gets its own icon. C2 messaging, voice and fire
+      // control are not interchangeable, and five identical diamonds said they
+      // were.
+      selector: 'node[kind="service"][icon != ""]',
+      style: {
+        'background-image': 'data(icon)',
+        'background-fit': 'contain',
+        'background-width': '48%',
+        'background-height': '48%',
+        'background-image-opacity': 1,
+        'background-opacity': 0.42,
+      },
     },
     {
       selector: 'node[kind="asset"]',

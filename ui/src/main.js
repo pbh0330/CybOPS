@@ -12,7 +12,7 @@ import { loadSymbology, unmappedTypes } from './symbols.js'
 import { buildElements, stylesheet, LAYOUTS, CAUSE_COLOR, degColor } from './graph.js'
 import { runStep, containmentCandidates } from './engine.js'
 import { createEditor } from './editor.js'
-import { deviceIconDataUri, iconSvgMarkup } from './icons.js'
+import { deviceIconDataUri, iconSvgMarkup, serviceIconSvgMarkup } from './icons.js'
 
 cytoscape.use(dagre)
 
@@ -966,6 +966,7 @@ function inspect(node) {
     if (c) add('현재 단절', `${c}`)
     if (d.symbol) add('심볼', d.symbolVerified ? '2525 매핑(대조 완료)' : '2525 매핑(<b>미검증</b>)')
   } else if (d.kind === 'service') {
+    add('종류', d.serviceKind || '(미지정)')
     add('이중화', d.redundancy || '없음(단일 경로)')
     add('저하도(전역)', pct(num(s.service?.[d.id])))
   } else if (d.kind === 'task') {
@@ -1099,9 +1100,19 @@ function renderLegend() {
     ['firewall', '방화벽'],
     ['observer-terminal', '관측 단말'],
   ]
+  const services = [
+    ['messaging', '메시징'],
+    ['voice', '음성'],
+    ['fire-control', '사격지휘'],
+    ['position-reporting', '위치보고'],
+    ['intel', '정보'],
+    ['directory', '인증'],
+  ]
   el.legend.innerHTML =
     '<span class="item legend-title">원인</span>' +
     causes.map(([k, name]) => `<span class="item"><i class="dot" style="background:${CAUSE_COLOR[k]}"></i>${name}</span>`).join('') +
+    '<span class="sep"></span><span class="item legend-title">서비스</span>' +
+    services.map(([k, label]) => `<span class="item">${serviceIconSvgMarkup(k, { size: 16 })}${label}</span>`).join('') +
     '<span class="sep"></span><span class="item legend-title">자산</span>' +
     devices.map(([t, label]) => `<span class="item">${iconSvgMarkup(t, { size: 17 })}${label}</span>`).join('') +
     '<span class="sep"></span><span class="item">아이콘 색: 흰=정상, <b style="color:#ffb4ba">붉음=공격</b>, 회색+점선 테두리=단절</span>'
