@@ -143,6 +143,6 @@ if (Test-Path $symSrc) {
   Copy-Item $symSrc $symDst -Force
   Write-Output ("copied {0}" -f $symDst)
 } else {
-  Write-Output "note: configs\symbology-2525.json 없음 - UI 는 심볼 없이 도형으로 그린다"
+  Write-Output "note: configs\symbology-2525.json not found - UI falls back to plain shapes"
 }
 Write-Output ""

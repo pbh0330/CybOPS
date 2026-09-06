@@ -1,0 +1,636 @@
+{
+  "_file": "configs/symbology-2525.json",
+  "_purpose": "Asset.type -> SIDC mapping table required by ADR-0013. Machine-readable half; the human-readable half is docs/12-symbology-mapping.md.",
+  "schema_version": "0.1.0",
+  "generated": "2026-09-06",
+  "status": "draft-unverified",
+  "encoding": "UTF-8 (no BOM)",
+
+  "_warning": "이 파일의 SIDC는 표준 원문(MIL-STD-2525D PDF)을 직접 대조하지 않았다. 공개 데이터 인코딩과 오픈소스 렌더러 소스에서 교차 확인한 값이다. verified=true 는 '코드 문자열이 표준의 어느 계층을 가리키는지 두 독립 출처에서 일치했다'는 뜻이지, '이 자산 타입에 이 심볼을 쓰는 것이 교리적으로 옳다'는 뜻이 아니다. 후자는 mapping_reviewed 로 따로 표시한다. CLAUDE.md '인용·수치 취급 주의' 참조.",
+
+  "standard": {
+    "pinned_version": "MIL-STD-2525D",
+    "pinned_version_digits": "10",
+    "sidc_format": "20-digit numeric string",
+    "harmonized_with": "NATO APP-6(D)",
+    "why_pinned_D": "심볼셋 60(Cyberspace)의 D판 엔터티 표를 두 독립 출처(Esri JMSML, spatialillusions/milsymbol)에서 교차 확인할 수 있었다. 2525E판 표는 단일 저자(spatialillusions)의 두 저장소에서만 확인되어 독립 교차가 성립하지 않는다. 검증 가능한 쪽에 고정한다.",
+    "known_divergence_2525E": {
+      "summary": "2525E는 심볼셋 60을 재구성했다. D의 Device Type(14)/Health and Status(13)/Effect(16) 엔터티가 E에서 Application(14)/Agent(13)/Data(16)로 바뀌고, Endpoint(17)와 Network(18)가 신설된 것으로 보인다. 같은 코드가 다른 의미다.",
+      "impact": "버전 자릿수를 10(D)에서 13(E)로 바꾸면 아이콘이 조용히 다른 것으로 바뀐다. 버전 자릿수를 고정하지 않은 SIDC를 저장하면 안 된다.",
+      "verified": false,
+      "source_note": "MIL-STD-2525E 부록(사이버) 원문의 엔터티 표를 직접 대조해야 한다. 현재 근거는 npm milstandard-e@0.2.14 의 tsv-tables/Cyberspace.tsv 전사본 하나뿐이다."
+    },
+    "sources": [
+      "https://docs.carmenta.com/pages/milstd2525d_tactical_sidc.html",
+      "https://docs.carmenta.com/pages/milstd2525d_symbols.html",
+      "https://github.com/Esri/joint-military-symbology-xml",
+      "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Base.xml",
+      "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Cyberspace.xml",
+      "https://github.com/spatialillusions/milsymbol",
+      "https://cdn.jsdelivr.net/npm/milstandard-e@0.2.14/tsv-tables/Cyberspace.tsv",
+      "http://www.mapsymbs.com/MilStd2525D.pdf"
+    ]
+  },
+
+  "sidc_layout": {
+    "verified": true,
+    "sources": [
+      "https://docs.carmenta.com/pages/milstd2525d_tactical_sidc.html",
+      "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/numbersidc/metadata.js"
+    ],
+    "source_note": "두 출처가 자릿수 배치에 완전히 일치한다. 그래도 MIL-STD-2525D 본문 5.3절(Symbol Identification Code) 원문 대조는 남아 있다.",
+    "positions": [
+      {"digits": "1-2",   "field": "version",              "note": "10=2525D 계열, 13=2525E 계열. milsymbol은 10/11/12를 edition D, 13/14를 edition E로 해석한다."},
+      {"digits": "3",     "field": "standard_identity_context"},
+      {"digits": "4",     "field": "standard_identity_affiliation"},
+      {"digits": "5-6",   "field": "symbol_set"},
+      {"digits": "7",     "field": "status"},
+      {"digits": "8",     "field": "hq_taskforce_dummy"},
+      {"digits": "9-10",  "field": "amplifier_descriptor", "note": "앞 1자리는 amplifier group, 뒤 1자리는 amplifier."},
+      {"digits": "11-12", "field": "entity"},
+      {"digits": "13-14", "field": "entity_type"},
+      {"digits": "15-16", "field": "entity_subtype"},
+      {"digits": "17-18", "field": "modifier_1"},
+      {"digits": "19-20", "field": "modifier_2"}
+    ]
+  },
+
+  "code_tables": {
+    "symbol_set": {
+      "verified": true,
+      "sources": [
+        "https://docs.carmenta.com/pages/milstd2525d_tactical_sidc.html",
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Base.xml"
+      ],
+      "source_note": "MIL-STD-2525D 표 I(Symbol Set 목록) 원문 대조 필요.",
+      "used_by_this_project": {
+        "10": "Land Unit",
+        "15": "Land Equipment",
+        "20": "Land Installation",
+        "60": "Cyberspace"
+      }
+    },
+    "standard_identity_context": {
+      "verified": true,
+      "sources": [
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Base.xml",
+        "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/ms/symbol/getmetadata.js"
+      ],
+      "source_note": "MIL-STD-2525D 5.3.2절 대조 필요.",
+      "values": {"0": "Reality", "1": "Exercise", "2": "Simulation", "9": "Extension"}
+    },
+    "standard_identity_affiliation": {
+      "verified": true,
+      "sources": [
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Base.xml",
+        "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/numbersidc/metadata.js"
+      ],
+      "source_note": "MIL-STD-2525D 5.3.3절 대조 필요. milsymbol은 프레임 형상 산출 시 0/1을 Unknown, 2/3을 Friend, 4를 Neutral, 5/6을 Hostile로 묶는다.",
+      "values": {
+        "0": "Pending",
+        "1": "Unknown",
+        "2": "Assumed Friend",
+        "3": "Friend",
+        "4": "Neutral",
+        "5": "Suspect/Joker",
+        "6": "Hostile/Faker",
+        "9": "Extension"
+      }
+    },
+    "status": {
+      "verified": true,
+      "sources": [
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Base.xml",
+        "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/ms/symbol/getmetadata.js"
+      ],
+      "source_note": "MIL-STD-2525D 5.3.4절 대조 필요.",
+      "values": {
+        "0": "Present",
+        "1": "Planned/Anticipated/Suspect",
+        "2": "Present/Fully Capable",
+        "3": "Present/Damaged",
+        "4": "Present/Destroyed",
+        "5": "Present/Full to Capacity",
+        "9": "Extension"
+      }
+    },
+    "hq_taskforce_dummy": {
+      "verified": false,
+      "sources": ["https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Base.xml"],
+      "source_note": "단일 출처(JMSML Base.xml)만 확인했다. MIL-STD-2525D 5.3.5절 대조 필요.",
+      "values": {
+        "0": "Unknown",
+        "1": "Feint/Dummy",
+        "2": "Headquarters",
+        "3": "Feint/Dummy Headquarters",
+        "4": "Task Force",
+        "5": "Feint/Dummy Task Force",
+        "6": "Task Force Headquarters",
+        "7": "Feint/Dummy Task Force Headquarters",
+        "9": "Extension"
+      }
+    },
+    "amplifier_echelon": {
+      "verified": true,
+      "sources": [
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Base.xml",
+        "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/ms/symbol/getmetadata.js"
+      ],
+      "source_note": "JMSML은 amplifier group 1='Echelon at brigade and below', amplifier code 5=Company/Battery/Troop, 6=Battalion/Squadron, 8=Brigade 로 적는다. 두 자리를 이어 붙인 값이 아래다. MIL-STD-2525D 5.3.6절 대조 필요.",
+      "values": {
+        "15": "Company/Battery/Troop",
+        "16": "Battalion/Squadron",
+        "18": "Brigade"
+      },
+      "applies_to_symbol_sets": ["10"],
+      "note": "심볼셋 60(Cyberspace)에 제대 증정보를 붙일 수 있는지는 확인되지 않았다. 이 프로젝트는 붙이지 않고, 소속 부대는 텍스트 증정보로만 표기한다."
+    }
+  },
+
+  "defaults": {
+    "version_digits": "10",
+    "context_digit": "0",
+    "affiliation_digit": "3",
+    "status_digit": "0",
+    "hqtfd_digit": "0",
+    "amplifier_digits": "00",
+    "modifier_1_digits": "00",
+    "modifier_2_digits": "00",
+    "_note": "asset_type_map 의 sidc 값은 이 기본값이 적용된 완성형 20자리다. 상태·소속을 바꿀 때는 자릿수만 치환한다."
+  },
+
+  "affiliation_policy": {
+    "_summary": "소속 축은 아군 고정이 아니지만, 자산의 소속을 건강상태 때문에 흔들지 않는다.",
+    "rules": [
+      {
+        "id": "AFF-1",
+        "rule": "임무 그래프의 Asset 노드는 소속 자릿수를 3(Friend)으로 고정한다. 침해·저하·원인미상 때문에 1(Unknown)이나 5(Suspect)로 바꾸지 않는다.",
+        "rationale": "2525에서 프레임 색·형상은 소속을 뜻한다. 아군 서버를 '미상'으로 그리면 화면이 '우리 것인지 모르겠다'로 읽힌다. 건강상태는 status 자릿수와 오버레이가 담당한다(ADR-0013 2항)."
+      },
+      {
+        "id": "AFF-2",
+        "rule": "소속 1(Unknown)은 자산대장에 없는 관측 개체 전용이다. 스캔에서 새로 나타난 미식별 호스트, 귀속되지 않은 외부 통신 상대가 여기 해당한다. 이들은 Asset 노드가 아니라 별도의 관측 노드로 들어온다.",
+        "rationale": "임무-자산 의존성 그래프는 아군 자산의 좌표계다. 미식별 개체를 같은 축에 섞으면 저하도 계산이 오염된다."
+      },
+      {
+        "id": "AFF-3",
+        "rule": "소속 5(Suspect) 또는 6(Hostile)은 결정론 엔진 또는 사람이 확정한 경우에만 부여한다. LLM 출력이 이 자릿수를 바꾸는 경로를 만들지 않는다.",
+        "rationale": "ADR-0003."
+      },
+      {
+        "id": "AFF-4",
+        "rule": "IP 지오로케이션 결과는 소속 자릿수 산출에 입력되지 않는다.",
+        "rationale": "ADR-0002."
+      },
+      {
+        "id": "AFF-5",
+        "rule": "합성 시나리오를 화면에 띄울 때는 context 자릿수를 2(Simulation)로 둔다. 실데이터는 0(Reality).",
+        "rationale": "합성 데이터로 실적을 주장하지 않는다는 CLAUDE.md 11항을 화면에서도 지킨다. 다만 milsymbol이 context 자릿수를 어떤 프레임으로 그리는지는 확인되지 않았다(verify 항목).",
+        "verified": false
+      }
+    ]
+  },
+
+  "state_overlay": {
+    "_summary": "ADR-0013 2항 — 사이버 고유 상태는 새 아이콘을 만들지 않고 status/증정보/부가표기 계층에 얹는다. 단, 2525D 심볼셋 60에는 이미 표준 사이버 상태 심볼이 있으므로 자체 아이콘 대신 그것을 쓴다.",
+
+    "status_digit_policy": {
+      "_summary": "status 자릿수는 '공격에 의한 손상'에만 쓴다. 기동·지형에 의한 단절에는 쓰지 않는다.",
+      "rationale": "ADR-0012 2항. Damaged/Destroyed는 전투 손상을 함의한다. 능선 차폐로 끊긴 링크를 Damaged로 그리면 상황도가 언덕을 적의 소행으로 보고한다.",
+      "map": [
+        {"engine_state": "정상",                      "status_digit": "2", "label": "Present/Fully Capable"},
+        {"engine_state": "공격에 의한 부분 저하",      "status_digit": "3", "label": "Present/Damaged"},
+        {"engine_state": "공격에 의한 전면 불가",      "status_digit": "4", "label": "Present/Destroyed"},
+        {"engine_state": "시점 t에 유효구간 밖(미전개/미가용)", "status_digit": "1", "label": "Planned/Anticipated — 점선 프레임"},
+        {"engine_state": "기동/지형/정비에 의한 단절",  "status_digit": "1", "label": "Planned/Anticipated — 점선 프레임 + 원인 텍스트 증정보"},
+        {"engine_state": "원인 미상 단절",             "status_digit": "0", "label": "Present — 상태 오버레이 Health and Status>Unknown 병기, 3/4로 올리지 않는다"}
+      ],
+      "verified": false,
+      "source_note": "status 코드값 자체는 검증됐으나(code_tables.status), '어느 엔진 상태를 어느 코드에 붙일지'는 이 프로젝트의 설계 판단이다. 표준이 정해주는 것이 아니다. 교리 검토 필요."
+    },
+
+    "standard_cyber_status_symbols": {
+      "_summary": "2525D 심볼셋 60에 이미 존재하는 사이버 상태/효과 심볼. 자체 아이콘을 만들 이유가 없다.",
+      "verified": true,
+      "sources": [
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Cyberspace.xml",
+        "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/numbersidc/sidc/cyberspace.js"
+      ],
+      "source_note": "코드-라벨 대응이 두 출처에서 일치한다. MIL-STD-2525D 부록 L(Cyberspace) 원문 대조는 남아 있다. 2525E에서 같은 코드가 다른 의미로 재배정된 정황이 있으므로 버전 자릿수 10을 반드시 유지한다.",
+      "_identity_placeholder": "아래 SIDC들은 3-4 자릿수를 00(Reality/Pending)으로 둔 참조용 코드다. asset_type_map 의 완성형(03=Reality/Friend)과 다르다. 오버레이를 실제로 그릴 때 어느 소속으로 프레임을 씌울지는 미결이다 — 아군 자산에 나타난 Effect>Infection 을 아군(03)으로 그릴지 미상(01)으로 그릴지 교리 판단이 필요하다. 결정 전까지 00을 유지한다.",
+      "health_and_status": [
+        {"sidc": "10006000001301000000", "label": "Health and Status > Normal"},
+        {"sidc": "10006000001302000000", "label": "Health and Status > Network Outage"},
+        {"sidc": "10006000001303000000", "label": "Health and Status > Unknown"},
+        {"sidc": "10006000001304000000", "label": "Health and Status > Impaired"}
+      ],
+      "effect": [
+        {"sidc": "10006000001601000000", "label": "Effect > Infection"},
+        {"sidc": "10006000001602000000", "label": "Effect > Degradation"},
+        {"sidc": "10006000001603000000", "label": "Effect > Data Spoofing"},
+        {"sidc": "10006000001604000000", "label": "Effect > Data Manipulation"},
+        {"sidc": "10006000001605000000", "label": "Effect > Exfiltration"},
+        {"sidc": "10006000001606000000", "label": "Effect > Power Outage"},
+        {"sidc": "10006000001607000000", "label": "Effect > Network Outage"},
+        {"sidc": "10006000001608000000", "label": "Effect > Service Outage"},
+        {"sidc": "10006000001609000000", "label": "Effect > Device Outage"}
+      ],
+      "usage_rule": "Health and Status / Effect는 심볼셋 60 안의 별개 엔터티다. 장비 심볼과 한 SIDC로 합칠 수 없다(엔터티 자릿수는 하나뿐이다). 따라서 장비 노드 옆에 부가 심볼로 배치하거나, 노드 배지로 축소 렌더한다. 장비 아이콘 자체는 바꾸지 않는다."
+    },
+
+    "engine_state_to_overlay": {
+      "verified": false,
+      "source_note": "이 대응은 이 프로젝트의 설계 판단이다. 표준이 정하지 않는다. ADR-0013 개정 시 함께 확정할 것.",
+      "map": [
+        {"engine_state": "compromised",          "overlay_sidc": "10006000001601000000", "overlay_label": "Effect > Infection"},
+        {"engine_state": "mission_degraded",     "overlay_sidc": "10006000001602000000", "overlay_label": "Effect > Degradation"},
+        {"engine_state": "service_unavailable",  "overlay_sidc": "10006000001608000000", "overlay_label": "Effect > Service Outage"},
+        {"engine_state": "asset_unavailable",    "overlay_sidc": "10006000001609000000", "overlay_label": "Effect > Device Outage"},
+        {"engine_state": "link_down",            "overlay_sidc": "10006000001607000000", "overlay_label": "Effect > Network Outage"},
+        {"engine_state": "exfiltration_observed", "overlay_sidc": "10006000001605000000", "overlay_label": "Effect > Exfiltration"},
+        {"engine_state": "cause_unknown",        "overlay_sidc": "10006000001303000000", "overlay_label": "Health and Status > Unknown"},
+        {"engine_state": "impaired",             "overlay_sidc": "10006000001304000000", "overlay_label": "Health and Status > Impaired"},
+        {"engine_state": "normal",               "overlay_sidc": "10006000001301000000", "overlay_label": "Health and Status > Normal"}
+      ]
+    },
+
+    "color_policy": {
+      "rules": [
+        "프레임 색은 소속 전용이다. 침해·저하를 프레임 색으로 표현하지 않는다. 아군 프레임을 빨갛게 칠하면 표준의 핵심 의미(빨강=적대)를 파괴한다.",
+        "저하도 등급 색은 2525 심볼 바깥, 그래프 노드 장식(후광 링, 배경 원)에 얹는다. 심볼의 바운딩 박스 안을 침범하지 않는다.",
+        "테두리 점선은 status 자릿수 1(Planned/Anticipated)이 렌더러에서 자동으로 만든다. 별도로 그리지 않는다."
+      ],
+      "degradation_ring": {
+        "_note": "저하도(0.0~1.0)를 노드 후광 링 색으로 표현한다. 임계값은 결정론 엔진 설정이며 여기서 정하지 않는다(ADR-0003).",
+        "channel": "graph-node decoration, outside symbol bbox",
+        "verified": false,
+        "source_note": "2525 표준 밖의 자체 장식이다. 표준 대조 대상이 아니라 UI 설계 리뷰 대상."
+      },
+      "text_amplifiers": {
+        "_note": "임무 저하율 수치, 단절 원인 라벨(attack/mobility/terrain/maintenance/unknown), 소속 부대는 텍스트 증정보 필드에 넣는다.",
+        "fields_to_confirm": ["Additional Information (H)", "Staff Comments (F)", "Unique Designation (T)", "Operational Condition"],
+        "verified": false,
+        "source_note": "MIL-STD-2525D 5.3.7절 / 표 II(Amplifier fields)에서 필드 문자와 배치 위치를 확인해야 한다. milsymbol의 옵션 이름과 표준 필드 문자의 대응도 함께 확인 필요."
+      }
+    }
+  },
+
+  "asset_type_map": {
+    "_note": "sidc 는 defaults 가 적용된 완성형 20자리(version=10, context=0, affiliation=3(Friend), status=0). 런타임에 status/affiliation 자릿수만 치환한다. verified 는 코드 문자열 대 계층 라벨의 교차 확인 여부이고, mapping_reviewed 는 '이 자산 타입에 이 심볼이 맞는가'에 대한 사람 검토 여부다. mapping_reviewed 는 전부 false 다.",
+
+    "domain-controller": {
+      "scenarios": ["defnet-01"],
+      "sidc": "10036000001406000000",
+      "hierarchy": "Cyberspace > Device Type > Domain Server",
+      "symbol_set": "60",
+      "verified": true,
+      "mapping_reviewed": false,
+      "sources": [
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Cyberspace.xml",
+        "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/numbersidc/sidc/cyberspace.js"
+      ],
+      "source_note": "MIL-STD-2525D 부록 L 표(Device Type) 대조 필요. 'Domain Server'가 Windows AD 도메인 컨트롤러를 뜻하는지 DNS 도메인 서버를 뜻하는지 원문 정의 확인 필요 — 두 해석이 갈리면 매핑이 바뀐다.",
+      "alternatives": []
+    },
+
+    "mail-server": {
+      "scenarios": ["defnet-01"],
+      "sidc": "10036000001404000000",
+      "hierarchy": "Cyberspace > Device Type > Mail Server",
+      "symbol_set": "60",
+      "verified": true,
+      "mapping_reviewed": false,
+      "sources": [
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Cyberspace.xml",
+        "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/numbersidc/sidc/cyberspace.js"
+      ],
+      "source_note": "MIL-STD-2525D 부록 L 표 대조 필요. 2525E에서 140400은 Social Media로 재배정된 정황이 있다 — 버전 자릿수 고정 필수.",
+      "alternatives": []
+    },
+
+    "file-server": {
+      "scenarios": ["defnet-01"],
+      "sidc": "10036000001407000000",
+      "hierarchy": "Cyberspace > Device Type > File Server",
+      "symbol_set": "60",
+      "verified": true,
+      "mapping_reviewed": false,
+      "sources": [
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Cyberspace.xml",
+        "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/numbersidc/sidc/cyberspace.js"
+      ],
+      "source_note": "MIL-STD-2525D 부록 L 표 대조 필요.",
+      "alternatives": []
+    },
+
+    "web-server": {
+      "scenarios": ["defnet-01"],
+      "sidc": "10036000001405000000",
+      "hierarchy": "Cyberspace > Device Type > Web Server",
+      "symbol_set": "60",
+      "verified": true,
+      "mapping_reviewed": false,
+      "sources": [
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Cyberspace.xml",
+        "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/numbersidc/sidc/cyberspace.js"
+      ],
+      "source_note": "MIL-STD-2525D 부록 L 표 대조 필요.",
+      "alternatives": []
+    },
+
+    "firewall": {
+      "scenarios": ["defnet-01"],
+      "sidc": "10036000001409000000",
+      "hierarchy": "Cyberspace > Device Type > Firewall",
+      "symbol_set": "60",
+      "verified": true,
+      "mapping_reviewed": false,
+      "sources": [
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Cyberspace.xml",
+        "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/numbersidc/sidc/cyberspace.js"
+      ],
+      "source_note": "MIL-STD-2525D 부록 L 표 대조 필요. 2525E에서 방화벽은 130100(Agent > Firewall)로 옮겨간 정황이 있다.",
+      "alternatives": []
+    },
+
+    "switch": {
+      "scenarios": ["defnet-01"],
+      "sidc": "10036000001410000000",
+      "hierarchy": "Cyberspace > Device Type > Switch",
+      "symbol_set": "60",
+      "verified": true,
+      "mapping_reviewed": false,
+      "sources": [
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Cyberspace.xml",
+        "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/numbersidc/sidc/cyberspace.js"
+      ],
+      "source_note": "MIL-STD-2525D 부록 L 표 대조 필요. 2525E에서 스위치는 170700(Endpoint > Switch)로 옮겨간 정황이 있다.",
+      "alternatives": []
+    },
+
+    "workstation": {
+      "scenarios": ["defnet-01", "tacnet-01"],
+      "sidc": "10036000001411000000",
+      "hierarchy": "Cyberspace > Device Type > Host",
+      "symbol_set": "60",
+      "verified": true,
+      "mapping_reviewed": false,
+      "sources": [
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Cyberspace.xml",
+        "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/numbersidc/sidc/cyberspace.js"
+      ],
+      "source_note": "코드는 검증됐지만 2525D 심볼셋 60에는 workstation 전용 엔터티가 없다. Host로 대체한 것은 설계 판단이다. 2525E에는 170200(Endpoint > Workstation)이 있으므로 E로 이행하면 이 항목이 개선된다.",
+      "gap": true,
+      "alternatives": [
+        {"sidc_2525e": "13036000001702000000", "hierarchy": "Cyberspace > Endpoint > Workstation", "verified": false, "source_note": "2525E 표 원문 대조 필요. 근거는 npm milstandard-e@0.2.14 전사본 단일 출처."}
+      ]
+    },
+
+    "gateway": {
+      "scenarios": ["tacnet-01"],
+      "sidc": "10036000001402000000",
+      "hierarchy": "Cyberspace > Device Type > Router",
+      "symbol_set": "60",
+      "verified": true,
+      "mapping_reviewed": false,
+      "sources": [
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Cyberspace.xml",
+        "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/numbersidc/sidc/cyberspace.js"
+      ],
+      "source_note": "MIL-STD-2525D 부록 L 표 대조 필요. tacnet-01의 BFT-GW가 단순 라우팅인지 망간 연동(Cross Domain Solution)인지에 따라 대체안이 맞을 수 있다.",
+      "alternatives": [
+        {"sidc": "10036000001403000000", "hierarchy": "Cyberspace > Device Type > Cross Domain Solution", "verified": true},
+        {"sidc": "10036000001401000000", "hierarchy": "Cyberspace > Device Type > Core Router", "verified": true}
+      ]
+    },
+
+    "database": {
+      "scenarios": ["defnet-01"],
+      "sidc": "10036000001411000000",
+      "hierarchy": "Cyberspace > Device Type > Host",
+      "symbol_set": "60",
+      "verified": true,
+      "mapping_reviewed": false,
+      "gap": true,
+      "sources": [
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Cyberspace.xml",
+        "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/numbersidc/sidc/cyberspace.js"
+      ],
+      "source_note": "2525D에도 2525E에도 데이터베이스 서버 엔터티가 없다. Host + 텍스트 증정보 'DB'로 대체한다. 표준에 정말 없는지 부록 L 전체 표를 사람이 훑어 확인해야 한다.",
+      "text_amplifier_hint": "DB",
+      "alternatives": []
+    },
+
+    "hypervisor": {
+      "scenarios": ["defnet-01", "tacnet-01"],
+      "sidc": "10036000001411000000",
+      "hierarchy": "Cyberspace > Device Type > Host",
+      "symbol_set": "60",
+      "verified": true,
+      "mapping_reviewed": false,
+      "gap": true,
+      "sources": [
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Cyberspace.xml",
+        "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/numbersidc/sidc/cyberspace.js"
+      ],
+      "source_note": "가상화 호스트 엔터티는 표준에 없다. Host + 텍스트 증정보 'ESX'로 대체한다. hosted_on 엣지로 다수 게스트를 떠받치는 단일 장애점이라는 사실은 심볼이 아니라 그래프 위상이 표현한다(ADR-0001).",
+      "text_amplifier_hint": "ESX",
+      "alternatives": [
+        {"sidc": "10036000001412000000", "hierarchy": "Cyberspace > Device Type > Virtual Private Network (VPN)", "verified": true, "note": "적합하지 않음. 가상화와 VPN은 다른 개념이다. 기록만 남긴다."}
+      ]
+    },
+
+    "c2-server": {
+      "scenarios": ["tacnet-01"],
+      "sidc": "10036000001411000000",
+      "hierarchy": "Cyberspace > Device Type > Host",
+      "symbol_set": "60",
+      "verified": true,
+      "mapping_reviewed": false,
+      "gap": true,
+      "sources": [
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Cyberspace.xml",
+        "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/numbersidc/sidc/cyberspace.js"
+      ],
+      "source_note": "2525D 심볼셋 60에는 범용 'Server' 엔터티가 없고 역할별(mail/web/domain/file)만 있다. C2 서버에 해당하는 항목이 없다. 대체안 중 어느 쪽을 쓸지는 교리 검토 대상 — 자산으로 볼 것인가(심볼셋 60), 지휘통제 요소로 볼 것인가(심볼셋 10).",
+      "text_amplifier_hint": "C2",
+      "alternatives": [
+        {"sidc": "10031000001100000000", "hierarchy": "Land Unit > Command and Control", "verified": true, "sources": ["https://docs.carmenta.com/pages/milstd2525d_appendix_d.html", "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Land_Unit.xml"]},
+        {"sidc_2525e": "13036000001701000000", "hierarchy": "Cyberspace > Endpoint > Server", "verified": false, "source_note": "2525E 표 원문 대조 필요."}
+      ]
+    },
+
+    "fire-control-server": {
+      "scenarios": ["tacnet-01"],
+      "sidc": "10036000001411000000",
+      "hierarchy": "Cyberspace > Device Type > Host",
+      "symbol_set": "60",
+      "verified": true,
+      "mapping_reviewed": false,
+      "gap": true,
+      "sources": [
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Cyberspace.xml",
+        "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/numbersidc/sidc/cyberspace.js"
+      ],
+      "source_note": "사격지휘(FDC) 서버에 해당하는 사이버 엔터티가 없다. 자산 심볼은 Host로 두고, FDC를 부대 요소로 그릴 때만 대체안(Land Unit > Fires > Field Artillery)을 쓴다. 교리 검토 대상.",
+      "text_amplifier_hint": "FDC",
+      "alternatives": [
+        {"sidc": "10031000001303000000", "hierarchy": "Land Unit > Fires > Field Artillery", "verified": true, "sources": ["https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Land_Unit.xml", "https://cdn.jsdelivr.net/npm/milstandard-e@0.2.14/tsv-tables/Land%20unit.tsv"]}
+      ]
+    },
+
+    "terminal": {
+      "scenarios": ["tacnet-01"],
+      "sidc": "10036000001411000000",
+      "hierarchy": "Cyberspace > Device Type > Host",
+      "symbol_set": "60",
+      "verified": true,
+      "mapping_reviewed": false,
+      "gap": true,
+      "sources": [
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Cyberspace.xml",
+        "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/numbersidc/sidc/cyberspace.js"
+      ],
+      "source_note": "종단 단말 전용 엔터티가 2525D에 없다. 2525E의 Endpoint(17) 계열이 정확한 대응이다.",
+      "alternatives": [
+        {"sidc_2525e": "13036000001702000000", "hierarchy": "Cyberspace > Endpoint > Workstation", "verified": false, "source_note": "2525E 표 원문 대조 필요."}
+      ]
+    },
+
+    "c2-terminal": {
+      "scenarios": ["tacnet-01"],
+      "sidc": "10036000001411000000",
+      "hierarchy": "Cyberspace > Device Type > Host",
+      "symbol_set": "60",
+      "verified": true,
+      "mapping_reviewed": false,
+      "gap": true,
+      "sources": [
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Cyberspace.xml",
+        "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/numbersidc/sidc/cyberspace.js"
+      ],
+      "source_note": "지휘소·지휘차 단말. 이동성(mobility=mobile)은 심볼이 아니라 시간축 유효구간과 status 자릿수 1로 표현한다(state_overlay 참조). 2525E에서는 modifier 1의 Wireless/Radio Frequency 값으로 전송수단을 표기할 여지가 있으나 미검증이다.",
+      "text_amplifier_hint": "C2",
+      "alternatives": [
+        {"sidc_2525e": "13036000001702000000", "hierarchy": "Cyberspace > Endpoint > Workstation", "verified": false}
+      ]
+    },
+
+    "radio-relay": {
+      "scenarios": ["tacnet-01"],
+      "sidc": "10031000001108000000",
+      "hierarchy": "Land Unit > Command and Control > Radio Relay",
+      "symbol_set": "10",
+      "verified": true,
+      "mapping_reviewed": false,
+      "sources": [
+        "https://docs.carmenta.com/pages/milstd2525d_appendix_d.html",
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Land_Unit.xml",
+        "https://cdn.jsdelivr.net/npm/milstandard-e@0.2.14/tsv-tables/Land%20unit.tsv"
+      ],
+      "source_note": "세 출처가 코드 110800을 Radio Relay로 일치시킨다(2525D, 2525E 모두). MIL-STD-2525D 부록 D 원문 대조 필요. 중계소를 '부대'로 볼지 '장비'로 볼지는 교리 판단 — 부대 심볼을 쓰면 제대 증정보를 붙일 수 있다.",
+      "alternatives": [
+        {"sidc": "10031000001110020000", "hierarchy": "Land Unit > Command and Control > Signal > Radio Relay", "verified": true}
+      ]
+    },
+
+    "satcom-terminal": {
+      "scenarios": ["tacnet-01"],
+      "sidc": "10031500002001000000",
+      "hierarchy": "Land Equipment > Other Equipment > Antennae",
+      "symbol_set": "15",
+      "verified": true,
+      "mapping_reviewed": false,
+      "sources": [
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Land_Equipment.xml",
+        "https://cdn.jsdelivr.net/npm/milstandard-e@0.2.14/tsv-tables/Land%20equipment.tsv"
+      ],
+      "source_note": "코드 200100=Antennae는 2525D/E 양쪽에서 일치한다. 다만 'Antennae'는 위성단말을 특정하지 않는다. 대체안 Land Unit > Command and Control > Tactical Satellite(111100)가 의미상 더 가깝지만, 2525E에서 111100과 111004가 {Disused}로 표시되고 111300 Space로 대체된 정황이 있다 — 버전 이행 시 이 항목이 깨진다.",
+      "alternatives": [
+        {"sidc": "10031000001111000000", "hierarchy": "Land Unit > Command and Control > Tactical Satellite", "verified": true, "note": "2525E에서 Disused로 보임"},
+        {"sidc": "10031000001110040000", "hierarchy": "Land Unit > Command and Control > Signal > Tactical Satellite", "verified": true, "note": "2525E에서 Disused로 보임"},
+        {"sidc_2525e": "13031000001113000000", "hierarchy": "Land Unit > Command and Control > Signal > Space", "verified": false, "source_note": "2525E 표 원문 대조 필요."}
+      ]
+    },
+
+    "observer-terminal": {
+      "scenarios": ["tacnet-01"],
+      "sidc": "10036000001411000000",
+      "hierarchy": "Cyberspace > Device Type > Host",
+      "symbol_set": "60",
+      "verified": true,
+      "mapping_reviewed": false,
+      "gap": true,
+      "sources": [
+        "https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Cyberspace.xml",
+        "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/numbersidc/sidc/cyberspace.js"
+      ],
+      "source_note": "tacnet-01의 FO-TAB은 android 태블릿이다. 2525D 심볼셋 60에 휴대단말 엔터티가 없다. 2525E의 Endpoint > Portable Electronic Device > Tablet(170302)이 정확한 대응이지만 미검증이다. 관측반을 부대로 그린다면 Land Unit > Fires > Field Artillery Observer(130400)가 대체안이다.",
+      "alternatives": [
+        {"sidc_2525e": "13036000001703020000", "hierarchy": "Cyberspace > Endpoint > Portable Electronic Device > Tablet", "verified": false, "source_note": "2525E 표 원문 대조 필요."},
+        {"sidc": "10031000001304000000", "hierarchy": "Land Unit > Fires > Field Artillery Observer", "verified": true, "sources": ["https://raw.githubusercontent.com/Esri/joint-military-symbology-xml/dev/instance/Land_Unit.xml", "https://cdn.jsdelivr.net/npm/milstandard-e@0.2.14/tsv-tables/Land%20unit.tsv"]}
+      ]
+    }
+  },
+
+  "unit_symbols": {
+    "_note": "tacnet-01 의 units[] 를 부대 심볼로 그릴 때 쓴다. 자산 심볼과 다른 축이므로 asset_type_map 에 넣지 않는다.",
+    "verified": false,
+    "source_note": "제대 증정보 코드는 검증됐으나(code_tables.amplifier_echelon), 각 부대에 어떤 엔터티(보병/포병/지휘통제)를 붙일지는 시나리오 저자가 정하지 않았다. tacnet-01 units[] 에 병과 정보가 없다.",
+    "echelon_amplifier": {"BDE": "18", "BN": "16", "CO": "15"},
+    "example": {
+      "sidc": "10031000181100000000",
+      "hierarchy": "Land Unit > Command and Control (Brigade)",
+      "note": "digits 9-10 = 18(Brigade). U-BDE 를 지휘통제 요소로 그린 예시일 뿐 확정 매핑이 아니다."
+    }
+  },
+
+  "renderer": {
+    "chosen": null,
+    "note": "Q5(UI 스택) 미확정. 아래는 ADR-0013 '결과' 절이 요구한 렌더러 호환성 조사 결과다.",
+    "candidates": [
+      {
+        "name": "milsymbol",
+        "repo": "https://github.com/spatialillusions/milsymbol",
+        "npm": "https://www.npmjs.com/package/milsymbol",
+        "latest_release_seen": "v3.0.4 (2026-03-10)",
+        "language": "JavaScript, SVG/Canvas 출력, 의존성 없음",
+        "supports_symbol_set_60": true,
+        "supports_2525d": true,
+        "supports_2525e": true,
+        "edition_selection": "SIDC 1-2 자릿수로 결정된다. 10/11/12 -> edition D, 13/14 -> edition E. 같은 엔터티 코드가 편집판별로 다른 아이콘에 매핑된다.",
+        "sidc_input": "20자리 숫자 SIDC. 22자리 이상을 주면 21번째부터를 modifier 확장/frameshape 로 읽는다.",
+        "cyberspace_frame_dimension": "Ground",
+        "verified": true,
+        "sources": [
+          "https://github.com/spatialillusions/milsymbol/blob/master/README.md",
+          "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/numbersidc/sidc/cyberspace.js",
+          "https://raw.githubusercontent.com/spatialillusions/milsymbol/master/src/numbersidc/metadata.js"
+        ],
+        "source_note": "저장소 소스에서 직접 확인했다. 실제 렌더 결과를 눈으로 확인한 것은 아니다 — 이 프로젝트 환경에 Node가 없어 실행 검증을 못 했다(CLAUDE.md 개발환경). Node 설치 후 심볼셋 60 렌더 스모크 테스트 필요."
+      },
+      {
+        "name": "mil-sym-java",
+        "repo": "https://github.com/missioncommand/mil-sym-java",
+        "note": "2525D Change 1 및 2525E Change 1 전체 지원을 표방한다. Java 미설치 환경이라 후보에서 밀린다(CLAUDE.md 개발환경).",
+        "verified": false,
+        "source_note": "저장소 설명 문구만 확인했다. 지원 범위 실측 안 함."
+      },
+      {
+        "name": "Carmenta Engine",
+        "note": "상용. 2525D 부록 중 사이버(L)와 METOC(I)를 지원하지 않는다고 문서에 명시. 이 프로젝트에는 부적합 — 심볼셋 60이 핵심이다.",
+        "verified": true,
+        "sources": ["https://docs.carmenta.com/pages/milstd2525d_symbols.html"],
+        "source_note": "제품 문서의 명시적 서술이다."
+      }
+    ]
+  },
+
+  "verification_rule": {
+    "verified_true_means": "SIDC 문자열과 계층 라벨의 대응이 서로 독립적인 두 개 이상의 공개 출처에서 일치했다.",
+    "independence_criterion": "Esri/JMSML(DISA 인코딩 계열), spatialillusions/milsymbol, Carmenta 제품문서를 서로 독립으로 본다. milstandard-e npm 패키지는 milsymbol 과 같은 저자이므로 milsymbol 과 독립으로 세지 않는다.",
+    "verified_true_does_not_mean": "표준 원문(MIL-STD-2525D PDF)을 대조했다는 뜻이 아니다. 또한 그 심볼을 이 자산 타입에 쓰는 것이 옳다는 뜻도 아니다(mapping_reviewed 참조).",
+    "mapping_reviewed_all_false": true,
+    "next_gate": "docs/12-symbology-mapping.md 의 '사람이 원문 대조해야 하는 항목' 절을 소진해야 이 파일을 draft-unverified 에서 올릴 수 있다."
+  }
+}

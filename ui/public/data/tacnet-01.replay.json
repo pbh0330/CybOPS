@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-09-06T21:01:57.9268226+09:00",
+    "generated":  "2026-09-06T21:14:53.9229524+09:00",
     "generator":  "scripts/Export-ReplayData.ps1",
     "contract":  1,
     "note":  "Precomputed by the deterministic engine. The UI displays these numbers and never recomputes them (ADR-0003).",

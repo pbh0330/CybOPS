@@ -7,7 +7,11 @@
 // unverified in that file, and unverified codes are drawn with a dashed
 // outline here so nobody mistakes a guess for a standard.
 
-import ms from 'milsymbol'
+// milsymbol has shipped both a default export (2.x) and a namespace with a
+// named Symbol (3.x). Take whichever this install provides rather than
+// pinning the import shape.
+import * as msNS from 'milsymbol'
+const ms = msNS.default ?? msNS
 
 let table = null
 let missing = new Set()
@@ -26,10 +30,14 @@ export async function loadSymbology(base = './data/symbology-2525.json') {
 
 function entryFor(type) {
   if (!table) return null
-  const m = table.mapping || table.types || table
+  const m = table.asset_type_map || table.mapping || table.types || table
   const e = m ? m[type] : null
-  if (!e) { missing.add(type); return null }
-  return typeof e === 'string' ? { sidc: e } : e
+  if (!e || typeof e !== 'object' || !e.sidc) {
+    if (typeof e === 'string') return { sidc: e }
+    missing.add(type)
+    return null
+  }
+  return e
 }
 
 export function unmappedTypes() {

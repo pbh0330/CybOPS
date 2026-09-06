@@ -42,7 +42,15 @@ export function buildElements(g) {
         performedAt: t.performed_at || '', criticality: t.criticality,
       },
     })
-    if (ph.mission) els.push({ data: { id: `e:${t.id}->${ph.mission}`, source: t.id, target: ph.mission, kind: 'part_of' } })
+    // direction is mission -> task on purpose: dagre ranks by edge direction, and
+    // the picture has to read top-down as mission > task > service > asset
+    if (ph.mission) els.push({ data: { id: `e:${ph.mission}->${t.id}`, source: ph.mission, target: t.id, kind: 'part_of' } })
+    // where the work is actually done. Without this edge the terminals float
+    // free in the dependency view, and "which terminal can still reach the
+    // service" is exactly what the time axis is about.
+    if (t.performed_at) {
+      els.push({ data: { id: `e:at:${t.id}->${t.performed_at}`, source: t.id, target: t.performed_at, kind: 'performed_at' } })
+    }
   }
   for (const s of g.services || []) {
     els.push({
@@ -53,7 +61,7 @@ export function buildElements(g) {
     })
   }
   for (const a of g.assets || []) {
-    const uri = symbolDataUri(a.type, { size: 30 })
+    const uri = symbolDataUri(a.type, { size: 40 })
     els.push({
       data: {
         id: a.id, kind: 'asset', label: a.id, assetType: a.type,
@@ -133,18 +141,20 @@ export function stylesheet() {
     },
     {
       selector: 'node[kind="service"]',
-      style: { 'shape': 'diamond', 'width': 46, 'height': 46 },
+      style: { 'shape': 'diamond', 'width': 54, 'height': 54 },
     },
     {
       selector: 'node[kind="asset"]',
-      style: { 'shape': 'round-rectangle', 'width': 42, 'height': 42 },
+      style: { 'shape': 'round-rectangle', 'width': 54, 'height': 54 },
     },
     {
       selector: 'node[kind="asset"][symbol != ""]',
       style: {
         'background-image': 'data(symbol)',
         'background-fit': 'contain',
-        'background-opacity': 0.14,
+        'background-opacity': 0.5,
+        'background-width': '78%',
+        'background-height': '78%',
         'background-image-opacity': 1,
       },
     },
@@ -170,6 +180,10 @@ export function stylesheet() {
       },
     },
     { selector: 'edge[kind="part_of"]', style: { 'line-style': 'dotted', 'target-arrow-shape': 'none' } },
+    {
+      selector: 'edge[kind="performed_at"]',
+      style: { 'line-style': 'dashed', 'line-color': '#4a5f7a', 'target-arrow-color': '#4a5f7a', 'arrow-scale': 0.7 },
+    },
     { selector: 'edge[kind="hosted_on"]', style: { 'line-style': 'dashed' } },
     { selector: 'edge[kind="depends_on"]', style: { 'line-color': '#3b4a5c', 'label': 'data(label)' } },
     {
@@ -194,9 +208,9 @@ export function stylesheet() {
 export const LAYOUTS = {
   dependency: {
     name: 'dagre',
-    rankDir: 'BT',
-    nodeSep: 26,
-    rankSep: 70,
+    rankDir: 'TB',
+    nodeSep: 22,
+    rankSep: 78,
     animate: false,
     fit: true,
     padding: 30,
