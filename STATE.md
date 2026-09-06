@@ -9,8 +9,9 @@
 | 데이터 | LANL **5/5 완료·검증**, AIT **1/8 완료(의도된 범위)**, OpTC 그라운드트루스만 |
 | 라벨 | 세 데이터셋 모두 확보. OpTC는 PDF→JSONL 구조화 완료(101건, 미분류 0) |
 | 결정 | Q1·Q2·Q3·Q4·Q6 확정(ADR-0012~0016). **남은 미결은 Q5(UI 스택) 하나** |
-| 다음 | Q5 확정 → 시간축 온톨로지 → 2525 심볼 → 상황도 UI (데모 1순위) |
-| 상태 | **실행 중인 작업 없음.** 작업트리 clean, `origin/main` 동기 |
+| 모델 | **시간축 온톨로지 완료**(ADR-0017) — `scenarios/tacnet-01/`, 원인 분해 동작 |
+| 다음 | **Q5 확정** → 2525 심볼 매핑 → 상황도 UI (데모 1순위) |
+| 도구 | Figma **pro / Full 좌석**(2026-09-06 확인) — 월 20회 한도 해소, 편집 가능 |
 
 ## 위치
 
@@ -53,17 +54,19 @@ Git이 그 안을 보지 않아 `!data/README.md` 예외가 무시된다. 첫 �
 
 ## 한 줄 요약
 
-기획 문서 완료. **오프라인 합성 트랙 동작 확인 완료 — 인터넷 없이 개발 가능.**
-데이터셋 취득은 AIT 일시정지, **LANL 4/5 완료** (`auth.txt.gz` 취득 진행 중).
+기획 문서 완료. **오프라인 트랙 동작 확인 완료 — 인터넷 없이 개발 가능.**
+데이터는 **LANL 5/5 완료·검증**, AIT 1/8(의도된 범위), OpTC는 그라운드트루스만.
+모델은 **전술망 시간축까지 구현 완료**(ADR-0017).
 
 ## 지금 당장 돌려볼 수 있는 것
 
 ```powershell
 cd F:\F\other_class\CybOPS
-.\scripts\Test-Ontology.ps1                            # 온톨로지 검증
-.\scripts\New-SyntheticTelemetry.ps1                   # 합성 데이터 생성
-.\scripts\Show-MissionReplay.ps1                       # 시간축 상황도
-.\scripts\Show-MissionReplay.ps1 -WhatIfIsolate ESX01  # 봉쇄 비용 what-if
+.\scripts\Test-Ontology.ps1                              # 정적 온톨로지 검증
+.\scripts\Test-Ontology.ps1 -Scenario scenarios\tacnet-01\mission.json   # 시간축 검증
+.\scripts\Show-TacticalReplay.ps1 -Step 15               # 전술망 시간축 + 원인 분해
+.\scripts\New-SyntheticTelemetry.ps1                     # 합성 데이터 생성
+.\scripts\Show-MissionReplay.ps1 -WhatIfIsolate ESX01    # 봉쇄 비용 what-if
 ```
 
 전부 네트워크 없이 동작한다. 상세는 `docs/07-synthetic-data.md`.
@@ -154,14 +157,9 @@ OpTC만 기계가 못 읽는 형태라 `scripts/build_optc_labels.py`로 변환�
 기반 실험에는 지장이 없다. 다만 "정상만 있는 구간"을 음성 샘플로 잡을 때 `flows`는
 36.19일까지만 쓸 수 있다.
 
-미완료 — `auth.txt.gz` (실제 크기 7,626,505,158 B = 7.10 GiB):
+#### 무인 취득 체인 — 종료됨 (기록)
 
-Chrome이 받는 중이다. 22:19 기준 1,134 MB (15.6%), 0.61 MB/s, **완료 예상 09-06 01:05.**
-`auth.txt.gz`가 가장 중요하다. 레드팀 이벤트가 인증 로그와 맞물려야 측면이동 탐지가 성립한다.
-
-#### 무인 취득 체인이 돌고 있다
-
-`scripts/Invoke-AcquireChain.ps1`이 백그라운드(detached)에서 실행 중이다.
+`scripts/Invoke-AcquireChain.ps1`이 백그라운드(detached)로 돌았다. 지금은 실행 중이 아니다.
 
 ```
 auth.txt.gz 완료 대기 -> lanl-cyber1로 이동 -> 무결성 검증 -> AIT 재개
@@ -241,7 +239,8 @@ C: 831.6 GB / F: 919.6 GB
 
 ## 1.5 오프라인 합성 트랙 — 동작 확인 완료
 
-Python·Node·Java 모두 미설치. **가용 런타임은 Windows PowerShell 5.1뿐이다.**
+참조 구현을 짜던 시점에는 Python·Node·Java가 전부 미설치였고 **가용 런타임이 Windows
+PowerShell 5.1뿐이었다.** (지금은 Python 3.12가 있다 — 2절 개발환경 표 참조.)
 그래서 참조 구현을 PowerShell로 작성했다. 데이터 아티팩트(JSON/JSONL)는 언어 독립이므로
 나중에 Python으로 포팅해도 그대로 쓴다.
 
@@ -249,10 +248,13 @@ Python·Node·Java 모두 미설치. **가용 런타임은 Windows PowerShell 5.
 scenarios/defnet-01/mission.json       임무 온톨로지 (자산 16, 서비스 5, 작업 4, 임무 2)
 scenarios/defnet-01/attack-chain.json  12단계 침투 시나리오 + 상태 궤적
 scenarios/defnet-01/synthetic/         생성 결과 (events 8,012 / labels 12 / states 10)
+scenarios/tacnet-01/mission.json        전술망 온톨로지 + 시간축 (자산 13, 링크 12, 작업 8)
+scenarios/tacnet-01/attack-timeline.json 7단계 침해 궤적 (환경 단절은 여기 넣지 않는다)
 scripts/New-SyntheticTelemetry.ps1     합성 텔레메트리 생성기
-scripts/Invoke-MissionPropagation.ps1  결정론 전파 엔진 (D 계층)
-scripts/Show-MissionReplay.ps1         시간축 리플레이 + what-if
-scripts/Test-Ontology.ps1              온톨로지 검증기 (음성 테스트 통과)
+scripts/Invoke-MissionPropagation.ps1  결정론 전파 엔진 (D 계층). -At 로 시간축 평가
+scripts/Show-MissionReplay.ps1         정적 시나리오 리플레이 + what-if
+scripts/Show-TacticalReplay.ps1        시간축 리플레이 + 원인 분해
+scripts/Test-Ontology.ps1              온톨로지 검증기 (시간축·도달성 검사 포함)
 scripts/Add-Bom.ps1                    PS 5.1 인코딩 사고 방지
 ```
 
@@ -263,6 +265,11 @@ scripts/Add-Bom.ps1                    PS 5.1 인코딩 사고 방지
 - **ESX01 격리 what-if는 시작부터 70.1% 저하** — 봉쇄가 공격보다 비싸다. ADR-0004의 근거.
 - 초기 모델링 오류를 실측으로 발견: 의존을 자산에 직접 걸면 이중화를 우회한다.
   서비스 id로 걸도록 수정했고 검증기가 이 실수를 잡는다.
+- **전술망(tacnet-01): 300분 구간에서 공격 단독 0%, 환경 단독 0%, 실제 저하 52.63%.**
+  도달 불가능한 이중화는 이중화가 아니다. 시간축을 넣은 실질적 이유이자 데모 장면이다.
+- 시간축에서도 같은 종류의 모델링 오류를 실측으로 잡았다 — 관측반 태블릿이 위성 단절을
+  우회 중계했고(→ `Asset.transit`), 침해된 중대 단말의 임무 영향이 0이었다
+  (→ `task_deg >= impact(performed_at)`). 상세는 `docs/11-tactical-time-axis.md` 3절.
 
 ### 알려진 제약
 
@@ -291,8 +298,9 @@ docs/07-synthetic-data.md    오프라인 합성 트랙 + 인코딩 함정
 docs/08-lanl-ground-truth.md LANL 라벨 실측 — 측면이동 없음, 베이스라인 precision 1.46%
 docs/09-optc-acquisition.md  OpTC 최소 취득 세트 + 라벨 구조화
 docs/10-limitations.md       못하는 것 (구조적 / 자원 / 미결)
+docs/11-tactical-time-axis.md 전술망 시간축 실측 — 원인 분해, 도달성, 잡은 오류 2건
 docs/99-open-questions.md    남은 미결 = Q5 하나
-docs/adr/0001~0016           결정 기록
+docs/adr/0001~0017           결정 기록 (0017 = 시간축 임무 그래프)
 
 scripts/
   fetch-ait.ps1              AIT 취득 (범위 축소됨, $deferred 참조)
@@ -306,11 +314,12 @@ scripts/
   Measure-HostProfile.ps1    17,666개 호스트 행동 프로파일
   build_optc_labels.py       OpTC PDF → 기계 판독 라벨
   New-SyntheticTelemetry.ps1 / Invoke-MissionPropagation.ps1 /
-  Show-MissionReplay.ps1 / Test-Ontology.ps1 / Add-Bom.ps1
+  Show-MissionReplay.ps1 / Show-TacticalReplay.ps1 / Test-Ontology.ps1 / Add-Bom.ps1
 
 analysis/lanl/               redteam-profile, auth-join, host-profile (CSV는 gitignore)
 analysis/optc/               redteam-events.jsonl, redteam-labels.json
-scenarios/defnet-01/         임무 온톨로지 + 공격 시나리오 + 합성 데이터
+scenarios/defnet-01/         임무 온톨로지 + 공격 시나리오 + 합성 데이터 (정적)
+scenarios/tacnet-01/         전술망 온톨로지 + 시간축 + 침해 궤적
 ```
 
 **개발 환경** (2026-09-06 갱신)
@@ -372,9 +381,22 @@ PowerShell 참조 구현은 그대로 유지한다. 대용량 스캔은 PowerShe
    ADR-0013이 이미 "2525 렌더러가 있는 웹 스택"으로 좁혀놨다. 선정 기준:
    심볼 렌더링 **포함** 성능(노드 수천 개), 저대역폭 델타 동기화, 오프라인 동작.
 
-1. **시간축 임무 온톨로지** — `03-mission-ontology.md`에 유효 구간·임무 단계 스키마 추가.
-   전술망의 새 요구사항인 **기동/지형 단절 vs 공격 저하 구분**을 모델에 넣는다(ADR-0012 2항).
-   기존 `scenarios/defnet-01/`은 단일 스냅샷으로 재해석하고 그 위에 시간축을 얹는다.
+1. ~~**시간축 임무 온톨로지**~~ → **완료 (2026-09-06, ADR-0017)**
+
+   `scenarios/tacnet-01/` (자산 13, 링크 12, 작업 8, 단계 5, 420분). 엔진에 `-At` 추가,
+   `Show-TacticalReplay.ps1` 추가, 검증기에 시간축·정적 도달성 검사 추가.
+   실측: [11-tactical-time-axis.md](docs/11-tactical-time-axis.md).
+
+   | 시점 | 상황 | total | attack | env | inter |
+   |---|---|---|---|---|---|
+   | 120분 | 지휘소 이동, 공격 없음 | 59.99% | **0%** | 59.99% | 0% |
+   | 300분 | 위성 단절(미상) + BN-SRV 장악 | 52.63% | **0%** | **0%** | **52.63%** |
+   | 390분 | TOC-SRV 장악, 환경 정상 | 52.63% | 52.63% | 0% | 0% |
+
+   300분이 이 과제의 데모 장면이다 — **어느 원인 하나만으로는 이 저하가 생기지 않는다.**
+   도달 불가능한 이중화는 이중화가 아니기 때문이고, 정적 그래프로는 표현 자체가 안 된다.
+   `defnet-01` 회귀 확인 완료(DC01 0.0% / DC01+DC02 80.5% / ESX01 격리 70.1%, 전부 동일).
+
 2. **`Asset.type` → SIDC 매핑 테이블** (ADR-0013)
 3. **상황도 UI + 시간축 리플레이** — 데모 그 자체
 4. **what-if 인터랙션** — 가장 설득력 있는 장면. 숫자는 이미 있다(ESX01 격리 = 70.1% 저하)

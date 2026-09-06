@@ -77,6 +77,118 @@ foreach ($e in $g.edges.communicates_with) {
   if (-not $assetIds.ContainsKey($e.b))      { Err "communicates_with.b 없는 자산: $($e.b)" }
 }
 
+# ---------------------------------------------------------------- temporal layer (ADR-0012)
+#
+# 시간축이 있는 시나리오만 검사한다. defnet-01 처럼 timeline 이 없으면 전부 건너뛴다.
+
+function AsArray($x) { if ($null -eq $x) { return @() } return @($x) }
+
+$CAUSES = @('attack','mobility','terrain','maintenance','unknown')
+$temporal = ($null -ne $g.timeline)
+$links = AsArray $g.links
+
+$linkIds = @{}
+foreach ($l in $links) {
+  if (-not $l.id)                       { Err "링크에 id 가 없다" ; continue }
+  if ($linkIds.ContainsKey($l.id))      { Err "중복 링크 id: $($l.id)" }
+  $linkIds[$l.id] = $true
+  if (-not $assetIds.ContainsKey($l.a)) { Err "link $($l.id).a 없는 자산: $($l.a)" }
+  if (-not $assetIds.ContainsKey($l.b)) { Err "link $($l.id).b 없는 자산: $($l.b)" }
+  if ($l.a -eq $l.b)                    { Err "link $($l.id) 이 자기 자신을 연결한다" }
+}
+
+if ($temporal) {
+  $horizon = [double]$g.timeline.horizon
+  if ($horizon -le 0) { Err "timeline.horizon 이 양수가 아니다: $horizon" }
+  if (-not $g.timeline.unit) { Warn "timeline.unit 이 없다 — 시간 단위가 문서화되지 않는다" }
+
+  function Test-Window($w, $label, $horizon) {
+    if ($null -eq $w) { return }
+    if ($null -eq $w.from -or $null -eq $w.to) { Err "$label 구간에 from/to 가 없다"; return }
+    if ([double]$w.from -ge [double]$w.to)     { Err "$label 구간이 비었거나 뒤집혔다: [$($w.from), $($w.to))" }
+    if ([double]$w.from -lt 0)                 { Err "$label 구간 시작이 음수다: $($w.from)" }
+    if ([double]$w.to -gt $horizon)            { Err "$label 구간 끝이 horizon($horizon)을 넘는다: $($w.to)" }
+  }
+
+  foreach ($p in $g.phases) {
+    if ($null -eq $p.window) { Err "phase $($p.id) 에 window 가 없다 — 시간축 시나리오에서는 필수다"; continue }
+    Test-Window $p.window "phase $($p.id)" $horizon
+  }
+
+  # 임무별로 어느 시점에도 활성 단계가 없는 구멍이 있으면 그 구간의 저하도는 정의되지 않는다.
+  foreach ($m in $g.missions) {
+    $mp = @($g.phases | Where-Object { $_.mission -eq $m.id -and $null -ne $_.window })
+    if ($mp.Count -eq 0) { continue }
+    $covered = 0
+    foreach ($p in $mp) { $covered += ([double]$p.window.to - [double]$p.window.from) }
+    $span = (($mp | ForEach-Object { [double]$_.window.to } | Measure-Object -Maximum).Maximum -
+             ($mp | ForEach-Object { [double]$_.window.from } | Measure-Object -Minimum).Minimum)
+    if ($covered -lt $span) { Warn "임무 $($m.id) 의 단계 사이에 빈 시간이 있다 — 그 구간에는 저하도가 정의되지 않는다" }
+  }
+
+  foreach ($t in $g.tasks) {
+    if (-not $t.performed_at) { Err "task $($t.id) 에 performed_at 이 없다 — 도달성을 계산할 수 없다"; continue }
+    if (-not $assetIds.ContainsKey($t.performed_at)) { Err "task $($t.id).performed_at 없는 자산: $($t.performed_at)" }
+  }
+
+  $outageOwners = @()
+  foreach ($a in $g.assets) { $outageOwners += ,@("asset $($a.id)", (AsArray $a.outages)) }
+  foreach ($l in $links)    { $outageOwners += ,@("link $($l.id)",  (AsArray $l.outages)) }
+  foreach ($ow in $outageOwners) {
+    foreach ($o in $ow[1]) {
+      Test-Window $o $ow[0] $horizon
+      $c = 'unknown'
+      if ($o.cause) { $c = [string]$o.cause }
+      if ($CAUSES -notcontains $c) { Err "$($ow[0]) outage 의 cause 가 정의되지 않았다: $c (허용: $($CAUSES -join ', '))" }
+      if (-not $o.cause) { Warn "$($ow[0]) outage 에 cause 가 없다 — unknown 으로 처리된다" }
+      if ($c -eq 'attack') { Err "$($ow[0]) outage 에 cause=attack 을 쓰지 않는다. 공격 상태는 attack-timeline 입력으로 넣는다" }
+    }
+  }
+
+  if ($links.Count -eq 0) { Err "시간축 시나리오인데 links 가 없다 — 도달성 모델이 성립하지 않는다" }
+
+  # 정적 도달성: 모든 링크가 살아 있다고 가정해도 작업이 요구 서비스에 닿지 못하면 모델링 오류다.
+  # (경유 불가 단말 transit=false 는 남의 트래픽을 중계하지 않는다)
+  $transit = @{}
+  foreach ($a in $g.assets) {
+    $transit[$a.id] = $true
+    if ($null -ne $a.transit -and -not $a.transit) { $transit[$a.id] = $false }
+  }
+  $adj = @{}
+  foreach ($a in $g.assets) { $adj[$a.id] = New-Object System.Collections.ArrayList }
+  foreach ($l in $links) {
+    if (-not ($assetIds.ContainsKey($l.a) -and $assetIds.ContainsKey($l.b))) { continue }
+    [void]$adj[$l.a].Add($l.b); [void]$adj[$l.b].Add($l.a)
+  }
+  function Get-StaticReach($start, $adj, $transit) {
+    $seen = @{}; $seen[$start] = $true
+    $stack = New-Object System.Collections.Stack
+    foreach ($m in $adj[$start]) { if (-not $seen.ContainsKey($m)) { $seen[$m] = $true; if ($transit[$m]) { $stack.Push($m) } } }
+    while ($stack.Count -gt 0) {
+      $n = $stack.Pop()
+      foreach ($m in $adj[$n]) {
+        if ($seen.ContainsKey($m)) { continue }
+        $seen[$m] = $true
+        if ($transit[$m]) { $stack.Push($m) }
+      }
+    }
+    return $seen
+  }
+  foreach ($t in $g.tasks) {
+    if (-not $t.performed_at -or -not $assetIds.ContainsKey($t.performed_at)) { continue }
+    $reach = Get-StaticReach $t.performed_at $adj $transit
+    foreach ($r in @($g.edges.requires | Where-Object { $_.from -eq $t.id })) {
+      $ok = $false
+      foreach ($pr in @($g.edges.provided_by | Where-Object { $_.from -eq $r.to })) {
+        if ($reach.ContainsKey($pr.to)) { $ok = $true; break }
+      }
+      if (-not $ok) {
+        Err "task $($t.id)(@$($t.performed_at)) 가 요구 서비스 $($r.to) 의 어떤 제공 자산에도 도달할 수 없다 (모든 링크가 살아 있다고 가정해도)"
+      }
+    }
+  }
+}
+
 # ---------------------------------------------------------------- redundancy bypass
 #
 # The mistake that cost real numbers on 2026-09-05: an asset-level depends_on
@@ -153,6 +265,7 @@ foreach ($a in $g.assets) {
   if (@($g.edges.hosted_on         | Where-Object { $_.from -eq $a.id -or $_.to -eq $a.id }).Count -gt 0) { $used = $true }
   if (@($g.edges.depends_on        | Where-Object { $_.from -eq $a.id -or $_.to -eq $a.id }).Count -gt 0) { $used = $true }
   if (@($g.edges.communicates_with | Where-Object { $_.a    -eq $a.id -or $_.b  -eq $a.id }).Count -gt 0) { $used = $true }
+  if (@($links | Where-Object { $_.a -eq $a.id -or $_.b -eq $a.id }).Count -gt 0) { $used = $true }
   if (-not $used) { Warn "자산 $($a.id) 이 어떤 엣지에도 연결되어 있지 않다" }
 }
 
@@ -165,8 +278,11 @@ foreach ($cj in $g.crown_jewels) {
 
 Write-Output ""
 Write-Output "ontology check: $($g.scenario_id)"
-Write-Output ("  자산 {0}, 서비스 {1}, 작업 {2}, 단계 {3}, 임무 {4}" -f `
-  $g.assets.Count, $g.services.Count, $g.tasks.Count, $g.phases.Count, $g.missions.Count)
+Write-Output ("  자산 {0}, 서비스 {1}, 작업 {2}, 단계 {3}, 임무 {4}, 링크 {5}" -f `
+  $g.assets.Count, $g.services.Count, $g.tasks.Count, $g.phases.Count, $g.missions.Count, $links.Count)
+if ($temporal) {
+  Write-Output ("  시간축: {0} 단위, horizon {1}, t0 {2}" -f $g.timeline.unit, $g.timeline.horizon, $g.timeline.t0_iso)
+}
 Write-Output ""
 
 if ($errors.Count -eq 0) {

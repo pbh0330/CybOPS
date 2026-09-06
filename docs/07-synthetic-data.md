@@ -21,18 +21,23 @@ scenarios/defnet-01/
     ├── states.jsonl      시점별 자산 침해 판정 10개
     └── summary.json      건수, 클래스 비율, 시간 범위
 
+scenarios/tacnet-01/
+├── mission.json          L2 전술망 온톨로지 + 시간축 (자산 13, 링크 12, 작업 8, 단계 5, 임무 2)
+└── attack-timeline.json  7단계 침해 궤적 (환경 단절은 여기 넣지 않는다)
+
 scripts/
-├── New-SyntheticTelemetry.ps1   생성기
-├── Invoke-MissionPropagation.ps1 결정론 전파 엔진 (D 계층)
-├── Show-MissionReplay.ps1        시간축 상황도 리플레이 + what-if
-├── Test-Ontology.ps1             온톨로지 검증기
+├── New-SyntheticTelemetry.ps1    생성기
+├── Invoke-MissionPropagation.ps1 결정론 전파 엔진 (D 계층). -At 로 시간축 평가
+├── Show-MissionReplay.ps1        정적 시나리오 리플레이 + what-if
+├── Show-TacticalReplay.ps1       시간축 리플레이 + 원인 분해 (total/attack/env/inter)
+├── Test-Ontology.ps1             온톨로지 검증기 (시간축 검사 포함)
 └── Add-Bom.ps1                   PS 5.1 인코딩 사고 방지
 ```
 
 ## 3. 시나리오 요약 — defnet-01
 
-**국방망(엔터프라이즈 유사) 가정.** `99-open-questions.md` Q1이 전술망으로 확정되면
-시간축(temporal graph)을 추가해야 한다.
+**국방망(엔터프라이즈 유사) 가정.** Q1이 전술망으로 확정됐으므로(ADR-0012) 이 시나리오는
+**단일 스냅샷 참조 구현**으로 유지한다. 시간축은 `tacnet-01`이 담당한다(3.1절).
 
 - 임무 2개: `M-C2` 지휘통제(우선순위 1), `M-LOG` 군수지원(2)
 - 서비스 5개 중 **`S-DIR`(인증)과 `S-DB`만 이중화**. 나머지는 단일 경로
@@ -40,6 +45,26 @@ scripts/
 - 공격: 피싱 → WKS003 침해 → 자격증명 탈취 → DC01 → DC02 → DB01 → 유출 → 흔적 삭제
 - ATT&CK 기법 11종: T1566.001, T1059.001, T1071.001, T1003.001, T1046, T1021.002,
   T1003.003, T1078.002, T1005, T1048.003, T1070.001
+
+## 3.1 시나리오 요약 — tacnet-01 (전술망, 시간축)
+
+**전술망(ADR-0012).** 여단 TOC — 대대 지휘소 — 2개 중대 — 포병 FDC, 420분.
+정적 그래프로는 표현되지 않는 성질을 담는 것이 목적이다.
+
+- 임무 2개: `M-C2` 지휘통제(1), `M-FIRE` 화력지원(2). 단계 5개에 각각 유효 구간이 있다
+- **환경 단절 6건**(기동 3, 지형 2, 미상 1)이 공격과 별개로 내장돼 있다
+- 공격 7단계: 노획 단말 → 자격증명 탈취 → BN-SRV 측면이동 → 장악 → 여단 TOC → TOC-SRV 장악
+- 저하도를 `total / attack / env / inter`로 분해해 보고한다(ADR-0017)
+
+핵심 장면은 **300~345분**이다. 공격 단독 0%, 환경 단독 0%, 그런데 실제 임무 저하 52.63%.
+위성 단절로 대대에서 도달 가능한 C2 제공자가 침해된 BN-SRV 하나뿐이 되기 때문이다.
+**도달성 없는 이중화는 이중화가 아니다.** 실측과 읽는 법은
+[11-tactical-time-axis.md](11-tactical-time-axis.md).
+
+```powershell
+.\scripts\Show-TacticalReplay.ps1 -Step 15
+.\scripts\Test-Ontology.ps1 -Scenario scenarios\tacnet-01\mission.json
+```
 
 ## 4. 실행
 
