@@ -66,6 +66,57 @@ Google Drive: `https://drive.google.com/drive/u/0/folders/1n3kkS3KR31KUegn42yk3-
 F: 여유가 909GB라 AIT 130GB와 함께면 애초에 들어가지 않는다. 부분 취득은 선택이 아니라
 전제 조건이며, `05-data-lifecycle.md`의 수명주기 정책과도 일치한다.
 
+## 라벨: PDF를 기계가 읽을 수 있게 바꿨다
+
+세 데이터셋 중 **OpTC만 그라운드트루스가 산문**이다. LANL은 `redteam.txt.gz`가, AIT는
+`labels/` 트리가 라벨이지만 OpTC는 영어 7페이지다. 문단을 상대로는 아무것도 평가할 수
+없으므로 먼저 구조화했다.
+
+```powershell
+python scripts\build_optc_labels.py
+```
+
+| 산출물 | 내용 |
+|---|---|
+| `analysis/optc/redteam-events.jsonl` | 레드팀 로그 1줄 = 1행. 시각·호스트·에이전트·행위 태그·ATT&CK 후보 |
+| `analysis/optc/redteam-labels.json` | 호스트/에이전트 목록, 피벗 체인, 일자별 요약 |
+
+**101건 전부 분류됐다(미분류 0).** 추출된 호스트 30개는 앞 절의 독립 추출과 정확히
+일치해 교차 검증이 됐다.
+
+| 행위 태그 | 건수 | | 행위 태그 | 건수 |
+|---|---|---|---|---|
+| lateral_movement | 33 | | defense_evasion | 11 |
+| c2 | 22 | | credential_access | 11 |
+| execution | 17 | | exfiltration | 10 |
+| privilege_escalation | 16 | | initial_access | 9 |
+| discovery_host | 14 | | discovery_network | 9 |
+| process_injection | 8 | | persistence | 7 |
+| collection | 7 | | discovery_account | 4 |
+
+초기 침해부터 흔적 삭제까지 킬체인 전 구간이 덮인다. LANL이 자격증명 오남용 한 종류만
+갖는 것과 대비된다.
+
+### 만드는 과정에서 겪은 것 두 가지
+
+1. **PDF 줄바꿈을 무시해 텍스트 절반을 잃었다.** 타임스탬프로 시작하는 줄만 취하고
+   이어지는 줄을 버렸더니 53%가 미분류로 나왔다. 이어붙이기를 넣자 10%로 떨어졌다.
+   *분류기가 나쁜 게 아니라 입력이 잘린 것이었다.*
+2. **Day 3은 도구가 다르다.** Day 1·2는 PowerShell Empire, **Day 3은 Meterpreter**다.
+   Empire 기준으로 만든 규칙이 Day 3에서 전부 빗나갔다. Meterpreter 규칙
+   (getsystem, named pipe impersonation, enum_shares, timestomp 등)을 추가해 0%가 됐다.
+   시나리오가 같다고 가정하면 하루치가 통째로 라벨 없이 남는다.
+
+### 이 라벨의 한계 — 반드시 읽을 것
+
+**이것은 레드팀 운용자의 행위 기록이지 텔레메트리 이벤트 라벨이 아니다.**
+
+eCAR 레코드에 붙이려면 `(hostname, 시간 창, actor pid)`로 매칭해야 하고, 그 결과는
+근사치다. 그라운드트루스는 운용자 행위 1건당 1줄이지만 엔드포인트 센서는 그 1건에 대해
+수십~수백 이벤트를 낸다. **라벨된 이벤트가 아니라 라벨된 구간(window)으로 다뤄야 한다.**
+
+ATT&CK 매핑은 키워드 휴리스틱이다. 보고 전에 검토해야 하며 그대로 인용하면 안 된다.
+
 ## 아직 확정하지 못한 것
 
 - **실제 용량.** `ecar/evaluation/`의 파일 단위 분할 방식(호스트별인지 일자별인지)과

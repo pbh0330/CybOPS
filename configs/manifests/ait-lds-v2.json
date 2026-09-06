@@ -13,35 +13,53 @@
   "local_root": "F:\\mc-cycop-data\\raw\\ait-lds-v2",
   "total_compressed_gb": 130.6,
   "total_unpacked_gb": 206,
+  "status": "scoped complete (1 of 8 by design)",
   "acquisition_log": [
     {
       "file": "russellmitchell.zip",
-      "content_length_bytes": 7128000000,
-      "content_length_note": "HEAD 응답 기준 6.64 GiB",
+      "bytes": 7132670599,
       "started_at": "2026-09-05",
-      "completed_at": null,
-      "sha256": null,
-      "status": "paused",
-      "bytes_on_disk": 2352601936,
-      "paused_at": "2026-09-05T19:15+09:00",
-      "paused_reason": "사용자 지시 — LANL 취득 우선. scripts/fetch-ait.ps1 재실행하면 이 지점부터 이어받는다.",
-      "reason": "8개 테스트베드 중 최소 용량. 파이프라인 개발 및 검증용 1순위."
+      "completed_at": "2026-09-06T20:18+09:00",
+      "sha256": "2DA85D89764AFA4EA3AA2B7565D246CCBA25681866A516DDD151834089B5AB4C",
+      "status": "acquired",
+      "integrity": "zip CRC 전수 검사 통과 (Python zipfile.testzip, 59초). 엔트리 14,911개, 압축해제 14,975,678,744 B (13.95 GB).",
+      "contents": {
+        "labels_included": true,
+        "label_entries": 24,
+        "note": "labels/ 트리에 줄 단위 라벨이 포함되어 있다. 별도 라벨링 작업이 필요 없다.",
+        "log_formats": "Apache, auth, DNS, VPN, Suricata rules, syslog, audit, pcap 등 이종 다중 소스",
+        "top_dirs": "environment/provisioning, gather/{monitoring,cloud_share,intranet_server,webserver,mail,vpn,inet-dns,inet-firewall,...}, processing/logstash, labels/"
+      },
+      "reason": "8개 테스트베드 중 최소 용량. OCSF 정규화 계층의 이종 로그 형식 커버리지 검증용."
     }
   ],
   "not_acquired": [
     "santos.zip", "fox.zip", "harrison.zip", "wardbeck.zip",
     "shaw.zip", "wheeler.zip", "wilson.zip"
   ],
+  "scope_decision": {
+    "date": "2026-09-06",
+    "decision": "테스트베드 1개만 취득하고 나머지 7개(123GB)는 받지 않는다.",
+    "adr": ["ADR-0012", "ADR-0014"],
+    "rationale": [
+      "AIT의 고유 가치는 로그 '형식'의 다양성이다. LANL은 동종 CSV 5종, OpTC는 단일 JSON 스키마라 정규화기의 형식 커버리지를 시험하지 못한다.",
+      "그 검증에는 테스트베드 1개면 충분하다. 나머지 7개는 형식이 아니라 시나리오가 다른 같은 종류라 정규화기가 새로 배울 것이 없다.",
+      "대상 망이 전술망으로 확정되어(ADR-0012) 기업 IT 테스트베드의 전이성이 셋 중 최하로 내려갔다.",
+      "산출물 1순위가 데모로 확정되어(ADR-0014) 대용량 실데이터의 기여도가 더 낮아졌다.",
+      "CC BY-NC-SA라 LANL(CC0)과 달리 논문 부록에 실을 수 없다.",
+      "회선 실측 약 1 MB/s에서 123GB는 며칠이고, 그 시간은 OpTC 최소 세트에 쓰는 편이 낫다."
+    ],
+    "how_to_resume": "scripts/fetch-ait.ps1의 $deferred 목록에서 $files로 파일명을 옮기고 재실행한다. 완료 파일은 건너뛰고 부분 파일은 이어받는다.",
+    "partial_removed": "santos.zip 527,933,440 B — 중단 시점의 부분 파일을 삭제했다."
+  },
   "notes": [
     "8개 테스트베드 각각이 메일서버/파일공유/WordPress/VPN/방화벽을 갖춘 소규모 기업망 모사.",
-    "그라운드트루스가 별도 파일로 제공되어 공격 관련 이벤트가 라벨링되어 있음.",
-    "모델 기반 테스트베드 자동 생성으로 재생성 가능 — 토폴로지를 국방망 형태로 변형 가능.",
+    "그라운드트루스가 labels/ 트리로 제공되어 공격 관련 이벤트가 줄 단위로 라벨링되어 있다.",
+    "테스트베드 재생성(Kyoushi)은 OpenStack에 30 vCPU / 디스크 800GB / RAM 60GB를 요구한다. 가용 장비로는 불가능하다 — ADR-0012 5항.",
     "원본 삭제 후에도 이 매니페스트만 있으면 재취득 가능 (ADR-0010)."
   ],
-  "todo_on_completion": [
-    "sha256 계산 후 기록",
-    "completed_at 기록, status=acquired",
-    "docs/01-datasets.md 및 configs/datasets.yaml 상태 갱신",
-    "압축 해제 없이 스트리밍 처리 가능한지 먼저 확인 (14GB 해제 회피)"
+  "todo": [
+    "압축 해제 없이 zip 스트리밍으로 처리 가능한지 확인 (14GB 해제 회피)",
+    "labels/ 트리의 라벨 형식을 확인하고 OCSF 매핑 스펙에 반영"
   ]
 }

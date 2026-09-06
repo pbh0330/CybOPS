@@ -64,22 +64,42 @@ cd F:\F\other_class\CybOPS
 
 저장 위치: `F:\mc-cycop-data\raw\`
 
-### AIT-LDS v2.0 — LANL 완료 후 자동 재개 대기
+### AIT-LDS v2.0 — 범위 축소 완료 (1/8, 의도된 것)
 
-| 파일 | 현재 | 목표 | 상태 |
-|---|---|---|---|
-| russellmitchell.zip | **2,352,601,936 B (2.19 GB)** | 6.64 GB | 부분 취득, 이어받기 가능 |
-| santos / fox / harrison / wardbeck / shaw / wheeler / wilson | 0 | 123 GB | 미착수 |
+| 파일 | 상태 |
+|---|---|
+| `russellmitchell.zip` | ✅ **7,132,670,599 B, zip CRC 전수 검사 통과** (엔트리 14,911, 해제 13.95 GB) |
+| 나머지 7개 (123 GB) | **받지 않는다** (ADR-0012, ADR-0014) |
+
+SHA256 `2DA85D89764AFA4EA3AA2B7565D246CCBA25681866A516DDD151834089B5AB4C`
+
+**왜 1개만 받는가.** AIT의 고유 가치는 로그 **형식**의 다양성이다 — Apache, auth, DNS,
+VPN, Suricata, syslog, audit, pcap. LANL은 동종 CSV 5종, OpTC는 단일 JSON 스키마라
+OCSF 정규화기의 형식 커버리지를 시험하지 못한다. **그 검증에는 테스트베드 1개면 충분하고**,
+나머지 7개는 형식이 아니라 시나리오가 다른 같은 종류다.
+
+여기에 전술망 확정(전이성 최하)과 데모 1순위(대용량 실데이터 기여도 하락)가 겹쳤고,
+CC BY-NC-SA라 논문 부록에도 못 싣는다. 회선 1 MB/s에서 123GB는 며칠인데 그 시간은
+OpTC가 더 필요로 한다.
+
+**라벨링 불필요** — `labels/` 트리에 줄 단위 라벨이 들어 있다(24개 항목).
+
+나중에 받으려면 `scripts/fetch-ait.ps1`의 `$deferred`에서 `$files`로 옮기고 재실행한다.
 
 - 로그: `F:\mc-cycop-data\raw\ait-lds-v2\_acquire.log`
-- **`Invoke-AcquireChain.ps1`이 auth.txt.gz 검증을 통과시키면 자동으로 착수한다.**
-  수동 재개도 가능하고 언제 실행해도 안전하다 — 완료 파일은 건너뛰고 부분 파일은
-  현재 지점부터 이어받는다:
-  ```powershell
-  powershell -NoProfile -ExecutionPolicy Bypass -File scripts\fetch-ait.ps1
-  ```
-- 실측 속도 0.04~0.43 MB/s. 130GB 전량은 며칠 단위다. 회선이 약 12 Mbps(1.5 MB/s)라
-  이게 상한이다.
+- 취득 체인은 종료됐다. 실행 중인 다운로드 없음.
+
+### 라벨 현황 — 추가 라벨링이 필요한 곳은 없다
+
+| 데이터셋 | 라벨 | 상태 |
+|---|---|---|
+| LANL | `redteam.txt.gz` (715개 고유 이벤트) | 제공됨 |
+| AIT | `labels/` 트리 (줄 단위) | 제공됨 |
+| **OpTC** | 그라운드트루스 **PDF 산문** | **구조화 완료** → `analysis/optc/` |
+
+OpTC만 기계가 못 읽는 형태라 `scripts/build_optc_labels.py`로 변환했다.
+**101건 전부 분류(미분류 0)**, 호스트 30개는 독립 추출과 일치. 상세와 한계는
+[09-optc-acquisition.md](docs/09-optc-acquisition.md).
 
 ### LANL Comprehensive — 5/5 완료 (2026-09-06)
 

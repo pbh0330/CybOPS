@@ -22,9 +22,26 @@ $ErrorActionPreference = 'Continue'
 $dest = 'F:\mc-cycop-data\raw\ait-lds-v2'
 $log  = Join-Path $dest '_acquire.log'
 
-# smallest first, so the pipeline-development file lands early
+# SCOPED DOWN 2026-09-06 (ADR-0014, ADR-0012).
+#
+# AIT is the only dataset here with heterogeneous log formats - Apache, auth,
+# DNS, VPN, Suricata, syslog, audit, pcap - with line-level labels. That is what
+# the OCSF normalizer has to be tested against; LANL is five uniform CSVs and
+# OpTC is a single JSON schema, so neither exercises format coverage.
+#
+# But one testbed is enough for that. The other seven differ by scenario, not by
+# format, so the normalizer learns nothing new from them. Under a tactical
+# target network they are also the least transferable data we have, and
+# CC BY-NC-SA means they cannot go in a paper appendix the way LANL (CC0) can.
+# 123 GB at ~1 MB/s is days of line time that OpTC needs more.
+#
+# To take the rest anyway, move names from $deferred into $files and re-run.
+# Partial files resume; completed ones are skipped.
 $files = @(
-  'russellmitchell.zip',
+  'russellmitchell.zip'
+)
+
+$deferred = @(
   'santos.zip',
   'fox.zip',
   'harrison.zip',
