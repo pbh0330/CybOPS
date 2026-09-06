@@ -1,0 +1,3283 @@
+{
+    "generated":  "2026-09-06T21:01:57.9268226+09:00",
+    "generator":  "scripts/Export-ReplayData.ps1",
+    "contract":  1,
+    "note":  "Precomputed by the deterministic engine. The UI displays these numbers and never recomputes them (ADR-0003).",
+    "scenario_id":  "tacnet-01",
+    "method":  "weighted",
+    "step":  15,
+    "graph":  {
+                  "scenario_id":  "tacnet-01",
+                  "name":  "전술망 대대 기동작전 축약 시나리오",
+                  "network_type":  "tactical",
+                  "authored":  "2026-09-06",
+                  "classification":  "가상. 공개 자료와 일반 교리 수준으로만 구성. 실제 부대편성·임무계획·자산대장 미사용.",
+                  "basis":  "ADR-0012(대상 망은 전술망)가 요구한 시간축을 반영한 첫 시나리오. 정적 시나리오 scenarios/defnet-01 은 단일 스냅샷으로 그대로 둔다.",
+                  "timeline":  {
+                                   "unit":  "minute",
+                                   "t0_iso":  "2026-09-10T06:00:00+09:00",
+                                   "horizon":  420,
+                                   "step":  15,
+                                   "note":  "모든 window/outage 의 from,to 는 t0 로부터의 경과 분이다. 구간은 [from, to) 반열린구간이다."
+                               },
+                  "cause_labels":  {
+                                       "attack":  "적대 행위에 의한 침해·거부. 침해 상태 입력(attack-timeline.json)에서만 발생한다.",
+                                       "mobility":  "기동에 의한 단절 — 지휘소 이동, 안테나 미전개, 장비 미전개.",
+                                       "terrain":  "지형에 의한 단절 — 능선 차폐, 계곡 진입, 가시선 상실.",
+                                       "maintenance":  "계획된 정비·전원 차단.",
+                                       "unknown":  "원인 미상. 공격으로 단정하지 않는다(ADR-0012 2항). 상황도에 \u0027미상\u0027으로 표기한다."
+                                   },
+                  "units":  [
+                                {
+                                    "id":  "U-BDE",
+                                    "name":  "여단",
+                                    "echelon":  "BDE",
+                                    "parent":  null
+                                },
+                                {
+                                    "id":  "U-1BN",
+                                    "name":  "1대대",
+                                    "echelon":  "BN",
+                                    "parent":  "U-BDE"
+                                },
+                                {
+                                    "id":  "U-1CO",
+                                    "name":  "1중대",
+                                    "echelon":  "CO",
+                                    "parent":  "U-1BN"
+                                },
+                                {
+                                    "id":  "U-2CO",
+                                    "name":  "2중대",
+                                    "echelon":  "CO",
+                                    "parent":  "U-1BN"
+                                },
+                                {
+                                    "id":  "U-FA",
+                                    "name":  "포병중대",
+                                    "echelon":  "CO",
+                                    "parent":  "U-BDE"
+                                }
+                            ],
+                  "missions":  [
+                                   {
+                                       "id":  "M-C2",
+                                       "name":  "지휘통제",
+                                       "priority":  1,
+                                       "owner":  "U-1BN"
+                                   },
+                                   {
+                                       "id":  "M-FIRE",
+                                       "name":  "화력지원",
+                                       "priority":  2,
+                                       "owner":  "U-FA"
+                                   }
+                               ],
+                  "phases":  [
+                                 {
+                                     "id":  "PH-C2-1",
+                                     "mission":  "M-C2",
+                                     "seq":  1,
+                                     "name":  "집결·준비",
+                                     "window":  {
+                                                    "from":  0,
+                                                    "to":  90
+                                                }
+                                 },
+                                 {
+                                     "id":  "PH-C2-2",
+                                     "mission":  "M-C2",
+                                     "seq":  2,
+                                     "name":  "기동",
+                                     "window":  {
+                                                    "from":  90,
+                                                    "to":  240
+                                                }
+                                 },
+                                 {
+                                     "id":  "PH-C2-3",
+                                     "mission":  "M-C2",
+                                     "seq":  3,
+                                     "name":  "목표 확보",
+                                     "window":  {
+                                                    "from":  240,
+                                                    "to":  420
+                                                }
+                                 },
+                                 {
+                                     "id":  "PH-FIRE-1",
+                                     "mission":  "M-FIRE",
+                                     "seq":  1,
+                                     "name":  "표적 획득",
+                                     "window":  {
+                                                    "from":  120,
+                                                    "to":  300
+                                                }
+                                 },
+                                 {
+                                     "id":  "PH-FIRE-2",
+                                     "mission":  "M-FIRE",
+                                     "seq":  2,
+                                     "name":  "화력 유도",
+                                     "window":  {
+                                                    "from":  180,
+                                                    "to":  420
+                                                }
+                                 }
+                             ],
+                  "tasks":  [
+                                {
+                                    "id":  "T-ORDER",
+                                    "phase":  "PH-C2-1",
+                                    "name":  "작전명령 하달",
+                                    "criticality":  1.0,
+                                    "performed_at":  "TOC-WS"
+                                },
+                                {
+                                    "id":  "T-BFT",
+                                    "phase":  "PH-C2-2",
+                                    "name":  "부대 위치 파악",
+                                    "criticality":  0.7,
+                                    "performed_at":  "BN-CP"
+                                },
+                                {
+                                    "id":  "T-SITREP",
+                                    "phase":  "PH-C2-2",
+                                    "name":  "상황보고 수신",
+                                    "criticality":  0.9,
+                                    "performed_at":  "TOC-WS"
+                                },
+                                {
+                                    "id":  "T-CO1REP",
+                                    "phase":  "PH-C2-2",
+                                    "name":  "1중대 상황보고 발신",
+                                    "criticality":  0.6,
+                                    "performed_at":  "CO1-VEH"
+                                },
+                                {
+                                    "id":  "T-CO2REP",
+                                    "phase":  "PH-C2-2",
+                                    "name":  "2중대 상황보고 발신",
+                                    "criticality":  0.6,
+                                    "performed_at":  "CO2-VEH"
+                                },
+                                {
+                                    "id":  "T-CTRL",
+                                    "phase":  "PH-C2-3",
+                                    "name":  "기동 통제",
+                                    "criticality":  1.0,
+                                    "performed_at":  "BN-CP"
+                                },
+                                {
+                                    "id":  "T-TGT",
+                                    "phase":  "PH-FIRE-1",
+                                    "name":  "표적정보 전달",
+                                    "criticality":  1.0,
+                                    "performed_at":  "FO-TAB"
+                                },
+                                {
+                                    "id":  "T-CFF",
+                                    "phase":  "PH-FIRE-2",
+                                    "name":  "사격요청 처리",
+                                    "criticality":  1.0,
+                                    "performed_at":  "FDC-TERM"
+                                }
+                            ],
+                  "services":  [
+                                   {
+                                       "id":  "S-C2MSG",
+                                       "name":  "전술 C2 메시징",
+                                       "redundancy_group":  "c2"
+                                   },
+                                   {
+                                       "id":  "S-BFT",
+                                       "name":  "위치보고(BFT)",
+                                       "redundancy_group":  null
+                                   },
+                                   {
+                                       "id":  "S-VOICE",
+                                       "name":  "음성지휘",
+                                       "redundancy_group":  "voice"
+                                   },
+                                   {
+                                       "id":  "S-FIRE",
+                                       "name":  "사격지휘",
+                                       "redundancy_group":  null
+                                   },
+                                   {
+                                       "id":  "S-INTEL",
+                                       "name":  "정보공유",
+                                       "redundancy_group":  null
+                                   }
+                               ],
+                  "_transit_note":  "transit=false 인 자산은 종단 단말이다. 자기 트래픽만 주고받고 남의 트래픽을 중계하지 않는다. 이 필드가 없으면 관측반 태블릿이 위성 단절을 우회 중계하는 비현실적 경로가 생긴다(2026-09-06 실측으로 발견). 생략 시 기본값은 true 다.",
+                  "assets":  [
+                                 {
+                                     "id":  "TOC-ESX",
+                                     "type":  "hypervisor",
+                                     "unit":  "U-BDE",
+                                     "site":  "여단 TOC",
+                                     "os":  "esxi",
+                                     "mobility":  "static",
+                                     "transit":  true
+                                 },
+                                 {
+                                     "id":  "TOC-SRV",
+                                     "type":  "c2-server",
+                                     "unit":  "U-BDE",
+                                     "site":  "여단 TOC",
+                                     "os":  "linux",
+                                     "mobility":  "static",
+                                     "transit":  true
+                                 },
+                                 {
+                                     "id":  "TOC-WS",
+                                     "type":  "workstation",
+                                     "unit":  "U-BDE",
+                                     "site":  "여단 TOC",
+                                     "os":  "windows",
+                                     "mobility":  "static",
+                                     "transit":  false
+                                 },
+                                 {
+                                     "id":  "BFT-GW",
+                                     "type":  "gateway",
+                                     "unit":  "U-BDE",
+                                     "site":  "여단 TOC",
+                                     "os":  "linux",
+                                     "mobility":  "static",
+                                     "transit":  true
+                                 },
+                                 {
+                                     "id":  "FDC-SRV",
+                                     "type":  "fire-control-server",
+                                     "unit":  "U-FA",
+                                     "site":  "포병 FDC",
+                                     "os":  "linux",
+                                     "mobility":  "static",
+                                     "transit":  true
+                                 },
+                                 {
+                                     "id":  "FDC-TERM",
+                                     "type":  "terminal",
+                                     "unit":  "U-FA",
+                                     "site":  "포병 FDC",
+                                     "os":  "windows",
+                                     "mobility":  "static",
+                                     "transit":  false
+                                 },
+                                 {
+                                     "id":  "RELAY-1",
+                                     "type":  "radio-relay",
+                                     "unit":  "U-1BN",
+                                     "site":  "능선 중계소",
+                                     "os":  "appliance",
+                                     "mobility":  "static",
+                                     "transit":  true
+                                 },
+                                 {
+                                     "id":  "BN-SRV",
+                                     "type":  "c2-server",
+                                     "unit":  "U-1BN",
+                                     "site":  "대대 지휘소",
+                                     "os":  "linux",
+                                     "mobility":  "mobile",
+                                     "transit":  true,
+                                     "outages":  [
+                                                     {
+                                                         "from":  95,
+                                                         "to":  125,
+                                                         "cause":  "mobility",
+                                                         "note":  "지휘소 이동(철수-전개)"
+                                                     }
+                                                 ]
+                                 },
+                                 {
+                                     "id":  "BN-CP",
+                                     "type":  "c2-terminal",
+                                     "unit":  "U-1BN",
+                                     "site":  "대대 지휘소",
+                                     "os":  "windows",
+                                     "mobility":  "mobile",
+                                     "transit":  false,
+                                     "outages":  [
+                                                     {
+                                                         "from":  95,
+                                                         "to":  125,
+                                                         "cause":  "mobility",
+                                                         "note":  "지휘소 이동(철수-전개)"
+                                                     }
+                                                 ]
+                                 },
+                                 {
+                                     "id":  "SAT-TERM",
+                                     "type":  "satcom-terminal",
+                                     "unit":  "U-1BN",
+                                     "site":  "대대 지휘소",
+                                     "os":  "appliance",
+                                     "mobility":  "mobile",
+                                     "transit":  true,
+                                     "outages":  [
+                                                     {
+                                                         "from":  95,
+                                                         "to":  125,
+                                                         "cause":  "mobility",
+                                                         "note":  "위성단말 철수-재전개"
+                                                     }
+                                                 ]
+                                 },
+                                 {
+                                     "id":  "CO1-VEH",
+                                     "type":  "c2-terminal",
+                                     "unit":  "U-1CO",
+                                     "site":  "1중대 지휘차",
+                                     "os":  "windows",
+                                     "mobility":  "mobile",
+                                     "transit":  false
+                                 },
+                                 {
+                                     "id":  "CO2-VEH",
+                                     "type":  "c2-terminal",
+                                     "unit":  "U-2CO",
+                                     "site":  "2중대 지휘차",
+                                     "os":  "windows",
+                                     "mobility":  "mobile",
+                                     "transit":  false
+                                 },
+                                 {
+                                     "id":  "FO-TAB",
+                                     "type":  "observer-terminal",
+                                     "unit":  "U-FA",
+                                     "site":  "관측반",
+                                     "os":  "android",
+                                     "mobility":  "mobile",
+                                     "transit":  false,
+                                     "outages":  [
+                                                     {
+                                                         "from":  0,
+                                                         "to":  120,
+                                                         "cause":  "mobility",
+                                                         "note":  "관측반 미전개 — 표적획득 단계 이전"
+                                                     }
+                                                 ]
+                                 }
+                             ],
+                  "links":  [
+                                {
+                                    "id":  "L-TOC-LAN",
+                                    "a":  "TOC-SRV",
+                                    "b":  "TOC-WS",
+                                    "bearer":  "wired"
+                                },
+                                {
+                                    "id":  "L-TOC-BFT",
+                                    "a":  "TOC-SRV",
+                                    "b":  "BFT-GW",
+                                    "bearer":  "wired"
+                                },
+                                {
+                                    "id":  "L-TOC-FDC",
+                                    "a":  "TOC-SRV",
+                                    "b":  "FDC-SRV",
+                                    "bearer":  "wired"
+                                },
+                                {
+                                    "id":  "L-FDC-LAN",
+                                    "a":  "FDC-SRV",
+                                    "b":  "FDC-TERM",
+                                    "bearer":  "wired"
+                                },
+                                {
+                                    "id":  "L-SAT-BN",
+                                    "a":  "SAT-TERM",
+                                    "b":  "BN-SRV",
+                                    "bearer":  "wired"
+                                },
+                                {
+                                    "id":  "L-BN-LAN",
+                                    "a":  "BN-SRV",
+                                    "b":  "BN-CP",
+                                    "bearer":  "wired"
+                                },
+                                {
+                                    "id":  "L-SAT-TOC",
+                                    "a":  "SAT-TERM",
+                                    "b":  "TOC-SRV",
+                                    "bearer":  "satcom",
+                                    "outages":  [
+                                                    {
+                                                        "from":  300,
+                                                        "to":  345,
+                                                        "cause":  "unknown",
+                                                        "note":  "신호 단절. 재밍/기상 구분 불가 — 공격으로 단정하지 않는다"
+                                                    }
+                                                ]
+                                },
+                                {
+                                    "id":  "L-VHF-RLY",
+                                    "a":  "BN-SRV",
+                                    "b":  "RELAY-1",
+                                    "bearer":  "vhf"
+                                },
+                                {
+                                    "id":  "L-VHF-CO1",
+                                    "a":  "CO1-VEH",
+                                    "b":  "RELAY-1",
+                                    "bearer":  "vhf",
+                                    "outages":  [
+                                                    {
+                                                        "from":  150,
+                                                        "to":  195,
+                                                        "cause":  "terrain",
+                                                        "note":  "능선 차폐"
+                                                    }
+                                                ]
+                                },
+                                {
+                                    "id":  "L-VHF-CO2",
+                                    "a":  "CO2-VEH",
+                                    "b":  "RELAY-1",
+                                    "bearer":  "vhf",
+                                    "outages":  [
+                                                    {
+                                                        "from":  205,
+                                                        "to":  235,
+                                                        "cause":  "mobility",
+                                                        "note":  "기동간 안테나 미전개"
+                                                    }
+                                                ]
+                                },
+                                {
+                                    "id":  "L-VHF-FO",
+                                    "a":  "FO-TAB",
+                                    "b":  "RELAY-1",
+                                    "bearer":  "vhf",
+                                    "outages":  [
+                                                    {
+                                                        "from":  255,
+                                                        "to":  275,
+                                                        "cause":  "terrain",
+                                                        "note":  "계곡 진입"
+                                                    }
+                                                ]
+                                },
+                                {
+                                    "id":  "L-FIRE-NET",
+                                    "a":  "FO-TAB",
+                                    "b":  "FDC-SRV",
+                                    "bearer":  "vhf"
+                                }
+                            ],
+                  "edges":  {
+                                "requires":  [
+                                                 {
+                                                     "from":  "T-ORDER",
+                                                     "to":  "S-C2MSG",
+                                                     "w":  1.0
+                                                 },
+                                                 {
+                                                     "from":  "T-ORDER",
+                                                     "to":  "S-VOICE",
+                                                     "w":  0.6
+                                                 },
+                                                 {
+                                                     "from":  "T-BFT",
+                                                     "to":  "S-BFT",
+                                                     "w":  1.0
+                                                 },
+                                                 {
+                                                     "from":  "T-BFT",
+                                                     "to":  "S-C2MSG",
+                                                     "w":  0.5
+                                                 },
+                                                 {
+                                                     "from":  "T-SITREP",
+                                                     "to":  "S-C2MSG",
+                                                     "w":  1.0
+                                                 },
+                                                 {
+                                                     "from":  "T-SITREP",
+                                                     "to":  "S-VOICE",
+                                                     "w":  0.8
+                                                 },
+                                                 {
+                                                     "from":  "T-SITREP",
+                                                     "to":  "S-INTEL",
+                                                     "w":  0.5
+                                                 },
+                                                 {
+                                                     "from":  "T-CO1REP",
+                                                     "to":  "S-C2MSG",
+                                                     "w":  1.0
+                                                 },
+                                                 {
+                                                     "from":  "T-CO1REP",
+                                                     "to":  "S-VOICE",
+                                                     "w":  0.8
+                                                 },
+                                                 {
+                                                     "from":  "T-CO2REP",
+                                                     "to":  "S-C2MSG",
+                                                     "w":  1.0
+                                                 },
+                                                 {
+                                                     "from":  "T-CO2REP",
+                                                     "to":  "S-VOICE",
+                                                     "w":  0.8
+                                                 },
+                                                 {
+                                                     "from":  "T-CTRL",
+                                                     "to":  "S-C2MSG",
+                                                     "w":  1.0
+                                                 },
+                                                 {
+                                                     "from":  "T-CTRL",
+                                                     "to":  "S-VOICE",
+                                                     "w":  0.9
+                                                 },
+                                                 {
+                                                     "from":  "T-TGT",
+                                                     "to":  "S-FIRE",
+                                                     "w":  1.0
+                                                 },
+                                                 {
+                                                     "from":  "T-TGT",
+                                                     "to":  "S-VOICE",
+                                                     "w":  0.7
+                                                 },
+                                                 {
+                                                     "from":  "T-CFF",
+                                                     "to":  "S-FIRE",
+                                                     "w":  1.0
+                                                 },
+                                                 {
+                                                     "from":  "T-CFF",
+                                                     "to":  "S-INTEL",
+                                                     "w":  0.5
+                                                 },
+                                                 {
+                                                     "from":  "T-CFF",
+                                                     "to":  "S-C2MSG",
+                                                     "w":  0.6
+                                                 }
+                                             ],
+                                "provided_by":  [
+                                                    {
+                                                        "from":  "S-C2MSG",
+                                                        "to":  "TOC-SRV",
+                                                        "w":  1.0
+                                                    },
+                                                    {
+                                                        "from":  "S-C2MSG",
+                                                        "to":  "BN-SRV",
+                                                        "w":  1.0
+                                                    },
+                                                    {
+                                                        "from":  "S-BFT",
+                                                        "to":  "BFT-GW",
+                                                        "w":  1.0
+                                                    },
+                                                    {
+                                                        "from":  "S-VOICE",
+                                                        "to":  "RELAY-1",
+                                                        "w":  1.0
+                                                    },
+                                                    {
+                                                        "from":  "S-VOICE",
+                                                        "to":  "SAT-TERM",
+                                                        "w":  1.0
+                                                    },
+                                                    {
+                                                        "from":  "S-FIRE",
+                                                        "to":  "FDC-SRV",
+                                                        "w":  1.0
+                                                    },
+                                                    {
+                                                        "from":  "S-INTEL",
+                                                        "to":  "TOC-SRV",
+                                                        "w":  1.0
+                                                    }
+                                                ],
+                                "_depends_on_note":  "to 는 자산 id 또는 서비스 id 둘 다 가능하다. 이중화된 대상에 의존할 때는 반드시 서비스 id로 건다(defnet-01 2026-09-05 실측 교훈).",
+                                "depends_on":  [
+                                                   {
+                                                       "from":  "FDC-SRV",
+                                                       "to":  "S-INTEL",
+                                                       "w":  0.4
+                                                   },
+                                                   {
+                                                       "from":  "BFT-GW",
+                                                       "to":  "S-C2MSG",
+                                                       "w":  0.3
+                                                   }
+                                               ],
+                                "hosted_on":  [
+                                                  {
+                                                      "from":  "TOC-SRV",
+                                                      "to":  "TOC-ESX"
+                                                  },
+                                                  {
+                                                      "from":  "BFT-GW",
+                                                      "to":  "TOC-ESX"
+                                                  }
+                                              ],
+                                "redundant_with":  [
+                                                       {
+                                                           "a":  "TOC-SRV",
+                                                           "b":  "BN-SRV",
+                                                           "group":  "c2"
+                                                       },
+                                                       {
+                                                           "a":  "RELAY-1",
+                                                           "b":  "SAT-TERM",
+                                                           "group":  "voice"
+                                                       }
+                                                   ]
+                            },
+                  "crown_jewels":  [
+                                       "TOC-SRV",
+                                       "BN-SRV",
+                                       "FDC-SRV",
+                                       "RELAY-1",
+                                       "SAT-TERM"
+                                   ],
+                  "notes":  [
+                                "이중화가 있어도 도달성이 없으면 소용이 없다. S-C2MSG는 TOC-SRV/BN-SRV 이중화지만 300~345분 위성 단절 구간에는 대대에서 TOC-SRV에 도달하지 못한다. 정적 그래프로는 표현되지 않던 전술망의 핵심 성질이다.",
+                                "95~125분 대대 지휘소 이동 구간은 공격이 아니라 기동에 의한 전면 단절이다. 상황도가 이것을 적의 소행으로 보고하면 안 된다(ADR-0012 2항).",
+                                "300~345분 위성 단절은 cause=unknown 이다. 같은 시간대에 공격도 진행 중이므로(attack-timeline.json) 이 시나리오는 \u0027원인 미상 단절과 공격이 겹칠 때 무엇을 보고할 것인가\u0027를 시험한다.",
+                                "FO-TAB는 RELAY-1 경유 경로와 FDC-SRV 직통 사격지휘망(L-FIRE-NET) 두 개를 갖는다. 경로 이중화가 서비스 이중화와 별개라는 것을 보이기 위한 구성이다."
+                            ]
+              },
+    "attack":  {
+                   "campaign_id":  "CAMP-T01",
+                   "scenario_id":  "tacnet-01",
+                   "name":  "노획 단말 기점 대대 지휘소 침해 및 여단 TOC 확산",
+                   "victim_entry":  "CO2-VEH",
+                   "note":  "가상 시나리오. 자산 침해 수준만 기술한다. 환경(기동·지형) 단절은 mission.json 의 outages 가 담당하며 여기에는 넣지 않는다 — 두 원인을 섞으면 상황도가 언덕을 적의 소행으로 보고한다(ADR-0012 2항).",
+                   "steps":  [
+                                 {
+                                     "t":  0,
+                                     "label":  "정상",
+                                     "state":  {
+
+                                               },
+                                     "note":  "집결·준비 단계. 침해 없음"
+                                 },
+                                 {
+                                     "t":  150,
+                                     "label":  "노획 단말 비인가 접속",
+                                     "state":  {
+                                                   "CO2-VEH":  0.5
+                                               },
+                                     "gt":  {
+                                                "technique":  "T1078",
+                                                "tactic":  "initial-access"
+                                            },
+                                     "note":  "2중대 지휘차 단말에서 비인가 계정 사용"
+                                 },
+                                 {
+                                     "t":  205,
+                                     "label":  "자격증명 탈취",
+                                     "state":  {
+                                                   "CO2-VEH":  0.8
+                                               },
+                                     "gt":  {
+                                                "technique":  "T1003",
+                                                "tactic":  "credential-access"
+                                            },
+                                     "note":  "같은 시각 L-VHF-CO2 가 기동으로 단절된다(cause=mobility). 두 사건이 겹치는 구간이며 상황도는 이를 구분해야 한다"
+                                 },
+                                 {
+                                     "t":  260,
+                                     "label":  "대대 지휘소 서버 침해",
+                                     "state":  {
+                                                   "CO2-VEH":  0.8,
+                                                   "BN-SRV":  0.7
+                                               },
+                                     "gt":  {
+                                                "technique":  "T1021",
+                                                "tactic":  "lateral-movement"
+                                            },
+                                     "note":  "중계망을 타고 BN-SRV 로 측면이동"
+                                 },
+                                 {
+                                     "t":  300,
+                                     "label":  "BN-SRV 장악",
+                                     "state":  {
+                                                   "CO2-VEH":  0.8,
+                                                   "BN-SRV":  1.0
+                                               },
+                                     "gt":  {
+                                                "technique":  "T1078.002",
+                                                "tactic":  "privilege-escalation"
+                                            },
+                                     "note":  "같은 시각 위성 링크가 cause=unknown 으로 단절된다(300~345). 재밍인지 기상인지 알 수 없다 — 공격으로 단정하지 않는다"
+                                 },
+                                 {
+                                     "t":  345,
+                                     "label":  "여단 TOC 침투",
+                                     "state":  {
+                                                   "CO2-VEH":  0.8,
+                                                   "BN-SRV":  1.0,
+                                                   "TOC-SRV":  0.6
+                                               },
+                                     "gt":  {
+                                                "technique":  "T1021.004",
+                                                "tactic":  "lateral-movement"
+                                            },
+                                     "note":  "위성 링크 복구와 동시에 신뢰 경로를 타고 여단으로 확산"
+                                 },
+                                 {
+                                     "t":  390,
+                                     "label":  "TOC-SRV 장악",
+                                     "state":  {
+                                                   "CO2-VEH":  0.8,
+                                                   "BN-SRV":  1.0,
+                                                   "TOC-SRV":  1.0
+                                               },
+                                     "gt":  {
+                                                "technique":  "T1486",
+                                                "tactic":  "impact"
+                                            },
+                                     "note":  "C2 메시징 이중화가 양쪽 다 침해되어 무력화된다"
+                                 }
+                             ]
+               },
+    "steps":  [
+                  {
+                      "t":  0,
+                      "time_iso":  "2026-09-10T06:00:00.0000000+09:00",
+                      "label":  "정상",
+                      "note":  "집결·준비 단계. 침해 없음",
+                      "compromise":  {
+
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  0,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  1,
+                                    "CO2-VEH":  0,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0,
+                                   "T-TGT":  1,
+                                   "T-CTRL":  0,
+                                   "T-CO2REP":  0,
+                                   "T-BFT":  0,
+                                   "T-ORDER":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  false
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-1"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  "mobility",
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  15,
+                      "time_iso":  "2026-09-10T06:15:00.0000000+09:00",
+                      "label":  "정상",
+                      "note":  "집결·준비 단계. 침해 없음",
+                      "compromise":  {
+
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  0,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  1,
+                                    "CO2-VEH":  0,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0,
+                                   "T-TGT":  1,
+                                   "T-CTRL":  0,
+                                   "T-CO2REP":  0,
+                                   "T-BFT":  0,
+                                   "T-ORDER":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  false
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-1"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  "mobility",
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  30,
+                      "time_iso":  "2026-09-10T06:30:00.0000000+09:00",
+                      "label":  "정상",
+                      "note":  "집결·준비 단계. 침해 없음",
+                      "compromise":  {
+
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  0,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  1,
+                                    "CO2-VEH":  0,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0,
+                                   "T-TGT":  1,
+                                   "T-CTRL":  0,
+                                   "T-CO2REP":  0,
+                                   "T-BFT":  0,
+                                   "T-ORDER":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  false
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-1"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  "mobility",
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  45,
+                      "time_iso":  "2026-09-10T06:45:00.0000000+09:00",
+                      "label":  "정상",
+                      "note":  "집결·준비 단계. 침해 없음",
+                      "compromise":  {
+
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  0,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  1,
+                                    "CO2-VEH":  0,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0,
+                                   "T-TGT":  1,
+                                   "T-CTRL":  0,
+                                   "T-CO2REP":  0,
+                                   "T-BFT":  0,
+                                   "T-ORDER":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  false
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-1"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  "mobility",
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  60,
+                      "time_iso":  "2026-09-10T07:00:00.0000000+09:00",
+                      "label":  "정상",
+                      "note":  "집결·준비 단계. 침해 없음",
+                      "compromise":  {
+
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  0,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  1,
+                                    "CO2-VEH":  0,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0,
+                                   "T-TGT":  1,
+                                   "T-CTRL":  0,
+                                   "T-CO2REP":  0,
+                                   "T-BFT":  0,
+                                   "T-ORDER":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  false
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-1"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  "mobility",
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  75,
+                      "time_iso":  "2026-09-10T07:15:00.0000000+09:00",
+                      "label":  "정상",
+                      "note":  "집결·준비 단계. 침해 없음",
+                      "compromise":  {
+
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  0,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  1,
+                                    "CO2-VEH":  0,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0,
+                                   "T-TGT":  1,
+                                   "T-CTRL":  0,
+                                   "T-CO2REP":  0,
+                                   "T-BFT":  0,
+                                   "T-ORDER":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  false
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-1"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  "mobility",
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  90,
+                      "time_iso":  "2026-09-10T07:30:00.0000000+09:00",
+                      "label":  "정상",
+                      "note":  "집결·준비 단계. 침해 없음",
+                      "compromise":  {
+
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  0,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  1,
+                                    "CO2-VEH":  0,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0,
+                                   "T-TGT":  1,
+                                   "T-CTRL":  0,
+                                   "T-CO2REP":  0,
+                                   "T-BFT":  0,
+                                   "T-ORDER":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  false
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-2"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  "mobility",
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  105,
+                      "time_iso":  "2026-09-10T07:45:00.0000000+09:00",
+                      "label":  "정상",
+                      "note":  "집결·준비 단계. 침해 없음",
+                      "compromise":  {
+
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  1,
+                                    "SAT-TERM":  1,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  1,
+                                    "CO2-VEH":  0,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  1,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0.55555555555555558,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0.34782608695652178,
+                                   "T-TGT":  1,
+                                   "T-CTRL":  1,
+                                   "T-CO2REP":  0.55555555555555558,
+                                   "T-BFT":  1,
+                                   "T-ORDER":  0.37499999999999994
+                               },
+                      "mission":  {
+                                      "M-C2":  0.59989648033126275,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  false
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0.59989648033126275,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-2"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  "mobility",
+                                           "SAT-TERM":  "mobility",
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  "mobility",
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  "mobility",
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  120,
+                      "time_iso":  "2026-09-10T08:00:00.0000000+09:00",
+                      "label":  "정상",
+                      "note":  "집결·준비 단계. 침해 없음",
+                      "compromise":  {
+
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  1,
+                                    "SAT-TERM":  1,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  0,
+                                    "CO2-VEH":  0,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  1,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0.55555555555555558,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0.34782608695652178,
+                                   "T-TGT":  0,
+                                   "T-CTRL":  1,
+                                   "T-CO2REP":  0.55555555555555558,
+                                   "T-BFT":  1,
+                                   "T-ORDER":  0.37499999999999994
+                               },
+                      "mission":  {
+                                      "M-C2":  0.59989648033126275,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  true
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0.59989648033126275,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-2",
+                                            "PH-FIRE-1"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  "mobility",
+                                           "SAT-TERM":  "mobility",
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  null,
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  "mobility",
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  135,
+                      "time_iso":  "2026-09-10T08:15:00.0000000+09:00",
+                      "label":  "정상",
+                      "note":  "집결·준비 단계. 침해 없음",
+                      "compromise":  {
+
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  0,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  0,
+                                    "CO2-VEH":  0,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0,
+                                   "T-TGT":  0,
+                                   "T-CTRL":  0,
+                                   "T-CO2REP":  0,
+                                   "T-BFT":  0,
+                                   "T-ORDER":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  true
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-2",
+                                            "PH-FIRE-1"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  null,
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  150,
+                      "time_iso":  "2026-09-10T08:30:00.0000000+09:00",
+                      "label":  "노획 단말 비인가 접속",
+                      "note":  "2중대 지휘차 단말에서 비인가 계정 사용",
+                      "compromise":  {
+                                         "CO2-VEH":  0.5
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  0,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  0,
+                                    "CO2-VEH":  0.5,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  1,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0,
+                                   "T-TGT":  0,
+                                   "T-CTRL":  0,
+                                   "T-CO2REP":  0.5,
+                                   "T-BFT":  0,
+                                   "T-ORDER":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0.32142857142857134,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  true
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0.10714285714285712,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0.21428571428571425,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-2",
+                                            "PH-FIRE-1"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  null,
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  "terrain",
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  165,
+                      "time_iso":  "2026-09-10T08:45:00.0000000+09:00",
+                      "label":  "노획 단말 비인가 접속",
+                      "note":  "2중대 지휘차 단말에서 비인가 계정 사용",
+                      "compromise":  {
+                                         "CO2-VEH":  0.5
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  0,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  0,
+                                    "CO2-VEH":  0.5,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  1,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0,
+                                   "T-TGT":  0,
+                                   "T-CTRL":  0,
+                                   "T-CO2REP":  0.5,
+                                   "T-BFT":  0,
+                                   "T-ORDER":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0.32142857142857134,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  true
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0.10714285714285712,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0.21428571428571425,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-2",
+                                            "PH-FIRE-1"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  null,
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  "terrain",
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  180,
+                      "time_iso":  "2026-09-10T09:00:00.0000000+09:00",
+                      "label":  "노획 단말 비인가 접속",
+                      "note":  "2중대 지휘차 단말에서 비인가 계정 사용",
+                      "compromise":  {
+                                         "CO2-VEH":  0.5
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  0,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  0,
+                                    "CO2-VEH":  0.5,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  1,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0,
+                                   "T-TGT":  0,
+                                   "T-CTRL":  0,
+                                   "T-CO2REP":  0.5,
+                                   "T-BFT":  0,
+                                   "T-ORDER":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0.32142857142857134,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  true
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0.10714285714285712,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0.21428571428571425,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-2",
+                                            "PH-FIRE-1",
+                                            "PH-FIRE-2"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  null,
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  "terrain",
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  195,
+                      "time_iso":  "2026-09-10T09:15:00.0000000+09:00",
+                      "label":  "노획 단말 비인가 접속",
+                      "note":  "2중대 지휘차 단말에서 비인가 계정 사용",
+                      "compromise":  {
+                                         "CO2-VEH":  0.5
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  0,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  0,
+                                    "CO2-VEH":  0.5,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0,
+                                   "T-TGT":  0,
+                                   "T-CTRL":  0,
+                                   "T-CO2REP":  0.5,
+                                   "T-BFT":  0,
+                                   "T-ORDER":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0.10714285714285712,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  true
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0.10714285714285712,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-2",
+                                            "PH-FIRE-1",
+                                            "PH-FIRE-2"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  null,
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  210,
+                      "time_iso":  "2026-09-10T09:30:00.0000000+09:00",
+                      "label":  "자격증명 탈취",
+                      "note":  "같은 시각 L-VHF-CO2 가 기동으로 단절된다(cause=mobility). 두 사건이 겹치는 구간이며 상황도는 이를 구분해야 한다",
+                      "compromise":  {
+                                         "CO2-VEH":  0.8
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  0,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  0,
+                                    "CO2-VEH":  0.8,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0,
+                                   "T-TGT":  0,
+                                   "T-CTRL":  0,
+                                   "T-CO2REP":  1,
+                                   "T-BFT":  0,
+                                   "T-ORDER":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0.21428571428571425,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  true
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0.1714285714285714,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0.21428571428571425,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-2",
+                                            "PH-FIRE-1",
+                                            "PH-FIRE-2"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  null,
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  "mobility",
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  225,
+                      "time_iso":  "2026-09-10T09:45:00.0000000+09:00",
+                      "label":  "자격증명 탈취",
+                      "note":  "같은 시각 L-VHF-CO2 가 기동으로 단절된다(cause=mobility). 두 사건이 겹치는 구간이며 상황도는 이를 구분해야 한다",
+                      "compromise":  {
+                                         "CO2-VEH":  0.8
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  0,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  0,
+                                    "CO2-VEH":  0.8,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0,
+                                   "T-TGT":  0,
+                                   "T-CTRL":  0,
+                                   "T-CO2REP":  1,
+                                   "T-BFT":  0,
+                                   "T-ORDER":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0.21428571428571425,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  true
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0.1714285714285714,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0.21428571428571425,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-2",
+                                            "PH-FIRE-1",
+                                            "PH-FIRE-2"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  null,
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  "mobility",
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  240,
+                      "time_iso":  "2026-09-10T10:00:00.0000000+09:00",
+                      "label":  "자격증명 탈취",
+                      "note":  "같은 시각 L-VHF-CO2 가 기동으로 단절된다(cause=mobility). 두 사건이 겹치는 구간이며 상황도는 이를 구분해야 한다",
+                      "compromise":  {
+                                         "CO2-VEH":  0.8
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  0,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  0,
+                                    "CO2-VEH":  0.8,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0,
+                                   "T-TGT":  0,
+                                   "T-CTRL":  0,
+                                   "T-CO2REP":  0.8,
+                                   "T-BFT":  0,
+                                   "T-ORDER":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  true
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-3",
+                                            "PH-FIRE-1",
+                                            "PH-FIRE-2"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  null,
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  255,
+                      "time_iso":  "2026-09-10T10:15:00.0000000+09:00",
+                      "label":  "자격증명 탈취",
+                      "note":  "같은 시각 L-VHF-CO2 가 기동으로 단절된다(cause=mobility). 두 사건이 겹치는 구간이며 상황도는 이를 구분해야 한다",
+                      "compromise":  {
+                                         "CO2-VEH":  0.8
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  0,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  0,
+                                    "CO2-VEH":  0.8,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0,
+                                   "T-TGT":  0,
+                                   "T-CTRL":  0,
+                                   "T-CO2REP":  0.8,
+                                   "T-BFT":  0,
+                                   "T-ORDER":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  true
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-3",
+                                            "PH-FIRE-1",
+                                            "PH-FIRE-2"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  null,
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  "terrain",
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  270,
+                      "time_iso":  "2026-09-10T10:30:00.0000000+09:00",
+                      "label":  "대대 지휘소 서버 침해",
+                      "note":  "중계망을 타고 BN-SRV 로 측면이동",
+                      "compromise":  {
+                                         "CO2-VEH":  0.8,
+                                         "BN-SRV":  0.7
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  0.7,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  0,
+                                    "CO2-VEH":  0.8,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0,
+                                   "T-TGT":  0,
+                                   "T-CTRL":  0,
+                                   "T-CO2REP":  0.8,
+                                   "T-BFT":  0,
+                                   "T-ORDER":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  true
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-3",
+                                            "PH-FIRE-1",
+                                            "PH-FIRE-2"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  null,
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  "terrain",
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  285,
+                      "time_iso":  "2026-09-10T10:45:00.0000000+09:00",
+                      "label":  "대대 지휘소 서버 침해",
+                      "note":  "중계망을 타고 BN-SRV 로 측면이동",
+                      "compromise":  {
+                                         "CO2-VEH":  0.8,
+                                         "BN-SRV":  0.7
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  0.7,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  0,
+                                    "CO2-VEH":  0.8,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0,
+                                   "T-TGT":  0,
+                                   "T-CTRL":  0,
+                                   "T-CO2REP":  0.8,
+                                   "T-BFT":  0,
+                                   "T-ORDER":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  true
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-3",
+                                            "PH-FIRE-1",
+                                            "PH-FIRE-2"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  null,
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  300,
+                      "time_iso":  "2026-09-10T11:00:00.0000000+09:00",
+                      "label":  "BN-SRV 장악",
+                      "note":  "같은 시각 위성 링크가 cause=unknown 으로 단절된다(300~345). 재밍인지 기상인지 알 수 없다 — 공격으로 단정하지 않는다",
+                      "compromise":  {
+                                         "CO2-VEH":  0.8,
+                                         "BN-SRV":  1
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  1,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  0,
+                                    "CO2-VEH":  0.8,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0.55555555555555558,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0.34782608695652178,
+                                   "T-TGT":  0,
+                                   "T-CTRL":  0.52631578947368418,
+                                   "T-CO2REP":  0.8,
+                                   "T-BFT":  1,
+                                   "T-ORDER":  0.37499999999999994
+                               },
+                      "mission":  {
+                                      "M-C2":  0.52631578947368418,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  true
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-3",
+                                            "PH-FIRE-2"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  null,
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  "unknown",
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  315,
+                      "time_iso":  "2026-09-10T11:15:00.0000000+09:00",
+                      "label":  "BN-SRV 장악",
+                      "note":  "같은 시각 위성 링크가 cause=unknown 으로 단절된다(300~345). 재밍인지 기상인지 알 수 없다 — 공격으로 단정하지 않는다",
+                      "compromise":  {
+                                         "CO2-VEH":  0.8,
+                                         "BN-SRV":  1
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  1,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  0,
+                                    "CO2-VEH":  0.8,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0.55555555555555558,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0.34782608695652178,
+                                   "T-TGT":  0,
+                                   "T-CTRL":  0.52631578947368418,
+                                   "T-CO2REP":  0.8,
+                                   "T-BFT":  1,
+                                   "T-ORDER":  0.37499999999999994
+                               },
+                      "mission":  {
+                                      "M-C2":  0.52631578947368418,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  true
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-3",
+                                            "PH-FIRE-2"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  null,
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  "unknown",
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  330,
+                      "time_iso":  "2026-09-10T11:30:00.0000000+09:00",
+                      "label":  "BN-SRV 장악",
+                      "note":  "같은 시각 위성 링크가 cause=unknown 으로 단절된다(300~345). 재밍인지 기상인지 알 수 없다 — 공격으로 단정하지 않는다",
+                      "compromise":  {
+                                         "CO2-VEH":  0.8,
+                                         "BN-SRV":  1
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  1,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0,
+                                    "TOC-SRV":  0,
+                                    "FO-TAB":  0,
+                                    "CO2-VEH":  0.8,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0,
+                                      "S-INTEL":  0,
+                                      "S-FIRE":  0,
+                                      "S-C2MSG":  0
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0.55555555555555558,
+                                   "T-CFF":  0,
+                                   "T-SITREP":  0.34782608695652178,
+                                   "T-TGT":  0,
+                                   "T-CTRL":  0.52631578947368418,
+                                   "T-CO2REP":  0.8,
+                                   "T-BFT":  1,
+                                   "T-ORDER":  0.37499999999999994
+                               },
+                      "mission":  {
+                                      "M-C2":  0.52631578947368418,
+                                      "M-FIRE":  0
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  true
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0,
+                                             "M-FIRE":  0
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-3",
+                                            "PH-FIRE-2"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  null,
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  "unknown",
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  345,
+                      "time_iso":  "2026-09-10T11:45:00.0000000+09:00",
+                      "label":  "여단 TOC 침투",
+                      "note":  "위성 링크 복구와 동시에 신뢰 경로를 타고 여단으로 확산",
+                      "compromise":  {
+                                         "CO2-VEH":  0.8,
+                                         "BN-SRV":  1,
+                                         "TOC-SRV":  0.6
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  1,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0.18,
+                                    "TOC-SRV":  0.6,
+                                    "FO-TAB":  0,
+                                    "CO2-VEH":  0.8,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0.24
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0.18,
+                                      "S-INTEL":  0.6,
+                                      "S-FIRE":  0.24,
+                                      "S-C2MSG":  0.6
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0.33333333333333331,
+                                   "T-CFF":  0.42857142857142855,
+                                   "T-SITREP":  0.391304347826087,
+                                   "T-TGT":  0.14117647058823529,
+                                   "T-CTRL":  0.31578947368421051,
+                                   "T-CO2REP":  0.8,
+                                   "T-BFT":  0.32,
+                                   "T-ORDER":  0.37499999999999994
+                               },
+                      "mission":  {
+                                      "M-C2":  0.31578947368421051,
+                                      "M-FIRE":  0.42857142857142855
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  true
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0.31578947368421051,
+                                             "M-FIRE":  0.42857142857142855
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-3",
+                                            "PH-FIRE-2"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  null,
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  360,
+                      "time_iso":  "2026-09-10T12:00:00.0000000+09:00",
+                      "label":  "여단 TOC 침투",
+                      "note":  "위성 링크 복구와 동시에 신뢰 경로를 타고 여단으로 확산",
+                      "compromise":  {
+                                         "CO2-VEH":  0.8,
+                                         "BN-SRV":  1,
+                                         "TOC-SRV":  0.6
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  1,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0.18,
+                                    "TOC-SRV":  0.6,
+                                    "FO-TAB":  0,
+                                    "CO2-VEH":  0.8,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0.24
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0.18,
+                                      "S-INTEL":  0.6,
+                                      "S-FIRE":  0.24,
+                                      "S-C2MSG":  0.6
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0.33333333333333331,
+                                   "T-CFF":  0.42857142857142855,
+                                   "T-SITREP":  0.391304347826087,
+                                   "T-TGT":  0.14117647058823529,
+                                   "T-CTRL":  0.31578947368421051,
+                                   "T-CO2REP":  0.8,
+                                   "T-BFT":  0.32,
+                                   "T-ORDER":  0.37499999999999994
+                               },
+                      "mission":  {
+                                      "M-C2":  0.31578947368421051,
+                                      "M-FIRE":  0.42857142857142855
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  true
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0.31578947368421051,
+                                             "M-FIRE":  0.42857142857142855
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-3",
+                                            "PH-FIRE-2"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  null,
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  375,
+                      "time_iso":  "2026-09-10T12:15:00.0000000+09:00",
+                      "label":  "여단 TOC 침투",
+                      "note":  "위성 링크 복구와 동시에 신뢰 경로를 타고 여단으로 확산",
+                      "compromise":  {
+                                         "CO2-VEH":  0.8,
+                                         "BN-SRV":  1,
+                                         "TOC-SRV":  0.6
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  1,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0.18,
+                                    "TOC-SRV":  0.6,
+                                    "FO-TAB":  0,
+                                    "CO2-VEH":  0.8,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0.24
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0.18,
+                                      "S-INTEL":  0.6,
+                                      "S-FIRE":  0.24,
+                                      "S-C2MSG":  0.6
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0.33333333333333331,
+                                   "T-CFF":  0.42857142857142855,
+                                   "T-SITREP":  0.391304347826087,
+                                   "T-TGT":  0.14117647058823529,
+                                   "T-CTRL":  0.31578947368421051,
+                                   "T-CO2REP":  0.8,
+                                   "T-BFT":  0.32,
+                                   "T-ORDER":  0.37499999999999994
+                               },
+                      "mission":  {
+                                      "M-C2":  0.31578947368421051,
+                                      "M-FIRE":  0.42857142857142855
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  true
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0.31578947368421051,
+                                             "M-FIRE":  0.42857142857142855
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-3",
+                                            "PH-FIRE-2"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  null,
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  390,
+                      "time_iso":  "2026-09-10T12:30:00.0000000+09:00",
+                      "label":  "TOC-SRV 장악",
+                      "note":  "C2 메시징 이중화가 양쪽 다 침해되어 무력화된다",
+                      "compromise":  {
+                                         "CO2-VEH":  0.8,
+                                         "BN-SRV":  1,
+                                         "TOC-SRV":  1
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  1,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0.3,
+                                    "TOC-SRV":  1,
+                                    "FO-TAB":  0,
+                                    "CO2-VEH":  0.8,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0.4
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0.3,
+                                      "S-INTEL":  1,
+                                      "S-FIRE":  0.4,
+                                      "S-C2MSG":  1
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0.55555555555555558,
+                                   "T-CFF":  0.7142857142857143,
+                                   "T-SITREP":  0.65217391304347827,
+                                   "T-TGT":  0.23529411764705885,
+                                   "T-CTRL":  0.52631578947368418,
+                                   "T-CO2REP":  0.8,
+                                   "T-BFT":  0.53333333333333333,
+                                   "T-ORDER":  0.625
+                               },
+                      "mission":  {
+                                      "M-C2":  0.52631578947368418,
+                                      "M-FIRE":  0.7142857142857143
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  true
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0.52631578947368418,
+                                             "M-FIRE":  0.7142857142857143
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-3",
+                                            "PH-FIRE-2"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  null,
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  },
+                  {
+                      "t":  405,
+                      "time_iso":  "2026-09-10T12:45:00.0000000+09:00",
+                      "label":  "TOC-SRV 장악",
+                      "note":  "C2 메시징 이중화가 양쪽 다 침해되어 무력화된다",
+                      "compromise":  {
+                                         "CO2-VEH":  0.8,
+                                         "BN-SRV":  1,
+                                         "TOC-SRV":  1
+                                     },
+                      "asset":  {
+                                    "TOC-ESX":  0,
+                                    "BN-SRV":  1,
+                                    "SAT-TERM":  0,
+                                    "BFT-GW":  0.3,
+                                    "TOC-SRV":  1,
+                                    "FO-TAB":  0,
+                                    "CO2-VEH":  0.8,
+                                    "TOC-WS":  0,
+                                    "FDC-TERM":  0,
+                                    "RELAY-1":  0,
+                                    "BN-CP":  0,
+                                    "CO1-VEH":  0,
+                                    "FDC-SRV":  0.4
+                                },
+                      "service":  {
+                                      "S-VOICE":  0,
+                                      "S-BFT":  0.3,
+                                      "S-INTEL":  1,
+                                      "S-FIRE":  0.4,
+                                      "S-C2MSG":  1
+                                  },
+                      "task":  {
+                                   "T-CO1REP":  0.55555555555555558,
+                                   "T-CFF":  0.7142857142857143,
+                                   "T-SITREP":  0.65217391304347827,
+                                   "T-TGT":  0.23529411764705885,
+                                   "T-CTRL":  0.52631578947368418,
+                                   "T-CO2REP":  0.8,
+                                   "T-BFT":  0.53333333333333333,
+                                   "T-ORDER":  0.625
+                               },
+                      "mission":  {
+                                      "M-C2":  0.52631578947368418,
+                                      "M-FIRE":  0.7142857142857143
+                                  },
+                      "mission_active":  {
+                                             "M-C2":  true,
+                                             "M-FIRE":  true
+                                         },
+                      "mission_attack":  {
+                                             "M-C2":  0.52631578947368418,
+                                             "M-FIRE":  0.7142857142857143
+                                         },
+                      "mission_env":  {
+                                          "M-C2":  0,
+                                          "M-FIRE":  0
+                                      },
+                      "active_phases":  [
+                                            "PH-C2-3",
+                                            "PH-FIRE-2"
+                                        ],
+                      "asset_outage":  {
+                                           "TOC-ESX":  null,
+                                           "BN-SRV":  null,
+                                           "SAT-TERM":  null,
+                                           "BFT-GW":  null,
+                                           "TOC-SRV":  null,
+                                           "FO-TAB":  null,
+                                           "CO2-VEH":  null,
+                                           "TOC-WS":  null,
+                                           "FDC-TERM":  null,
+                                           "RELAY-1":  null,
+                                           "BN-CP":  null,
+                                           "CO1-VEH":  null,
+                                           "FDC-SRV":  null
+                                       },
+                      "link_outage":  {
+                                          "L-SAT-TOC":  null,
+                                          "L-VHF-CO2":  null,
+                                          "L-FDC-LAN":  null,
+                                          "L-VHF-FO":  null,
+                                          "L-TOC-FDC":  null,
+                                          "L-SAT-BN":  null,
+                                          "L-VHF-RLY":  null,
+                                          "L-FIRE-NET":  null,
+                                          "L-TOC-BFT":  null,
+                                          "L-TOC-LAN":  null,
+                                          "L-VHF-CO1":  null,
+                                          "L-BN-LAN":  null
+                                      }
+                  }
+              ]
+}

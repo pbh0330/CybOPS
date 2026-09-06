@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MC-CyCOP 임무중심 사이버 공동상황도</title>
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark">MC-CyCOP</span>
+          <span class="brand-sub">임무중심 사이버 공동상황도</span>
+        </div>
+        <div class="scenario-pick">
+          <label for="scenario">시나리오</label>
+          <select id="scenario"></select>
+        </div>
+        <div class="topbar-note" id="phase-line">—</div>
+      </header>
+
+      <main class="layout">
+        <section class="graph-pane">
+          <div class="graph-toolbar">
+            <button type="button" data-view="dependency" class="view-btn is-on">임무 의존</button>
+            <button type="button" data-view="transport" class="view-btn">전송로</button>
+            <span class="spacer"></span>
+            <label class="chk"><input type="checkbox" id="toggle-labels" checked /> 라벨</label>
+            <button type="button" id="fit-btn">화면 맞춤</button>
+          </div>
+          <div id="cy"></div>
+          <div class="legend" id="legend"></div>
+        </section>
+
+        <aside class="side-pane">
+          <div class="panel">
+            <h2>임무 저하도</h2>
+            <div id="missions"></div>
+            <p class="fineprint">
+              막대의 <b class="sw-attack">붉은 부분</b>은 공격 단독, <b class="sw-env">회청색</b>은
+              기동·지형·미상 단독, <b class="sw-inter">보라</b>는 둘이 겹쳐야만 생기는 몫이다.
+              모두 결정론 계층의 산출이며 LLM이 만들지 않는다 (ADR-0003).
+            </p>
+          </div>
+
+          <div class="panel">
+            <h2>단절 <span class="hint">원인 라벨</span></h2>
+            <div id="cuts"></div>
+            <p class="fineprint">
+              원인이 <b>미상(unknown)</b>인 단절을 공격으로 표기하지 않는다 (ADR-0012).
+            </p>
+          </div>
+
+          <div class="panel">
+            <h2>선택한 노드</h2>
+            <div id="inspect" class="inspect-empty">노드를 클릭하면 기여 경로가 나온다.</div>
+          </div>
+        </aside>
+      </main>
+
+      <footer class="timebar">
+        <button type="button" id="play">▶</button>
+        <input type="range" id="scrub" min="0" max="0" value="0" step="1" />
+        <div class="clock">
+          <span id="clock">--:--</span>
+          <span id="step-label" class="step-label">—</span>
+        </div>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
