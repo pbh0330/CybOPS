@@ -465,6 +465,16 @@ PowerShell 참조 구현은 그대로 유지한다. 대용량 스캔은 PowerShe
    (`Test-BriefingCitations.ps1`), 모델 비교(`Compare-BriefingModels.ps1`).
 6. 탐지 실험 E1 - 논문 자산. 화면에는 거의 안 보인다. **OpTC가 로컬에 있으니 착수 가능.**
 
+   > **착수 전 반영할 실측 (2026-09-07): DC1 에는 eCAR 이 없다.**
+   > eCAR 18개 번들 380 GB 를 전수 스캔했다. 호스트 450개 전부 SysClient, 비-SysClient 0건.
+   > 그런데 DC1 은 bro DNS 에 있다(`dc1.systemia.com`, IP 142.20.61.130 / 109.172.36.2).
+   > **네트워크 측에는 보이고 엔드포인트 측에는 없다.**
+   > 따라서 Day 1 피벗 체인의 마지막 구간(DC1 lsadump)은 엔드포인트 탐지의 평가 대상이
+   > 될 수 없다. E1-b 를 그 구간을 빼고 정의하거나 네트워크 측으로 정의해야 한다.
+   > 관측이 없는 구간의 재현율은 모델의 성질이 아니라 데이터의 성질이다.
+   > 재현: `.\scripts\Measure-OptcHosts.ps1 -Filter 'ecar\'` (약 55분)
+   > 상세와 남는 불확실성: `docs/09-optc-acquisition.md` 마지막 절
+
 **병행 가능 (대역폭만 씀)**
 - ✅ OpTC Drive 목록 조회·용량 실측·계획 확정 완료 (232.10GB / 1,001개 파일)
 - ✅ **OpTC 취득 완료 (2026-09-07 08:55)**. Phase 1,2,6 / 900개 `.gz` + 문서 / **41.3 GB**.
