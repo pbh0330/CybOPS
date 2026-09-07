@@ -341,7 +341,19 @@ def main():
 
     print(f"reading {args.features}")
     df = pd.read_csv(args.features)
-    print(f"  rows {len(df):,}   positives {int(df.label.sum()):,}")
+    # The 1-in-100 extraction is 10.5M rows; at pandas' default float64 that is
+    # about 4 GB before a model has been fitted. float32 halves it and costs
+    # nothing here - the features are counts and ratios, not quantities where
+    # the seventh significant figure decides anything.
+    for c in df.columns:
+        if c in ("t", "grp"):
+            df[c] = df[c].astype("int64")
+        elif c == "label":
+            df[c] = df[c].astype("int8")
+        elif df[c].dtype == "float64":
+            df[c] = df[c].astype("float32")
+    print(f"  rows {len(df):,}   positives {int(df.label.sum()):,}   "
+          f"{df.memory_usage(deep=True).sum() / 1e9:.2f} GB in memory")
 
     df["day"] = df["t"] / DAY
     feat_cols = [c for c in df.columns if c not in ("t", "label", "w", "day", "grp")]

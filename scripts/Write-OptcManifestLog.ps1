@@ -1,4 +1,4 @@
-# Move the acquisition record into the manifest.
+﻿# Move the acquisition record into the manifest.
 #
 # ASCII only in this file.
 #
