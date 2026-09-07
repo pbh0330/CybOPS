@@ -44,16 +44,29 @@ if (-not $GzipLog) { $GzipLog = Join-Path $Root '_gzipcheck.log' }
 
 # ---------------------------------------------------------------- read
 
-$rows = New-Object System.Collections.ArrayList
+$raw = New-Object System.Collections.ArrayList
 foreach ($line in [IO.File]::ReadLines((Resolve-Path $acqPath))) {
   if (-not $line.Trim()) { continue }
-  [void]$rows.Add(($line | ConvertFrom-Json))
+  [void]$raw.Add(($line | ConvertFrom-Json))
 }
+
+# _acquired.jsonl is append-only, so a re-fetch of a file leaves both records.
+# Six files in the 2026-09-06 run were HTML error pages that passed the size
+# check (docs/09 "취득 결과"), and their SHA256 is the hash of the garbage.
+# Keep the newest record per rel_path: the repaired one wins, and the manifest
+# never carries a hash of something that is no longer on disk.
+$byPath = [ordered]@{}
+foreach ($r in ($raw | Sort-Object { [string]$_.acquired_at })) {
+  $byPath[[string]$r.rel_path] = $r
+}
+$rows = @($byPath.Values)
+$dupes = $raw.Count - $rows.Count
 
 Write-Output ''
 Write-Output "optc manifest log   root=$Root"
 Write-Output ('-' * 74)
-Write-Output ("  _acquired.jsonl        {0,6} record(s)" -f $rows.Count)
+Write-Output ("  _acquired.jsonl        {0,6} line(s)" -f $raw.Count)
+Write-Output ("  distinct rel_path      {0,6}   (superseded by re-fetch: {1})" -f $rows.Count, $dupes)
 
 # ---------------------------------------------------------------- reconcile
 #

@@ -474,10 +474,24 @@ PowerShell 참조 구현은 그대로 유지한다. 대용량 스캔은 PowerShe
 **지금 밀려 있는 것 (규칙상 이미 했어야 하는 것)**
 - **`configs/manifests/optc.json` 의 `acquisition_log` 가 아직 `[]` 다.** 41.3 GB를 받아놓고
   출처·해시 기록이 비어 있다. CLAUDE.md "취득 즉시 MANIFEST.json을 쓴다" 위반 상태다.
-  `_acquired.jsonl` 901줄을 그대로 옮기면 된다.
-- 무결성 검사: `.\scripts\Test-GzipIntegrity.ps1 -Path F:\mc-cycop-data\raw\optc -NoHash -ExpectedLastTimestamp 0`
-  (2026-09-07: 이 스크립트에 `-Recurse` 가 빠져 있어 900개를 못 찾고 "No .gz files under"
-  로 죽었다. LANL은 평평한 디렉터리라 안 드러났던 버그다. 고쳤다.)
+  `.\scripts\Write-OptcManifestLog.ps1` 이 `_acquired.jsonl` 을 디스크와 대조해 옮긴다.
+
+> ### ⚠ 2026-09-07: 다운로드 6개가 HTML 에러 페이지였다
+>
+> `fetch-optc.ps1` 이 `0 file(s) incomplete` 라고 보고했지만 **틀렸다.**
+> `Test-GzipIntegrity.ps1` 로 전수 해제하니 6개가 gzip 이 아니라 Drive 의 **503 페이지**
+> 였다. 크기는 기대값과 **정확히** 일치했다 - `curl` 이 `--fail` 없이 에러 본문을 파일에
+> 쓰고, 다음 시도의 `-C -` 가 그 뒤부터 이어받아서 `[503 HTML 1.6 KB][진짜 데이터]` 가
+> 됐기 때문이다. 48 MB 짜리도 섞여 있었다.
+>
+> **바이트 수 일치는 파일이 맞다는 뜻이 아니다.** 이어받기는 이미 있는 접두사를 검증 없이
+> 신뢰하는 것이 정의다. 상세와 고친 내용은 `docs/09-optc-acquisition.md` 마지막 절.
+>
+> 고침: `fetch-optc.ps1` 에 `--fail` + gzip 매직 검사(틀리면 삭제) + `-Only` 재취득,
+> `Test-GzipIntegrity.ps1` 에 `-Recurse`(없어서 900개를 못 찾고 죽었다).
+
+- 무결성 검사(전수, 약 25분):
+  `.\scripts\Test-GzipIntegrity.ps1 -Path F:\mc-cycop-data\raw\optc -NoHash -ExpectedLastTimestamp 0`
 
 **남은 자잘한 것**
 - ~~`FW01`/`SW01`이 어떤 엣지에도 연결되지 않았다~~ → **해결**. defnet-01 에 링크 15개를

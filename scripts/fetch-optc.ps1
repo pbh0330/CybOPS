@@ -54,6 +54,10 @@ param(
     # Abort a file after this many consecutive attempts that gain zero bytes.
     [int] $MaxStall = 10,
 
+    # Re-fetch only these rel_paths (repeatable). Used to repair specific files
+    # without walking the whole plan again.
+    [string[]] $Only = @(),
+
     # Keep this much free on the chosen volume (docs/05-data-lifecycle.md).
     [double] $ReserveGB = 50
 )
@@ -79,6 +83,12 @@ if ($Phase.Count -gt 0) {
     $files = @($files | Where-Object { $Phase -contains [int]$_.phase })
 }
 if ($files.Count -eq 0) { throw ('No planned files for phase(s): ' + ($Phase -join ',')) }
+if ($Only.Count -gt 0) {
+    # rel_path is written with forward slashes in the manifest; accept either.
+    $want = @($Only | ForEach-Object { ($_ -replace '\\', '/') })
+    $files = @($files | Where-Object { $want -contains ($_.rel_path -replace '\\', '/') })
+    if ($files.Count -eq 0) { throw ('None of -Only matched a planned rel_path: ' + ($Only -join ', ')) }
+}
 
 # Log the file count immediately. An encoding accident that swallows a list
 # element shows up here and nowhere else (docs/05-data-lifecycle.md).
@@ -189,7 +199,16 @@ foreach ($f in $files) {
         # --speed-limit/--speed-time drop a socket that falls under 8 KB/s for
         # 90 s, so a dead connection is retried instead of hanging all night.
         # No --retry here on purpose (rule 2 above).
-        & curl.exe -sS -L -C - --connect-timeout 30 --speed-limit 8192 --speed-time 90 -o $target $url 2>$null
+        #
+        # --fail is not optional. Without it curl writes the server's ERROR
+        # BODY into -o, and Drive answers a transient overload with a ~1.6 KB
+        # HTML page. The next attempt then resumes with `Range: bytes=1600-`,
+        # Drive serves the real file from that offset, and the finished file is
+        # [503 HTML][real gzip from 1600] whose length is EXACTLY the expected
+        # byte count. The size check passes, the log says DONE, and six files
+        # in the 2026-09-06 run were HTML-headed garbage that nothing noticed
+        # until Test-GzipIntegrity read their magic number.
+        & curl.exe -sS -f -L -C - --connect-timeout 30 --speed-limit 8192 --speed-time 90 -o $target $url 2>$null
         $secs = [math]::Max(1, ((Get-Date) - $t0).TotalSeconds)
 
         $after = 0
@@ -224,7 +243,36 @@ foreach ($f in $files) {
     $final = 0
     if (Test-Path -LiteralPath $target) { $final = (Get-Item -LiteralPath $target).Length }
 
-    if ($want -gt 0 -and $final -eq $want) {
+    # Size is not identity. A file can be exactly the right length and still be
+    # the wrong bytes - see the --fail comment above. Two bytes of magic number
+    # settle it, and reading two bytes costs nothing next to a 2 GB download.
+    $magicOk = $true
+    $magicWhy = ''
+    if ($final -gt 0 -and $target -match '\.gz$') {
+        try {
+            $mfs = [IO.File]::OpenRead($target)
+            $mb = New-Object byte[] 2
+            $mn = $mfs.Read($mb, 0, 2)
+            $mfs.Close()
+            if ($mn -lt 2 -or $mb[0] -ne 0x1F -or $mb[1] -ne 0x8B) {
+                $magicOk = $false
+                $magicWhy = ('not gzip: first bytes {0:X2} {1:X2}' -f $mb[0], $mb[1])
+            }
+        } catch {
+            $magicOk = $false
+            $magicWhy = 'could not read header'
+        }
+    }
+
+    if ($want -gt 0 -and $final -eq $want -and -not $magicOk) {
+        # Right length, wrong content. Resuming onto this would keep the bad
+        # prefix forever, so the partial file goes.
+        Write-Log ('BAD   [{0}/{1}] {2}  {3} - deleting, re-run to fetch clean' -f `
+                   $idx, $files.Count, $f.rel_path, $magicWhy)
+        Remove-Item -LiteralPath $target -Force -ErrorAction SilentlyContinue
+        $failed++
+    }
+    elseif ($want -gt 0 -and $final -eq $want) {
         Write-Log ('DONE  [{0}/{1}] {2}  {3:N2} GB' -f $idx, $files.Count, $f.rel_path, ($final / 1GB))
         $sha = ''
         try {
