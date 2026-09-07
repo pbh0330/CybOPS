@@ -76,16 +76,55 @@
 
     "terrain": {
       "_note": "표시·서술용 도식이다. 엔진은 읽지 않는다. 가시선·차폐를 좌표에서 계산하지 않는다 - outage 의 cause 는 저작된 값이고 이 블록은 그것과 수작업으로 정합을 맞춘 그림일 뿐이다.",
+      "_authored": "features 와 spots 는 전부 창작값이다. 실지형 DEM·수치지도·위성영상에서 유도하지 않았고 실지형과 대조하지도 않았다(safety.basemap_policy).",
+
+      "field": {
+        "method": "idw-to-feature",
+        "base_elev_m": 70,
+        "base_influence_m": 2600,
+        "contour_interval_m": 40,
+        "index_contour_every": 5,
+        "grid_n": 32,
+        "contour_grid_n": 64,
+        "_note": "고도장은 features 와 spots 로부터 역거리가중으로 보간한다. 거리는 점까지가 아니라 선·면까지의 최단거리라서 능선이 점 무더기가 아니라 능선으로 보인다. 등고선은 그 격자에서 marching squares 로 뽑는다.",
+        "_honesty": "이 필드는 관측값이 아니라 위 저작 도형에서 만들어낸 보간면이다. 등고선 수치는 '이 시나리오가 가정하는 지형'이지 어떤 실제 지형의 측량값이 아니다. 판단 로직은 이 필드를 읽지 않는다(ADR-0002)."
+      },
+
       "features": [
-        {"id": "TF-RIDGE-A", "kind": "ridge", "name": "북쪽 능선", "crest_elev_m": 420,
+        {"id": "TF-RIDGE-A", "kind": "ridge", "name": "북쪽 능선", "crest_elev_m": 420, "influence_m": 900,
          "polyline": [[6800, 9600], [10400, 10900], [14200, 12300]]},
-        {"id": "TF-VALLEY-B", "kind": "valley", "name": "동쪽 계곡", "floor_elev_m": 60,
+        {"id": "TF-RIDGE-C", "kind": "ridge", "name": "남쪽 능선", "crest_elev_m": 250, "influence_m": 1100,
+         "polyline": [[4200, 2600], [8600, 3400], [12800, 3000]]},
+        {"id": "TF-PEAK-E", "kind": "ridge", "name": "동북 고지", "crest_elev_m": 520, "influence_m": 800,
+         "polyline": [[18600, 14600], [20400, 15800]]},
+        {"id": "TF-RIDGE-W", "kind": "ridge", "name": "서쪽 능선", "crest_elev_m": 285, "influence_m": 800,
+         "polyline": [[1800, 12800], [4200, 11200], [6200, 9800]]},
+        {"id": "TF-SPUR-F", "kind": "ridge", "name": "중앙 지맥", "crest_elev_m": 240, "influence_m": 620,
+         "polyline": [[8400, 9200], [7200, 7000], [6800, 5200]]},
+        {"id": "TF-VALLEY-B", "kind": "valley", "name": "동쪽 계곡", "floor_elev_m": 60, "influence_m": 700,
          "polyline": [[16200, 12200], [17400, 13300], [18600, 14400]]},
-        {"id": "TF-REAR", "kind": "assembly-area", "name": "후방 집결지", "elev_m": 90,
+        {"id": "TF-STREAM-S", "kind": "valley", "name": "서측 하천", "floor_elev_m": 78, "influence_m": 560,
+         "polyline": [[1200, 9800], [3200, 7600], [5000, 6000], [7000, 4600], [9600, 3600]]},
+        {"id": "TF-VALLEY-D", "kind": "valley", "name": "중앙 하곡", "floor_elev_m": 85, "influence_m": 900,
+         "polyline": [[2600, 5200], [6400, 6600], [9200, 7900], [12600, 8600], [16400, 9200]]},
+        {"id": "TF-REAR", "kind": "assembly-area", "name": "후방 집결지", "elev_m": 90, "influence_m": 600,
          "polygon": [[2400, 3400], [4400, 3400], [4400, 5400], [2400, 5400]]}
+      ],
+
+      "_spot_rule": "spots 는 지형의 표고점이지 자산의 표고가 아니다. 자산 표고는 여기서 파생된다(ui/tools/ground-assets.mjs) - 반대 방향으로 맞추면, 즉 부대가 있는 곳에 지형을 맞추면 지형이 아무 말도 하지 않게 된다. 지형이 먼저이고 부대가 따라간다.",
+
+      "spots": [
+        {"id": "SP-OP1",  "x": 5200,  "y": 11800, "elev_m": 268, "influence_m": 700},
+        {"id": "SP-KNOB", "x": 10600, "y": 7200,  "elev_m": 195, "influence_m": 800},
+        {"id": "SP-LOW1", "x": 2200,  "y": 6400,  "elev_m": 88,  "influence_m": 900},
+        {"id": "SP-LOW2", "x": 11000, "y": 5600,  "elev_m": 96,  "influence_m": 900},
+        {"id": "SP-NW",   "x": 1400,  "y": 15400, "elev_m": 300, "influence_m": 2000},
+        {"id": "SP-N",    "x": 9800,  "y": 16400, "elev_m": 340, "influence_m": 2000},
+        {"id": "SP-SW",   "x": 1600,  "y": 1400,  "elev_m": 130, "influence_m": 2000},
+        {"id": "SP-SE",   "x": 22200, "y": 2200,  "elev_m": 160, "influence_m": 2000},
+        {"id": "SP-E",    "x": 21600, "y": 7600,  "elev_m": 190, "influence_m": 2000}
       ]
     },
-
     "position_rule": {
       "_note": "시점 t 의 자산 위치를 뽑는 결정론적 규칙. 어떤 구현이든 이 규칙만 따르면 같은 값이 나와야 한다.",
       "steps": [
@@ -145,67 +184,67 @@
 
   "assets": [
     {"id": "TOC-ESX",  "type": "hypervisor",          "unit": "U-BDE", "site": "여단 TOC",    "os": "esxi",      "mobility": "static", "transit": true,
-     "geo": {"kind": "fixed", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 10, "at": {"x": 3180, "y": 4240, "z": 92}}},
+     "geo": {"kind": "fixed", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 10, "at": {"x": 3180, "y": 4240, "z": 96}}},
     {"id": "TOC-SRV",  "type": "c2-server",           "unit": "U-BDE", "site": "여단 TOC",    "os": "linux",     "mobility": "static", "transit": true,
-     "geo": {"kind": "fixed", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 10, "at": {"x": 3205, "y": 4232, "z": 92}}},
+     "geo": {"kind": "fixed", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 10, "at": {"x": 3205, "y": 4232, "z": 96}}},
     {"id": "TOC-WS",   "type": "workstation",         "unit": "U-BDE", "site": "여단 TOC",    "os": "windows",   "mobility": "static", "transit": false,
-     "geo": {"kind": "fixed", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 10, "at": {"x": 3162, "y": 4211, "z": 92}}},
+     "geo": {"kind": "fixed", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 10, "at": {"x": 3162, "y": 4211, "z": 96}}},
     {"id": "BFT-GW",   "type": "gateway",             "unit": "U-BDE", "site": "여단 TOC",    "os": "linux",     "mobility": "static", "transit": true,
-     "geo": {"kind": "fixed", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 10, "at": {"x": 3221, "y": 4258, "z": 93}}},
+     "geo": {"kind": "fixed", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 10, "at": {"x": 3221, "y": 4258, "z": 97}}},
     {"id": "FDC-SRV",  "type": "fire-control-server", "unit": "U-FA",  "site": "포병 FDC",    "os": "linux",     "mobility": "static", "transit": true,
-     "geo": {"kind": "fixed", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 10, "at": {"x": 7420, "y": 6140, "z": 128}}},
+     "geo": {"kind": "fixed", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 10, "at": {"x": 7420, "y": 6140, "z": 203}}},
     {"id": "FDC-TERM", "type": "terminal",            "unit": "U-FA",  "site": "포병 FDC",    "os": "windows",   "mobility": "static", "transit": false,
-     "geo": {"kind": "fixed", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 10, "at": {"x": 7396, "y": 6118, "z": 128}}},
+     "geo": {"kind": "fixed", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 10, "at": {"x": 7396, "y": 6118, "z": 204}}},
     {"id": "RELAY-1",  "type": "radio-relay",         "unit": "U-1BN", "site": "능선 중계소", "os": "appliance", "mobility": "static", "transit": true,
-     "geo": {"kind": "fixed", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 15, "at": {"x": 10400, "y": 10900, "z": 418},
+     "geo": {"kind": "fixed", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 15, "at": {"x": 10400, "y": 10900, "z": 394},
              "note": "TF-RIDGE-A 능선마루. 중계소가 왜 거기 있는지가 좌표로 설명된다"}},
 
     {"id": "BN-SRV",   "type": "c2-server",           "unit": "U-1BN", "site": "대대 지휘소", "os": "linux",     "mobility": "mobile", "transit": true,
      "outages": [{"from": 95, "to": 125, "cause": "mobility", "note": "지휘소 이동(철수-전개)"}],
      "geo": {"kind": "track", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 25, "segments": [
-       {"from": 0,   "to": 95,  "mode": "hold", "at": {"x": 8640, "y": 8180, "z": 146}, "note": "1차 지휘소"},
-       {"from": 95,  "to": 125, "mode": "move", "at": {"x": 8640, "y": 8180, "z": 146}, "to_at": {"x": 13860, "y": 12420, "z": 205}, "note": "지휘소 이동 - outage(mobility) 와 같은 구간"},
-       {"from": 125, "to": 420, "mode": "hold", "at": {"x": 13860, "y": 12420, "z": 205}, "note": "2차 지휘소"}
+       {"from": 0,   "to": 95,  "mode": "hold", "at": {"x": 8640, "y": 8180, "z": 187}, "note": "1차 지휘소"},
+       {"from": 95,  "to": 125, "mode": "move", "at": {"x": 8640, "y": 8180, "z": 187}, "to_at": {"x": 13860, "y": 12420, "z": 384}, "note": "지휘소 이동 - outage(mobility) 와 같은 구간"},
+       {"from": 125, "to": 420, "mode": "hold", "at": {"x": 13860, "y": 12420, "z": 384}, "note": "2차 지휘소"}
      ]}},
     {"id": "BN-CP",    "type": "c2-terminal",         "unit": "U-1BN", "site": "대대 지휘소", "os": "windows",   "mobility": "mobile", "transit": false,
      "outages": [{"from": 95, "to": 125, "cause": "mobility", "note": "지휘소 이동(철수-전개)"}],
      "geo": {"kind": "track", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 25, "segments": [
-       {"from": 0,   "to": 95,  "mode": "hold", "at": {"x": 8622, "y": 8192, "z": 146}},
-       {"from": 95,  "to": 125, "mode": "move", "at": {"x": 8622, "y": 8192, "z": 146}, "to_at": {"x": 13842, "y": 12432, "z": 205}},
-       {"from": 125, "to": 420, "mode": "hold", "at": {"x": 13842, "y": 12432, "z": 205}}
+       {"from": 0,   "to": 95,  "mode": "hold", "at": {"x": 8622, "y": 8192, "z": 189}},
+       {"from": 95,  "to": 125, "mode": "move", "at": {"x": 8622, "y": 8192, "z": 189}, "to_at": {"x": 13842, "y": 12432, "z": 384}},
+       {"from": 125, "to": 420, "mode": "hold", "at": {"x": 13842, "y": 12432, "z": 384}}
      ]}},
     {"id": "SAT-TERM", "type": "satcom-terminal",     "unit": "U-1BN", "site": "대대 지휘소", "os": "appliance", "mobility": "mobile", "transit": true,
      "outages": [{"from": 95, "to": 125, "cause": "mobility", "note": "위성단말 철수-재전개"}],
      "geo": {"kind": "track", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 25, "segments": [
-       {"from": 0,   "to": 95,  "mode": "hold", "at": {"x": 8662, "y": 8171, "z": 147}},
-       {"from": 95,  "to": 125, "mode": "move", "at": {"x": 8662, "y": 8171, "z": 147}, "to_at": {"x": 13882, "y": 12411, "z": 206}},
-       {"from": 125, "to": 420, "mode": "hold", "at": {"x": 13882, "y": 12411, "z": 206}}
+       {"from": 0,   "to": 95,  "mode": "hold", "at": {"x": 8662, "y": 8171, "z": 185}},
+       {"from": 95,  "to": 125, "mode": "move", "at": {"x": 8662, "y": 8171, "z": 185}, "to_at": {"x": 13882, "y": 12411, "z": 384}},
+       {"from": 125, "to": 420, "mode": "hold", "at": {"x": 13882, "y": 12411, "z": 384}}
      ]}},
 
     {"id": "CO1-VEH",  "type": "c2-terminal",         "unit": "U-1CO", "site": "1중대 지휘차", "os": "windows",  "mobility": "mobile", "transit": false,
      "geo": {"kind": "track", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 50, "segments": [
-       {"from": 0,   "to": 90,  "mode": "hold", "at": {"x": 6240, "y": 7380, "z": 112}},
-       {"from": 90,  "to": 150, "mode": "move", "at": {"x": 6240, "y": 7380, "z": 112},  "to_at": {"x": 11460, "y": 12880, "z": 166}},
-       {"from": 150, "to": 195, "mode": "move", "at": {"x": 11460, "y": 12880, "z": 166}, "to_at": {"x": 12980, "y": 14260, "z": 131}, "note": "TF-RIDGE-A 북사면 사각지대 통과 - L-VHF-CO1 의 terrain outage 와 같은 구간"},
-       {"from": 195, "to": 260, "mode": "move", "at": {"x": 12980, "y": 14260, "z": 131}, "to_at": {"x": 15240, "y": 15420, "z": 198}},
-       {"from": 260, "to": 420, "mode": "hold", "at": {"x": 15240, "y": 15420, "z": 198}}
+       {"from": 0,   "to": 90,  "mode": "hold", "at": {"x": 6240, "y": 7380, "z": 165}},
+       {"from": 90,  "to": 150, "mode": "move", "at": {"x": 6240, "y": 7380, "z": 165},  "to_at": {"x": 11460, "y": 12880, "z": 330}},
+       {"from": 150, "to": 195, "mode": "move", "at": {"x": 11460, "y": 12880, "z": 330}, "to_at": {"x": 12980, "y": 14260, "z": 260}, "note": "TF-RIDGE-A 북사면 사각지대 통과 - L-VHF-CO1 의 terrain outage 와 같은 구간"},
+       {"from": 195, "to": 260, "mode": "move", "at": {"x": 12980, "y": 14260, "z": 260}, "to_at": {"x": 15240, "y": 15420, "z": 212}},
+       {"from": 260, "to": 420, "mode": "hold", "at": {"x": 15240, "y": 15420, "z": 212}}
      ]}},
     {"id": "CO2-VEH",  "type": "c2-terminal",         "unit": "U-2CO", "site": "2중대 지휘차", "os": "windows",  "mobility": "mobile", "transit": false,
      "geo": {"kind": "track", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 50, "segments": [
-       {"from": 0,   "to": 100, "mode": "hold", "at": {"x": 5480, "y": 6420, "z": 104}},
-       {"from": 100, "to": 205, "mode": "move", "at": {"x": 5480, "y": 6420, "z": 104},  "to_at": {"x": 11020, "y": 11640, "z": 222}},
-       {"from": 205, "to": 235, "mode": "move", "at": {"x": 11020, "y": 11640, "z": 222}, "to_at": {"x": 13480, "y": 13060, "z": 186}, "note": "L-VHF-CO2 의 mobility outage 와 같은 구간 - 기동간 안테나 미전개"},
-       {"from": 235, "to": 420, "mode": "hold", "at": {"x": 13480, "y": 13060, "z": 186}}
+       {"from": 0,   "to": 100, "mode": "hold", "at": {"x": 5480, "y": 6420, "z": 96}},
+       {"from": 100, "to": 205, "mode": "move", "at": {"x": 5480, "y": 6420, "z": 96},  "to_at": {"x": 11020, "y": 11640, "z": 390}},
+       {"from": 205, "to": 235, "mode": "move", "at": {"x": 11020, "y": 11640, "z": 390}, "to_at": {"x": 13480, "y": 13060, "z": 365}, "note": "L-VHF-CO2 의 mobility outage 와 같은 구간 - 기동간 안테나 미전개"},
+       {"from": 235, "to": 420, "mode": "hold", "at": {"x": 13480, "y": 13060, "z": 365}}
      ]}},
     {"id": "FO-TAB",   "type": "observer-terminal",   "unit": "U-FA",  "site": "관측반",       "os": "android",  "mobility": "mobile", "transit": false,
      "outages": [{"from": 0, "to": 120, "cause": "mobility", "note": "관측반 미전개 - 표적획득 단계 이전"}],
      "geo": {"kind": "track", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 50, "segments": [
-       {"from": 0,   "to": 120, "mode": "hold", "at": {"x": 3460, "y": 4720, "z": 95}, "note": "후방 집결지 대기. outage 중이지만 위치는 정의된다"},
-       {"from": 120, "to": 180, "mode": "move", "at": {"x": 3460, "y": 4720, "z": 95},   "to_at": {"x": 9820, "y": 9640, "z": 352}},
-       {"from": 180, "to": 255, "mode": "move", "at": {"x": 9820, "y": 9640, "z": 352},  "to_at": {"x": 16040, "y": 12180, "z": 214}},
-       {"from": 255, "to": 275, "mode": "move", "at": {"x": 16040, "y": 12180, "z": 214}, "to_at": {"x": 17280, "y": 13240, "z": 68}, "note": "TF-VALLEY-B 진입 - L-VHF-FO 의 terrain outage 와 같은 구간"},
-       {"from": 275, "to": 330, "mode": "move", "at": {"x": 17280, "y": 13240, "z": 68},  "to_at": {"x": 18420, "y": 14380, "z": 146}},
-       {"from": 330, "to": 420, "mode": "hold", "at": {"x": 18420, "y": 14380, "z": 146}}
+       {"from": 0,   "to": 120, "mode": "hold", "at": {"x": 3460, "y": 4720, "z": 94}, "note": "후방 집결지 대기. outage 중이지만 위치는 정의된다"},
+       {"from": 120, "to": 180, "mode": "move", "at": {"x": 3460, "y": 4720, "z": 94},   "to_at": {"x": 9820, "y": 9640, "z": 288}},
+       {"from": 180, "to": 255, "mode": "move", "at": {"x": 9820, "y": 9640, "z": 288},  "to_at": {"x": 16040, "y": 12180, "z": 83}},
+       {"from": 255, "to": 275, "mode": "move", "at": {"x": 16040, "y": 12180, "z": 83}, "to_at": {"x": 17280, "y": 13240, "z": 86}, "note": "TF-VALLEY-B 진입 - L-VHF-FO 의 terrain outage 와 같은 구간"},
+       {"from": 275, "to": 330, "mode": "move", "at": {"x": 17280, "y": 13240, "z": 86},  "to_at": {"x": 18420, "y": 14380, "z": 240}},
+       {"from": 330, "to": 420, "mode": "hold", "at": {"x": 18420, "y": 14380, "z": 240}}
      ]}}
   ],
 

@@ -483,6 +483,9 @@ function bindControls() {
   bindCam('geo-pitch', 'pitch')
   bindCam('geo-zscale', 'zScale')
 
+  const terrChk = document.getElementById('geo-terrain')
+  if (terrChk) terrChk.addEventListener('change', () => { geoCam.terrain = terrChk.checked; renderGeoPane() })
+
   // drag to orbit, which is the control people reach for before the slider
   let dragCam = null
   el.geoCanvas.addEventListener('pointerdown', (e) => {
@@ -867,7 +870,7 @@ function renderBrief(s) {
 
 // The map view. Secondary by construction (ADR-0001): it draws positions the
 // engine never reads, which Test-GeoInvariance.ps1 asserts on every run.
-const geoCam = { mode: '2d', az: 35, pitch: 55, zScale: 8 }
+const geoCam = { mode: '2d', az: 35, pitch: 55, zScale: 12, terrain: true }
 
 function renderGeoPane(step) {
   const s = step || currentStep()

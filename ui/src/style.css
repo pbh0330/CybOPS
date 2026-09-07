@@ -437,13 +437,31 @@ button.is-armed { border-color: rgba(255,77,94,.7); background: rgba(255,77,94,.
   linear-gradient(180deg, #070b11 0%, var(--bg) 100%); }
 .geo-pane[hidden] { display: none; }
 .geo-svg { width: 100%; height: 100%; display: block; }
-.geo-grid { stroke: rgba(255,255,255,.05); stroke-width: 1; }
+.geo-grid { fill: none; stroke: rgba(255,255,255,.11); stroke-width: 1; }
+
+/* Relief surface. The facet fill is set per element (hypsometric tint times
+   hillshade); the stroke matches the fill so adjacent facets do not show a
+   hairline seam where the rasteriser rounds. */
+.geo-cell { stroke-width: .6; shape-rendering: crispEdges; }
+.geo-contour { fill: none; stroke: rgba(214,196,158,.22); stroke-width: .8; }
+.geo-contour.is-index { stroke: rgba(232,214,176,.46); stroke-width: 1.4; }
+.geo-contour-label {
+  fill: rgba(232,214,176,.72); font-size: 8.5px; text-anchor: middle;
+  paint-order: stroke; stroke: rgba(5,7,11,.85); stroke-width: 2.4px;
+}
+.geo-chk { font-size: 10.5px; color: var(--fg-dim); }
 .geo-tick { fill: var(--fg-dim); font-size: 9px; }
-.terr-ridge { fill: none; stroke: rgba(167,194,107,.55); stroke-width: 3; stroke-linecap: round; }
-.terr-valley { fill: none; stroke: rgba(53,200,255,.4); stroke-width: 3; stroke-linecap: round; }
-.terr-label { fill: var(--fg-dim); font-size: 10px; text-anchor: middle; }
-.geo-link { stroke-width: 2; opacity: .85; }
+.terr-ridge { fill: none; stroke: rgba(198,216,150,.5); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 7 4; }
+.terr-valley { fill: none; stroke: rgba(96,206,255,.45); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 7 4; }
+.terr-label {
+  fill: #b9c6d4; font-size: 10px; text-anchor: middle;
+  paint-order: stroke; stroke: rgba(5,7,11,.8); stroke-width: 3px;
+}
+.geo-link { fill: none; stroke-width: 2; opacity: .85; stroke-linecap: round; stroke-linejoin: round; }
 .geo-link.is-cut { stroke-dasharray: 3 8; stroke-width: 3; }
+/* the span of a line-of-sight path that runs below the surface: it is inside
+   the hill. A drawing, not a finding - the cause on an outage is authored. */
+.geo-link.is-masked { stroke-dasharray: 1 5; stroke-width: 1.4; opacity: .38; }
 .geo-node { cursor: pointer; }
 .geo-node .geo-label { fill: #c8d3e0; font-size: 9px; text-anchor: middle; }
 .geo-node.is-selected circle { stroke: var(--accent); stroke-width: 3; }
@@ -478,6 +496,7 @@ button.is-armed { border-color: rgba(255,77,94,.7); background: rgba(255,77,94,.
 .geo-slider input { width: 82px; accent-color: var(--accent); }
 .geo-canvas { cursor: default; }
 body .geo-canvas:active { cursor: grabbing; }
-.terr-ground { fill: none; stroke: rgba(255,255,255,.07); stroke-width: 2; stroke-dasharray: 2 4; }
 .geo-drop { stroke: rgba(255,255,255,.14); stroke-width: 1; }
 .geo-shadow { fill: rgba(0,0,0,.45); }
+
+.geo-mask-note b { display: block; font-weight: 400; color: var(--fg-dim); opacity: .8; }

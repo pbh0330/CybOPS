@@ -72,6 +72,20 @@ cd F:\F\other_class\CybOPS
 
 전부 네트워크 없이 동작한다. 상세는 `docs/07-synthetic-data.md`.
 
+지도 뷰 쪽 검사 (Node 는 `C:\Program Files\nodejs` 에 있고 PATH 에 없다):
+
+```powershell
+$env:Path += ';C:\Program Files\nodejs'
+node ui\tools\ground-assets.mjs scenarios\tacnet-01\mission.json --check  # 부대가 지면 위에 있는가
+node ui\tools\parity.mjs                                                  # JS 엔진 = PowerShell 엔진
+.\scripts\Test-GeoInvariance.ps1                                          # geo 가 판단에 안 닿는가 (ADR-0002)
+.\scripts\Export-ReplayData.ps1                                           # mission.json 을 고쳤으면 반드시
+```
+
+**`scenarios/*/mission.json` 을 고치면 `Export-ReplayData.ps1` 을 다시 돌려야 한다.**
+UI 는 `ui/public/data/*.replay.json` 만 읽는다. 이걸 잊으면 시나리오를 고쳤는데
+화면이 안 바뀌고, 코드를 의심하며 한참을 보낸다.
+
 ---
 
 ## 1. 데이터 취득 현황
