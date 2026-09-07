@@ -36,6 +36,17 @@ function esc(s) {
 
 const pct = (v) => `${(Number(v || 0) * 100).toFixed(1)}%`
 
+// A lateral move is enumerated once per foothold it could be launched from, so
+// three different moves can share a target and read as one line repeated three
+// times. They are not the same move - they have different ids, different
+// preconditions and, once one lands, different follow-ups. Show the origin.
+function moveWhere(m) {
+  if (m.from && m.target && m.from !== m.target) {
+    return `<b>${esc(m.from)}</b> → <b>${esc(m.target)}</b>`
+  }
+  return m.target ? `<b>${esc(m.target)}</b>` : ''
+}
+
 export function createWargame({ mountEl, getGraph, getT, getMethod, onChange }) {
   let active = false
   let state = {}
@@ -210,7 +221,7 @@ export function createWargame({ mountEl, getGraph, getT, getMethod, onChange }) 
       result = `<div class="wg-result ${last.success ? 'is-hit' : 'is-miss'}">
         <div class="wg-result-top">
           <b>${esc(m.label)}</b>
-          ${m.target ? `<span class="wg-target">${esc(m.target)}</span>` : ''}
+          <span class="wg-target">${m.from && m.target && m.from !== m.target ? esc(m.from) + ' -> ' + esc(m.target) : esc(m.target || '')}</span>
           <span class="wg-verdict">${last.success ? '성공' : '실패'}</span>
         </div>
         <div class="wg-roll">판정 ${last.roll} ${last.success ? '&lt;' : '&ge;'} ${m.p}
@@ -225,7 +236,7 @@ export function createWargame({ mountEl, getGraph, getT, getMethod, onChange }) 
           ${top.map((m) => `
             <div class="wg-move">
               <div class="wg-move-bar" style="width:${Math.round((m.gain / maxGain) * 100)}%"></div>
-              <span class="wg-move-label">${esc(m.label)}${m.target ? ` <b>${esc(m.target)}</b>` : ''}</span>
+              <span class="wg-move-label">${esc(m.label)} ${moveWhere(m)}</span>
               <span class="wg-move-gain">${pct(m.gain)}</span>
             </div>`).join('')}
         </div>`
@@ -250,7 +261,8 @@ export function createWargame({ mountEl, getGraph, getT, getMethod, onChange }) 
       ? `<div class="wg-log">${log.slice(0, 12).map((r) => `
           <div class="wg-log-row${r.defender ? ' is-def' : r.success ? ' is-hit' : ' is-miss'}">
             <span class="wg-log-turn">T${r.turn}</span>
-            <span class="wg-log-what">${esc(r.label)}${r.target ? ` ${esc(r.target)}` : ''}</span>
+            <span class="wg-log-what">${esc(r.label)} ${r.from && r.target && r.from !== r.target
+              ? `${esc(r.from)} → ${esc(r.target)}` : esc(r.target || '')}</span>
             ${r.defender ? '<span class="wg-log-tag">방어</span>'
               : `<span class="wg-log-tag">${r.success ? '성공' : '실패'}</span>`}
           </div>`).join('')}</div>`
