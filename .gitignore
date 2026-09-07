@@ -54,3 +54,7 @@ analysis/ollama-pull-*.log
 analysis/ollama-pull-*.log.err
 analysis/briefing/compare/
 analysis/lanl/auth-features.csv
+
+# 진행 로그(중간 산출물)
+analysis/lanl/_features.log
+analysis/optc/_host-index.log
