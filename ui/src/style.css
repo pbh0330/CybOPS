@@ -507,3 +507,56 @@ body .geo-canvas:active { cursor: grabbing; }
 .geo-satlink { fill: none; stroke-width: 1.3; stroke-dasharray: 5 4; opacity: .7; }
 .geo-satlink.is-cut { stroke-dasharray: 2 6; stroke-width: 2; }
 .geo-sat .geo-sat-label { fill: #9fb2c6; font-size: 9px; text-anchor: middle; }
+
+/* ---------------------------------------------------------------- wargame */
+
+.wg-head { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+.wg-turn { font-weight: 700; color: var(--fg); }
+.wg-foot-count { font-size: 11px; color: var(--fg-dim); }
+.wg-reset { margin-left: auto; padding: 3px 9px; font-size: 11px; }
+.wg-controls { display: flex; align-items: flex-end; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.wg-pick { display: flex; flex-direction: column; gap: 3px; font-size: 10.5px; color: var(--fg-dim); }
+.wg-pick select, .wg-pick input { padding: 4px 7px; font-size: 11.5px; }
+.wg-pick input { width: 92px; background: var(--bg-3); border: 1px solid var(--line); border-radius: 6px; }
+.wg-go { margin-left: auto; padding: 6px 14px; border-color: rgba(255,77,94,.45); color: #ffc2c7; background: rgba(255,77,94,.1); }
+.wg-go:hover:not(:disabled) { background: rgba(255,77,94,.18); border-color: rgba(255,77,94,.7); }
+
+.wg-result {
+  border: 1px solid var(--line); border-left-width: 3px; border-radius: 6px;
+  padding: 8px 10px; margin-bottom: 10px; background: var(--bg-3); font-size: 12px;
+}
+.wg-result.is-hit { border-left-color: var(--attack); }
+.wg-result.is-miss { border-left-color: var(--maintenance); }
+.wg-result.is-bad { border-left-color: var(--unknown); color: var(--unknown); }
+.wg-result.is-bad span { display: block; color: var(--fg-dim); margin-top: 3px; font-size: 11px; }
+.wg-result-top { display: flex; align-items: center; gap: 8px; }
+.wg-target { color: var(--fg-2); font-family: ui-monospace, "Cascadia Mono", monospace; font-size: 11px; }
+.wg-verdict { margin-left: auto; font-size: 11px; color: var(--fg-dim); }
+.wg-result.is-hit .wg-verdict { color: var(--attack); }
+.wg-roll { color: var(--fg-dim); font-size: 10.5px; margin-top: 4px; }
+.wg-why { color: var(--fg-2); font-size: 11px; margin-top: 5px; line-height: 1.5; }
+
+.wg-sub {
+  font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fg-dim); margin: 12px 0 6px;
+}
+.wg-move {
+  position: relative; display: flex; align-items: center; gap: 8px;
+  padding: 4px 8px; border-radius: 5px; margin-bottom: 3px;
+  background: var(--bg-3); overflow: hidden; font-size: 11.5px;
+}
+.wg-move-bar { position: absolute; inset: 0 auto 0 0; background: rgba(255,77,94,.14); }
+.wg-move-label { position: relative; color: var(--fg-2); }
+.wg-move-label b { color: var(--fg); font-weight: 600; font-family: ui-monospace, "Cascadia Mono", monospace; }
+.wg-move-gain { position: relative; margin-left: auto; color: var(--fg); font-variant-numeric: tabular-nums; }
+
+.wg-def-row { display: flex; gap: 6px; }
+.wg-def-row select { flex: 1; min-width: 0; font-size: 11.5px; padding: 4px 7px; }
+
+.wg-log { margin-top: 10px; border-top: 1px dashed var(--line); padding-top: 8px; }
+.wg-log-row { display: flex; align-items: center; gap: 8px; font-size: 11px; padding: 2px 0; }
+.wg-log-turn { color: var(--fg-dim); font-variant-numeric: tabular-nums; min-width: 22px; }
+.wg-log-what { color: var(--fg-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wg-log-tag { margin-left: auto; font-size: 10px; color: var(--fg-dim); }
+.wg-log-row.is-hit .wg-log-tag { color: var(--attack); }
+.wg-log-row.is-def .wg-log-tag { color: var(--mobility); }

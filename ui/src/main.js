@@ -14,6 +14,7 @@ import { runStep, containmentCandidates } from './engine.js'
 import { createEditor } from './editor.js'
 import { deviceIconDataUri, iconSvgMarkup, serviceIconSvgMarkup } from './icons.js'
 import { renderGeo } from './geo.js'
+import { createWargame } from './wargame.js'
 
 cytoscape.use(dagre)
 
@@ -50,6 +51,8 @@ const el = {
   onboardClose: document.getElementById('onboard-close'),
   onboardStart: document.getElementById('onboard-start'),
   onboardSkip: document.getElementById('onboard-skip'),
+  wargame: document.getElementById('wargame'),
+  wargamePanel: document.getElementById('wargame-panel'),
 }
 
 let cy = null
@@ -66,6 +69,7 @@ let mode = 'observe'
 let graph = null
 let edited = false
 let editor = null
+let wargame = null
 
 init().catch((e) => {
   console.error(e)
@@ -159,9 +163,12 @@ async function load(id) {
 
 function currentStep() {
   const base = payload.steps[idx]
-  if (!edited) return base
+  const live = wargame && wargame.isActive()
+  if (!edited && !live) return base
   const t = base && base.t !== undefined && base.t !== null ? Number(base.t) : -1
-  const compromise = (base && base.compromise) || {}
+  // In a wargame the compromise state belongs to the turn loop, not to the
+  // export: that is what makes the opponent real rather than a replay of one.
+  const compromise = live ? wargame.getState() : ((base && base.compromise) || {})
   const computed = runStep(graph, compromise, {
     t,
     method: payload.method || 'weighted',
@@ -403,6 +410,34 @@ function setMode(next) {
     editor.setTool('select')
   }
   if (edited) el.editState.hidden = next !== 'edit'
+
+  // Wargame mode takes ownership of the compromise state. Everything else on
+  // screen keeps working the same way: the mission bars, the cut list and the
+  // containment costs all read the step, and the step now comes from the
+  // wargame instead of the export. That is the whole point - the attacker is
+  // not a separate screen, it is the same picture with a live opponent.
+  const wgOn = next === 'wargame'
+  el.wargamePanel.hidden = !wgOn
+  if (wgOn) {
+    if (!wargame) {
+      wargame = createWargame({
+        mountEl: el.wargame,
+        getGraph: () => graph,
+        getT: () => {
+          const b = payload.steps[idx]
+          return b && b.t !== undefined && b.t !== null ? Number(b.t) : -1
+        },
+        getMethod: () => payload.method || 'weighted',
+        onChange: render,
+      })
+    }
+    // start from whatever the replay says is compromised right now, so the
+    // wargame begins in the situation the operator was just looking at
+    wargame.start((payload.steps[idx] || {}).compromise || {})
+  } else if (wargame && wargame.isActive()) {
+    wargame.stop()
+  }
+  render()
 }
 
 function bindControls() {

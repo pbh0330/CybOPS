@@ -1,4 +1,4 @@
-# 현재 상태 - 2026-09-06 세션 종료 시점
+# 현재 상태 - 2026-09-07
 
 작업 시작 전 이 파일부터 읽는다.
 
@@ -6,12 +6,12 @@
 
 | | |
 |---|---|
-| 데이터 | LANL **5/5 완료·검증**, AIT **1/8 완료(의도된 범위)**, OpTC 라벨 + **취득 계획 확정(232.1GB, 미착수)** |
+| 데이터 | LANL **5/5 완료·검증**, AIT **1/8 완료(의도된 범위)**, OpTC **취득 완료 41.3GB(Phase 1,2,6)** - 매니페스트 기록 미완 |
 | 라벨 | 세 데이터셋 모두 확보. OpTC는 PDF→JSONL 구조화 완료(101건, 미분류 0) |
 | 결정 | **Q1~Q6 전부 확정**(ADR-0012~0018). 미결 없음 |
 | 모델 | **시간축 온톨로지 완료**(ADR-0017) - `scenarios/tacnet-01/`, 원인 분해 동작 |
-| UI | **동작함**. `ui/` Vite + Cytoscape 정적 번들, 시간축 리본 + 원인 분해 패널 |
-| 다음 | what-if 인터랙션 → LLM 브리핑 계층 → 지리 레이어 → 탐지 실험 E1 |
+| UI | **동작함**. `ui/` Vite + Cytoscape 정적 번들. 3뷰(의존/전송로/지리), 2D-3D 지형면, 편집, **교전(워게임) 턴** |
+| 다음 | OpTC 매니페스트 기록 → 탐지 실험 E1 → 서버 호스팅 |
 | 도구 | Figma pro/Full 좌석. Node 24.20.0 **포터블 설치**, Python 3.12, Git 2.55 |
 
 ## 위치
@@ -55,9 +55,10 @@ Git이 그 안을 보지 않아 `!data/README.md` 예외가 무시된다. 첫 �
 
 ## 한 줄 요약
 
-기획 문서 완료. **오프라인 트랙 동작 확인 완료 - 인터넷 없이 개발 가능.**
-데이터는 **LANL 5/5 완료·검증**, AIT 1/8(의도된 범위), OpTC는 그라운드트루스만.
-모델은 **전술망 시간축까지 구현 완료**(ADR-0017).
+데모는 돌아간다. 상황도 UI 3뷰 + 지형면 + 편집 + 교전(워게임) 턴까지 동작하고,
+결정론 엔진·JS 포팅·패리티 검사·LLM 브리핑·적대자 비교가 모두 붙어 있다.
+데이터는 **LANL 5/5, AIT 1/8(의도된 범위), OpTC 41.3GB 취득 완료**.
+남은 큰 것은 **OpTC 매니페스트 기록**과 **탐지 실험 E1**, 그리고 서버 호스팅이다.
 
 ## 지금 당장 돌려볼 수 있는 것
 
@@ -454,25 +455,45 @@ PowerShell 참조 구현은 그대로 유지한다. 대용량 스캔은 PowerShe
    도달 불가능한 이중화는 이중화가 아니기 때문이고, 정적 그래프로는 표현 자체가 안 된다.
    `defnet-01` 회귀 확인 완료(DC01 0.0% / DC01+DC02 80.5% / ESX01 격리 70.1%, 전부 동일).
 
-2. **`Asset.type` → SIDC 매핑 테이블** (ADR-0013)
-3. **상황도 UI + 시간축 리플레이** - 데모 그 자체
-4. **what-if 인터랙션** - 가장 설득력 있는 장면. 숫자는 이미 있다(ESX01 격리 = 70.1% 저하)
-5. **LLM 브리핑 계층** - Ollama 등 설치 후 7~8B 4비트부터
-6. 탐지 실험 E1 - 논문 자산. 화면에는 거의 안 보인다
+2. ~~**`Asset.type` → SIDC 매핑 테이블**~~ (ADR-0013) → **완료**. `configs/symbology-2525.json`,
+   `docs/12-symbology-mapping.md`. 미매핑 타입은 콘솔 경고로 뜬다.
+3. ~~**상황도 UI + 시간축 리플레이**~~ → **완료**. `ui/` (Cytoscape.js + Vite 정적 번들).
+   임무 의존 / 전송로 / 지리 3뷰, 2D-3D 지형면, 편집 모드, 되돌리기, 온보딩.
+4. ~~**what-if 인터랙션**~~ → **완료**. 대응 후보 패널이 격리 비용을 미리 계산해 보여준다.
+   실행 경로는 없다(ADR-0004).
+5. ~~**LLM 브리핑 계층**~~ → **완료**. Ollama 로컬, 근거 인용 5종 검사
+   (`Test-BriefingCitations.ps1`), 모델 비교(`Compare-BriefingModels.ps1`).
+6. 탐지 실험 E1 - 논문 자산. 화면에는 거의 안 보인다. **OpTC가 로컬에 있으니 착수 가능.**
 
 **병행 가능 (대역폭만 씀)**
 - ✅ OpTC Drive 목록 조회·용량 실측·계획 확정 완료 (232.10GB / 1,001개 파일)
-- OpTC 취득 실행: `.\scripts\fetch-optc.ps1 -Phase 1,2 -Confirm` (34.1GB, 약 10~16시간)
+- ✅ **OpTC 취득 완료 (2026-09-07 08:55)**. Phase 1,2,6 / 900개 `.gz` + 문서 / **41.3 GB**.
+  `_fetch.log` 마지막 줄 `0 file(s) incomplete`, `_acquired.jsonl` 901줄(파일별 SHA256 포함).
+- OpTC 후처리 (아래 "지금 밀려 있는 것" 참조)
+
+**지금 밀려 있는 것 (규칙상 이미 했어야 하는 것)**
+- **`configs/manifests/optc.json` 의 `acquisition_log` 가 아직 `[]` 다.** 41.3 GB를 받아놓고
+  출처·해시 기록이 비어 있다. CLAUDE.md "취득 즉시 MANIFEST.json을 쓴다" 위반 상태다.
+  `_acquired.jsonl` 901줄을 그대로 옮기면 된다.
+- 무결성 검사: `.\scripts\Test-GzipIntegrity.ps1 -Path F:\mc-cycop-data\raw\optc -NoHash -ExpectedLastTimestamp 0`
+  (2026-09-07: 이 스크립트에 `-Recurse` 가 빠져 있어 900개를 못 찾고 "No .gz files under"
+  로 죽었다. LANL은 평평한 디렉터리라 안 드러났던 버그다. 고쳤다.)
 
 **남은 자잘한 것**
-- `FW01`/`SW01`이 어떤 엣지에도 연결되지 않았다 - 검증기 경고 2건 미해결
+- ~~`FW01`/`SW01`이 어떤 엣지에도 연결되지 않았다~~ → **해결**. defnet-01 에 링크 15개를
+  넣으면서 사라졌다. `Test-Ontology.ps1` ERRORS 0 / WARNINGS 0.
 - ~~전파 함수 3종(max/weighted/noisyor) 비교 → E2~~ → **완료**.
   `noisyor` 의심은 사실이었다(defnet DC01+DC02에서 99.9%, 입력 절반에서 이미 64.5%).
   원인은 noisy-OR가 작업·임무 두 계층에 연달아 적용되는 것. 단조성 204/204 통과,
   이중화는 세 방법 전부 동일(서비스 계층이 방법과 무관). **기본값 `weighted` 유지 권고.**
   → `docs/15-propagation-functions.md`, `eval/results/propagation-comparison.json`,
   `scripts/Compare-Propagation.ps1`
-- OCSF 매핑 스펙 - AIT `labels/` 트리 형식 확인 후 착수
+- ~~OCSF 매핑 스펙~~ → **완료**. `configs/ocsf-mapping.json`(1.9.0 핀), `docs/16-ocsf-mapping.md`,
+  `scripts/Test-OcsfConformance.ps1`. 42,846건 검사 → **위반 0**. ADR-0005 가 선언에서
+  검사 가능한 것으로 바뀌었다.
+- ~~적대 행위자 비교(docs/13) 가 ADR-0020 이전 수치~~ → **완료 (2026-09-07 재측정)**.
+  `analysis/redteam/comparison-hard.json`. 결론 유지(LLM 0.587배), greedy 가 세졌다
+  (wobj 1.333 -> 1.500, M-FIRE 66.7%% -> 100%%).
 
 ---
 

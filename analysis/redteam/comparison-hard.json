@@ -1,0 +1,2121 @@
+{
+  "generated": "2026-09-07T05:32:19.942Z",
+  "generator": "ui/tools/redteam-compare.mjs",
+  "adr": "ADR-0019",
+  "protocol": "04-evaluation.md 2.4",
+  "config": {
+    "scenario": "F:\\F\\other_class\\CybOPS\\scenarios\\tacnet-01\\mission.json",
+    "entry": "CO2-VEH",
+    "turns": 8,
+    "seeds": [
+      20260906,
+      20260907,
+      20260908
+    ],
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "endpoint": "http://127.0.0.1:11434",
+    "temperature": 0.15
+  },
+  "objective_note": "weighted_objective = sum over missions of (final degradation / priority). scoreMoves() 가 쓰는 가중치와 같다. 클수록 공격자에게 유리하다.",
+  "caveat": "합성 시나리오 산출이다. 탐지 성능·오탐률을 주장하지 않는다(CLAUDE.md 규칙 11, ADR-0014 3항, ADR-0019 6항).",
+  "summary": {
+    "random": {
+      "variant": "random",
+      "n_seeds": 3,
+      "mission_final_mean": {
+        "M-C2": 0.1667,
+        "M-FIRE": 0.2667
+      },
+      "mission_final_by_seed": {
+        "M-C2": {
+          "20260906": 0,
+          "20260907": 0,
+          "20260908": 0.5
+        },
+        "M-FIRE": {
+          "20260906": 0,
+          "20260907": 0.8,
+          "20260908": 0
+        }
+      },
+      "weighted_objective_final_mean": 0.3,
+      "weighted_objective_final_by_seed": {
+        "20260906": 0,
+        "20260907": 0.4,
+        "20260908": 0.5
+      },
+      "cumulative_weighted_objective_mean": 2.1048,
+      "success_rate_mean": 0.625,
+      "greedy_agreement_mean": 0.2083,
+      "mean_legal_moves": 11.8767,
+      "sec_per_turn_mean": 0,
+      "action_distribution": {
+        "escalate": 4,
+        "lateral_move": 10,
+        "credential_access": 6,
+        "deny": 3,
+        "recon": 1
+      },
+      "turns_to_threshold": {
+        "M-C2": {
+          "1": {
+            "reached_in_n_seeds": 0,
+            "mean_turn": null
+          },
+          "0.5": {
+            "reached_in_n_seeds": 1,
+            "mean_turn": 5
+          }
+        },
+        "M-FIRE": {
+          "1": {
+            "reached_in_n_seeds": 0,
+            "mean_turn": null
+          },
+          "0.5": {
+            "reached_in_n_seeds": 1,
+            "mean_turn": 6
+          }
+        }
+      },
+      "delta_vs_greedy": {
+        "weighted_objective_final": -1.2,
+        "weighted_objective_final_ratio": 0.2,
+        "beats_greedy": false,
+        "M-C2": -0.8333,
+        "M-FIRE": -0.7333
+      }
+    },
+    "greedy": {
+      "variant": "greedy",
+      "n_seeds": 3,
+      "mission_final_mean": {
+        "M-C2": 1,
+        "M-FIRE": 1
+      },
+      "mission_final_by_seed": {
+        "M-C2": {
+          "20260906": 1,
+          "20260907": 1,
+          "20260908": 1
+        },
+        "M-FIRE": {
+          "20260906": 1,
+          "20260907": 1,
+          "20260908": 1
+        }
+      },
+      "weighted_objective_final_mean": 1.5,
+      "weighted_objective_final_by_seed": {
+        "20260906": 1.5,
+        "20260907": 1.5,
+        "20260908": 1.5
+      },
+      "cumulative_weighted_objective_mean": 8.1548,
+      "success_rate_mean": 0.8333,
+      "greedy_agreement_mean": 1,
+      "mean_legal_moves": 15.3767,
+      "sec_per_turn_mean": 0.0067,
+      "action_distribution": {
+        "escalate": 13,
+        "lateral_move": 6,
+        "recon": 5
+      },
+      "turns_to_threshold": {
+        "M-C2": {
+          "1": {
+            "reached_in_n_seeds": 3,
+            "mean_turn": 5.6667
+          },
+          "0.5": {
+            "reached_in_n_seeds": 3,
+            "mean_turn": 4
+          }
+        },
+        "M-FIRE": {
+          "1": {
+            "reached_in_n_seeds": 3,
+            "mean_turn": 4.3333
+          },
+          "0.5": {
+            "reached_in_n_seeds": 3,
+            "mean_turn": 2
+          }
+        }
+      },
+      "delta_vs_greedy": {
+        "weighted_objective_final": 0,
+        "weighted_objective_final_ratio": 1,
+        "beats_greedy": false,
+        "M-C2": 0,
+        "M-FIRE": 0
+      }
+    },
+    "llm": {
+      "variant": "llm",
+      "n_seeds": 3,
+      "mission_final_mean": {
+        "M-C2": 0.8333,
+        "M-FIRE": 0.0952
+      },
+      "mission_final_by_seed": {
+        "M-C2": {
+          "20260906": 1,
+          "20260907": 1,
+          "20260908": 0.5
+        },
+        "M-FIRE": {
+          "20260906": 0,
+          "20260907": 0.285714,
+          "20260908": 0
+        }
+      },
+      "weighted_objective_final_mean": 0.881,
+      "weighted_objective_final_by_seed": {
+        "20260906": 1,
+        "20260907": 1.142857,
+        "20260908": 0.5
+      },
+      "cumulative_weighted_objective_mean": 4.1571,
+      "success_rate_mean": 0.7083,
+      "greedy_agreement_mean": 0.5,
+      "mean_legal_moves": 11.7533,
+      "sec_per_turn_mean": 2.71,
+      "action_distribution": {
+        "credential_access": 5,
+        "lateral_move": 12,
+        "escalate": 5,
+        "deny": 2
+      },
+      "turns_to_threshold": {
+        "M-C2": {
+          "1": {
+            "reached_in_n_seeds": 2,
+            "mean_turn": 6.5
+          },
+          "0.5": {
+            "reached_in_n_seeds": 3,
+            "mean_turn": 4.3333
+          }
+        },
+        "M-FIRE": {
+          "1": {
+            "reached_in_n_seeds": 0,
+            "mean_turn": null
+          },
+          "0.5": {
+            "reached_in_n_seeds": 0,
+            "mean_turn": null
+          }
+        }
+      },
+      "llm": {
+        "model": "qwen2.5:7b-instruct-q4_K_M",
+        "temperature": 0.15,
+        "show_gain": false,
+        "calls": 27,
+        "retries": 3,
+        "invalid_id": 6,
+        "unparsable": 0,
+        "transport_error": 0,
+        "fallback_greedy": 3,
+        "latency_ms_mean": 2331,
+        "latency_ms_min": 365,
+        "latency_ms_max": 20781
+      },
+      "delta_vs_greedy": {
+        "weighted_objective_final": -0.619,
+        "weighted_objective_final_ratio": 0.5873,
+        "beats_greedy": false,
+        "M-C2": -0.1667,
+        "M-FIRE": -0.9048
+      }
+    },
+    "llm+gain": {
+      "variant": "llm+gain",
+      "n_seeds": 3,
+      "mission_final_mean": {
+        "M-C2": 0.6667,
+        "M-FIRE": 0.1905
+      },
+      "mission_final_by_seed": {
+        "M-C2": {
+          "20260906": 1,
+          "20260907": 0.5,
+          "20260908": 0.5
+        },
+        "M-FIRE": {
+          "20260906": 0,
+          "20260907": 0.285714,
+          "20260908": 0.285714
+        }
+      },
+      "weighted_objective_final_mean": 0.7619,
+      "weighted_objective_final_by_seed": {
+        "20260906": 1,
+        "20260907": 0.642857,
+        "20260908": 0.642857
+      },
+      "cumulative_weighted_objective_mean": 4.0013,
+      "success_rate_mean": 0.7917,
+      "greedy_agreement_mean": 0.2917,
+      "mean_legal_moves": 10.7533,
+      "sec_per_turn_mean": 1.9167,
+      "action_distribution": {
+        "escalate": 5,
+        "lateral_move": 14,
+        "deny": 5
+      },
+      "turns_to_threshold": {
+        "M-C2": {
+          "1": {
+            "reached_in_n_seeds": 1,
+            "mean_turn": 8
+          },
+          "0.5": {
+            "reached_in_n_seeds": 3,
+            "mean_turn": 5.3333
+          }
+        },
+        "M-FIRE": {
+          "1": {
+            "reached_in_n_seeds": 0,
+            "mean_turn": null
+          },
+          "0.5": {
+            "reached_in_n_seeds": 0,
+            "mean_turn": null
+          }
+        }
+      },
+      "llm": {
+        "model": "qwen2.5:7b-instruct-q4_K_M",
+        "temperature": 0.15,
+        "show_gain": true,
+        "calls": 25,
+        "retries": 1,
+        "invalid_id": 2,
+        "unparsable": 0,
+        "transport_error": 0,
+        "fallback_greedy": 1,
+        "latency_ms_mean": 1834,
+        "latency_ms_min": 378,
+        "latency_ms_max": 2504
+      },
+      "delta_vs_greedy": {
+        "weighted_objective_final": -0.7381,
+        "weighted_objective_final_ratio": 0.5079,
+        "beats_greedy": false,
+        "M-C2": -0.3333,
+        "M-FIRE": -0.8095
+      }
+    }
+  },
+  "runs": [
+    {
+      "variant": "random",
+      "seed": 20260906,
+      "metrics": {
+        "strategy": "random",
+        "variant": "random",
+        "turns_played": 8,
+        "mission_final": {
+          "M-C2": 0,
+          "M-FIRE": 0
+        },
+        "weighted_objective_final": 0,
+        "cumulative_weighted_objective": 1.071429,
+        "turns_to_threshold": {
+          "M-C2": {
+            "1": null,
+            "0.5": null
+          },
+          "M-FIRE": {
+            "1": null,
+            "0.5": null
+          }
+        },
+        "attempts": 8,
+        "successes": 6,
+        "success_rate": 0.75,
+        "action_distribution": {
+          "escalate": 1,
+          "lateral_move": 5,
+          "credential_access": 1,
+          "deny": 1
+        },
+        "mean_legal_moves": 16,
+        "greedy_agreement": 0.25,
+        "wall_ms": 25,
+        "sec_per_turn": 0
+      },
+      "moves": [
+        {
+          "turn": 0,
+          "t": 150,
+          "action": "escalate",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": true,
+          "gain": 0.107143,
+          "best_gain": 0.107143,
+          "legal_count": 3,
+          "rationale": "random baseline",
+          "source": null
+        },
+        {
+          "turn": 1,
+          "t": 180,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "RELAY-1",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0.25,
+          "legal_count": 12,
+          "rationale": "random baseline",
+          "source": null
+        },
+        {
+          "turn": 2,
+          "t": 210,
+          "action": "credential_access",
+          "from": "RELAY-1",
+          "target": "RELAY-1",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0,
+          "legal_count": 4,
+          "rationale": "random baseline",
+          "source": null
+        },
+        {
+          "turn": 3,
+          "t": 240,
+          "action": "lateral_move",
+          "from": "RELAY-1",
+          "target": "TOC-WS",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 25,
+          "rationale": "random baseline",
+          "source": null
+        },
+        {
+          "turn": 4,
+          "t": 270,
+          "action": "lateral_move",
+          "from": "RELAY-1",
+          "target": "CO1-VEH",
+          "success": false,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 25,
+          "rationale": "random baseline",
+          "source": null
+        },
+        {
+          "turn": 5,
+          "t": 300,
+          "action": "lateral_move",
+          "from": "RELAY-1",
+          "target": "CO1-VEH",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 17,
+          "rationale": "random baseline",
+          "source": null
+        },
+        {
+          "turn": 6,
+          "t": 330,
+          "action": "deny",
+          "from": "RELAY-1",
+          "target": "RELAY-1",
+          "success": false,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 17,
+          "rationale": "random baseline",
+          "source": null
+        },
+        {
+          "turn": 7,
+          "t": 360,
+          "action": "lateral_move",
+          "from": "RELAY-1",
+          "target": "BFT-GW",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 25,
+          "rationale": "random baseline",
+          "source": null
+        }
+      ]
+    },
+    {
+      "variant": "greedy",
+      "seed": 20260906,
+      "metrics": {
+        "strategy": "greedy",
+        "variant": "greedy",
+        "turns_played": 8,
+        "mission_final": {
+          "M-C2": 1,
+          "M-FIRE": 1
+        },
+        "weighted_objective_final": 1.5,
+        "cumulative_weighted_objective": 7.821429,
+        "turns_to_threshold": {
+          "M-C2": {
+            "1": 7,
+            "0.5": 4
+          },
+          "M-FIRE": {
+            "1": 3,
+            "0.5": 2
+          }
+        },
+        "attempts": 8,
+        "successes": 6,
+        "success_rate": 0.75,
+        "action_distribution": {
+          "escalate": 5,
+          "lateral_move": 2,
+          "recon": 1
+        },
+        "mean_legal_moves": 15.75,
+        "greedy_agreement": 1,
+        "wall_ms": 38,
+        "sec_per_turn": 0
+      },
+      "moves": [
+        {
+          "turn": 0,
+          "t": 150,
+          "action": "escalate",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": true,
+          "gain": 0.107143,
+          "best_gain": 0.107143,
+          "legal_count": 3,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        },
+        {
+          "turn": 1,
+          "t": 180,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "FDC-SRV",
+          "success": true,
+          "gain": 0.25,
+          "best_gain": 0.25,
+          "legal_count": 12,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        },
+        {
+          "turn": 2,
+          "t": 210,
+          "action": "escalate",
+          "from": "FDC-SRV",
+          "target": "FDC-SRV",
+          "success": true,
+          "gain": 0.25,
+          "best_gain": 0.25,
+          "legal_count": 4,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        },
+        {
+          "turn": 3,
+          "t": 240,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "BN-CP",
+          "success": true,
+          "gain": 0.5,
+          "best_gain": 0.5,
+          "legal_count": 23,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        },
+        {
+          "turn": 4,
+          "t": 270,
+          "action": "escalate",
+          "from": "BN-CP",
+          "target": "BN-CP",
+          "success": false,
+          "gain": 0.5,
+          "best_gain": 0.5,
+          "legal_count": 23,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        },
+        {
+          "turn": 5,
+          "t": 300,
+          "action": "escalate",
+          "from": "BN-CP",
+          "target": "BN-CP",
+          "success": false,
+          "gain": 0.5,
+          "best_gain": 0.5,
+          "legal_count": 15,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        },
+        {
+          "turn": 6,
+          "t": 330,
+          "action": "escalate",
+          "from": "BN-CP",
+          "target": "BN-CP",
+          "success": true,
+          "gain": 0.5,
+          "best_gain": 0.5,
+          "legal_count": 15,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        },
+        {
+          "turn": 7,
+          "t": 360,
+          "action": "recon",
+          "from": null,
+          "target": null,
+          "success": true,
+          "gain": 0,
+          "best_gain": 0,
+          "legal_count": 31,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        }
+      ]
+    },
+    {
+      "variant": "llm",
+      "seed": 20260906,
+      "metrics": {
+        "strategy": "llm",
+        "variant": "llm",
+        "turns_played": 8,
+        "mission_final": {
+          "M-C2": 1,
+          "M-FIRE": 0
+        },
+        "weighted_objective_final": 1,
+        "cumulative_weighted_objective": 3.985714,
+        "turns_to_threshold": {
+          "M-C2": {
+            "1": 8,
+            "0.5": 4
+          },
+          "M-FIRE": {
+            "1": null,
+            "0.5": null
+          }
+        },
+        "attempts": 8,
+        "successes": 5,
+        "success_rate": 0.625,
+        "action_distribution": {
+          "credential_access": 2,
+          "lateral_move": 4,
+          "escalate": 2
+        },
+        "mean_legal_moves": 12.13,
+        "greedy_agreement": 0.5,
+        "wall_ms": 36342,
+        "sec_per_turn": 4.54,
+        "llm": {
+          "model": "qwen2.5:7b-instruct-q4_K_M",
+          "temperature": 0.15,
+          "show_gain": false,
+          "calls": 10,
+          "retries": 2,
+          "invalid_id": 4,
+          "unparsable": 0,
+          "transport_error": 0,
+          "fallback_greedy": 2,
+          "latency_ms_mean": 3629,
+          "latency_ms_min": 365,
+          "latency_ms_max": 20781
+        }
+      },
+      "moves": [
+        {
+          "turn": 0,
+          "t": 150,
+          "action": "credential_access",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": true,
+          "gain": 0.064286,
+          "best_gain": 0.107143,
+          "legal_count": 3,
+          "rationale": "2중대 지휘차에서 정보를 획取以增强关键任务的执行难度",
+          "source": "llm"
+        },
+        {
+          "turn": 1,
+          "t": 180,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "BN-SRV",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0.25,
+          "legal_count": 14,
+          "rationale": "2중대 지휘차에서 대대 지휘소 서버로 이동하여 M-C2 임무의 핵심 자산을 노린다.",
+          "source": "llm"
+        },
+        {
+          "turn": 2,
+          "t": 210,
+          "action": "credential_access",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0,
+          "legal_count": 6,
+          "rationale": "2중대 지휘차는 현재 진행 중인 과업을 수행하고 있어 임무 저하도를 크게 증가시킬 수 있는 대상입니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 3,
+          "t": 240,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "BN-CP",
+          "success": true,
+          "gain": 0.5,
+          "best_gain": 0.5,
+          "legal_count": 16,
+          "rationale": "BN-CP는 M-C2 과업을 수행하는 중인 자산으로, 이동하여 해당 과업을 저해할 수 있습니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 4,
+          "t": 270,
+          "action": "escalate",
+          "from": "BN-CP",
+          "target": "BN-CP",
+          "success": false,
+          "gain": 0.5,
+          "best_gain": 0.5,
+          "legal_count": 17,
+          "rationale": "FALLBACK->greedy: greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": "fallback:greedy"
+        },
+        {
+          "turn": 5,
+          "t": 300,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "RELAY-1",
+          "success": false,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 12,
+          "rationale": "CO2-VEH의 침해를 통해 M-C2 임무를 더욱 저하시키고, RELAY-1을 통해 M-FIRE 임무에도 영향을 미칠 수 있습니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 6,
+          "t": 330,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "RELAY-1",
+          "success": false,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 12,
+          "rationale": "CO2-VEH의 침해를 통해 M-C2 임무를 저하시키고, RELAY-1을 통해 M-FIRE 임무에도 영향을 미칠 수 있습니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 7,
+          "t": 360,
+          "action": "escalate",
+          "from": "BN-CP",
+          "target": "BN-CP",
+          "success": true,
+          "gain": 0.5,
+          "best_gain": 0.5,
+          "legal_count": 17,
+          "rationale": "FALLBACK->greedy: greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": "fallback:greedy"
+        }
+      ]
+    },
+    {
+      "variant": "llm+gain",
+      "seed": 20260906,
+      "metrics": {
+        "strategy": "llm",
+        "variant": "llm+gain",
+        "turns_played": 8,
+        "mission_final": {
+          "M-C2": 1,
+          "M-FIRE": 0
+        },
+        "weighted_objective_final": 1,
+        "cumulative_weighted_objective": 3.571429,
+        "turns_to_threshold": {
+          "M-C2": {
+            "1": 8,
+            "0.5": 5
+          },
+          "M-FIRE": {
+            "1": null,
+            "0.5": null
+          }
+        },
+        "attempts": 8,
+        "successes": 7,
+        "success_rate": 0.875,
+        "action_distribution": {
+          "escalate": 2,
+          "lateral_move": 3,
+          "deny": 3
+        },
+        "mean_legal_moves": 9.88,
+        "greedy_agreement": 0.5,
+        "wall_ms": 16175,
+        "sec_per_turn": 2.02,
+        "llm": {
+          "model": "qwen2.5:7b-instruct-q4_K_M",
+          "temperature": 0.15,
+          "show_gain": true,
+          "calls": 9,
+          "retries": 1,
+          "invalid_id": 2,
+          "unparsable": 0,
+          "transport_error": 0,
+          "fallback_greedy": 1,
+          "latency_ms_mean": 1789,
+          "latency_ms_min": 378,
+          "latency_ms_max": 2303
+        }
+      },
+      "moves": [
+        {
+          "turn": 0,
+          "t": 150,
+          "action": "escalate",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": true,
+          "gain": 0.107143,
+          "best_gain": 0.107143,
+          "legal_count": 3,
+          "rationale": "2중대 지휘차에서 임무를 떠받치는 자산으로 이동하여 우선순위가 높은 임무의 저하도를 크게 만듭니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 1,
+          "t": 180,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "TOC-SRV",
+          "success": false,
+          "gain": 0.138509,
+          "best_gain": 0.25,
+          "legal_count": 12,
+          "rationale": "2중대 지휘차를 여단 C2 서버로 이동하여 M-C2 임무의 중요성을 높입니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 2,
+          "t": 210,
+          "action": "deny",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0,
+          "legal_count": 2,
+          "rationale": "2중대 지휘차는 M-C2 임무를 수행 중인 자산으로, 우선순위가 높은 임무의 저하도를 크게 만들기 위해 노린 자산이다.",
+          "source": "llm"
+        },
+        {
+          "turn": 3,
+          "t": 240,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "BN-SRV",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 13,
+          "rationale": "BN-SRV는 M-C2와 M-FIRE를 지원하는 중요한 자산이며, 현재 침해되지 않았습니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 4,
+          "t": 270,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "BN-CP",
+          "success": true,
+          "gain": 0.5,
+          "best_gain": 0.5,
+          "legal_count": 14,
+          "rationale": "BN-CP는 M-C2 과업을 수행하는 중인 자산으로, 이동하여 해당 과업을 저해할 수 있습니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 5,
+          "t": 300,
+          "action": "deny",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 10,
+          "rationale": "CO2-VEH의 컴프ROMISE가 1이므로, 이 자산을 더 침해하면 임무 저하도를 크게 증가시킬 수 있습니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 6,
+          "t": 330,
+          "action": "deny",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 10,
+          "rationale": "CO2-VEH의 컴프ROMISE가 1로 높아 임무 수행에 심각한 영향을 미치고 있어 이를 저하시키는 것이 우선순위가 높은 임무를 보호하는 데 도움이 됩니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 7,
+          "t": 360,
+          "action": "escalate",
+          "from": "BN-CP",
+          "target": "BN-CP",
+          "success": true,
+          "gain": 0.5,
+          "best_gain": 0.5,
+          "legal_count": 15,
+          "rationale": "FALLBACK->greedy: greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": "fallback:greedy"
+        }
+      ]
+    },
+    {
+      "variant": "random",
+      "seed": 20260907,
+      "metrics": {
+        "strategy": "random",
+        "variant": "random",
+        "turns_played": 8,
+        "mission_final": {
+          "M-C2": 0,
+          "M-FIRE": 0.8
+        },
+        "weighted_objective_final": 0.4,
+        "cumulative_weighted_objective": 2.385714,
+        "turns_to_threshold": {
+          "M-C2": {
+            "1": null,
+            "0.5": null
+          },
+          "M-FIRE": {
+            "1": null,
+            "0.5": 6
+          }
+        },
+        "attempts": 8,
+        "successes": 6,
+        "success_rate": 0.75,
+        "action_distribution": {
+          "credential_access": 3,
+          "lateral_move": 2,
+          "recon": 1,
+          "escalate": 1,
+          "deny": 1
+        },
+        "mean_legal_moves": 11.13,
+        "greedy_agreement": 0.125,
+        "wall_ms": 22,
+        "sec_per_turn": 0
+      },
+      "moves": [
+        {
+          "turn": 0,
+          "t": 150,
+          "action": "credential_access",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": true,
+          "gain": 0.064286,
+          "best_gain": 0.107143,
+          "legal_count": 3,
+          "rationale": "random baseline",
+          "source": null
+        },
+        {
+          "turn": 1,
+          "t": 180,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "FDC-TERM",
+          "success": true,
+          "gain": 0.125,
+          "best_gain": 0.25,
+          "legal_count": 14,
+          "rationale": "random baseline",
+          "source": null
+        },
+        {
+          "turn": 2,
+          "t": 210,
+          "action": "credential_access",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0.125,
+          "legal_count": 6,
+          "rationale": "random baseline",
+          "source": null
+        },
+        {
+          "turn": 3,
+          "t": 240,
+          "action": "recon",
+          "from": null,
+          "target": null,
+          "success": true,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 16,
+          "rationale": "random baseline",
+          "source": null
+        },
+        {
+          "turn": 4,
+          "t": 270,
+          "action": "escalate",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 16,
+          "rationale": "random baseline",
+          "source": null
+        },
+        {
+          "turn": 5,
+          "t": 300,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "BN-SRV",
+          "success": false,
+          "gain": 0.5,
+          "best_gain": 0.5,
+          "legal_count": 10,
+          "rationale": "random baseline",
+          "source": null
+        },
+        {
+          "turn": 6,
+          "t": 330,
+          "action": "deny",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": false,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 10,
+          "rationale": "random baseline",
+          "source": null
+        },
+        {
+          "turn": 7,
+          "t": 360,
+          "action": "credential_access",
+          "from": "FDC-TERM",
+          "target": "FDC-TERM",
+          "success": true,
+          "gain": 0.15,
+          "best_gain": 0.5,
+          "legal_count": 14,
+          "rationale": "random baseline",
+          "source": null
+        }
+      ]
+    },
+    {
+      "variant": "greedy",
+      "seed": 20260907,
+      "metrics": {
+        "strategy": "greedy",
+        "variant": "greedy",
+        "turns_played": 8,
+        "mission_final": {
+          "M-C2": 1,
+          "M-FIRE": 1
+        },
+        "weighted_objective_final": 1.5,
+        "cumulative_weighted_objective": 7.821429,
+        "turns_to_threshold": {
+          "M-C2": {
+            "1": 5,
+            "0.5": 4
+          },
+          "M-FIRE": {
+            "1": 7,
+            "0.5": 2
+          }
+        },
+        "attempts": 8,
+        "successes": 6,
+        "success_rate": 0.75,
+        "action_distribution": {
+          "escalate": 5,
+          "lateral_move": 2,
+          "recon": 1
+        },
+        "mean_legal_moves": 13.63,
+        "greedy_agreement": 1,
+        "wall_ms": 71,
+        "sec_per_turn": 0.01
+      },
+      "moves": [
+        {
+          "turn": 0,
+          "t": 150,
+          "action": "escalate",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": true,
+          "gain": 0.107143,
+          "best_gain": 0.107143,
+          "legal_count": 3,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        },
+        {
+          "turn": 1,
+          "t": 180,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "FDC-SRV",
+          "success": true,
+          "gain": 0.25,
+          "best_gain": 0.25,
+          "legal_count": 12,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        },
+        {
+          "turn": 2,
+          "t": 210,
+          "action": "escalate",
+          "from": "FDC-SRV",
+          "target": "FDC-SRV",
+          "success": false,
+          "gain": 0.25,
+          "best_gain": 0.25,
+          "legal_count": 4,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        },
+        {
+          "turn": 3,
+          "t": 240,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "BN-CP",
+          "success": true,
+          "gain": 0.5,
+          "best_gain": 0.5,
+          "legal_count": 14,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        },
+        {
+          "turn": 4,
+          "t": 270,
+          "action": "escalate",
+          "from": "BN-CP",
+          "target": "BN-CP",
+          "success": true,
+          "gain": 0.5,
+          "best_gain": 0.5,
+          "legal_count": 15,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        },
+        {
+          "turn": 5,
+          "t": 300,
+          "action": "escalate",
+          "from": "FDC-SRV",
+          "target": "FDC-SRV",
+          "success": false,
+          "gain": 0.25,
+          "best_gain": 0.25,
+          "legal_count": 15,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        },
+        {
+          "turn": 6,
+          "t": 330,
+          "action": "escalate",
+          "from": "FDC-SRV",
+          "target": "FDC-SRV",
+          "success": true,
+          "gain": 0.25,
+          "best_gain": 0.25,
+          "legal_count": 15,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        },
+        {
+          "turn": 7,
+          "t": 360,
+          "action": "recon",
+          "from": null,
+          "target": null,
+          "success": true,
+          "gain": 0,
+          "best_gain": 0,
+          "legal_count": 31,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        }
+      ]
+    },
+    {
+      "variant": "llm",
+      "seed": 20260907,
+      "metrics": {
+        "strategy": "llm",
+        "variant": "llm",
+        "turns_played": 8,
+        "mission_final": {
+          "M-C2": 1,
+          "M-FIRE": 0.285714
+        },
+        "weighted_objective_final": 1.142857,
+        "cumulative_weighted_objective": 5.628571,
+        "turns_to_threshold": {
+          "M-C2": {
+            "1": 5,
+            "0.5": 4
+          },
+          "M-FIRE": {
+            "1": null,
+            "0.5": null
+          }
+        },
+        "attempts": 8,
+        "successes": 7,
+        "success_rate": 0.875,
+        "action_distribution": {
+          "credential_access": 2,
+          "lateral_move": 3,
+          "escalate": 1,
+          "deny": 2
+        },
+        "mean_legal_moves": 13.88,
+        "greedy_agreement": 0.625,
+        "wall_ms": 15096,
+        "sec_per_turn": 1.89,
+        "llm": {
+          "model": "qwen2.5:7b-instruct-q4_K_M",
+          "temperature": 0.15,
+          "show_gain": false,
+          "calls": 9,
+          "retries": 1,
+          "invalid_id": 2,
+          "unparsable": 0,
+          "transport_error": 0,
+          "fallback_greedy": 1,
+          "latency_ms_mean": 1671,
+          "latency_ms_min": 374,
+          "latency_ms_max": 2664
+        }
+      },
+      "moves": [
+        {
+          "turn": 0,
+          "t": 150,
+          "action": "credential_access",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": true,
+          "gain": 0.064286,
+          "best_gain": 0.107143,
+          "legal_count": 3,
+          "rationale": "2중대 지휘차를 침해하여 M-C2 임무의 저하도를 크게 증가시킵니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 1,
+          "t": 180,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "BN-SRV",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0.25,
+          "legal_count": 14,
+          "rationale": "2중대 지휘차를 대대 지휘소 서버로 이동하여 M-C2 임무를 저하시키기 위함.",
+          "source": "llm"
+        },
+        {
+          "turn": 2,
+          "t": 210,
+          "action": "credential_access",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0,
+          "legal_count": 6,
+          "rationale": "2중대 지휘차는 현재 진행 중인 과업을 수행하고 있어 임무 저하도를 크게 증가시킬 수 있는 대상입니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 3,
+          "t": 240,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "BN-CP",
+          "success": true,
+          "gain": 0.5,
+          "best_gain": 0.5,
+          "legal_count": 16,
+          "rationale": "BN-CP는 M-C2 과업을 수행하는 중인 자산으로, 이동하여 해당 과업을 방해할 수 있습니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 4,
+          "t": 270,
+          "action": "escalate",
+          "from": "BN-CP",
+          "target": "BN-CP",
+          "success": true,
+          "gain": 0.5,
+          "best_gain": 0.5,
+          "legal_count": 17,
+          "rationale": "FALLBACK->greedy: greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": "fallback:greedy"
+        },
+        {
+          "turn": 5,
+          "t": 300,
+          "action": "deny",
+          "from": "BN-CP",
+          "target": "BN-CP",
+          "success": false,
+          "gain": 0,
+          "best_gain": 0,
+          "legal_count": 15,
+          "rationale": "BN-CP는 현재 진행 중인 과업을 수행하고 있으며, 이를 차단하면 M-C2 임무의 저하도를 크게 증가시킬 수 있습니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 6,
+          "t": 330,
+          "action": "deny",
+          "from": "BN-CP",
+          "target": "BN-CP",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0,
+          "legal_count": 15,
+          "rationale": "BN-CP는 M-C2 임무를 지원하는 중이며 hosts_active_task가 참이므로 이 자산을 노리면 M-C2 임무의 저하도를 크게 만들 수 있습니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 7,
+          "t": 360,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "TOC-SRV",
+          "success": true,
+          "gain": 0.142857,
+          "best_gain": 0.25,
+          "legal_count": 25,
+          "rationale": "대대 지휘차를 여단 TOC의 중요 자산에 연결시켜 지휘통제 임무의 저하도를 크게 증가시킵니다.",
+          "source": "llm"
+        }
+      ]
+    },
+    {
+      "variant": "llm+gain",
+      "seed": 20260907,
+      "metrics": {
+        "strategy": "llm",
+        "variant": "llm+gain",
+        "turns_played": 8,
+        "mission_final": {
+          "M-C2": 0.5,
+          "M-FIRE": 0.285714
+        },
+        "weighted_objective_final": 0.642857,
+        "cumulative_weighted_objective": 4.091304,
+        "turns_to_threshold": {
+          "M-C2": {
+            "1": null,
+            "0.5": 6
+          },
+          "M-FIRE": {
+            "1": null,
+            "0.5": null
+          }
+        },
+        "attempts": 8,
+        "successes": 5,
+        "success_rate": 0.625,
+        "action_distribution": {
+          "escalate": 1,
+          "lateral_move": 6,
+          "deny": 1
+        },
+        "mean_legal_moves": 11,
+        "greedy_agreement": 0.125,
+        "wall_ms": 16217,
+        "sec_per_turn": 2.03,
+        "llm": {
+          "model": "qwen2.5:7b-instruct-q4_K_M",
+          "temperature": 0.15,
+          "show_gain": true,
+          "calls": 8,
+          "retries": 0,
+          "invalid_id": 0,
+          "unparsable": 0,
+          "transport_error": 0,
+          "fallback_greedy": 0,
+          "latency_ms_mean": 2021,
+          "latency_ms_min": 1260,
+          "latency_ms_max": 2504
+        }
+      },
+      "moves": [
+        {
+          "turn": 0,
+          "t": 150,
+          "action": "escalate",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": true,
+          "gain": 0.107143,
+          "best_gain": 0.107143,
+          "legal_count": 3,
+          "rationale": "2중대 지휘차에서 임무를 떠받치는 자산으로 이동하여 우선순위가 높은 임무의 저하도를 크게 만듭니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 1,
+          "t": 180,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "TOC-SRV",
+          "success": true,
+          "gain": 0.138509,
+          "best_gain": 0.25,
+          "legal_count": 12,
+          "rationale": "2중대 지휘차를 여단 C2 서버로 이동하여 M-C2 임무의 중요성을 높입니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 2,
+          "t": 210,
+          "action": "deny",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": false,
+          "gain": 0,
+          "best_gain": 0.138509,
+          "legal_count": 4,
+          "rationale": "1중대 지휘차를 노리며 M-C2 임무의 저하도를 크게 만듭니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 3,
+          "t": 240,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "BN-SRV",
+          "success": true,
+          "gain": 0.267857,
+          "best_gain": 0.5,
+          "legal_count": 14,
+          "rationale": "BN-SRV는 M-C2와 M-FIRE를 지원하는 중요한 자산으로, 현재 Compromise 상태가 0이므로 침해하면 임무 저하도를 크게 증가시킬 수 있습니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 4,
+          "t": 270,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "BN-CP",
+          "success": false,
+          "gain": 0.25,
+          "best_gain": 0.371429,
+          "legal_count": 15,
+          "rationale": "BN-CP는 M-C2 과업을 수행하는 중인 자산으로, 이동하여 해당 과업을 저해할 수 있습니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 5,
+          "t": 300,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "BN-CP",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 11,
+          "rationale": "CO2-VEH의 침해가 임무 M-C2에 큰 영향을 미치므로, 이를 BN-CP를 통해 중앙에 위치시켜 임무 저하도를 크게 증가시킵니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 6,
+          "t": 330,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "RELAY-1",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 12,
+          "rationale": "CO2-VEH의 침해를 통해 M-C2 임무를 저하시키고, RELAY-1을 노리며 추가 피해를 줌.",
+          "source": "llm"
+        },
+        {
+          "turn": 7,
+          "t": 360,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "FDC-SRV",
+          "success": false,
+          "gain": 0.107143,
+          "best_gain": 0.5,
+          "legal_count": 17,
+          "rationale": "대대 지휘차를 포병 FDC 서버로 이동하여 M-C2 임무를 지원하는 자산을 침해합니다.",
+          "source": "llm"
+        }
+      ]
+    },
+    {
+      "variant": "random",
+      "seed": 20260908,
+      "metrics": {
+        "strategy": "random",
+        "variant": "random",
+        "turns_played": 8,
+        "mission_final": {
+          "M-C2": 0.5,
+          "M-FIRE": 0
+        },
+        "weighted_objective_final": 0.5,
+        "cumulative_weighted_objective": 2.857143,
+        "turns_to_threshold": {
+          "M-C2": {
+            "1": null,
+            "0.5": 5
+          },
+          "M-FIRE": {
+            "1": null,
+            "0.5": null
+          }
+        },
+        "attempts": 8,
+        "successes": 3,
+        "success_rate": 0.375,
+        "action_distribution": {
+          "credential_access": 2,
+          "escalate": 2,
+          "lateral_move": 3,
+          "deny": 1
+        },
+        "mean_legal_moves": 8.5,
+        "greedy_agreement": 0.25,
+        "wall_ms": 19,
+        "sec_per_turn": 0
+      },
+      "moves": [
+        {
+          "turn": 0,
+          "t": 150,
+          "action": "credential_access",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": false,
+          "gain": 0.064286,
+          "best_gain": 0.107143,
+          "legal_count": 3,
+          "rationale": "random baseline",
+          "source": null
+        },
+        {
+          "turn": 1,
+          "t": 180,
+          "action": "credential_access",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": false,
+          "gain": 0.064286,
+          "best_gain": 0.107143,
+          "legal_count": 3,
+          "rationale": "random baseline",
+          "source": null
+        },
+        {
+          "turn": 2,
+          "t": 210,
+          "action": "escalate",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0,
+          "legal_count": 3,
+          "rationale": "random baseline",
+          "source": null
+        },
+        {
+          "turn": 3,
+          "t": 240,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "CO1-VEH",
+          "success": false,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 13,
+          "rationale": "random baseline",
+          "source": null
+        },
+        {
+          "turn": 4,
+          "t": 270,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "BN-CP",
+          "success": true,
+          "gain": 0.5,
+          "best_gain": 0.5,
+          "legal_count": 13,
+          "rationale": "random baseline",
+          "source": null
+        },
+        {
+          "turn": 5,
+          "t": 300,
+          "action": "deny",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": false,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 9,
+          "rationale": "random baseline",
+          "source": null
+        },
+        {
+          "turn": 6,
+          "t": 330,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "SAT-TERM",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 9,
+          "rationale": "random baseline",
+          "source": null
+        },
+        {
+          "turn": 7,
+          "t": 360,
+          "action": "escalate",
+          "from": "SAT-TERM",
+          "target": "SAT-TERM",
+          "success": false,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 15,
+          "rationale": "random baseline",
+          "source": null
+        }
+      ]
+    },
+    {
+      "variant": "greedy",
+      "seed": 20260908,
+      "metrics": {
+        "strategy": "greedy",
+        "variant": "greedy",
+        "turns_played": 8,
+        "mission_final": {
+          "M-C2": 1,
+          "M-FIRE": 1
+        },
+        "weighted_objective_final": 1.5,
+        "cumulative_weighted_objective": 8.821429,
+        "turns_to_threshold": {
+          "M-C2": {
+            "1": 5,
+            "0.5": 4
+          },
+          "M-FIRE": {
+            "1": 3,
+            "0.5": 2
+          }
+        },
+        "attempts": 8,
+        "successes": 8,
+        "success_rate": 1,
+        "action_distribution": {
+          "escalate": 3,
+          "lateral_move": 2,
+          "recon": 3
+        },
+        "mean_legal_moves": 16.75,
+        "greedy_agreement": 1,
+        "wall_ms": 75,
+        "sec_per_turn": 0.01
+      },
+      "moves": [
+        {
+          "turn": 0,
+          "t": 150,
+          "action": "escalate",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": true,
+          "gain": 0.107143,
+          "best_gain": 0.107143,
+          "legal_count": 3,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        },
+        {
+          "turn": 1,
+          "t": 180,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "FDC-SRV",
+          "success": true,
+          "gain": 0.25,
+          "best_gain": 0.25,
+          "legal_count": 12,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        },
+        {
+          "turn": 2,
+          "t": 210,
+          "action": "escalate",
+          "from": "FDC-SRV",
+          "target": "FDC-SRV",
+          "success": true,
+          "gain": 0.25,
+          "best_gain": 0.25,
+          "legal_count": 4,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        },
+        {
+          "turn": 3,
+          "t": 240,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "BN-CP",
+          "success": true,
+          "gain": 0.5,
+          "best_gain": 0.5,
+          "legal_count": 23,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        },
+        {
+          "turn": 4,
+          "t": 270,
+          "action": "escalate",
+          "from": "BN-CP",
+          "target": "BN-CP",
+          "success": true,
+          "gain": 0.5,
+          "best_gain": 0.5,
+          "legal_count": 23,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        },
+        {
+          "turn": 5,
+          "t": 300,
+          "action": "recon",
+          "from": null,
+          "target": null,
+          "success": true,
+          "gain": 0,
+          "best_gain": 0,
+          "legal_count": 19,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        },
+        {
+          "turn": 6,
+          "t": 330,
+          "action": "recon",
+          "from": null,
+          "target": null,
+          "success": true,
+          "gain": 0,
+          "best_gain": 0,
+          "legal_count": 19,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        },
+        {
+          "turn": 7,
+          "t": 360,
+          "action": "recon",
+          "from": null,
+          "target": null,
+          "success": true,
+          "gain": 0,
+          "best_gain": 0,
+          "legal_count": 31,
+          "rationale": "greedy: 임무 저하도 증가분이 가장 큰 수",
+          "source": null
+        }
+      ]
+    },
+    {
+      "variant": "llm",
+      "seed": 20260908,
+      "metrics": {
+        "strategy": "llm",
+        "variant": "llm",
+        "turns_played": 8,
+        "mission_final": {
+          "M-C2": 0.5,
+          "M-FIRE": 0
+        },
+        "weighted_objective_final": 0.5,
+        "cumulative_weighted_objective": 2.857143,
+        "turns_to_threshold": {
+          "M-C2": {
+            "1": null,
+            "0.5": 5
+          },
+          "M-FIRE": {
+            "1": null,
+            "0.5": null
+          }
+        },
+        "attempts": 8,
+        "successes": 5,
+        "success_rate": 0.625,
+        "action_distribution": {
+          "credential_access": 1,
+          "escalate": 2,
+          "lateral_move": 5
+        },
+        "mean_legal_moves": 9.25,
+        "greedy_agreement": 0.375,
+        "wall_ms": 13588,
+        "sec_per_turn": 1.7,
+        "llm": {
+          "model": "qwen2.5:7b-instruct-q4_K_M",
+          "temperature": 0.15,
+          "show_gain": false,
+          "calls": 8,
+          "retries": 0,
+          "invalid_id": 0,
+          "unparsable": 0,
+          "transport_error": 0,
+          "fallback_greedy": 0,
+          "latency_ms_mean": 1694,
+          "latency_ms_min": 1245,
+          "latency_ms_max": 2554
+        }
+      },
+      "moves": [
+        {
+          "turn": 0,
+          "t": 150,
+          "action": "credential_access",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": false,
+          "gain": 0.064286,
+          "best_gain": 0.107143,
+          "legal_count": 3,
+          "rationale": "2중대 지휘차에서 정보를 획取以增强指挥任务的执行",
+          "source": "llm"
+        },
+        {
+          "turn": 1,
+          "t": 180,
+          "action": "escalate",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": false,
+          "gain": 0.107143,
+          "best_gain": 0.107143,
+          "legal_count": 3,
+          "rationale": "2중대 지휘차를 침해하여 M-C2 임무의 저하도를 크게 증가시킵니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 2,
+          "t": 210,
+          "action": "escalate",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0,
+          "legal_count": 3,
+          "rationale": "2중대 지휘차를 침해하여 M-C2 임무의 저하도를 크게 증가시킵니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 3,
+          "t": 240,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "BN-SRV",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 13,
+          "rationale": "BN-SRV는 M-C2와 M-FIRE를 지원하는 중요한 자산으로, 현재 임무를 수행하고 있지 않으므로 이동하여 임무 저하도를 증가시킬 수 있습니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 4,
+          "t": 270,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "BN-CP",
+          "success": true,
+          "gain": 0.5,
+          "best_gain": 0.5,
+          "legal_count": 14,
+          "rationale": "BN-CP는 현재 진행 중인 과업을 수행하고 있어 임무 저하도를 크게 증가시킬 수 있는 위치입니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 5,
+          "t": 300,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "RELAY-1",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 10,
+          "rationale": "M-C2 임무를 지원하는 자산으로 이동하여 임무 저하도를 증가시킵니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 6,
+          "t": 330,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "SAT-TERM",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 11,
+          "rationale": "CO2-VEH의 침해를 통해 M-C2 임무의 저하도를 크게 증가시킵니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 7,
+          "t": 360,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "TOC-SRV",
+          "success": false,
+          "gain": 0.142857,
+          "best_gain": 0.5,
+          "legal_count": 17,
+          "rationale": "CO2-VEH는 현재 M-C2 임무를 수행 중인 중요한 자산이며, TOC-SRV는 M-C2와 M-FIRE 둘 다를 지원하는 핵심 자산입니다. 이동을 통해 TOC-SRV의 침해도를 높여 M-C2 임무의 저하도를 크게 만들 수 있습니다.",
+          "source": "llm"
+        }
+      ]
+    },
+    {
+      "variant": "llm+gain",
+      "seed": 20260908,
+      "metrics": {
+        "strategy": "llm",
+        "variant": "llm+gain",
+        "turns_played": 8,
+        "mission_final": {
+          "M-C2": 0.5,
+          "M-FIRE": 0.285714
+        },
+        "weighted_objective_final": 0.642857,
+        "cumulative_weighted_objective": 4.341304,
+        "turns_to_threshold": {
+          "M-C2": {
+            "1": null,
+            "0.5": 5
+          },
+          "M-FIRE": {
+            "1": null,
+            "0.5": null
+          }
+        },
+        "attempts": 8,
+        "successes": 7,
+        "success_rate": 0.875,
+        "action_distribution": {
+          "escalate": 2,
+          "lateral_move": 5,
+          "deny": 1
+        },
+        "mean_legal_moves": 11.38,
+        "greedy_agreement": 0.25,
+        "wall_ms": 13577,
+        "sec_per_turn": 1.7,
+        "llm": {
+          "model": "qwen2.5:7b-instruct-q4_K_M",
+          "temperature": 0.15,
+          "show_gain": true,
+          "calls": 8,
+          "retries": 0,
+          "invalid_id": 0,
+          "unparsable": 0,
+          "transport_error": 0,
+          "fallback_greedy": 0,
+          "latency_ms_mean": 1692,
+          "latency_ms_min": 1212,
+          "latency_ms_max": 2355
+        }
+      },
+      "moves": [
+        {
+          "turn": 0,
+          "t": 150,
+          "action": "escalate",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": true,
+          "gain": 0.107143,
+          "best_gain": 0.107143,
+          "legal_count": 3,
+          "rationale": "2중대 지휘차에서 임무를 떠받치는 자산으로 이동하여 우선순위가 높은 M-C2 임무의 저하도를 크게 만듭니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 1,
+          "t": 180,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "TOC-SRV",
+          "success": true,
+          "gain": 0.138509,
+          "best_gain": 0.25,
+          "legal_count": 12,
+          "rationale": "2중대 지휘차를 여단 C2 서버로 이동하여 M-C2 임무의 중요성을 높입니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 2,
+          "t": 210,
+          "action": "deny",
+          "from": "CO2-VEH",
+          "target": "CO2-VEH",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0.138509,
+          "legal_count": 4,
+          "rationale": "현재 진행 중인 '기동' 과업에 참여 중인 자산을 침해하여 임무 저하도를 크게 증가시킵니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 3,
+          "t": 240,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "BN-SRV",
+          "success": true,
+          "gain": 0.267857,
+          "best_gain": 0.5,
+          "legal_count": 14,
+          "rationale": "BN-SRV는 M-C2와 M-FIRE를 지원하는 중요한 자산으로, 현재 Compromise 상태가 0이므로 침해하면 임무 저하도를 크게 증가시킬 수 있습니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 4,
+          "t": 270,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "BN-CP",
+          "success": true,
+          "gain": 0.25,
+          "best_gain": 0.371429,
+          "legal_count": 15,
+          "rationale": "BN-CP는 M-C2 과업을 수행하는 중인 자산으로, 이동하여 해당 과업을 저해할 수 있습니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 5,
+          "t": 300,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "RELAY-1",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 12,
+          "rationale": "CO2-VEH의 침해가 임무 수행에 직접적인 영향을 미치므로, 이를 다른 중요 자산인 RELAY-1으로 이동시켜 M-C2 임무의 저하도를 크게 증가시킵니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 6,
+          "t": 330,
+          "action": "lateral_move",
+          "from": "CO2-VEH",
+          "target": "SAT-TERM",
+          "success": true,
+          "gain": 0,
+          "best_gain": 0.5,
+          "legal_count": 13,
+          "rationale": "CO2-VEH는 M-C2 임무를 지원하는 중요한 자산으로, SAT-TERM과의 통신을 차단하면 M-C2 임무의 저하도를 크게 증가시킬 수 있습니다.",
+          "source": "llm"
+        },
+        {
+          "turn": 7,
+          "t": 360,
+          "action": "escalate",
+          "from": "BN-CP",
+          "target": "BN-CP",
+          "success": false,
+          "gain": 0.5,
+          "best_gain": 0.5,
+          "legal_count": 18,
+          "rationale": "BN-CP는 현재 진행 중인 M-C2 과업을 수행 중인 자산으로, 임무 저하도를 크게 증가시킬 수 있는 중요한 목표입니다.",
+          "source": "llm"
+        }
+      ]
+    }
+  ]
+}

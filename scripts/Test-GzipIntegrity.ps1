@@ -124,9 +124,14 @@ if (-not (Test-Path -LiteralPath $Path)) {
     throw ('Not found: ' + $Path)
 }
 
+# -Recurse matters. This was written against LANL cyber1, which is a flat
+# directory of eight files, so the omission was invisible. OpTC is a tree
+# (ecar/<day>/<host>/*.gz, 900 files deep in subdirectories) and the check
+# reported "No .gz files under: <path>" while sitting on 41 GB of them. The
+# error message already said "under", which is what the code should have done.
 $targets = @()
 if ((Get-Item -LiteralPath $Path).PSIsContainer) {
-    $targets = @(Get-ChildItem -LiteralPath $Path -Filter *.gz -File | Sort-Object Length)
+    $targets = @(Get-ChildItem -LiteralPath $Path -Filter *.gz -File -Recurse | Sort-Object Length)
 } else {
     $targets = @(Get-Item -LiteralPath $Path)
 }
