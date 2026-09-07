@@ -230,7 +230,7 @@ while (($n = $gz.Read($buf,0,$buf.Length)) -gt 0) { $total += $n }
 마지막 레코드의 타임스탬프가 `5011199`(58일)에 도달하는지도 함께 본다.
 전체 스크립트는 `scripts/Test-GzipIntegrity.ps1`.
 
-### DARPA OpTC - 취득 준비 완료, 다운로드 미착수 ★다음 취득 대상
+### DARPA OpTC - 취득·검증·매니페스트 완료 (2026-09-07)
 
 - ✅ `OpTCRedTeamGroundTruth.pdf` + README/ecar.md/errata.md → `F:\mc-cycop-data\raw\optc\`
   (GitHub 저장소에 있어 Google Drive를 거치지 않았다)
@@ -350,9 +350,9 @@ docs/08-lanl-ground-truth.md LANL 라벨 실측 - 측면이동 없음, 베이스
 docs/09-optc-acquisition.md  OpTC 최소 취득 세트(실측 232.1GB) + 라벨 구조화
 docs/10-limitations.md       못하는 것 (구조적 / 자원 / 미결)
 docs/11-tactical-time-axis.md 전술망 시간축 실측 - 원인 분해, 도달성, 잡은 오류 2건
-docs/13-adversary-comparison.md 공격자 3종 비교 실측 - **LLM이 greedy에 0승 6패(0.57배)**
-docs/99-open-questions.md    남은 미결 = Q5 하나
-docs/adr/0001~0017           결정 기록 (0017 = 시간축 임무 그래프)
+docs/13-adversary-comparison.md 공격자 3종 비교 실측 - **LLM이 greedy에 0승 6패(0.59배)**
+docs/99-open-questions.md    미결 없음 (Q1~Q6 전부 확정)
+docs/adr/0001~0020           결정 기록 (0020 = hard/soft 요구)
 
 scripts/
   fetch-ait.ps1              AIT 취득 (범위 축소됨, $deferred 참조)
