@@ -57,7 +57,7 @@ function esc(s) {
 // pitch = 90 degrees is straight down, which is exactly the 2D plan view, so
 // the two modes are one projection and there is no second code path to keep
 // in agreement.
-function makeProjector({ ext, width, height, az, pitch, zScale, pad = 40, fitPoints = null }) {
+function makeProjector({ ext, width, height, az, pitch, zScale, pad = 40, padTop = 0, fitPoints = null }) {
   const cx = (ext.x[0] + ext.x[1]) / 2
   const cy = (ext.y[0] + ext.y[1]) / 2
   const a = (az * Math.PI) / 180
@@ -96,9 +96,15 @@ function makeProjector({ ext, width, height, az, pitch, zScale, pad = 40, fitPoi
   const spanGuard = 1200
   if (maxX - minX < spanGuard) { const c = (maxX + minX) / 2; minX = c - spanGuard / 2; maxX = c + spanGuard / 2 }
   if (maxY - minY < spanGuard) { const c = (maxY + minY) / 2; minY = c - spanGuard / 2; maxY = c + spanGuard / 2 }
-  const scale = Math.min((width - pad * 2) / (maxX - minX || 1), (height - pad * 2) / (maxY - minY || 1))
+  // padTop reserves a band of sky at the top of the frame. The terrain is fitted
+  // below it, which is the only way a satellite relay can be drawn above the
+  // highest ground: in an axonometric view a point in the foreground projects
+  // lower than a point behind it, so raising the relay's altitude alone put it
+  // under the far peak no matter how high it went.
+  const boxH = height - pad * 2 - padTop
+  const scale = Math.min((width - pad * 2) / (maxX - minX || 1), boxH / (maxY - minY || 1))
   const offX = pad + ((width - pad * 2) - (maxX - minX) * scale) / 2 - minX * scale
-  const offY = pad + ((height - pad * 2) - (maxY - minY) * scale) / 2 - minY * scale
+  const offY = pad + padTop + (boxH - (maxY - minY) * scale) / 2 - minY * scale
 
   return (x, y, z = 0) => {
     const r = raw(x, y, z)
@@ -212,6 +218,14 @@ export function renderGeo({
     drawPos[id] = { x: p.x + o.dx, y: p.y + o.dy, z: p.z ?? 0 }
   }
 
+  // SATCOM display altitude. Not to scale and it cannot be: a GEO arc is
+  // 35,786 km against a 24 km area of operations. The height is chosen so the
+  // uplinks read as steep and the relay clears the highest ground, and the
+  // footer tells the reader that is what it is.
+  const isSat = (b) => /sat/.test(String(b || '').toLowerCase())
+  const satLinks = (graph.links || []).filter((l) => isSat(l.bearer) && drawPos[l.a] && drawPos[l.b])
+  const skyBand = is3d && satLinks.length ? Math.min(148, height * 0.19) : 0
+
   // what the camera should frame: the relief surface, every asset at this
   // instant, and the terrain features
   const fitPoints = []
@@ -244,8 +258,26 @@ export function renderGeo({
     pitch: is3d ? pitch : 90,
     zScale: is3d ? zScale : 0,
     pad: 56,
+    padTop: skyBand,
     fitPoints,
   })
+
+  // Altitude of the satellite relay, solved rather than guessed. The camera is
+  // affine in z, so one probe gives pixels per metre of elevation, and from
+  // that the altitude that lands the relay in the middle of the reserved sky
+  // band - at any rotation and any exaggeration setting.
+  //
+  // The number is a drawing parameter and nothing else. A real geostationary
+  // arc is 35,786 km against a 24 km area of operations; drawn to scale the
+  // satellite is a point at infinity and the uplinks are two parallel vertical
+  // lines. The footer says this is not to scale, because it is not.
+  const satAltitudeFor = (sx, sy) => {
+    const y0 = project(sx, sy, 0).y
+    const y1 = project(sx, sy, 1000).y
+    const pxPerM = (y0 - y1) / 1000
+    if (!(pxPerM > 1e-9)) return 0
+    return (y0 - (56 + skyBand * 0.45)) / pxPerM
+  }
 
   const out = []
 
@@ -309,10 +341,19 @@ export function renderGeo({
   // cause on an outage is an authored value (ADR-0012), and a masked span here
   // is at most a picture that agrees with it. Test-GeoInvariance.ps1 exists to
   // keep that boundary honest.
+  //
+  // SATCOM is a third shape and it was wrong until now. L-SAT-TOC was drawn as
+  // a straight line between two ground stations, which put the satellite path
+  // at ground level and let a ridge five kilometres away "mask" it. A satellite
+  // link goes up and comes back down; what can block it is the local look
+  // angle, not a hill in the middle of the ground track. It is drawn as two
+  // uplinks meeting at a space relay above the scene, and it is never terrain
+  // masked.
   const surf = (x, y) => (model ? surfaceAt(model, x, y) : 0)
   const linkOut = step.link_outage || {}
   const LINK_SAMPLES = 20
   let maskedCount = 0
+  const satOut = []
   for (const l of graph.links || []) {
     const pa = drawPos[l.a]
     const pb = drawPos[l.b]
@@ -321,6 +362,42 @@ export function renderGeo({
     const color = cause ? (causeColor[cause] || '#8a8f98') : '#2fd18b'
     const bearer = String(l.bearer || '').toLowerCase()
     const wired = /wired|fibre|fiber|cable|lan|copper|landline/.test(bearer)
+    const satcom = isSat(bearer)
+
+    if (satcom) {
+      // The scenario has no space segment asset - the satellite is a property
+      // of the bearer, not a node in the mission graph - so this relay point
+      // exists only in the picture. It is placed above the terrain at a height
+      // chosen to draw, NOT to scale: a real GEO arc is 35,786 km, which is
+      // eighty times the width of the whole AO. Anything drawn to scale would
+      // be a dot at infinity. The footer says so.
+      const sx = (pa.x + pb.x) / 2
+      const sy = (pa.y + pb.y) / 2
+      const A = project(pa.x, pa.y, is3d ? pa.z : 0)
+      const B = project(pb.x, pb.y, is3d ? pb.z : 0)
+      const S = project(sx, sy, is3d ? satAltitudeFor(sx, sy) : 0)
+      const t = `<title>${esc(l.id)} ${esc(l.bearer || '')} · 위성 중계 (고도 축척 아님)` +
+        `${cause ? ' / 단절: ' + esc(cause) : ''}</title>`
+      const beam = (P) => `<path class="geo-satlink${cause ? ' is-cut' : ''}" ` +
+        `d="M${P.x.toFixed(1)} ${P.y.toFixed(1)}L${S.x.toFixed(1)} ${S.y.toFixed(1)}" stroke="${color}">${t}</path>`
+      if (is3d) {
+        satOut.push(beam(A), beam(B))
+        satOut.push(`<g class="geo-sat" transform="translate(${S.x.toFixed(1)},${S.y.toFixed(1)})">
+          <circle r="7" fill="#0d131c" stroke="${color}" stroke-width="1.4" />
+          <path d="M-13 -4 L-7 -4 M7 -4 L13 -4" stroke="${color}" stroke-width="1.4" />
+          <text class="geo-sat-label" y="-13">위성 중계</text>${t}</g>`)
+      } else {
+        // Plan view genuinely projects the path onto the ground, so the ground
+        // track is the honest 2D answer. The glyph says it went via space.
+        satOut.push(`<path class="geo-satlink${cause ? ' is-cut' : ''}" ` +
+          `d="M${A.x.toFixed(1)} ${A.y.toFixed(1)}L${B.x.toFixed(1)} ${B.y.toFixed(1)}" stroke="${color}">${t}</path>`)
+        satOut.push(`<g class="geo-sat" transform="translate(${((A.x + B.x) / 2).toFixed(1)},${((A.y + B.y) / 2).toFixed(1)})">
+          <circle r="6" fill="#0d131c" stroke="${color}" stroke-width="1.4" />
+          <path d="M-11 0 L-6 0 M6 0 L11 0" stroke="${color}" stroke-width="1.4" />${t}</g>`)
+      }
+      continue
+    }
+
     const offA = pa.z - surf(pa.x, pa.y)
     const offB = pb.z - surf(pb.x, pb.y)
 
@@ -355,6 +432,9 @@ export function renderGeo({
       i = j
     }
   }
+
+  // satellite beams over the terrain but under the unit symbols
+  out.push(...satOut)
 
   // paint far-to-near so nearer nodes overlap farther ones
   const drawList = []
@@ -411,6 +491,7 @@ export function renderGeo({
     <span>${esc(geo.frame.id)} · 격자 2 km · 단위 m${is3d ? ` · 표고 ${zScale}배 과장` : ''}</span>
     ${model ? `<span>등고선 ${model.interval} m · 굵은 선 ${model.interval * model.every} m</span>` : ''}
     ${maskedCount ? `<span class="geo-mask-note">가시선 차폐 ${maskedCount}개 구간 (점선)<b>그림일 뿐이다. 단절 원인은 저작값이고 여기서 계산하지 않는다.</b></span>` : ''}
+    ${satLinks.length && is3d ? `<span class="geo-mask-note">위성 중계 고도는 축척이 아니다<b>실제 정지궤도는 35,786 km 로 AO 폭의 1,500배다. 그리면 무한대의 점이 된다.</b></span>` : ''}
     ${anchor ? `<span>앵커 ${anchor.lat}, ${anchor.lon}${geo.georef.mgrs ? ' · MGRS ' + esc(geo.georef.mgrs.gzd) : ''}</span>` : ''}
     <span class="geo-warn">가상 좌표다. 지형도 저작 도형에서 보간한 것이고 실지형이 아니다.</span>
   </div>`

@@ -34,26 +34,33 @@ import path from 'node:path'
 import { makeElev } from '../src/terrain.js'
 
 // How far above the ground the thing actually sits. A mast is not a tablet.
+//
+// Keys are the exact `Asset.type` values used by the scenarios. The substring
+// fallback below is a safety net for a type nobody has added here yet, and it
+// is deliberately not clever: 'satcom-terminal' does not contain
+// 'sat-terminal', so an almost-right key silently fell through to `terminal`
+// and cost the satellite dish a metre of antenna before the table was written
+// against the real type list.
 const PLATFORM_M = {
-  relay: 12,          // mast on the ridge
-  'sat-terminal': 3,  // dish on a trailer
+  'radio-relay': 12,       // mast on the ridge
+  'satcom-terminal': 3,    // dish on a trailer
   gateway: 3,
-  vehicle: 2,
   'c2-server': 2,
-  'fire-control': 2,
+  'c2-terminal': 2,
+  'fire-control-server': 2,
   workstation: 2,
   hypervisor: 2,
   terminal: 2,
-  tablet: 1,
-  handheld: 1,
+  'observer-terminal': 1,  // dismounted, carried
 }
 const DEFAULT_PLATFORM_M = 2
 
 function platformOf(asset) {
   const t = String(asset.type || '').toLowerCase()
   if (t in PLATFORM_M) return PLATFORM_M[t]
-  for (const k of Object.keys(PLATFORM_M)) if (t.includes(k)) return PLATFORM_M[k]
-  if (/veh|truck|carrier/.test(t)) return PLATFORM_M.vehicle
+  if (/relay|mast|antenna/.test(t)) return 12
+  if (/satcom|vsat|dish/.test(t)) return 3
+  if (/tablet|handheld|radio/.test(t)) return 1
   return DEFAULT_PLATFORM_M
 }
 

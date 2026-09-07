@@ -216,9 +216,9 @@
     {"id": "SAT-TERM", "type": "satcom-terminal",     "unit": "U-1BN", "site": "대대 지휘소", "os": "appliance", "mobility": "mobile", "transit": true,
      "outages": [{"from": 95, "to": 125, "cause": "mobility", "note": "위성단말 철수-재전개"}],
      "geo": {"kind": "track", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 25, "segments": [
-       {"from": 0,   "to": 95,  "mode": "hold", "at": {"x": 8662, "y": 8171, "z": 185}},
-       {"from": 95,  "to": 125, "mode": "move", "at": {"x": 8662, "y": 8171, "z": 185}, "to_at": {"x": 13882, "y": 12411, "z": 384}},
-       {"from": 125, "to": 420, "mode": "hold", "at": {"x": 13882, "y": 12411, "z": 384}}
+       {"from": 0,   "to": 95,  "mode": "hold", "at": {"x": 8662, "y": 8171, "z": 186}},
+       {"from": 95,  "to": 125, "mode": "move", "at": {"x": 8662, "y": 8171, "z": 186}, "to_at": {"x": 13882, "y": 12411, "z": 385}},
+       {"from": 125, "to": 420, "mode": "hold", "at": {"x": 13882, "y": 12411, "z": 385}}
      ]}},
 
     {"id": "CO1-VEH",  "type": "c2-terminal",         "unit": "U-1CO", "site": "1중대 지휘차", "os": "windows",  "mobility": "mobile", "transit": false,
@@ -239,12 +239,12 @@
     {"id": "FO-TAB",   "type": "observer-terminal",   "unit": "U-FA",  "site": "관측반",       "os": "android",  "mobility": "mobile", "transit": false,
      "outages": [{"from": 0, "to": 120, "cause": "mobility", "note": "관측반 미전개 - 표적획득 단계 이전"}],
      "geo": {"kind": "track", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 50, "segments": [
-       {"from": 0,   "to": 120, "mode": "hold", "at": {"x": 3460, "y": 4720, "z": 94}, "note": "후방 집결지 대기. outage 중이지만 위치는 정의된다"},
-       {"from": 120, "to": 180, "mode": "move", "at": {"x": 3460, "y": 4720, "z": 94},   "to_at": {"x": 9820, "y": 9640, "z": 288}},
-       {"from": 180, "to": 255, "mode": "move", "at": {"x": 9820, "y": 9640, "z": 288},  "to_at": {"x": 16040, "y": 12180, "z": 83}},
-       {"from": 255, "to": 275, "mode": "move", "at": {"x": 16040, "y": 12180, "z": 83}, "to_at": {"x": 17280, "y": 13240, "z": 86}, "note": "TF-VALLEY-B 진입 - L-VHF-FO 의 terrain outage 와 같은 구간"},
-       {"from": 275, "to": 330, "mode": "move", "at": {"x": 17280, "y": 13240, "z": 86},  "to_at": {"x": 18420, "y": 14380, "z": 240}},
-       {"from": 330, "to": 420, "mode": "hold", "at": {"x": 18420, "y": 14380, "z": 240}}
+       {"from": 0,   "to": 120, "mode": "hold", "at": {"x": 3460, "y": 4720, "z": 93}, "note": "후방 집결지 대기. outage 중이지만 위치는 정의된다"},
+       {"from": 120, "to": 180, "mode": "move", "at": {"x": 3460, "y": 4720, "z": 93},   "to_at": {"x": 9820, "y": 9640, "z": 287}},
+       {"from": 180, "to": 255, "mode": "move", "at": {"x": 9820, "y": 9640, "z": 287},  "to_at": {"x": 16040, "y": 12180, "z": 82}},
+       {"from": 255, "to": 275, "mode": "move", "at": {"x": 16040, "y": 12180, "z": 82}, "to_at": {"x": 17280, "y": 13240, "z": 85}, "note": "TF-VALLEY-B 진입 - L-VHF-FO 의 terrain outage 와 같은 구간"},
+       {"from": 275, "to": 330, "mode": "move", "at": {"x": 17280, "y": 13240, "z": 85},  "to_at": {"x": 18420, "y": 14380, "z": 239}},
+       {"from": 330, "to": 420, "mode": "hold", "at": {"x": 18420, "y": 14380, "z": 239}}
      ]}}
   ],
 
