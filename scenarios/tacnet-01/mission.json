@@ -40,7 +40,7 @@
       "purpose": "로컬 평면을 지도 위젯에 올리기 위한 앵커. 표시 전용이다.",
       "datum": "WGS84",
       "epsg": 4326,
-      "anchor": {"x": 0, "y": 0, "lat": -49.05, "lon": -123.6},
+      "anchor": {"x": 0, "y": 0, "lat": 36.45, "lon": 128.5},
       "rotation_deg": 0,
       "method": "equirectangular-local",
       "formula": {
@@ -55,22 +55,23 @@
         "store": false,
         "display": true,
         "derive_from": "wgs84",
-        "gzd": "10F",
+        "gzd": "52S",
         "default_precision_digits": 8,
-        "note": "MGRS 는 WGS84 datum 기반이라 위경도에서 무손실로 파생된다. 반대로 MGRS 문자열을 정본으로 저장하면 자릿수가 곧 정밀도라 값이 잘리고 격자 경계에서 보간이 깨진다. 그래서 저장은 위경도, 표시는 MGRS 로 나눈다. GZD 는 AO 전체가 UTM zone 10, 위도대 F 에 들어가서 상수다."
+        "note": "MGRS 는 WGS84 datum 기반이라 위경도에서 무손실로 파생된다. 반대로 MGRS 문자열을 정본으로 저장하면 자릿수가 곧 정밀도라 값이 잘리고 격자 경계에서 보간이 깨진다. 그래서 저장은 위경도, 표시는 MGRS 로 나눈다. GZD 는 AO 전체가 UTM zone 52, 위도대 S 에 들어가서 상수다."
       }
     },
 
     "safety": {
       "claim": "이 시나리오의 모든 좌표는 가상이다. 실제 부대 위치·실제 군사시설·실제 지명을 쓰지 않았다.",
       "how": [
-        "앵커를 남태평양 공해 한가운데 무인 해역(육지 접근불가점 인근)에 두었다. AO 24 km x 18 km 전체가 외해상이라 어떤 실제 군사시설과도 겹칠 수 없다.",
-        "가장 가까운 육지까지 수천 km 규모이므로 어느 국가의 영해·EEZ(200 해리) 안에도 들어가지 않는다.",
-        "site 라벨(여단 TOC, 능선 중계소 등)은 전부 일반명사이고 실제 지명이 아니다.",
-        "지형(terrain 블록)은 이 로컬 평면 안에서만 존재하는 창작물이다. 앵커 지점의 실제 해저지형과 무관하다."
+        "앵커(위도 36.45, 경도 128.5)는 한반도 내륙의 일반 산악지대를 임의로 고른 값이다. 실제 부대 배치나 실제 시설 위치에서 유도하지 않았고, 어떤 실제 편성도 참조하지 않았다.",
+        "좌표를 한국으로 둔 것은 지형 감각을 맞추기 위한 것이지 특정 지역을 지목하는 것이 아니다. AO 를 다른 산악지대로 옮겨도 시나리오는 그대로 성립한다.",
+        "site 라벨(여단 TOC, 능선 중계소 등)은 전부 일반명사이고 실제 지명이 아니다. 부대 이름도 여단·대대·중대 같은 제대명뿐이다.",
+        "지형(terrain 블록)은 이 로컬 평면 안에서만 존재하는 창작물이다. 앵커 지점의 실제 지형과 무관하며 실제 지형에서 유도하지도 않았다.",
+        "실제 시설과 우연히 가까워지더라도 이 데이터는 그 시설에 대한 정보를 담고 있지 않다. 담을 수 있는 정보가 없다 - 전부 창작이다."
       ],
       "basemap_policy": "위성영상·실지형 타일을 이 좌표에 깔고 '이 지형이 시나리오 지형'이라고 표시하지 않는다. 지도 레이어는 빈 배경 + 격자 + terrain 블록의 도식만 그린다.",
-      "verification_pending": "'육지 접근불가점 최근접 육지 약 2,700 km' 수치는 2차 출처 기반이며 원문 대조 미완료다. 안전성 논거 자체는 이 수치가 반으로 줄어도 성립한다(200 해리 = 370 km)."
+      "why_not_ocean": "초안은 앵커를 남태평양 공해에 두어 실제 시설과의 중첩 가능성을 원천 차단했다. 그러나 데모에서 지도 뷰가 빈 바다 위 격자가 되어 지형 감각을 전혀 주지 못했다. 지형 감각과 안전성을 맞바꾸는 대신, 좌표를 한반도 내륙으로 옮기고 안전성은 데이터의 성격(전부 창작, 실제 배치 미참조)과 표기로 확보한다."
     },
 
     "terrain": {
@@ -231,22 +232,22 @@
 
   "edges": {
     "requires": [
-      {"from": "T-ORDER",  "to": "S-C2MSG", "w": 1.0},
+      {"from": "T-ORDER",  "to": "S-C2MSG", "w": 1.0, "hard": true},
       {"from": "T-ORDER",  "to": "S-VOICE", "w": 0.6},
-      {"from": "T-BFT",    "to": "S-BFT",   "w": 1.0},
+      {"from": "T-BFT",    "to": "S-BFT",   "w": 1.0, "hard": true},
       {"from": "T-BFT",    "to": "S-C2MSG", "w": 0.5},
-      {"from": "T-SITREP", "to": "S-C2MSG", "w": 1.0},
+      {"from": "T-SITREP", "to": "S-C2MSG", "w": 1.0, "hard": true},
       {"from": "T-SITREP", "to": "S-VOICE", "w": 0.8},
       {"from": "T-SITREP", "to": "S-INTEL", "w": 0.5},
-      {"from": "T-CO1REP", "to": "S-C2MSG", "w": 1.0},
+      {"from": "T-CO1REP", "to": "S-C2MSG", "w": 1.0, "hard": true},
       {"from": "T-CO1REP", "to": "S-VOICE", "w": 0.8},
-      {"from": "T-CO2REP", "to": "S-C2MSG", "w": 1.0},
+      {"from": "T-CO2REP", "to": "S-C2MSG", "w": 1.0, "hard": true},
       {"from": "T-CO2REP", "to": "S-VOICE", "w": 0.8},
-      {"from": "T-CTRL",   "to": "S-C2MSG", "w": 1.0},
+      {"from": "T-CTRL",   "to": "S-C2MSG", "w": 1.0, "hard": true},
       {"from": "T-CTRL",   "to": "S-VOICE", "w": 0.9},
-      {"from": "T-TGT",    "to": "S-FIRE",  "w": 1.0},
+      {"from": "T-TGT",    "to": "S-FIRE",  "w": 1.0, "hard": true},
       {"from": "T-TGT",    "to": "S-VOICE", "w": 0.7},
-      {"from": "T-CFF",    "to": "S-FIRE",  "w": 1.0},
+      {"from": "T-CFF",    "to": "S-FIRE",  "w": 1.0, "hard": true},
       {"from": "T-CFF",    "to": "S-INTEL", "w": 0.5},
       {"from": "T-CFF",    "to": "S-C2MSG", "w": 0.6}
     ],

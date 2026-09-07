@@ -89,15 +89,15 @@
 
   "edges": {
     "requires": [
-      {"from": "T-SITREP", "to": "S-MSG",  "w": 1.0},
+      {"from": "T-SITREP", "to": "S-MSG",  "w": 1.0, "hard": true},
       {"from": "T-SITREP", "to": "S-DIR",  "w": 0.7},
       {"from": "T-SITREP", "to": "S-WEB",  "w": 0.5},
-      {"from": "T-ORDER",  "to": "S-MSG",  "w": 1.0},
+      {"from": "T-ORDER",  "to": "S-MSG",  "w": 1.0, "hard": true},
       {"from": "T-ORDER",  "to": "S-FILE", "w": 0.8},
       {"from": "T-ORDER",  "to": "S-DIR",  "w": 0.7},
-      {"from": "T-REQ",    "to": "S-DB",   "w": 1.0},
+      {"from": "T-REQ",    "to": "S-DB",   "w": 1.0, "hard": true},
       {"from": "T-REQ",    "to": "S-DIR",  "w": 0.6},
-      {"from": "T-ISSUE",  "to": "S-DB",   "w": 1.0},
+      {"from": "T-ISSUE",  "to": "S-DB",   "w": 1.0, "hard": true},
       {"from": "T-ISSUE",  "to": "S-MSG",  "w": 0.7}
     ],
     "provided_by": [

@@ -7,7 +7,7 @@
     "step_label":  "TOC-SRV 장악",
     "method":  "weighted",
     "source":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
-    "generated":  "2026-09-06T23:02:17.8076882+09:00",
+    "generated":  "2026-09-07T09:35:26.8428771+09:00",
     "facts":  [
                   {
                       "id":  "F1",
@@ -20,14 +20,14 @@
                       "id":  "F2",
                       "kind":  "mission_degradation",
                       "subject":  "M-C2",
-                      "text":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 52.63%다",
-                      "value":  0.52631578947368418
+                      "text":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 100%다",
+                      "value":  1
                   },
                   {
                       "id":  "F3",
                       "kind":  "attribution",
                       "subject":  "M-C2",
-                      "text":  "임무 M-C2의 원인 분해: 공격 단독 52.63%, 환경 단독 0%, 상호작용 0%",
+                      "text":  "임무 M-C2의 원인 분해: 공격 단독 100%, 환경 단독 0%, 상호작용 0%",
                       "value":  0
                   },
                   {
@@ -69,8 +69,8 @@
                       "id":  "F9",
                       "kind":  "task_degradation",
                       "subject":  "T-ORDER",
-                      "text":  "작업 T-ORDER(작전명령 하달, 수행 위치 TOC-WS)의 저하도는 62.5%다",
-                      "value":  0.625
+                      "text":  "작업 T-ORDER(작전명령 하달, 수행 위치 TOC-WS)의 저하도는 100%다",
+                      "value":  1
                   },
                   {
                       "id":  "F10",
@@ -83,36 +83,36 @@
                       "id":  "F11",
                       "kind":  "task_degradation",
                       "subject":  "T-SITREP",
-                      "text":  "작업 T-SITREP(상황보고 수신, 수행 위치 TOC-WS)의 저하도는 65.22%다",
-                      "value":  0.65217391304347827
+                      "text":  "작업 T-SITREP(상황보고 수신, 수행 위치 TOC-WS)의 저하도는 100%다",
+                      "value":  1
                   },
                   {
                       "id":  "F12",
                       "kind":  "task_degradation",
                       "subject":  "T-CO1REP",
-                      "text":  "작업 T-CO1REP(1중대 상황보고 발신, 수행 위치 CO1-VEH)의 저하도는 55.56%다",
-                      "value":  0.55555555555555558
+                      "text":  "작업 T-CO1REP(1중대 상황보고 발신, 수행 위치 CO1-VEH)의 저하도는 100%다",
+                      "value":  1
                   },
                   {
                       "id":  "F13",
                       "kind":  "task_degradation",
                       "subject":  "T-CO2REP",
-                      "text":  "작업 T-CO2REP(2중대 상황보고 발신, 수행 위치 CO2-VEH)의 저하도는 80%다",
-                      "value":  0.8
+                      "text":  "작업 T-CO2REP(2중대 상황보고 발신, 수행 위치 CO2-VEH)의 저하도는 100%다",
+                      "value":  1
                   },
                   {
                       "id":  "F14",
                       "kind":  "task_degradation",
                       "subject":  "T-CTRL",
-                      "text":  "작업 T-CTRL(기동 통제, 수행 위치 BN-CP)의 저하도는 52.63%다",
-                      "value":  0.52631578947368418
+                      "text":  "작업 T-CTRL(기동 통제, 수행 위치 BN-CP)의 저하도는 100%다",
+                      "value":  1
                   },
                   {
                       "id":  "F15",
                       "kind":  "task_degradation",
                       "subject":  "T-TGT",
-                      "text":  "작업 T-TGT(표적정보 전달, 수행 위치 FO-TAB)의 저하도는 23.53%다",
-                      "value":  0.23529411764705885
+                      "text":  "작업 T-TGT(표적정보 전달, 수행 위치 FO-TAB)의 저하도는 40%다",
+                      "value":  0.4
                   },
                   {
                       "id":  "F16",

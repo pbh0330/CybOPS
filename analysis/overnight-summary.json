@@ -1,0 +1,15 @@
+{
+    "finished":  "2026-09-07T01:05:55.5767265+09:00",
+    "model_14b":  true,
+    "models_run":  [
+                       "qwen2.5:7b-instruct-q4_K_M",
+                       "qwen2.5:14b-instruct-q4_K_M"
+                   ],
+    "repeats":  3,
+    "seeds":  10,
+    "outputs":  [
+                    "eval/results/briefing-model-comparison.json",
+                    "analysis/redteam/comparison-wide.json"
+                ],
+    "note":  "Unattended run. Results are measurements, not conclusions; read the logs before quoting a number."
+}

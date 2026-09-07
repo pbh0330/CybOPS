@@ -337,10 +337,17 @@ function Get-TaskDegradation($imp, $g, $snap, $method, $hasLinks) {
     if ($t.performed_at) { $consumer = [string]$t.performed_at }
     $svc = Get-ServiceDegFor $imp $g $snap $consumer $hasLinks
     $pairs = @()
+    $hardMax = 0.0
     foreach ($r in @($g.edges.requires | Where-Object { $_.from -eq $t.id })) {
-      $pairs += @{ w = [double]$r.w; v = [double]$svc[$r.to] }
+      $sv = [double]$svc[$r.to]
+      $pairs += @{ w = [double]$r.w; v = $sv }
+      # A hard requirement admits no substitute: losing it loses the task,
+      # whatever else is still up. Averaging it away is how a task that cannot
+      # be performed reports 52% (ADR-0020).
+      if ($r.hard -and $sv -gt $hardMax) { $hardMax = $sv }
     }
     $v = Combine $pairs $method
+    if ($hardMax -gt $v) { $v = $hardMax }
     # The terminal the work is done on is part of the work. A task cannot be
     # performed better than the machine performing it: a compromised or
     # unavailable performer floors the task at its own impact. Without this a

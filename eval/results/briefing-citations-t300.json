@@ -1,6 +1,6 @@
 {
     "check_version":  1,
-    "checked":  "2026-09-06T23:25:12.0497052+09:00",
+    "checked":  "2026-09-07T09:35:26.7950256+09:00",
     "briefing":  "analysis\\briefing\\tacnet-01-t300.ollama.brief.json",
     "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\tacnet-01-t300.pack.json",
     "prompt_version":  "briefing.ko v1",
@@ -10,7 +10,7 @@
     "sentences_total":  4,
     "sentences_cited":  4,
     "citation_rate":  1,
-    "citations_total":  5,
+    "citations_total":  6,
     "abstentions":  0,
     "bogus_citations":  [
 
@@ -35,25 +35,25 @@
                           "no":  1,
                           "cited":  "F1",
                           "abstain":  false,
-                          "text":  "11:00 (t+300분)에 활성 단계는 목표 확보와 화력 유도이다 [F1]."
+                          "text":  "11:00 (t+300분) 시각에 활성 단계는 목표 확보와 화력 유도가 진행 중이다 [F1]."
                       },
                       {
                           "no":  2,
                           "cited":  "F2,F3",
                           "abstain":  false,
-                          "text":  "임무 M-C2의 저하도는 52.63%이며, 이는 상호작용으로 인해 발생한다 [F2][F3]."
+                          "text":  "임무 M-C2(지휘통제)의 저하도는 100%이며, 이는 상호작용으로 인한 것으로 판단된다 [F2][F3]."
                       },
                       {
                           "no":  3,
                           "cited":  "F6",
                           "abstain":  false,
-                          "text":  "링크 L-SAT-TOC가 단절되어 있으며, 원인은 구분 불가하다 [F6]."
+                          "text":  "링크 L-SAT-TOC가 단절되어 있으며, 원인은 미상으로 구분 불가하다 [F6]."
                       },
                       {
                           "no":  4,
-                          "cited":  "F16",
+                          "cited":  "F8,F1",
                           "abstain":  false,
-                          "text":  "BN-SRV의 격리 비용은 0이다 [F16]."
+                          "text":  "BN-SRV 자산의 침해 수준은 100%로, 이는 임무 M-C2의 저하에 큰 영향을 미치고 있다 [F8][F1]."
                       }
                   ]
 }

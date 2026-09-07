@@ -1,0 +1,90 @@
+{
+    "pack_version":  1,
+    "scenario_id":  "tacnet-01",
+    "t":  0,
+    "time_iso":  "2026-09-10T06:00:00.0000000+09:00",
+    "clock":  "06:00",
+    "step_label":  "정상",
+    "method":  "weighted",
+    "source":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
+    "generated":  "2026-09-07T00:57:21.3964884+09:00",
+    "facts":  [
+                  {
+                      "id":  "F1",
+                      "kind":  "time",
+                      "subject":  "tacnet-01",
+                      "text":  "tacnet-01 시각 06:00 (t+0분). 활성 단계: 집결·준비",
+                      "value":  0
+                  },
+                  {
+                      "id":  "F2",
+                      "kind":  "mission_degradation",
+                      "subject":  "M-C2",
+                      "text":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 0%다",
+                      "value":  0
+                  },
+                  {
+                      "id":  "F3",
+                      "kind":  "attribution",
+                      "subject":  "M-C2",
+                      "text":  "임무 M-C2의 원인 분해: 공격 단독 0%, 환경 단독 0%, 상호작용 0%",
+                      "value":  0
+                  },
+                  {
+                      "id":  "F4",
+                      "kind":  "outage_asset",
+                      "subject":  "FO-TAB",
+                      "text":  "자산 FO-TAB이(가) 비가용이다. 원인 기동. 비고: 관측반 미전개 - 표적획득 단계 이전",
+                      "value":  1
+                  },
+                  {
+                      "id":  "F5",
+                      "kind":  "task_degradation",
+                      "subject":  "T-TGT",
+                      "text":  "작업 T-TGT(표적정보 전달, 수행 위치 FO-TAB)의 저하도는 100%다",
+                      "value":  1
+                  },
+                  {
+                      "id":  "F6",
+                      "kind":  "containment_cost",
+                      "subject":  "TOC-SRV",
+                      "text":  "TOC-SRV을(를) 격리해도 임무 저하도는 변하지 않는다(추가 비용 0)",
+                      "value":  0
+                  },
+                  {
+                      "id":  "F7",
+                      "kind":  "containment_cost",
+                      "subject":  "BN-SRV",
+                      "text":  "BN-SRV을(를) 격리해도 임무 저하도는 변하지 않는다(추가 비용 0)",
+                      "value":  0
+                  },
+                  {
+                      "id":  "F8",
+                      "kind":  "containment_cost",
+                      "subject":  "FDC-SRV",
+                      "text":  "FDC-SRV을(를) 격리해도 임무 저하도는 변하지 않는다(추가 비용 0)",
+                      "value":  0
+                  },
+                  {
+                      "id":  "F9",
+                      "kind":  "containment_cost",
+                      "subject":  "RELAY-1",
+                      "text":  "RELAY-1을(를) 격리해도 임무 저하도는 변하지 않는다(추가 비용 0)",
+                      "value":  0
+                  },
+                  {
+                      "id":  "F10",
+                      "kind":  "containment_cost",
+                      "subject":  "SAT-TERM",
+                      "text":  "SAT-TERM을(를) 격리해도 임무 저하도는 변하지 않는다(추가 비용 0)",
+                      "value":  0
+                  },
+                  {
+                      "id":  "F11",
+                      "kind":  "containment_cost",
+                      "subject":  "CO2-VEH",
+                      "text":  "CO2-VEH을(를) 격리해도 임무 저하도는 변하지 않는다(추가 비용 0)",
+                      "value":  0
+                  }
+              ]
+}

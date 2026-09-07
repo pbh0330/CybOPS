@@ -175,8 +175,13 @@ function taskDegradation(imp, g, snap, method) {
   for (const t of g.tasks || []) {
     const consumer = t.performed_at || null
     const svc = serviceDegFor(imp, g, snap, consumer)
-    const pairs = requires.filter((r) => r.from === t.id).map((r) => ({ w: Number(r.w), v: Number(svc[r.to] || 0) }))
+    const reqs = requires.filter((r) => r.from === t.id)
+    const pairs = reqs.map((r) => ({ w: Number(r.w), v: Number(svc[r.to] || 0) }))
     let v = combine(pairs, method)
+    // A hard requirement admits no substitute: losing it loses the task, no
+    // matter what else is still up (ADR-0020).
+    const hardMax = reqs.reduce((m, r) => (r.hard ? Math.max(m, Number(svc[r.to] || 0)) : m), 0)
+    if (hardMax > v) v = hardMax
     if (consumer && imp[consumer] > v) v = Number(imp[consumer])
     task[t.id] = v
   }

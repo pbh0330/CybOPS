@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-09-07T00:06:13.3759678+09:00",
+    "generated":  "2026-09-07T09:32:03.2535273+09:00",
     "generator":  "scripts/Export-ReplayData.ps1",
     "contract":  1,
     "note":  "Precomputed by the deterministic engine. The UI displays these numbers and never recomputes them (ADR-0003).",
@@ -367,7 +367,8 @@
                                                  {
                                                      "from":  "T-SITREP",
                                                      "to":  "S-MSG",
-                                                     "w":  1.0
+                                                     "w":  1.0,
+                                                     "hard":  true
                                                  },
                                                  {
                                                      "from":  "T-SITREP",
@@ -382,7 +383,8 @@
                                                  {
                                                      "from":  "T-ORDER",
                                                      "to":  "S-MSG",
-                                                     "w":  1.0
+                                                     "w":  1.0,
+                                                     "hard":  true
                                                  },
                                                  {
                                                      "from":  "T-ORDER",
@@ -397,7 +399,8 @@
                                                  {
                                                      "from":  "T-REQ",
                                                      "to":  "S-DB",
-                                                     "w":  1.0
+                                                     "w":  1.0,
+                                                     "hard":  true
                                                  },
                                                  {
                                                      "from":  "T-REQ",
@@ -407,7 +410,8 @@
                                                  {
                                                      "from":  "T-ISSUE",
                                                      "to":  "S-DB",
-                                                     "w":  1.0
+                                                     "w":  1.0,
+                                                     "hard":  true
                                                  },
                                                  {
                                                      "from":  "T-ISSUE",
@@ -695,11 +699,11 @@
                                               },
                                      "MAIL01":  {
                                                     "mission":  {
-                                                                    "M-C2":  0.42727272727272725,
+                                                                    "M-C2":  1,
                                                                     "M-LOG":  0.21799307958477507
                                                                 },
                                                     "delta":  {
-                                                                  "M-C2":  0.427273,
+                                                                  "M-C2":  1,
                                                                   "M-LOG":  0.217993
                                                               }
                                                 }

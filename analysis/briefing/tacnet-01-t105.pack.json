@@ -1,117 +1,117 @@
 {
     "pack_version":  1,
     "scenario_id":  "tacnet-01",
-    "t":  120,
-    "time_iso":  "2026-09-10T08:00:00.0000000+09:00",
-    "clock":  "08:00",
+    "t":  105,
+    "time_iso":  "2026-09-10T07:45:00.0000000+09:00",
+    "clock":  "07:45",
     "step_label":  "정상",
     "method":  "weighted",
     "source":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
-    "generated":  "2026-09-07T09:35:04.7111905+09:00",
+    "generated":  "2026-09-07T00:57:21.4981255+09:00",
     "facts":  [
                   {
                       "id":  "F1",
                       "kind":  "time",
                       "subject":  "tacnet-01",
-                      "text":  "tacnet-01 시각 08:00 (t+120분). 활성 단계: 기동, 표적 획득",
-                      "value":  120
+                      "text":  "tacnet-01 시각 07:45 (t+105분). 활성 단계: 기동",
+                      "value":  105
                   },
                   {
                       "id":  "F2",
                       "kind":  "mission_degradation",
                       "subject":  "M-C2",
-                      "text":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 79.04%다",
-                      "value":  0.79037267080745333
+                      "text":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 59.99%다",
+                      "value":  0.59989648033126275
                   },
                   {
                       "id":  "F3",
                       "kind":  "attribution",
                       "subject":  "M-C2",
-                      "text":  "임무 M-C2의 원인 분해: 공격 단독 0%, 환경 단독 79.04%, 상호작용 0%",
+                      "text":  "임무 M-C2의 원인 분해: 공격 단독 0%, 환경 단독 59.99%, 상호작용 0%",
                       "value":  0
                   },
                   {
                       "id":  "F4",
-                      "kind":  "mission_degradation",
-                      "subject":  "M-FIRE",
-                      "text":  "임무 M-FIRE(화력지원, 우선순위 2)의 저하도는 0%다",
-                      "value":  0
-                  },
-                  {
-                      "id":  "F5",
-                      "kind":  "attribution",
-                      "subject":  "M-FIRE",
-                      "text":  "임무 M-FIRE의 원인 분해: 공격 단독 0%, 환경 단독 0%, 상호작용 0%",
-                      "value":  0
-                  },
-                  {
-                      "id":  "F6",
                       "kind":  "outage_asset",
                       "subject":  "BN-SRV",
                       "text":  "자산 BN-SRV이(가) 비가용이다. 원인 기동. 비고: 지휘소 이동(철수-전개)",
                       "value":  1
                   },
                   {
-                      "id":  "F7",
+                      "id":  "F5",
                       "kind":  "outage_asset",
                       "subject":  "BN-CP",
                       "text":  "자산 BN-CP이(가) 비가용이다. 원인 기동. 비고: 지휘소 이동(철수-전개)",
                       "value":  1
                   },
                   {
-                      "id":  "F8",
+                      "id":  "F6",
                       "kind":  "outage_asset",
                       "subject":  "SAT-TERM",
                       "text":  "자산 SAT-TERM이(가) 비가용이다. 원인 기동. 비고: 위성단말 철수-재전개",
                       "value":  1
                   },
                   {
-                      "id":  "F9",
+                      "id":  "F7",
+                      "kind":  "outage_asset",
+                      "subject":  "FO-TAB",
+                      "text":  "자산 FO-TAB이(가) 비가용이다. 원인 기동. 비고: 관측반 미전개 - 표적획득 단계 이전",
+                      "value":  1
+                  },
+                  {
+                      "id":  "F8",
                       "kind":  "task_degradation",
                       "subject":  "T-ORDER",
                       "text":  "작업 T-ORDER(작전명령 하달, 수행 위치 TOC-WS)의 저하도는 37.5%다",
                       "value":  0.37499999999999994
                   },
                   {
-                      "id":  "F10",
+                      "id":  "F9",
                       "kind":  "task_degradation",
                       "subject":  "T-BFT",
                       "text":  "작업 T-BFT(부대 위치 파악, 수행 위치 BN-CP)의 저하도는 100%다",
                       "value":  1
                   },
                   {
-                      "id":  "F11",
+                      "id":  "F10",
                       "kind":  "task_degradation",
                       "subject":  "T-SITREP",
                       "text":  "작업 T-SITREP(상황보고 수신, 수행 위치 TOC-WS)의 저하도는 34.78%다",
                       "value":  0.34782608695652178
                   },
                   {
-                      "id":  "F12",
+                      "id":  "F11",
                       "kind":  "task_degradation",
                       "subject":  "T-CO1REP",
-                      "text":  "작업 T-CO1REP(1중대 상황보고 발신, 수행 위치 CO1-VEH)의 저하도는 100%다",
-                      "value":  1
+                      "text":  "작업 T-CO1REP(1중대 상황보고 발신, 수행 위치 CO1-VEH)의 저하도는 55.56%다",
+                      "value":  0.55555555555555558
+                  },
+                  {
+                      "id":  "F12",
+                      "kind":  "task_degradation",
+                      "subject":  "T-CO2REP",
+                      "text":  "작업 T-CO2REP(2중대 상황보고 발신, 수행 위치 CO2-VEH)의 저하도는 55.56%다",
+                      "value":  0.55555555555555558
                   },
                   {
                       "id":  "F13",
-                      "kind":  "task_degradation",
-                      "subject":  "T-CO2REP",
-                      "text":  "작업 T-CO2REP(2중대 상황보고 발신, 수행 위치 CO2-VEH)의 저하도는 100%다",
-                      "value":  1
-                  },
-                  {
-                      "id":  "F14",
                       "kind":  "task_degradation",
                       "subject":  "T-CTRL",
                       "text":  "작업 T-CTRL(기동 통제, 수행 위치 BN-CP)의 저하도는 100%다",
                       "value":  1
                   },
                   {
+                      "id":  "F14",
+                      "kind":  "task_degradation",
+                      "subject":  "T-TGT",
+                      "text":  "작업 T-TGT(표적정보 전달, 수행 위치 FO-TAB)의 저하도는 100%다",
+                      "value":  1
+                  },
+                  {
                       "id":  "F15",
                       "kind":  "containment_cost",
                       "subject":  "TOC-SRV",
-                      "text":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-C2 +21.0%p, M-FIRE +40.0%p 변한다",
+                      "text":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-C2 +21.0%p 변한다",
                       "value":  1
                   },
                   {
@@ -125,14 +125,14 @@
                       "id":  "F17",
                       "kind":  "containment_cost",
                       "subject":  "FDC-SRV",
-                      "text":  "FDC-SRV을(를) 격리하면 임무 저하도가 M-FIRE +100.0%p 변한다",
-                      "value":  1
+                      "text":  "FDC-SRV을(를) 격리해도 임무 저하도는 변하지 않는다(추가 비용 0)",
+                      "value":  0
                   },
                   {
                       "id":  "F18",
                       "kind":  "containment_cost",
                       "subject":  "RELAY-1",
-                      "text":  "RELAY-1을(를) 격리하면 임무 저하도가 M-FIRE +41.2%p 변한다",
+                      "text":  "RELAY-1을(를) 격리하면 임무 저하도가 M-C2 +19.0%p 변한다",
                       "value":  1
                   },
                   {
@@ -146,8 +146,8 @@
                       "id":  "F20",
                       "kind":  "containment_cost",
                       "subject":  "CO2-VEH",
-                      "text":  "CO2-VEH을(를) 격리해도 임무 저하도는 변하지 않는다(추가 비용 0)",
-                      "value":  0
+                      "text":  "CO2-VEH을(를) 격리하면 임무 저하도가 M-C2 +9.5%p 변한다",
+                      "value":  1
                   }
               ]
 }

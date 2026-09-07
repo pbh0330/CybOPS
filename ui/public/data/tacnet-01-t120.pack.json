@@ -7,7 +7,7 @@
     "step_label":  "정상",
     "method":  "weighted",
     "source":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
-    "generated":  "2026-09-06T23:02:12.4873801+09:00",
+    "generated":  "2026-09-07T09:35:04.7111905+09:00",
     "facts":  [
                   {
                       "id":  "F1",
@@ -20,14 +20,14 @@
                       "id":  "F2",
                       "kind":  "mission_degradation",
                       "subject":  "M-C2",
-                      "text":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 59.99%다",
-                      "value":  0.59989648033126275
+                      "text":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 79.04%다",
+                      "value":  0.79037267080745333
                   },
                   {
                       "id":  "F3",
                       "kind":  "attribution",
                       "subject":  "M-C2",
-                      "text":  "임무 M-C2의 원인 분해: 공격 단독 0%, 환경 단독 59.99%, 상호작용 0%",
+                      "text":  "임무 M-C2의 원인 분해: 공격 단독 0%, 환경 단독 79.04%, 상호작용 0%",
                       "value":  0
                   },
                   {
@@ -90,15 +90,15 @@
                       "id":  "F12",
                       "kind":  "task_degradation",
                       "subject":  "T-CO1REP",
-                      "text":  "작업 T-CO1REP(1중대 상황보고 발신, 수행 위치 CO1-VEH)의 저하도는 55.56%다",
-                      "value":  0.55555555555555558
+                      "text":  "작업 T-CO1REP(1중대 상황보고 발신, 수행 위치 CO1-VEH)의 저하도는 100%다",
+                      "value":  1
                   },
                   {
                       "id":  "F13",
                       "kind":  "task_degradation",
                       "subject":  "T-CO2REP",
-                      "text":  "작업 T-CO2REP(2중대 상황보고 발신, 수행 위치 CO2-VEH)의 저하도는 55.56%다",
-                      "value":  0.55555555555555558
+                      "text":  "작업 T-CO2REP(2중대 상황보고 발신, 수행 위치 CO2-VEH)의 저하도는 100%다",
+                      "value":  1
                   },
                   {
                       "id":  "F14",
@@ -111,7 +111,7 @@
                       "id":  "F15",
                       "kind":  "containment_cost",
                       "subject":  "TOC-SRV",
-                      "text":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-C2 +21.0%p, M-FIRE +23.5%p 변한다",
+                      "text":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-C2 +21.0%p, M-FIRE +40.0%p 변한다",
                       "value":  1
                   },
                   {
@@ -125,14 +125,14 @@
                       "id":  "F17",
                       "kind":  "containment_cost",
                       "subject":  "FDC-SRV",
-                      "text":  "FDC-SRV을(를) 격리하면 임무 저하도가 M-FIRE +58.8%p 변한다",
+                      "text":  "FDC-SRV을(를) 격리하면 임무 저하도가 M-FIRE +100.0%p 변한다",
                       "value":  1
                   },
                   {
                       "id":  "F18",
                       "kind":  "containment_cost",
                       "subject":  "RELAY-1",
-                      "text":  "RELAY-1을(를) 격리하면 임무 저하도가 M-C2 +19.0%p, M-FIRE +41.2%p 변한다",
+                      "text":  "RELAY-1을(를) 격리하면 임무 저하도가 M-FIRE +41.2%p 변한다",
                       "value":  1
                   },
                   {
@@ -146,8 +146,8 @@
                       "id":  "F20",
                       "kind":  "containment_cost",
                       "subject":  "CO2-VEH",
-                      "text":  "CO2-VEH을(를) 격리하면 임무 저하도가 M-C2 +9.5%p 변한다",
-                      "value":  1
+                      "text":  "CO2-VEH을(를) 격리해도 임무 저하도는 변하지 않는다(추가 비용 0)",
+                      "value":  0
                   }
               ]
 }
