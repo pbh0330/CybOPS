@@ -13,6 +13,7 @@ import { buildElements, stylesheet, LAYOUTS, CAUSE_COLOR, degColor } from './gra
 import { runStep, containmentCandidates } from './engine.js'
 import { createEditor } from './editor.js'
 import { deviceIconDataUri, iconSvgMarkup, serviceIconSvgMarkup } from './icons.js'
+import { renderGeo } from './geo.js'
 
 cytoscape.use(dagre)
 
@@ -34,6 +35,7 @@ const el = {
   phaseLine: document.getElementById('phase-line'),
   play: document.getElementById('play'),
   legend: document.getElementById('legend'),
+  geo: document.getElementById('geo'),
   fit: document.getElementById('fit-btn'),
   labels: document.getElementById('toggle-labels'),
   palette: document.getElementById('palette'),
@@ -274,8 +276,24 @@ function applyViewVisibility() {
 
 function storageKey() { return `mccycop:edit:${payload?.scenario_id}` }
 
+// Cheap fingerprint of the shipped graph. A saved edit belongs to the version
+// it was made against: when the scenario itself changes underneath it, keeping
+// the edit silently replaces the new data with the old and nobody is told.
+// That happened with the geo layer - the map came up empty because a saved
+// edit from before geo existed was shadowing it.
+function graphStamp(g) {
+  const s = JSON.stringify(g)
+  let h = 2166136261
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) }
+  return `${s.length}:${(h >>> 0).toString(36)}`
+}
+
 function persistEdits() {
-  try { localStorage.setItem(storageKey(), JSON.stringify(graph)) } catch { /* private mode */ }
+  try {
+    localStorage.setItem(storageKey(), JSON.stringify({
+      base: graphStamp(payload.graph), scenario_id: payload.scenario_id, graph,
+    }))
+  } catch { /* private mode */ }
 }
 
 function restoreEdits(id) {
@@ -283,8 +301,16 @@ function restoreEdits(id) {
     const raw = localStorage.getItem(`mccycop:edit:${id}`)
     if (!raw) return
     const saved = JSON.parse(raw)
-    if (saved && saved.scenario_id === id) {
-      graph = saved
+    // older format stored the bare graph; treat it as belonging to an unknown
+    // version and drop it rather than guess
+    const savedGraph = saved && saved.graph ? saved.graph : null
+    if (!savedGraph || saved.base !== graphStamp(payload.graph)) {
+      localStorage.removeItem(`mccycop:edit:${id}`)
+      setTimeout(() => toast('시나리오가 갱신되어 저장된 편집본을 버렸다'), 800)
+      return
+    }
+    if (savedGraph.scenario_id === id) {
+      graph = savedGraph
       edited = true
     }
   } catch { /* ignore */ }
@@ -480,6 +506,13 @@ function stopPlay() {
 
 function applyView(v) {
   view = v
+  // the geo pane is a different drawing with different axes: metres, not
+  // dependency. Sharing one canvas would make two meanings share one set of
+  // coordinates, so it gets its own element and the graph is hidden.
+  const isGeo = v === 'geo'
+  el.cy.hidden = isGeo
+  el.geo.hidden = !isGeo
+  if (isGeo) { renderGeoPane(); return }
   if (!cy) return
   const transport = cy.edges('.transport')
   const structural = cy.edges().not('.transport')
@@ -548,6 +581,8 @@ function render() {
     }
   })
   startFlow()
+
+  if (view === 'geo') renderGeoPane(s)
 
   renderMissions(s)
   renderCuts(s, assetOut, linkOut)
@@ -787,6 +822,38 @@ function renderBrief(s) {
       })
     }
   })
+}
+
+// The map view. Secondary by construction (ADR-0001): it draws positions the
+// engine never reads, which Test-GeoInvariance.ps1 asserts on every run.
+function renderGeoPane(step) {
+  const s = step || currentStep()
+  if (!s) return
+  const w = el.geo.clientWidth || 900
+  const h = el.geo.clientHeight || 560
+  el.geo.innerHTML = renderGeo({
+    graph,
+    step: s,
+    width: w,
+    height: h,
+    causeColor: CAUSE_COLOR,
+    iconFor: (type, state) => deviceIconDataUri(type, {
+      size: 22,
+      color: state === 'attack' ? '#ffb4ba' : state === 'outage' ? '#93a6ba' : '#e6f0fb',
+    }),
+    selected: cy && cy.$(':selected').length ? cy.$(':selected').first().id() : null,
+  })
+  for (const g of el.geo.querySelectorAll('.geo-node')) {
+    g.addEventListener('click', () => {
+      const id = g.dataset.asset
+      if (cy && cy.$id(id).length) {
+        cy.$(':selected').unselect()
+        cy.$id(id).select()
+        inspect(cy.$id(id))
+        renderGeoPane()
+      }
+    })
+  }
 }
 
 function renderCuts(s, assetOut, linkOut) {

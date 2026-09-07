@@ -39,6 +39,7 @@
           <div class="graph-toolbar">
             <button type="button" data-view="dependency" class="view-btn is-on">임무 의존</button>
             <button type="button" data-view="transport" class="view-btn">전송로</button>
+            <button type="button" data-view="geo" class="view-btn">지리</button>
             <span class="tool-sep" data-edit-only hidden></span>
             <button type="button" class="tool-btn is-on" data-tool="select" data-edit-only hidden>선택</button>
             <button type="button" class="tool-btn" data-tool="link" data-edit-only hidden>연결</button>
@@ -53,6 +54,7 @@
             <button type="button" id="fit-btn">화면 맞춤</button>
           </div>
           <div id="cy"></div>
+          <div id="geo" class="geo-pane" hidden></div>
           <details class="legend" id="legend-box">
             <summary>범례</summary>
             <div class="legend-body" id="legend"></div>
