@@ -307,3 +307,37 @@ Drive 는 체크섬을 주지 않으므로 대조할 상대도 없다.
 
 `docs/05-data-lifecycle.md` 의 VERIFY 게이트에 이 항목이 이미 있었다("크기만 믿지
 않는다"). 이번에는 그 게이트를 통과시키는 스크립트 자체가 크기만 보고 있었다.
+
+### 최종 상태 (2026-09-07 16:02)
+
+수리 후 전수 재검증했다.
+
+```
+Test-GzipIntegrity.ps1 -Path F:\mc-cycop-data\raw\optc -NoHash -ExpectedLastTimestamp 0
+  900 files, gzip OK 900, FAILED 0
+  All files passed gzip integrity check.
+
+Write-OptcManifestLog.ps1
+  _acquired.jsonl        907 line(s)
+  distinct rel_path      901   (superseded by re-fetch: 6)
+  present on disk        901
+  missing from disk        0
+  size mismatch            0
+  records without sha256   0
+  bytes accounted for  41.30 GB
+  RESULT: PASS
+```
+
+`configs/manifests/optc.json` 의 `acquisition_log` 에 901건이 들어갔고 `status` 는
+`acquired (phases 1,2,6)` 다. 파일별 Drive id, 바이트 수, SHA256, phase, 취득 시각이
+전부 있다. **원본을 지워도 이것으로 재취득하고 대조할 수 있다**(ADR-0010).
+
+두 가지 기록:
+
+- **`_acquired.jsonl` 은 append-only 라 907줄이고 rel_path 는 901개다.** 재취득한 6개가
+  두 번씩 들어 있고, 옛 레코드의 SHA256 은 HTML 섞인 파일의 해시다.
+  `Write-OptcManifestLog.ps1` 이 rel_path 별 최신 레코드만 남긴다.
+- **900개 중 6개는 gzip 으로는 정상인데 해제하면 0 바이트다.** 그 시간대에 트래픽이
+  없었던 bro 캡처 창이고 손상이 아니다. 매니페스트에 `files_empty: 6` 으로 따로
+  적는다 - 파일 수를 데이터 수로 착각하지 않으려고 세는 것이다.
+- 사고 당시 로그는 `_gzipcheck-2026-09-07-incident.log` 로 남겼다.

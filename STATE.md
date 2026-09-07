@@ -6,12 +6,12 @@
 
 | | |
 |---|---|
-| 데이터 | LANL **5/5 완료·검증**, AIT **1/8 완료(의도된 범위)**, OpTC **취득 완료 41.3GB(Phase 1,2,6)** - 매니페스트 기록 미완 |
+| 데이터 | LANL **5/5 완료·검증**, AIT **1/8 완료(의도된 범위)**, OpTC **41.3GB 취득·검증·매니페스트 완료(Phase 1,2,6)** |
 | 라벨 | 세 데이터셋 모두 확보. OpTC는 PDF→JSONL 구조화 완료(101건, 미분류 0) |
 | 결정 | **Q1~Q6 전부 확정**(ADR-0012~0018). 미결 없음 |
 | 모델 | **시간축 온톨로지 완료**(ADR-0017) - `scenarios/tacnet-01/`, 원인 분해 동작 |
 | UI | **동작함**. `ui/` Vite + Cytoscape 정적 번들. 3뷰(의존/전송로/지리), 2D-3D 지형면, 편집, **교전(워게임) 턴** |
-| 다음 | OpTC 매니페스트 기록 → 탐지 실험 E1 → 서버 호스팅 |
+| 다음 | 탐지 실험 E1 → 서버 호스팅 |
 | 도구 | Figma pro/Full 좌석. Node 24.20.0 **포터블 설치**, Python 3.12, Git 2.55 |
 
 ## 위치
@@ -58,7 +58,7 @@ Git이 그 안을 보지 않아 `!data/README.md` 예외가 무시된다. 첫 �
 데모는 돌아간다. 상황도 UI 3뷰 + 지형면 + 편집 + 교전(워게임) 턴까지 동작하고,
 결정론 엔진·JS 포팅·패리티 검사·LLM 브리핑·적대자 비교가 모두 붙어 있다.
 데이터는 **LANL 5/5, AIT 1/8(의도된 범위), OpTC 41.3GB 취득 완료**.
-남은 큰 것은 **OpTC 매니페스트 기록**과 **탐지 실험 E1**, 그리고 서버 호스팅이다.
+남은 큰 것은 **탐지 실험 E1** 과 서버 호스팅이다.
 
 ## 지금 당장 돌려볼 수 있는 것
 
@@ -471,10 +471,17 @@ PowerShell 참조 구현은 그대로 유지한다. 대용량 스캔은 PowerShe
   `_fetch.log` 마지막 줄 `0 file(s) incomplete`, `_acquired.jsonl` 901줄(파일별 SHA256 포함).
 - OpTC 후처리 (아래 "지금 밀려 있는 것" 참조)
 
-**지금 밀려 있는 것 (규칙상 이미 했어야 하는 것)**
-- **`configs/manifests/optc.json` 의 `acquisition_log` 가 아직 `[]` 다.** 41.3 GB를 받아놓고
-  출처·해시 기록이 비어 있다. CLAUDE.md "취득 즉시 MANIFEST.json을 쓴다" 위반 상태다.
-  `.\scripts\Write-OptcManifestLog.ps1` 이 `_acquired.jsonl` 을 디스크와 대조해 옮긴다.
+**OpTC 후처리 - 완료 (2026-09-07 16:02)**
+
+```
+Test-GzipIntegrity  900 files, OK 900, FAILED 0
+Write-OptcManifestLog  901 rel_path, 디스크 대조 PASS, 41.30 GB
+configs/manifests/optc.json  acquisition_log 901건, status "acquired (phases 1,2,6)"
+```
+
+파일별 Drive id · 바이트 수 · SHA256 · phase · 취득 시각이 매니페스트에 들어갔다.
+원본을 지워도 재취득하고 대조할 수 있다(ADR-0010). 재검증:
+`.\scripts\Write-OptcManifestLog.ps1 -Check` (어긋나면 exit 1)
 
 > ### ⚠ 2026-09-07: 다운로드 6개가 HTML 에러 페이지였다
 >
