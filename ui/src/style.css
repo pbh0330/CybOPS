@@ -560,3 +560,19 @@ body .geo-canvas:active { cursor: grabbing; }
 .wg-log-tag { margin-left: auto; font-size: 10px; color: var(--fg-dim); }
 .wg-log-row.is-hit .wg-log-tag { color: var(--attack); }
 .wg-log-row.is-def .wg-log-tag { color: var(--mobility); }
+
+.wg-llm-note {
+  border: 1px solid rgba(255,176,32,.3); border-left: 3px solid var(--unknown);
+  border-radius: 6px; padding: 7px 10px; margin-bottom: 10px;
+  font-size: 11.5px; color: var(--unknown); background: rgba(255,176,32,.06);
+}
+.wg-llm-note span { display: block; color: var(--fg-dim); margin-top: 3px; font-size: 11px; line-height: 1.5; }
+
+/* Facility layout (defnet-01). Assets indoors, so the map draws buildings
+   rather than terrain: what matters is which block a redundant pair sits in. */
+.fac-wall { fill: rgba(44,58,76,.55); stroke: rgba(120,150,185,.35); stroke-width: .8; }
+.fac-roof { fill: rgba(58,76,98,.5); stroke: rgba(140,175,210,.5); stroke-width: 1.2; }
+.fac-label {
+  fill: #a9bdd2; font-size: 10px; text-anchor: middle;
+  paint-order: stroke; stroke: rgba(5,7,11,.8); stroke-width: 3px;
+}

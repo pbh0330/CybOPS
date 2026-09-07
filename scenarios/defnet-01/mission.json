@@ -46,23 +46,69 @@
   "_transit_note": "transit=false 인 자산은 종단 단말이다. 자기 트래픽만 주고받고 남의 트래픽을 중계하지 않는다(ADR-0017 5항). 워크스테이션만 false 이고 서버·하이퍼바이저·방화벽·스위치는 true 다. 생략 시 기본값은 true 다.",
 
   "assets": [
-    {"id": "DC01",   "type": "domain-controller", "unit": "U-HQ",  "site": "본부 전산실", "os": "windows-server", "transit": true},
-    {"id": "DC02",   "type": "domain-controller", "unit": "U-HQ",  "site": "예비 전산실", "os": "windows-server", "transit": true},
-    {"id": "MAIL01", "type": "mail-server",       "unit": "U-HQ",  "site": "본부 전산실", "os": "linux",          "transit": true},
-    {"id": "FS01",   "type": "file-server",       "unit": "U-HQ",  "site": "본부 전산실", "os": "windows-server", "transit": true},
-    {"id": "DB01",   "type": "database",          "unit": "U-LOG", "site": "본부 전산실", "os": "linux",          "transit": true},
-    {"id": "DB02",   "type": "database",          "unit": "U-LOG", "site": "예비 전산실", "os": "linux",          "transit": true},
-    {"id": "WEB01",  "type": "web-server",        "unit": "U-HQ",  "site": "본부 전산실", "os": "linux",          "transit": true},
-    {"id": "ESX01",  "type": "hypervisor",        "unit": "U-HQ",  "site": "본부 전산실", "os": "esxi",           "transit": true},
-    {"id": "ESX02",  "type": "hypervisor",        "unit": "U-HQ",  "site": "예비 전산실", "os": "esxi",           "transit": true},
-    {"id": "FW01",   "type": "firewall",          "unit": "U-HQ",  "site": "본부 전산실", "os": "appliance",      "transit": true},
-    {"id": "SW01",   "type": "switch",            "unit": "U-HQ",  "site": "본부 전산실", "os": "appliance",      "transit": true},
-    {"id": "WKS001", "type": "workstation",       "unit": "U-HQ",  "site": "지휘소",     "os": "windows",        "transit": false},
-    {"id": "WKS002", "type": "workstation",       "unit": "U-HQ",  "site": "지휘소",     "os": "windows",        "transit": false},
-    {"id": "WKS003", "type": "workstation",       "unit": "U-1BN", "site": "1대대",      "os": "windows",        "transit": false},
-    {"id": "WKS004", "type": "workstation",       "unit": "U-1BN", "site": "1대대",      "os": "windows",        "transit": false},
-    {"id": "WKS005", "type": "workstation",       "unit": "U-LOG", "site": "군수대대",   "os": "windows",        "transit": false}
+    {"id": "DC01",   "type": "domain-controller", "unit": "U-HQ",  "site": "본부 전산실", "os": "windows-server", "transit": true, "geo": {"kind": "fixed", "frame": "FACGRID-01", "source": "asset-register", "building": "B-DC", "floor": 1, "at": {"x": 182, "y": 140, "z": 1}}},
+    {"id": "DC02",   "type": "domain-controller", "unit": "U-HQ",  "site": "예비 전산실", "os": "windows-server", "transit": true, "geo": {"kind": "fixed", "frame": "FACGRID-01", "source": "asset-register", "building": "B-DR", "floor": 1, "at": {"x": 252, "y": 55, "z": 1}}},
+    {"id": "MAIL01", "type": "mail-server",       "unit": "U-HQ",  "site": "본부 전산실", "os": "linux",          "transit": true, "geo": {"kind": "fixed", "frame": "FACGRID-01", "source": "asset-register", "building": "B-DC", "floor": 1, "at": {"x": 194, "y": 140, "z": 1}}},
+    {"id": "FS01",   "type": "file-server",       "unit": "U-HQ",  "site": "본부 전산실", "os": "windows-server", "transit": true, "geo": {"kind": "fixed", "frame": "FACGRID-01", "source": "asset-register", "building": "B-DC", "floor": 1, "at": {"x": 170, "y": 158, "z": 1}}},
+    {"id": "DB01",   "type": "database",          "unit": "U-LOG", "site": "본부 전산실", "os": "linux",          "transit": true, "geo": {"kind": "fixed", "frame": "FACGRID-01", "source": "asset-register", "building": "B-DC", "floor": 1, "at": {"x": 182, "y": 158, "z": 1}}},
+    {"id": "DB02",   "type": "database",          "unit": "U-LOG", "site": "예비 전산실", "os": "linux",          "transit": true, "geo": {"kind": "fixed", "frame": "FACGRID-01", "source": "asset-register", "building": "B-DR", "floor": 1, "at": {"x": 266, "y": 55, "z": 1}}},
+    {"id": "WEB01",  "type": "web-server",        "unit": "U-HQ",  "site": "본부 전산실", "os": "linux",          "transit": true, "geo": {"kind": "fixed", "frame": "FACGRID-01", "source": "asset-register", "building": "B-DC", "floor": 1, "at": {"x": 194, "y": 158, "z": 1}}},
+    {"id": "ESX01",  "type": "hypervisor",        "unit": "U-HQ",  "site": "본부 전산실", "os": "esxi",           "transit": true, "geo": {"kind": "fixed", "frame": "FACGRID-01", "source": "asset-register", "building": "B-DC", "floor": 1, "at": {"x": 170, "y": 140, "z": 1}}},
+    {"id": "ESX02",  "type": "hypervisor",        "unit": "U-HQ",  "site": "예비 전산실", "os": "esxi",           "transit": true, "geo": {"kind": "fixed", "frame": "FACGRID-01", "source": "asset-register", "building": "B-DR", "floor": 1, "at": {"x": 280, "y": 55, "z": 1}}},
+    {"id": "FW01",   "type": "firewall",          "unit": "U-HQ",  "site": "본부 전산실", "os": "appliance",      "transit": true, "geo": {"kind": "fixed", "frame": "FACGRID-01", "source": "asset-register", "building": "B-DC", "floor": 1, "at": {"x": 150, "y": 132, "z": 1}}},
+    {"id": "SW01",   "type": "switch",            "unit": "U-HQ",  "site": "본부 전산실", "os": "appliance",      "transit": true, "geo": {"kind": "fixed", "frame": "FACGRID-01", "source": "asset-register", "building": "B-DC", "floor": 1, "at": {"x": 158, "y": 132, "z": 1}}},
+    {"id": "WKS001", "type": "workstation",       "unit": "U-HQ",  "site": "지휘소",     "os": "windows",        "transit": false, "geo": {"kind": "fixed", "frame": "FACGRID-01", "source": "asset-register", "building": "B-HQ", "floor": 2, "at": {"x": 45, "y": 140, "z": 4.6}}},
+    {"id": "WKS002", "type": "workstation",       "unit": "U-HQ",  "site": "지휘소",     "os": "windows",        "transit": false, "geo": {"kind": "fixed", "frame": "FACGRID-01", "source": "asset-register", "building": "B-HQ", "floor": 2, "at": {"x": 62, "y": 140, "z": 4.6}}},
+    {"id": "WKS003", "type": "workstation",       "unit": "U-1BN", "site": "1대대",      "os": "windows",        "transit": false, "geo": {"kind": "fixed", "frame": "FACGRID-01", "source": "asset-register", "building": "B-1BN", "floor": 2, "at": {"x": 50, "y": 45, "z": 4.6}}},
+    {"id": "WKS004", "type": "workstation",       "unit": "U-1BN", "site": "1대대",      "os": "windows",        "transit": false, "geo": {"kind": "fixed", "frame": "FACGRID-01", "source": "asset-register", "building": "B-1BN", "floor": 2, "at": {"x": 75, "y": 45, "z": 4.6}}},
+    {"id": "WKS005", "type": "workstation",       "unit": "U-LOG", "site": "군수대대",   "os": "windows",        "transit": false, "geo": {"kind": "fixed", "frame": "FACGRID-01", "source": "asset-register", "building": "B-LOG", "floor": 2, "at": {"x": 150, "y": 42, "z": 4.6}}}
   ],
+
+  "geo": {
+    "_role": "보조 레이어다. 기본 뷰는 임무-자산 의존성 그래프다(ADR-0001). 저하도·우선순위·색상 등급 어느 것도 이 블록을 읽지 않는다. scripts/Test-GeoInvariance.ps1 이 그것을 검사한다.",
+    "_not_ip_geolocation": "자산대장 정보다. 외부 IP 지오로케이션과 다른 것이고 같은 필드에 넣지 않는다(ADR-0002).",
+
+    "_why_facility_not_terrain": "tacnet-01 은 능선과 계곡을 그린다. 여기서 같은 것을 하면 안 된다. 국방망 자산은 건물 안에 있고, '어느 능선에 있는가'는 이 시나리오에서 아무 의미가 없다. 의미가 있는 것은 '어느 건물 몇 층에 있는가' 이고, 특히 이중화 쌍이 같은 건물에 있는지 다른 건물에 있는지다. 그래서 지형장(terrain 블록)을 넣지 않고 시설 배치(facility)만 넣는다. terrain 이 없으면 렌더러는 등고선과 음영기복을 그리지 않는다.",
+
+    "frame": {
+      "id": "FACGRID-01",
+      "kind": "local-plane",
+      "canonical": true,
+      "unit": "meter",
+      "grid_step_m": 50,
+      "axes": {"x": "east", "y": "north", "z": "height_agl"},
+      "extent": {"x": [0, 300], "y": [0, 220], "z": [0, 20]},
+      "note": "영내 배치도다. z 는 해발이 아니라 지표 기준 높이(층)다. tacnet-01 의 z 가 표고인 것과 다르므로 두 시나리오의 z 를 같은 축으로 비교하지 않는다."
+    },
+
+    "safety": {
+      "claim": "가상 영내 배치다. 실제 부대·실제 건물·실제 전산실 위치를 쓰지 않았다.",
+      "how": [
+        "위경도 앵커를 두지 않았다. 이 좌표는 지구상 어디에도 놓이지 않으며 지도 위젯에 올릴 수 없다. tacnet-01 과 달리 georef 블록이 없는 것은 누락이 아니라 결정이다.",
+        "건물 이름은 본관·전산동 같은 일반명사이고 실제 시설명이 아니다.",
+        "배치는 시나리오의 이중화 구조를 읽히게 하려고 그린 것이지 어떤 실제 도면에서 유도한 것이 아니다."
+      ],
+      "basemap_policy": "위성영상·항공사진·실제 도면을 이 좌표에 깔지 않는다."
+    },
+
+    "facility": {
+      "_note": "건물은 바닥 다각형 + 층수 + 층고로 표현한다. 3D 에서는 그만큼 올려 그린다. 실내 배치(랙 열, 실 번호)는 이 추상 수준에 넣지 않는다.",
+      "buildings": [
+        {"id": "B-HQ",  "name": "본관 (지휘소)",   "floors": 4, "floor_height_m": 3.6,
+         "polygon": [[30, 120], [110, 120], [110, 175], [30, 175]]},
+        {"id": "B-DC",  "name": "본부 전산동",     "floors": 2, "floor_height_m": 4.2,
+         "polygon": [[140, 125], [220, 125], [220, 180], [140, 180]]},
+        {"id": "B-DR",  "name": "예비 전산동",     "floors": 1, "floor_height_m": 4.2,
+         "polygon": [[240, 40], [290, 40], [290, 85], [240, 85]]},
+        {"id": "B-1BN", "name": "1대대 청사",      "floors": 2, "floor_height_m": 3.6,
+         "polygon": [[35, 30], [95, 30], [95, 70], [35, 70]]},
+        {"id": "B-LOG", "name": "군수대대 청사",   "floors": 2, "floor_height_m": 3.6,
+         "polygon": [[120, 25], [190, 25], [190, 65], [120, 65]]}
+      ]
+    },
+
+    "_redundancy_note": "DC02·DB02·ESX02 를 예비 전산동에 둔 것이 이 배치도의 요점이다. DC01 하나만 침해되면 임무 저하도가 0.0% 인데 DC01+DC02 면 80.5% 인 이유가 지도에서 보인다 - 이중화 쌍이 다른 건물에 있다. 이 사실은 화면에 그려질 뿐이고 엔진은 여전히 requires 엣지만 읽는다."
+  },
 
   "_links_note": "물리 전송로다. 아래 communicates_with(논리 통신 관계)와 다른 층이며 서로 복사본이 아니다. 전산실 구간은 SW01 이 잇고, 지휘소·대대 구간은 FW01 에 붙어 전산실로 들어간다. 부대별 액세스 스위치는 모델링하지 않는다. 이 추상 수준에서 FW01 이 사용자 구간의 집선·정책 지점 역할을 겸한다.",
 

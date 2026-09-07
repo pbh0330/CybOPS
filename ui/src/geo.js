@@ -92,8 +92,11 @@ function makeProjector({ ext, width, height, az, pitch, zScale, pad = 40, padTop
     minX = Math.min(minX, r.x); maxX = Math.max(maxX, r.x)
     minY = Math.min(minY, r.y); maxY = Math.max(maxY, r.y)
   }
-  // never zoom past the grid itself
-  const spanGuard = 1200
+  // Guard against a degenerate fit (every sampled point at one spot). It has to
+  // be a fraction of the declared extent, not a constant: 1200 metres is a
+  // sensible floor for a 24 km area of operations and five times too wide for a
+  // 300 m compound, where it zoomed the whole camp down to a smudge.
+  const spanGuard = Math.max(1e-6, Math.max(ext.x[1] - ext.x[0], ext.y[1] - ext.y[0]) * 0.05)
   if (maxX - minX < spanGuard) { const c = (maxX + minX) / 2; minX = c - spanGuard / 2; maxX = c + spanGuard / 2 }
   if (maxY - minY < spanGuard) { const c = (maxY + minY) / 2; minY = c - spanGuard / 2; maxY = c + spanGuard / 2 }
   // padTop reserves a band of sky at the top of the frame. The terrain is fitted
@@ -153,6 +156,53 @@ function drawTerrain(out, geo, project, is3d, bounds) {
   }
 }
 
+// Buildings, for a scenario whose assets live indoors (defnet-01).
+//
+// A ridge is the wrong picture for an enterprise network. What matters there is
+// which building an asset is in - specifically, whether a redundant pair is in
+// the same one. defnet-01 puts DC02, DB02 and ESX02 in a separate block, and
+// that is why compromising DC01 alone costs the mission 0.0% while DC01 and
+// DC02 together cost 80.5%. The map is allowed to say that; it still does not
+// compute it (ADR-0002).
+//
+// Extruded footprints, painter-sorted with everything else in 3D. No windows,
+// no roofs, no interior: at this abstraction the scenario knows a building and
+// a floor number and nothing finer, and drawing detail the data does not have
+// is how a diagram starts lying.
+function drawFacility(out, geo, project, is3d) {
+  const b = geo.facility && geo.facility.buildings
+  if (!b || !b.length) return
+  const parts = []
+  for (const f of b) {
+    const pts = (f.polygon || []).map((q) => (Array.isArray(q) ? { x: q[0], y: q[1] } : q))
+    if (pts.length < 3) continue
+    const ground = Number(f.ground_elev_m || 0)
+    const top = is3d ? ground + Number(f.floors || 1) * Number(f.floor_height_m || 3.5) : 0
+    const roof = pts.map((q) => project(q.x, q.y, top))
+    const base = pts.map((q) => project(q.x, q.y, ground))
+
+    if (is3d) {
+      for (let i = 0; i < pts.length; i++) {
+        const j = (i + 1) % pts.length
+        const quad = [base[i], base[j], roof[j], roof[i]]
+        parts.push({
+          y: (quad[0].y + quad[1].y + quad[2].y + quad[3].y) / 4,
+          svg: `<polygon class="fac-wall" points="${quad.map((q) => `${q.x.toFixed(1)},${q.y.toFixed(1)}`).join(' ')}" />`,
+        })
+      }
+    }
+    const roofPts = roof.map((q) => `${q.x.toFixed(1)},${q.y.toFixed(1)}`).join(' ')
+    const c = centroid(roof)
+    parts.push({
+      y: c.y + 1e5, // roof and label always over this building's own walls
+      svg: `<polygon class="fac-roof" points="${roofPts}"><title>${esc(f.name || f.id)} · ${f.floors || 1}층</title></polygon>` +
+        `<text class="fac-label" x="${c.x.toFixed(1)}" y="${c.y.toFixed(1)}">${esc(f.name || f.id)}</text>`,
+    })
+  }
+  parts.sort((m, n) => m.y - n.y)
+  for (const p of parts) out.push(p.svg)
+}
+
 export function renderGeo({
   graph, step, width, height, causeColor, iconFor, selected,
   mode = '2d', az = 35, pitch = 55, zScale = 8, terrain = true,
@@ -188,13 +238,18 @@ export function renderGeo({
     sy0 = Math.min(sy0, p.y); sy1 = Math.max(sy1, p.y)
   }
   const sceneSpan = Number.isFinite(sx0) ? Math.max(sx1 - sx0, sy1 - sy0) : 8000
-  const ringR = Math.max(280, Math.min(1200, sceneSpan * 0.055))
+  // Both of these are fractions of the scene, not metres. Fixed metre values
+  // were tuned on a 24 km area of operations and were nonsense on a 300 m
+  // compound: a 400 m cluster cell put all sixteen assets in one cluster and a
+  // 280 m ring threw them clear of the camp they are standing in.
+  const clusterCell = Math.max(1e-6, sceneSpan * 0.02)
+  const ringR = Math.max(1e-6, sceneSpan * 0.05)
 
   const cluster = new Map()
   for (const a of graph.assets || []) {
     const p = posOf[a.id]
     if (!p) continue
-    const key = `${Math.round(p.x / 400)}:${Math.round(p.y / 400)}`
+    const key = `${Math.round(p.x / clusterCell)}:${Math.round(p.y / clusterCell)}`
     if (!cluster.has(key)) cluster.set(key, [])
     cluster.get(key).push(a.id)
   }
@@ -239,6 +294,13 @@ export function renderGeo({
   for (const id in drawPos) {
     const p = drawPos[id]
     fitPoints.push({ x: p.x, y: p.y, z: is3d ? p.z : 0 })
+  }
+  for (const f of (geo.facility && geo.facility.buildings) || []) {
+    const top = Number(f.ground_elev_m || 0) + Number(f.floors || 1) * Number(f.floor_height_m || 3.5)
+    for (const q of f.polygon || []) {
+      const pt = Array.isArray(q) ? { x: q[0], y: q[1] } : q
+      fitPoints.push({ x: pt.x, y: pt.y, z: is3d ? top : 0 })
+    }
   }
   for (const f of (geo.terrain && geo.terrain.features) || []) {
     const raw = f.polyline || f.outline || f.polygon || []
@@ -301,7 +363,10 @@ export function renderGeo({
 
   // Map grid, 2 km spacing, draped on the surface so it creases over the
   // ridges instead of cutting through them.
-  const gridStep = 2000
+  // A 24 km area of operations wants a 2 km grid; a 300 m compound does not.
+  // The scenario says which, because only the scenario knows what the frame is.
+  const gridStep = Number(geo.frame.grid_step_m || 2000)
+  const tickOf = (v) => (gridStep >= 1000 ? v / 1000 : v)
   const gx = model ? model.bounds.x : ext.x
   const gy = model ? model.bounds.y : ext.y
   const drape = (x, y) => (is3d && model ? surfaceAt(model, x, y) : 0)
@@ -314,7 +379,7 @@ export function renderGeo({
       pts.push(project(x, y, drape(x, y)))
     }
     out.push(`<path class="geo-grid" d="${gridPath(pts)}" />`)
-    if (!is3d) out.push(`<text class="geo-tick" x="${pts[0].x.toFixed(1)}" y="${(pts[0].y + 13).toFixed(1)}">${x / 1000}</text>`)
+    if (!is3d) out.push(`<text class="geo-tick" x="${pts[0].x.toFixed(1)}" y="${(pts[0].y + 13).toFixed(1)}">${tickOf(x)}</text>`)
   }
   for (let y = Math.ceil(gy[0] / gridStep) * gridStep; y <= gy[1]; y += gridStep) {
     const pts = []
@@ -323,10 +388,11 @@ export function renderGeo({
       pts.push(project(x, y, drape(x, y)))
     }
     out.push(`<path class="geo-grid" d="${gridPath(pts)}" />`)
-    if (!is3d) out.push(`<text class="geo-tick" x="${(pts[0].x - 14).toFixed(1)}" y="${(pts[0].y + 3).toFixed(1)}">${y / 1000}</text>`)
+    if (!is3d) out.push(`<text class="geo-tick" x="${(pts[0].x - 14).toFixed(1)}" y="${(pts[0].y + 3).toFixed(1)}">${tickOf(y)}</text>`)
   }
 
   drawTerrain(out, geo, project, is3d, model ? model.bounds : null)
+  drawFacility(out, geo, project, is3d)
 
   // Transport links.
   //
@@ -488,12 +554,14 @@ export function renderGeo({
 
   const anchor = geo.georef && geo.georef.anchor
   const foot = `<div class="geo-foot">
-    <span>${esc(geo.frame.id)} · 격자 2 km · 단위 m${is3d ? ` · 표고 ${zScale}배 과장` : ''}</span>
+    <span>${esc(geo.frame.id)} · 격자 ${gridStep >= 1000 ? `${gridStep / 1000} km` : `${gridStep} m`} · 단위 m${is3d ? ` · ${model ? '표고' : '높이'} ${zScale}배 과장` : ''}</span>
     ${model ? `<span>등고선 ${model.interval} m · 굵은 선 ${model.interval * model.every} m</span>` : ''}
     ${maskedCount ? `<span class="geo-mask-note">가시선 차폐 ${maskedCount}개 구간 (점선)<b>그림일 뿐이다. 단절 원인은 저작값이고 여기서 계산하지 않는다.</b></span>` : ''}
     ${satLinks.length && is3d ? `<span class="geo-mask-note">위성 중계 고도는 축척이 아니다<b>실제 정지궤도는 35,786 km 로 AO 폭의 1,500배다. 그리면 무한대의 점이 된다.</b></span>` : ''}
     ${anchor ? `<span>앵커 ${anchor.lat}, ${anchor.lon}${geo.georef.mgrs ? ' · MGRS ' + esc(geo.georef.mgrs.gzd) : ''}</span>` : ''}
-    <span class="geo-warn">가상 좌표다. 지형도 저작 도형에서 보간한 것이고 실지형이 아니다.</span>
+    <span class="geo-warn">가상 좌표다. ${model
+      ? '지형도 저작 도형에서 보간한 것이고 실지형이 아니다.'
+      : (geo.facility ? '영내 배치는 저작 도면이고 실제 시설이 아니다.' : '')}</span>
   </div>`
 
   return `<svg class="geo-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet">${out.join('')}</svg>${missingNote}${foot}`

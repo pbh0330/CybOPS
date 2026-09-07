@@ -1,0 +1,9 @@
+{
+  "_note": "배포 시점 설정이다. 빌드에 들어가지 않으므로 이 파일만 고치면 된다. 기본값과 세 가지 배치 형태는 ui/src/config.js 주석 참조.",
+  "llm": {
+    "enabled": true,
+    "endpoint": "http://127.0.0.1:11434",
+    "model": "qwen2.5:7b-instruct-q4_K_M",
+    "unavailable_note": "이 배포본에는 모델 서버가 없다. greedy 와 random 은 그대로 동작한다."
+  }
+}

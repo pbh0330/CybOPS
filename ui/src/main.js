@@ -15,6 +15,7 @@ import { createEditor } from './editor.js'
 import { deviceIconDataUri, iconSvgMarkup, serviceIconSvgMarkup } from './icons.js'
 import { renderGeo } from './geo.js'
 import { createWargame } from './wargame.js'
+import { loadConfig } from './config.js'
 
 cytoscape.use(dagre)
 
@@ -78,6 +79,7 @@ init().catch((e) => {
 })
 
 async function init() {
+  await loadConfig()
   await loadSymbology()
 
   const available = []

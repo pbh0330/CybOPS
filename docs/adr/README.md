@@ -31,3 +31,8 @@
 | [0014](0014-demo-first-then-paper.md) | 산출물 1순위는 프로토타입 데모 | 채택 |
 | [0015](0015-no-human-subject-evaluation.md) | 전문가 평가 없이 계산 가능한 대조로 대체 | 채택 |
 | [0016](0016-local-gpu-llm-sizing.md) | LLM은 로컬 GPU에서 4비트 7~14B | 채택 |
+| [0017](0017-temporal-mission-graph.md) | 임무 그래프에 시간축을 넣는다 | 채택 |
+| [0018](0018-ui-stack-cytoscape-static-bundle.md) | UI는 Cytoscape.js + 정적 번들 | 채택 |
+| [0019](0019-adversary-simulation.md) | 적대 행위자 시뮬레이션 - 모델은 합법수만 고른다 | 채택 |
+| [0020](0020-hard-and-soft-requirements.md) | hard 요구는 100% 전파한다 | 채택 |
+| [0021](0021-hosting-posture-and-model-endpoint.md) | 호스팅 배치와 모델 엔드포인트는 런타임 설정 | 채택 |

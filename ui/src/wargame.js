@@ -26,9 +26,7 @@
 //    is not one - there is nothing at the other end).
 
 import { legalMoves, scoreMoves, playTurn, greedyChooser, randomChooser, footholds } from './attack.js'
-
-const DEFAULT_MODEL = 'qwen2.5:7b-instruct-q4_K_M'
-const DEFAULT_ENDPOINT = 'http://127.0.0.1:11434'
+import { config, probeLlm } from './config.js'
 
 function esc(s) {
   return String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
@@ -60,18 +58,31 @@ export function createWargame({ mountEl, getGraph, getT, getMethod, onChange }) 
   let llm = null
   let llmStats = null
 
-  // The LLM chooser is loaded on demand. It is the only part of this screen
-  // that talks to anything outside the browser, and a demo machine with no
-  // model server should not pay for it (ADR-0007: the model is swappable, so
-  // nothing above depends on it being there).
+  // Whether a model is reachable. Probed once, not guessed: this bundle is the
+  // same file on a laptop and on a web server, and on a web server
+  // 127.0.0.1:11434 means the viewer's own machine (see config.js). Finding out
+  // at click time would spend the connect timeout and then report something the
+  // reader cannot act on.
+  let llmProbe = null
+  async function ensureProbe() {
+    if (llmProbe) return llmProbe
+    llmProbe = await probeLlm()
+    return llmProbe
+  }
+
+  // The chooser is loaded on demand. It is the only part of this screen that
+  // talks to anything outside the browser, and a demo machine with no model
+  // server should not pay for it (ADR-0007: the model is swappable, so nothing
+  // above depends on it being there).
   async function getLlmChooser() {
     if (!llm) {
+      const c = config().llm || {}
       const mod = await import('./attack-llm.mjs')
       // createLLMChooser returns the chooser function itself, with .stats and
       // .config hung off it. It is not { chooser, stats }.
       llm = mod.createLLMChooser({
-        endpoint: DEFAULT_ENDPOINT,
-        model: DEFAULT_MODEL,
+        endpoint: c.endpoint,
+        model: c.model,
         seed,
         verbose: false,
       })
@@ -88,6 +99,12 @@ export function createWargame({ mountEl, getGraph, getT, getMethod, onChange }) 
     log.length = 0
     active = true
     render()
+    // Probe after the first paint so the panel is usable immediately; greedy
+    // and random need nothing from outside the browser.
+    ensureProbe().then(() => {
+      if (!llmProbe.ok && strategy === 'llm') strategy = 'greedy'
+      if (active) render()
+    })
   }
 
   function stop() {
@@ -185,6 +202,9 @@ export function createWargame({ mountEl, getGraph, getT, getMethod, onChange }) 
     const own = footholds(state)
     const top = legal.slice(0, 6)
     const maxGain = Math.max(1e-9, ...top.map((m) => m.gain))
+    const cfgLlm = config().llm || {}
+    const modelShort = String(cfgLlm.model || 'llm').split(':')[0]
+    const llmOk = !!(llmProbe && llmProbe.ok)
 
     const head = `
       <div class="wg-head">
@@ -198,7 +218,7 @@ export function createWargame({ mountEl, getGraph, getT, getMethod, onChange }) 
           <select data-wg="strategy">
             <option value="greedy"${strategy === 'greedy' ? ' selected' : ''}>greedy (대조군)</option>
             <option value="random"${strategy === 'random' ? ' selected' : ''}>random (하한)</option>
-            <option value="llm"${strategy === 'llm' ? ' selected' : ''}>LLM (${esc(DEFAULT_MODEL.split(':')[0])})</option>
+            <option value="llm"${strategy === 'llm' ? ' selected' : ''}${llmOk ? '' : ' disabled'}>LLM (${esc(modelShort)})${llmOk ? '' : ' - 사용 불가'}</option>
           </select>
         </label>
         <label class="wg-pick">
@@ -245,6 +265,13 @@ export function createWargame({ mountEl, getGraph, getT, getMethod, onChange }) 
     const isolatable = (g.assets || [])
       .map((a) => a.id)
       .filter((id) => Number(state[id] || 0) < 1)
+    // Say why the model is not on the menu. A greyed-out option with no reason
+    // reads as a bug; "this deployment has no model server" reads as a choice.
+    const llmNote = (llmProbe && !llmProbe.ok)
+      ? `<div class="wg-llm-note">LLM 공격자 사용 불가
+          <span>${esc(cfgLlm.unavailable_note || '')} ${llmProbe.why && llmProbe.why !== 'disabled' ? `(${esc(llmProbe.why)})` : ''}</span></div>`
+      : ''
+
     const defence = `
       <div class="wg-defence">
         <div class="wg-sub">방어측 - 격리 (모의)</div>
@@ -268,7 +295,7 @@ export function createWargame({ mountEl, getGraph, getT, getMethod, onChange }) 
           </div>`).join('')}</div>`
       : ''
 
-    mountEl.innerHTML = head + result + moves + defence + logHtml
+    mountEl.innerHTML = head + llmNote + result + moves + defence + logHtml
   }
 
   mountEl && mountEl.addEventListener('click', (e) => {
