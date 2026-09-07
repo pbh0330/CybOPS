@@ -1,0 +1,319 @@
+{
+  "generated": "2026-09-07T14:49:31.922013+00:00",
+  "generator": "scripts/run_e1a.py",
+  "experiment": "E1-a",
+  "tag": "pass2",
+  "refs": [
+    "docs/02-research-plan.md",
+    "docs/04-evaluation.md 2.1",
+    "ADR-0008",
+    "ADR-0011"
+  ],
+  "features_file": "F:\\F\\other_class\\CybOPS\\analysis\\lanl\\auth-features2.csv",
+  "n_rows": 2102679,
+  "n_positives": 702,
+  "feature_columns": [
+    "src_hr_events",
+    "src_hr_dst",
+    "src_hr_usr",
+    "src_hr_failrate",
+    "src_prev_dst",
+    "src_life_events",
+    "src_life_dst",
+    "src_life_failrate",
+    "src_new_dst",
+    "src_new_usr",
+    "src_hr_newdst",
+    "src_hr_newdst_share",
+    "src_hr_dst_share",
+    "src_hr_dst_z",
+    "src_hr_fail_z",
+    "src_min_events",
+    "src_min_dst",
+    "src_gap_log",
+    "pair_seen",
+    "dst_hr_src",
+    "dst_life_src",
+    "dst_rarity",
+    "usr_hr_src",
+    "usr_life_src",
+    "usr_hr_dst",
+    "usr_life_dst",
+    "usr_new_dst",
+    "usr_hr_failrate",
+    "usr_gap_log",
+    "is_fail",
+    "auth_ntlm",
+    "auth_kerb",
+    "auth_other",
+    "lt_network",
+    "lt_service",
+    "lt_batch",
+    "lt_interactive",
+    "lt_other",
+    "or_logon",
+    "or_logoff",
+    "or_tgs",
+    "or_tgt",
+    "or_other",
+    "hour",
+    "dow"
+  ],
+  "protocol": {
+    "tuning": "hyperparameters selected by forward-chaining validation inside the training days only; the test split is scored once with the winner and nothing is changed after",
+    "weights": "each kept negative carries w = NegSample; all metrics weighted",
+    "identity": "no host/account identity in the feature file; asserted at load",
+    "train_weight": "balanced",
+    "train_vs_eval_weight": "fitting uses train_weight; every reported metric is weighted by w (the extraction weight), so the numbers remain population estimates"
+  },
+  "trivial_baseline": {
+    "rule": "src in {C17693, C22409, C19932, C18025}",
+    "recall": 1.0,
+    "precision": 0.0146,
+    "rows_selected": 48079,
+    "true_positives": 702,
+    "note": "mandatory row (docs/04-evaluation.md 2.1). uses host identity, which every model below is forbidden to see."
+  },
+  "splits": [
+    {
+      "cut_day": 10.0,
+      "train_rows": 341153,
+      "test_rows": 1761526,
+      "train_pos": 316,
+      "test_pos": 386,
+      "models": [
+        {
+          "model": "rule: hr_dst x (1+hr_failrate)",
+          "pr_auc": 1.9049315253672604e-06,
+          "roc_auc": 0.64670432058227,
+          "positives": 386.0,
+          "negatives": 880570000.0,
+          "precision@recall50": 1.3374432062191968e-06,
+          "alerts@recall50": 144305193.0,
+          "precision@recall90": 4.2444648409681716e-07,
+          "alerts@recall90": 819891348.0,
+          "precision@recall100": 4.4148878959427304e-07,
+          "alerts@recall100": 874314386.0,
+          "precision@100": 0.0,
+          "precision@100_ci95": [
+            0.0,
+            0.0
+          ],
+          "precision@1000": 0.0,
+          "precision@1000_ci95": [
+            0.0,
+            0.0
+          ],
+          "precision@10000": 0.0,
+          "precision@10000_ci95": [
+            0.0,
+            0.0
+          ],
+          "trivial_precision_at_any_k": 0.0146
+        },
+        {
+          "model": "selected: histgb(lr=0.1,leaves=31,w=true)",
+          "pr_auc": 0.004073908697267968,
+          "roc_auc": 0.48668548327828876,
+          "positives": 386.0,
+          "negatives": 880570000.0,
+          "precision@recall50": 2.191853771490929e-07,
+          "alerts@recall50": 880533193.0,
+          "precision@recall90": 3.952076089620766e-07,
+          "alerts@recall90": 880549848.0,
+          "precision@recall100": 4.3835248756167435e-07,
+          "alerts@recall100": 880569886.0,
+          "precision@100": 0.06191369606003752,
+          "precision@100_ci95": [
+            0.021526418786692758,
+            0.06191369606003752
+          ],
+          "precision@1000": 0.031945788964181994,
+          "precision@1000_ci95": [
+            0.013028030003947888,
+            0.03290537194329979
+          ],
+          "precision@10000": 0.00999900999901,
+          "precision@10000_ci95": [
+            0.00835107830513694,
+            0.011371696819122598
+          ],
+          "trivial_precision_at_any_k": 0.0146
+        },
+        {
+          "model": "linearsvm(C=0.01)",
+          "pr_auc": 0.0005533126252986178,
+          "roc_auc": 0.9967935071024709,
+          "positives": 386.0,
+          "negatives": 880570000.0,
+          "precision@recall50": 0.0006815140204736699,
+          "alerts@recall50": 283193.0,
+          "precision@recall90": 0.0006879536935996584,
+          "alerts@recall90": 505848.0,
+          "precision@recall100": 4.52595920535347e-07,
+          "alerts@recall100": 852857886.0,
+          "precision@100": 0.0,
+          "precision@100_ci95": [
+            0.0,
+            0.0
+          ],
+          "precision@1000": 0.0,
+          "precision@1000_ci95": [
+            0.0,
+            0.0
+          ],
+          "precision@10000": 0.0,
+          "precision@10000_ci95": [
+            0.0,
+            0.0
+          ],
+          "trivial_precision_at_any_k": 0.0146
+        }
+      ],
+      "validation": [
+        {
+          "model": "histgb(lr=0.1,leaves=31,w=true)",
+          "val_pr_auc_mean": 0.23085929977582653,
+          "folds": [
+            0.05298199086650909,
+            0.10475144886371142,
+            0.534844459597259
+          ]
+        },
+        {
+          "model": "histgb(lr=0.1,leaves=31,w=balanced)",
+          "val_pr_auc_mean": 0.08169237572425421,
+          "folds": [
+            0.04625430816412258,
+            0.027910456412763927,
+            0.17091236259587614
+          ]
+        }
+      ],
+      "selected": {
+        "model": "histgb(lr=0.1,leaves=31,w=true)",
+        "val_pr_auc_mean": 0.23085929977582653,
+        "how": "highest mean forward-chaining PR-AUC inside the training days"
+      }
+    },
+    {
+      "cut_day": 12.0,
+      "train_rows": 397618,
+      "test_rows": 1705061,
+      "train_pos": 316,
+      "test_pos": 386,
+      "models": [
+        {
+          "model": "rule: hr_dst x (1+hr_failrate)",
+          "pr_auc": 1.9610208320965356e-06,
+          "roc_auc": 0.6464941063097512,
+          "positives": 386.0,
+          "negatives": 852337500.0,
+          "precision@recall50": 1.3748476243199376e-06,
+          "alerts@recall50": 140379193.0,
+          "precision@recall90": 4.3938625679181306e-07,
+          "alerts@recall90": 792013848.0,
+          "precision@recall100": 4.562206169250148e-07,
+          "alerts@recall100": 846081886.0,
+          "precision@100": 0.0,
+          "precision@100_ci95": [
+            0.0,
+            0.0
+          ],
+          "precision@1000": 0.0,
+          "precision@1000_ci95": [
+            0.0,
+            0.0
+          ],
+          "precision@10000": 0.0,
+          "precision@10000_ci95": [
+            0.0,
+            0.0
+          ],
+          "trivial_precision_at_any_k": 0.0146
+        },
+        {
+          "model": "selected: histgb(lr=0.1,leaves=31,w=true)",
+          "pr_auc": 0.005138877127532501,
+          "roc_auc": 0.60870178329314,
+          "positives": 386.0,
+          "negatives": 852337500.0,
+          "precision@recall50": 0.00441718353054265,
+          "alerts@recall50": 43693.0,
+          "precision@recall90": 4.0829000089762793e-07,
+          "alerts@recall90": 852335348.0,
+          "precision@recall100": 4.5287257461247547e-07,
+          "alerts@recall100": 852336886.0,
+          "precision@100": 0.0421455938697318,
+          "precision@100_ci95": [
+            0.014365306204678888,
+            1.0
+          ],
+          "precision@1000": 0.11738746690203,
+          "precision@1000_ci95": [
+            0.014365306204678888,
+            0.11738746690203
+          ],
+          "precision@10000": 0.013125431757623606,
+          "precision@10000_ci95": [
+            0.011946465463037816,
+            0.015554242961212838
+          ],
+          "trivial_precision_at_any_k": 0.0146
+        },
+        {
+          "model": "linearsvm(C=0.01)",
+          "pr_auc": 0.0005386226576125812,
+          "roc_auc": 0.9968218213688643,
+          "positives": 386.0,
+          "negatives": 852337500.0,
+          "precision@recall50": 0.0006639306760052702,
+          "alerts@recall50": 290693.0,
+          "precision@recall90": 0.0007118777206820934,
+          "alerts@recall90": 488848.0,
+          "precision@recall100": 4.6787119645595664e-07,
+          "alerts@recall100": 825013386.0,
+          "precision@100": 0.0,
+          "precision@100_ci95": [
+            0.0,
+            0.0
+          ],
+          "precision@1000": 0.0,
+          "precision@1000_ci95": [
+            0.0,
+            0.0
+          ],
+          "precision@10000": 0.0,
+          "precision@10000_ci95": [
+            0.0,
+            0.0
+          ],
+          "trivial_precision_at_any_k": 0.0146
+        }
+      ],
+      "validation": [
+        {
+          "model": "histgb(lr=0.1,leaves=31,w=true)",
+          "val_pr_auc_mean": 0.13776684900976163,
+          "folds": [
+            0.23490359099083463,
+            0.04063010702868864
+          ]
+        },
+        {
+          "model": "histgb(lr=0.1,leaves=31,w=balanced)",
+          "val_pr_auc_mean": 0.024916966444768224,
+          "folds": [
+            0.030843528499609158,
+            0.01899040438992729
+          ]
+        }
+      ],
+      "selected": {
+        "model": "histgb(lr=0.1,leaves=31,w=true)",
+        "val_pr_auc_mean": 0.13776684900976163,
+        "how": "highest mean forward-chaining PR-AUC inside the training days"
+      }
+    }
+  ]
+}
