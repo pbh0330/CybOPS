@@ -52,11 +52,21 @@ $eventId = 0
 $events  = New-Object System.Collections.ArrayList
 $labels  = New-Object System.Collections.ArrayList
 
+# OCSF 1.9.0 (pinned to commit 856d462b in configs/ocsf-mapping.json).
+#
+# category_uid, activity_id and type_uid are REQUIRED and were missing until
+# 2026-09-07. type_uid is not a free field: OCSF defines it as
+# class_uid * 100 + activity_id, so it is computed, never typed in.
+#
+# The authentication subject also moved. It used to sit in actor.user, which is
+# optional in the host profile; Authentication (3002) makes `user` required.
+# An account-centric query over the old data returned nothing, which is the
+# whole point of the class.
 $classMap = @{
-  'process' = @{ uid = 1007; name = 'Process Activity' }
-  'auth'    = @{ uid = 3002; name = 'Authentication'   }
-  'network' = @{ uid = 4001; name = 'Network Activity' }
-  'file'    = @{ uid = 1001; name = 'File System Activity' }
+  'process' = @{ uid = 1007; name = 'Process Activity';     category = 1; activity = 1; activity_name = 'Launch' }
+  'auth'    = @{ uid = 3002; name = 'Authentication';        category = 3; activity = 1; activity_name = 'Logon' }
+  'network' = @{ uid = 4001; name = 'Network Activity';      category = 4; activity = 6; activity_name = 'Traffic' }
+  'file'    = @{ uid = 1001; name = 'File System Activity';  category = 1; activity = 1; activity_name = 'Create' }
 }
 
 function New-Event {
@@ -66,22 +76,39 @@ function New-Event {
   $script:eventId++
   $id = 'EV{0:D7}' -f $script:eventId
 
+  $cm  = $script:classMap[$class]
+  $usr = [ordered]@{ name = $user; type_id = 1 }
+
   $e = [ordered]@{
-    event_uid   = $id
-    time        = [int64]([datetimeoffset]$ts).ToUnixTimeMilliseconds()
-    time_iso    = $ts.ToString('yyyy-MM-ddTHH:mm:ss')
-    class_uid   = $script:classMap[$class].uid
-    class_name  = $script:classMap[$class].name
-    severity_id = 1
-    device      = [ordered]@{ hostname = $hostName; uid = $hostName }
-    actor       = [ordered]@{ user = [ordered]@{ name = $user } }
-    message     = $summary
-    metadata    = [ordered]@{
-      version     = '1.1.0'
+    event_uid     = $id
+    time          = [int64]([datetimeoffset]$ts).ToUnixTimeMilliseconds()
+    time_iso      = $ts.ToString('yyyy-MM-ddTHH:mm:ss')
+    category_uid  = $cm.category
+    class_uid     = $cm.uid
+    class_name    = $cm.name
+    activity_id   = $cm.activity
+    activity_name = $cm.activity_name
+    type_uid      = $cm.uid * 100 + $cm.activity
+    severity_id   = 1
+    status_id     = 1
+    device        = [ordered]@{ hostname = $hostName; uid = $hostName; type_id = 0 }
+    actor         = [ordered]@{ user = $usr }
+    message       = $summary
+    metadata      = [ordered]@{
+      version     = '1.9.0'
       product     = [ordered]@{ name = 'mc-cycop-synth'; vendor_name = 'mc-cycop' }
       logged_time = [int64]([datetimeoffset]$ts).ToUnixTimeMilliseconds()
     }
-    unmapped    = $extra
+    unmapped      = $extra
+  }
+
+  # Authentication requires `user` at the top level and at least one of
+  # service / dst_endpoint. Both were missing; an account-centric query over
+  # this data used to come back empty.
+  if ($class -eq 'auth') {
+    $e['user'] = $usr
+    $e['dst_endpoint'] = [ordered]@{ hostname = $hostName; uid = $hostName }
+    $e['auth_protocol_id'] = 0
   }
 
   [void]$script:events.Add($e)

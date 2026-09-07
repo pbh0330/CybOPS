@@ -1,7 +1,7 @@
 ﻿{
     "scenario":  "defnet-01",
     "campaign":  "CAMP-01",
-    "generated_at":  "2026-09-05T19:44:10",
+    "generated_at":  "2026-09-07T09:43:33",
     "seed":  42,
     "total_events":  8012,
     "malicious_events":  12,

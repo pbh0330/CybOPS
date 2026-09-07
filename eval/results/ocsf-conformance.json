@@ -1,0 +1,16 @@
+{
+    "generated":  "2026-09-07T09:43:35.8931558+09:00",
+    "generator":  "scripts/Test-OcsfConformance.ps1",
+    "adr":  "ADR-0005",
+    "events_file":  "F:\\F\\other_class\\CybOPS\\scenarios\\defnet-01\\synthetic\\events.jsonl",
+    "schema_version":  "1.9.0",
+    "events_checked":  8012,
+    "violations_total":  0,
+    "violations_by_rule":  {
+
+                           },
+    "violations":  [
+
+                   ],
+    "pass":  true
+}
