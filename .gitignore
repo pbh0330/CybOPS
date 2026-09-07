@@ -58,3 +58,12 @@ analysis/lanl/auth-features.csv
 # 진행 로그(중간 산출물)
 analysis/lanl/_features.log
 analysis/optc/_host-index.log
+analysis/lanl/auth-features2.csv
+analysis/lanl/auth-features2-n100.csv
+analysis/lanl/_e1a-*.log
+analysis/lanl/_features2*.log
+
+# 사용자가 둔 문서. 커밋 여부는 사용자가 정한다.
+프로젝트 수행 계획서.pdf
+프로젝트 수행계획서_MC-CyCOP.docx
+프로젝트 수행계획서_MC-CyCOP.pdf

@@ -1,0 +1,139 @@
+{
+  "generated": "2026-09-07T12:53:53.373119+00:00",
+  "generator": "scripts/run_e1a.py",
+  "experiment": "E1-a",
+  "tag": "pass1-quick",
+  "refs": [
+    "docs/02-research-plan.md",
+    "docs/04-evaluation.md 2.1",
+    "ADR-0008",
+    "ADR-0011"
+  ],
+  "features_file": "F:\\F\\other_class\\CybOPS\\analysis\\lanl\\auth-features.csv",
+  "n_rows": 2102679,
+  "n_positives": 702,
+  "feature_columns": [
+    "src_hr_events",
+    "src_hr_dst",
+    "src_hr_usr",
+    "src_hr_failrate",
+    "src_prev_dst",
+    "src_life_events",
+    "src_life_dst",
+    "src_new_dst",
+    "src_new_usr",
+    "dst_hr_src",
+    "dst_life_src",
+    "usr_hr_src",
+    "usr_life_src",
+    "usr_hr_failrate",
+    "is_fail",
+    "auth_ntlm",
+    "auth_kerb",
+    "auth_other",
+    "lt_network",
+    "lt_service",
+    "lt_batch",
+    "lt_interactive",
+    "lt_other",
+    "or_logon",
+    "or_logoff",
+    "or_tgs",
+    "or_tgt",
+    "or_other",
+    "hour"
+  ],
+  "protocol": {
+    "tuning": "hyperparameters selected by forward-chaining validation inside the training days only; the test split is scored once with the winner and nothing is changed after",
+    "weights": "each kept negative carries w = NegSample; all metrics weighted",
+    "identity": "no host/account identity in the feature file; asserted at load"
+  },
+  "trivial_baseline": {
+    "rule": "src in {C17693, C22409, C19932, C18025}",
+    "recall": 1.0,
+    "precision": 0.0146,
+    "rows_selected": 48079,
+    "true_positives": 702,
+    "note": "mandatory row (docs/04-evaluation.md 2.1). uses host identity, which every model below is forbidden to see."
+  },
+  "splits": [
+    {
+      "cut_day": 25.0,
+      "train_rows": 839366,
+      "test_rows": 1263313,
+      "train_pos": 655,
+      "test_pos": 47,
+      "models": [
+        {
+          "model": "rule: hr_dst x (1+hr_failrate)",
+          "pr_auc": 7.003615829520796e-08,
+          "roc_auc": 0.39569909485884797,
+          "positives": 47.0,
+          "negatives": 631633000.0,
+          "precision@recall50": 5.2380986012871175e-08,
+          "alerts@recall50": 458181524.0,
+          "precision@recall90": 6.883209855511772e-08,
+          "alerts@recall90": 624708543.0,
+          "precision@recall100": 7.515466105682002e-08,
+          "alerts@recall100": 625377047.0,
+          "precision@100": 0.0,
+          "precision@1000": 0.0,
+          "precision@10000": 0.0
+        },
+        {
+          "model": "selected: histgb(lr=0.1,leaves=31)",
+          "pr_auc": 0.0021653135424587644,
+          "roc_auc": 0.9258320824666869,
+          "positives": 47.0,
+          "negatives": 631633000.0,
+          "precision@recall50": 0.0029910269192422734,
+          "alerts@recall50": 8024.0,
+          "precision@recall90": 5.057214561724792e-07,
+          "alerts@recall90": 85027043.0,
+          "precision@recall100": 7.441046955813307e-08,
+          "alerts@recall100": 631631547.0,
+          "precision@100": 0.011857707509881422,
+          "precision@1000": 0.005964214711729622,
+          "precision@10000": 0.0026927296299990027
+        },
+        {
+          "model": "linearsvm(C=0.01)",
+          "pr_auc": 0.0002665445801499635,
+          "roc_auc": 0.9936714866507286,
+          "positives": 47.0,
+          "negatives": 631633000.0,
+          "precision@recall50": 0.00035808068751492004,
+          "alerts@recall50": 67024.0,
+          "precision@recall90": 0.00028754271346702955,
+          "alerts@recall90": 149543.0,
+          "precision@recall100": 2.602731083382328e-07,
+          "alerts@recall100": 180579547.0,
+          "precision@100": 0.0,
+          "precision@1000": 0.0,
+          "precision@10000": 0.0
+        }
+      ],
+      "validation": [
+        {
+          "model": "histgb(lr=0.1,leaves=31)",
+          "val_pr_auc_mean": 0.002199682207743283,
+          "folds": [
+            0.0005857563775147447,
+            0.0038136080379718214
+          ]
+        }
+      ],
+      "selected": {
+        "model": "histgb(lr=0.1,leaves=31)",
+        "val_pr_auc_mean": 0.002199682207743283,
+        "how": "highest mean forward-chaining PR-AUC inside the training days"
+      }
+    },
+    {
+      "cut_day": 30.0,
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 702,
+      "test_pos": 0
+    }
+  ]
+}

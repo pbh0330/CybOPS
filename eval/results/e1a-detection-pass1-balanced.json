@@ -1,0 +1,286 @@
+{
+  "generated": "2026-09-07T13:45:09.229372+00:00",
+  "generator": "scripts/run_e1a.py",
+  "experiment": "E1-a",
+  "tag": "pass1-balanced",
+  "refs": [
+    "docs/02-research-plan.md",
+    "docs/04-evaluation.md 2.1",
+    "ADR-0008",
+    "ADR-0011"
+  ],
+  "features_file": "F:\\F\\other_class\\CybOPS\\analysis\\lanl\\auth-features.csv",
+  "n_rows": 2102679,
+  "n_positives": 702,
+  "feature_columns": [
+    "src_hr_events",
+    "src_hr_dst",
+    "src_hr_usr",
+    "src_hr_failrate",
+    "src_prev_dst",
+    "src_life_events",
+    "src_life_dst",
+    "src_new_dst",
+    "src_new_usr",
+    "dst_hr_src",
+    "dst_life_src",
+    "usr_hr_src",
+    "usr_life_src",
+    "usr_hr_failrate",
+    "is_fail",
+    "auth_ntlm",
+    "auth_kerb",
+    "auth_other",
+    "lt_network",
+    "lt_service",
+    "lt_batch",
+    "lt_interactive",
+    "lt_other",
+    "or_logon",
+    "or_logoff",
+    "or_tgs",
+    "or_tgt",
+    "or_other",
+    "hour"
+  ],
+  "protocol": {
+    "tuning": "hyperparameters selected by forward-chaining validation inside the training days only; the test split is scored once with the winner and nothing is changed after",
+    "weights": "each kept negative carries w = NegSample; all metrics weighted",
+    "identity": "no host/account identity in the feature file; asserted at load",
+    "train_weight": "balanced",
+    "train_vs_eval_weight": "fitting uses train_weight; every reported metric is weighted by w (the extraction weight), so the numbers remain population estimates"
+  },
+  "trivial_baseline": {
+    "rule": "src in {C17693, C22409, C19932, C18025}",
+    "recall": 1.0,
+    "precision": 0.0146,
+    "rows_selected": 48079,
+    "true_positives": 702,
+    "note": "mandatory row (docs/04-evaluation.md 2.1). uses host identity, which every model below is forbidden to see."
+  },
+  "splits": [
+    {
+      "cut_day": 10.0,
+      "train_rows": 341153,
+      "test_rows": 1761526,
+      "train_pos": 316,
+      "test_pos": 386,
+      "models": [
+        {
+          "model": "rule: hr_dst x (1+hr_failrate)",
+          "pr_auc": 1.9049315253672604e-06,
+          "roc_auc": 0.64670432058227,
+          "positives": 386.0,
+          "negatives": 880570000.0,
+          "precision@recall50": 1.3374432062191968e-06,
+          "alerts@recall50": 144305193.0,
+          "precision@recall90": 4.2444648409681716e-07,
+          "alerts@recall90": 819891348.0,
+          "precision@recall100": 4.4148878959427304e-07,
+          "alerts@recall100": 874314386.0,
+          "precision@100": 0.0,
+          "precision@100_ci95": [
+            0.0,
+            0.0
+          ],
+          "precision@1000": 0.0,
+          "precision@1000_ci95": [
+            0.0,
+            0.0
+          ],
+          "precision@10000": 0.0,
+          "precision@10000_ci95": [
+            0.0,
+            0.0
+          ],
+          "trivial_precision_at_any_k": 0.0146
+        },
+        {
+          "model": "selected: histgb(lr=0.1,leaves=31)",
+          "pr_auc": 0.011243465674159644,
+          "roc_auc": 0.9968149957743456,
+          "positives": 386.0,
+          "negatives": 880570000.0,
+          "precision@recall50": 0.001134006686526473,
+          "alerts@recall50": 170193.0,
+          "precision@recall90": 0.00100767921053546,
+          "alerts@recall90": 345348.0,
+          "precision@recall100": 1.4034302584203033e-06,
+          "alerts@recall100": 275040386.0,
+          "precision@100": 0.007936507936507936,
+          "precision@100_ci95": [
+            0.0026595744680851063,
+            0.007936507936507936
+          ],
+          "precision@1000": 0.00398406374501992,
+          "precision@1000_ci95": [
+            0.001597444089456869,
+            0.00398406374501992
+          ],
+          "precision@10000": 0.00039984006397441024,
+          "precision@10000_ci95": [
+            0.0003635041802980734,
+            0.00039984006397441024
+          ],
+          "trivial_precision_at_any_k": 0.0146
+        },
+        {
+          "model": "linearsvm(C=0.01)",
+          "pr_auc": 0.003365440722367949,
+          "roc_auc": 0.9969778068856835,
+          "positives": 386.0,
+          "negatives": 880570000.0,
+          "precision@recall50": 0.001338483837634282,
+          "alerts@recall50": 144193.0,
+          "precision@recall90": 6.762733761277053e-05,
+          "alerts@recall90": 5145848.0,
+          "precision@recall100": 8.757463690228308e-07,
+          "alerts@recall100": 440766886.0,
+          "precision@100": 0.001996007984031936,
+          "precision@100_ci95": [
+            0.0006662225183211193,
+            0.007936507936507936
+          ],
+          "precision@1000": 0.001996007984031936,
+          "precision@1000_ci95": [
+            0.0006662225183211193,
+            0.00398406374501992
+          ],
+          "precision@10000": 0.0006995103427600679,
+          "precision@10000_ci95": [
+            0.00045433893684688776,
+            0.0014265335235378032
+          ],
+          "trivial_precision_at_any_k": 0.0146
+        }
+      ],
+      "validation": [
+        {
+          "model": "histgb(lr=0.1,leaves=31)",
+          "val_pr_auc_mean": 0.032786907517113446,
+          "folds": [
+            0.006091475946692856,
+            0.0009738780319206311,
+            0.09129536857272685
+          ]
+        }
+      ],
+      "selected": {
+        "model": "histgb(lr=0.1,leaves=31)",
+        "val_pr_auc_mean": 0.032786907517113446,
+        "how": "highest mean forward-chaining PR-AUC inside the training days"
+      }
+    },
+    {
+      "cut_day": 12.0,
+      "train_rows": 397618,
+      "test_rows": 1705061,
+      "train_pos": 316,
+      "test_pos": 386,
+      "models": [
+        {
+          "model": "rule: hr_dst x (1+hr_failrate)",
+          "pr_auc": 1.9610208320965356e-06,
+          "roc_auc": 0.6464941063097512,
+          "positives": 386.0,
+          "negatives": 852337500.0,
+          "precision@recall50": 1.3748476243199376e-06,
+          "alerts@recall50": 140379193.0,
+          "precision@recall90": 4.3938625679181306e-07,
+          "alerts@recall90": 792013848.0,
+          "precision@recall100": 4.562206169250148e-07,
+          "alerts@recall100": 846081886.0,
+          "precision@100": 0.0,
+          "precision@100_ci95": [
+            0.0,
+            0.0
+          ],
+          "precision@1000": 0.0,
+          "precision@1000_ci95": [
+            0.0,
+            0.0
+          ],
+          "precision@10000": 0.0,
+          "precision@10000_ci95": [
+            0.0,
+            0.0
+          ],
+          "trivial_precision_at_any_k": 0.0146
+        },
+        {
+          "model": "selected: histgb(lr=0.1,leaves=31)",
+          "pr_auc": 0.005148421927440765,
+          "roc_auc": 0.9984642644188403,
+          "positives": 386.0,
+          "negatives": 852337500.0,
+          "precision@recall50": 0.002006383000842057,
+          "alerts@recall50": 96193.0,
+          "precision@recall90": 0.0010062223867132382,
+          "alerts@recall90": 345848.0,
+          "precision@recall100": 2.6507186613326884e-06,
+          "alerts@recall100": 145620886.0,
+          "precision@100": 0.001996007984031936,
+          "precision@100_ci95": [
+            0.0006620607084865297,
+            0.054820415879017016
+          ],
+          "precision@1000": 0.007936507936507936,
+          "precision@1000_ci95": [
+            0.0006620607084865297,
+            0.028182701652089408
+          ],
+          "precision@10000": 0.0028916143184764182,
+          "precision@10000_ci95": [
+            0.0026265806102570284,
+            0.0028916143184764182
+          ],
+          "trivial_precision_at_any_k": 0.0146
+        },
+        {
+          "model": "linearsvm(C=0.01)",
+          "pr_auc": 0.0008170807903623909,
+          "roc_auc": 0.9970753469713851,
+          "positives": 386.0,
+          "negatives": 852337500.0,
+          "precision@recall50": 0.0014067773137113409,
+          "alerts@recall50": 137193.0,
+          "precision@recall90": 6.960907702364388e-05,
+          "alerts@recall90": 4999348.0,
+          "precision@recall100": 9.441891597759979e-07,
+          "alerts@recall100": 408816386.0,
+          "precision@100": 0.0,
+          "precision@100_ci95": [
+            0.0,
+            0.005964214711729622
+          ],
+          "precision@1000": 0.001996007984031936,
+          "precision@1000_ci95": [
+            0.0,
+            0.0029910269192422734
+          ],
+          "precision@10000": 0.0010987913295375088,
+          "precision@10000_ci95": [
+            0.0005989267661561829,
+            0.0017967658215212617
+          ],
+          "trivial_precision_at_any_k": 0.0146
+        }
+      ],
+      "validation": [
+        {
+          "model": "histgb(lr=0.1,leaves=31)",
+          "val_pr_auc_mean": 0.0029997015941502364,
+          "folds": [
+            0.004141560067358541,
+            0.001857843120941932
+          ]
+        }
+      ],
+      "selected": {
+        "model": "histgb(lr=0.1,leaves=31)",
+        "val_pr_auc_mean": 0.0029997015941502364,
+        "how": "highest mean forward-chaining PR-AUC inside the training days"
+      }
+    }
+  ]
+}
