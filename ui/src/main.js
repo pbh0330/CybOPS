@@ -36,6 +36,7 @@ const el = {
   play: document.getElementById('play'),
   legend: document.getElementById('legend'),
   geo: document.getElementById('geo'),
+  geoCanvas: document.getElementById('geo-canvas'),
   fit: document.getElementById('fit-btn'),
   labels: document.getElementById('toggle-labels'),
   palette: document.getElementById('palette'),
@@ -464,6 +465,46 @@ function bindControls() {
   el.undoBtn.addEventListener('click', undo)
   el.redoBtn.addEventListener('click', redo)
 
+  // geo camera. 2D is the same projection with the camera pointed straight
+  // down, so there is no second rendering path to keep in agreement.
+  for (const b of document.querySelectorAll('.dim-btn')) {
+    b.addEventListener('click', () => {
+      for (const o of document.querySelectorAll('.dim-btn')) o.classList.toggle('is-on', o === b)
+      geoCam.mode = b.dataset.dim
+      for (const n of document.querySelectorAll('[data-3d-only]')) n.hidden = geoCam.mode !== '3d'
+      renderGeoPane()
+    })
+  }
+  const bindCam = (id, key) => {
+    const inp = document.getElementById(id)
+    if (inp) inp.addEventListener('input', () => { geoCam[key] = Number(inp.value); renderGeoPane() })
+  }
+  bindCam('geo-az', 'az')
+  bindCam('geo-pitch', 'pitch')
+  bindCam('geo-zscale', 'zScale')
+
+  // drag to orbit, which is the control people reach for before the slider
+  let dragCam = null
+  el.geoCanvas.addEventListener('pointerdown', (e) => {
+    if (geoCam.mode !== '3d') return
+    dragCam = { x: e.clientX, y: e.clientY, az: geoCam.az, pitch: geoCam.pitch }
+    el.geoCanvas.setPointerCapture(e.pointerId)
+  })
+  el.geoCanvas.addEventListener('pointermove', (e) => {
+    if (!dragCam) return
+    geoCam.az = (dragCam.az + (e.clientX - dragCam.x) * 0.4 + 360) % 360
+    geoCam.pitch = Math.min(88, Math.max(12, dragCam.pitch + (e.clientY - dragCam.y) * 0.25))
+    const azI = document.getElementById('geo-az')
+    const piI = document.getElementById('geo-pitch')
+    if (azI) azI.value = String(Math.round(geoCam.az))
+    if (piI) piI.value = String(Math.round(geoCam.pitch))
+    renderGeoPane()
+  })
+  el.geoCanvas.addEventListener('pointerup', (e) => {
+    dragCam = null
+    el.geoCanvas.releasePointerCapture(e.pointerId)
+  })
+
   el.helpBtn.addEventListener('click', () => showOnboard(true))
   el.onboardClose.addEventListener('click', () => closeOnboard())
   el.onboardStart.addEventListener('click', () => closeOnboard())
@@ -826,12 +867,14 @@ function renderBrief(s) {
 
 // The map view. Secondary by construction (ADR-0001): it draws positions the
 // engine never reads, which Test-GeoInvariance.ps1 asserts on every run.
+const geoCam = { mode: '2d', az: 35, pitch: 55, zScale: 8 }
+
 function renderGeoPane(step) {
   const s = step || currentStep()
-  if (!s) return
-  const w = el.geo.clientWidth || 900
-  const h = el.geo.clientHeight || 560
-  el.geo.innerHTML = renderGeo({
+  if (!s || !el.geoCanvas) return
+  const w = el.geoCanvas.clientWidth || 900
+  const h = el.geoCanvas.clientHeight || 560
+  el.geoCanvas.innerHTML = renderGeo({
     graph,
     step: s,
     width: w,
@@ -842,8 +885,9 @@ function renderGeoPane(step) {
       color: state === 'attack' ? '#ffb4ba' : state === 'outage' ? '#93a6ba' : '#e6f0fb',
     }),
     selected: cy && cy.$(':selected').length ? cy.$(':selected').first().id() : null,
+    ...geoCam,
   })
-  for (const g of el.geo.querySelectorAll('.geo-node')) {
+  for (const g of el.geoCanvas.querySelectorAll('.geo-node')) {
     g.addEventListener('click', () => {
       const id = g.dataset.asset
       if (cy && cy.$id(id).length) {

@@ -461,3 +461,23 @@ button.is-armed { border-color: rgba(255,77,94,.7); background: rgba(255,77,94,.
 .geo-warn { color: var(--unknown); }
 .geo-empty { padding: 24px; color: var(--fg-dim); }
 .geo-svg text { user-select: none; }
+
+.geo-canvas { position: absolute; inset: 0; }
+.geo-controls {
+  position: absolute; right: 14px; top: 12px; z-index: 2;
+  display: flex; align-items: center; gap: 14px;
+  background: rgba(9,13,20,.92); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 7px 12px; box-shadow: var(--shadow);
+}
+.dim-switch { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.dim-btn { border: none; border-radius: 0; background: transparent; padding: 3px 12px; color: var(--fg-dim); font-size: 11.5px; }
+.dim-btn.is-on { background: rgba(53,224,255,.14); color: #bdeaff; }
+.dim-btn + .dim-btn { border-left: 1px solid var(--line); }
+.geo-slider { display: flex; align-items: center; gap: 7px; font-size: 10.5px; color: var(--fg-dim); }
+.geo-slider[hidden] { display: none; }
+.geo-slider input { width: 82px; accent-color: var(--accent); }
+.geo-canvas { cursor: default; }
+body .geo-canvas:active { cursor: grabbing; }
+.terr-ground { fill: none; stroke: rgba(255,255,255,.07); stroke-width: 2; stroke-dasharray: 2 4; }
+.geo-drop { stroke: rgba(255,255,255,.14); stroke-width: 1; }
+.geo-shadow { fill: rgba(0,0,0,.45); }
