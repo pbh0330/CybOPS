@@ -227,7 +227,32 @@ foreach ($f in $files) {
         # byte count. The size check passes, the log says DONE, and six files
         # in the 2026-09-06 run were HTML-headed garbage that nothing noticed
         # until Test-GzipIntegrity read their magic number.
-        & curl.exe -sS -f -L -C - --connect-timeout 30 --speed-limit 8192 --speed-time 90 -o $target $url 2>$null
+        # curl writing to stderr must not end the run.
+        #
+        # $ErrorActionPreference is Stop for this script, and in PowerShell 5.1
+        # a native command that writes to stderr under Stop becomes a
+        # TERMINATING error. Drive answered 503 on one file at 07:11 and again
+        # at 08:07, and both times the whole pass died on that one file - 88
+        # files still incomplete, none of them retried. A transient server
+        # error on one file is the most ordinary thing that can happen here
+        # and it was ending the night.
+        #
+        # So the exit code is the only thing read, and stderr is dropped. The
+        # bytes on disk decide everything downstream anyway: the gain check,
+        # the quota page check, the size check and the gzip magic check all
+        # look at the file, not at what curl said.
+        $curlExit = 0
+        try {
+            $prevEap = $ErrorActionPreference
+            $ErrorActionPreference = 'Continue'
+            & curl.exe -sS -f -L -C - --connect-timeout 30 --speed-limit 8192 --speed-time 90 -o $target $url 2>$null
+            $curlExit = $LASTEXITCODE
+        } catch {
+            $curlExit = -1
+        } finally {
+            $ErrorActionPreference = $prevEap
+        }
+        if ($curlExit -ne 0) { Write-Log ("    curl exit {0}" -f $curlExit) }
         $secs = [math]::Max(1, ((Get-Date) - $t0).TotalSeconds)
 
         $after = 0
