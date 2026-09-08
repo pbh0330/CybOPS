@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-09-08T23:58:53.4001921+09:00",
+    "generated":  "2026-09-09T00:21:04.8924361+09:00",
     "generator":  "scripts/Test-GoldenBriefing.ps1",
     "experiment":  "E3",
     "refs":  [
@@ -40,12 +40,12 @@
                             "근거없음":  0
                         },
     "totals":  {
-                   "sentences":  110,
-                   "tagged":  110,
+                   "sentences":  116,
+                   "tagged":  116,
                    "untagged":  0,
-                   "correct":  41,
-                   "wrong":  24,
-                   "abstain":  0,
+                   "correct":  45,
+                   "wrong":  23,
+                   "abstain":  4,
                    "by_band":  {
                                    "추정":  {
                                               "n":  0,
@@ -53,12 +53,12 @@
                                               "wrong":  0
                                           },
                                    "확신":  {
-                                              "n":  110,
-                                              "correct":  41,
-                                              "wrong":  24
+                                              "n":  112,
+                                              "correct":  45,
+                                              "wrong":  23
                                           },
                                    "근거없음":  {
-                                                "n":  0,
+                                                "n":  4,
                                                 "correct":  0,
                                                 "wrong":  0
                                             }
@@ -68,11 +68,11 @@
                   {
                       "band":  "확신",
                       "stated_confidence":  0.95,
-                      "n":  110,
-                      "scored":  65,
-                      "correct":  41,
-                      "wrong":  24,
-                      "accuracy":  0.63076923076923075
+                      "n":  112,
+                      "scored":  68,
+                      "correct":  45,
+                      "wrong":  23,
+                      "accuracy":  0.66176470588235292
                   },
                   {
                       "band":  "추정",
@@ -86,21 +86,21 @@
                   {
                       "band":  "근거없음",
                       "stated_confidence":  0,
-                      "n":  0,
+                      "n":  4,
                       "scored":  0,
                       "correct":  0,
                       "wrong":  0,
                       "accuracy":  null
                   }
               ],
-    "ece":  0.31923076923076921,
-    "brier":  0.33480769230769231,
+    "ece":  0.28823529411764703,
+    "brier":  0.30691176470588238,
     "abstention_note":  "abstentions are counted separately and never as errors; scoring them wrong would train the option out of the prompt",
     "scope_note":  "this measures whether the stated numbers are the engine numbers. whether the briefing is USEFUL is not measured (docs/20 section 4, ADR-0015)",
     "sentences":  [
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t105-r1.brief.json",
-                          "sentence":  "시각 07:45 (t+105분), 활성 단계는 기동 [F1]{확신}.",
+                          "sentence":  "tacnet-01 시각 07:45 (t+105분), 활성 단계는 기동이다 [F1]{확신}.",
                           "band":  "확신",
                           "verdict":  "no-number",
                           "numbers":  [
@@ -130,11 +130,13 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t105-r1.brief.json",
-                          "sentence":  "임무 M-C2의 원인은 환경 단독으로 79.04%다 [F3]{확신}.",
+                          "sentence":  "임무 M-C2의 원인 분해: 공격 단독 0%, 환경 단독 79.04%, 상호작용 0% [F3]{확신}.",
                           "band":  "확신",
                           "verdict":  "wrong",
                           "numbers":  [
-                                          "79.04%"
+                                          "0%",
+                                          "79.04%",
+                                          "0%"
                                       ],
                           "unmatched":  [
                                             "79.04%"
@@ -145,7 +147,7 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t105-r1.brief.json",
-                          "sentence":  "자산 BN-SRV, BN-CP, SAT-TERM, FO-TAB이 비가용 상태로 기동 단절 [F4][F5][F6][F7]{확신}.",
+                          "sentence":  "자산 BN-SRV, BN-CP, SAT-TERM, FO-TAB이 비가용 상태로, 원인은 모두 기동이다 [F4][F5][F6][F7]{확신}.",
                           "band":  "확신",
                           "verdict":  "no-number",
                           "numbers":  [
@@ -159,8 +161,23 @@
                                             ]
                       },
                       {
+                          "file":  "qwen2_5_14b_instruct_q4_K_M-t105-r1.brief.json",
+                          "sentence":  "TOC-SRV을 격리하면 임무 저하도가 M-C2 +21.0%p 변한다 [F15]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "21.0%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t105-r2.brief.json",
-                          "sentence":  "시각 07:45 (t+105분), 활성 단계는 기동 [F1]{확신}.",
+                          "sentence":  "tacnet-01 시각 07:45 (t+105분), 활성 단계는 기동이다 [F1]{확신}.",
                           "band":  "확신",
                           "verdict":  "no-number",
                           "numbers":  [
@@ -190,10 +207,11 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t105-r2.brief.json",
-                          "sentence":  "임무 M-C2의 원인 분해: 환경 단독 79.04%, 상호작용 0% [F3]{확신}.",
+                          "sentence":  "임무 M-C2의 원인 분해: 공격 단독 0%, 환경 단독 79.04%, 상호작용 0% [F3]{확신}.",
                           "band":  "확신",
                           "verdict":  "wrong",
                           "numbers":  [
+                                          "0%",
                                           "79.04%",
                                           "0%"
                                       ],
@@ -206,7 +224,7 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t105-r2.brief.json",
-                          "sentence":  "자산 BN-SRV, BN-CP, SAT-TERM, FO-TAB이 기동으로 비가용 [F4][F5][F6][F7]{확신}.",
+                          "sentence":  "자산 BN-SRV, BN-CP, SAT-TERM, FO-TAB이 비가용 상태로, 원인은 모두 기동이다 [F4]{확신}, [F5]{확신}, [F6]{확신}, [F7]{확신}.",
                           "band":  "확신",
                           "verdict":  "no-number",
                           "numbers":  [
@@ -220,8 +238,23 @@
                                             ]
                       },
                       {
+                          "file":  "qwen2_5_14b_instruct_q4_K_M-t105-r2.brief.json",
+                          "sentence":  "TOC-SRV을 격리하면 임무 저하도가 M-C2 +21.0%p 변한다 [F15]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "21.0%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t105-r3.brief.json",
-                          "sentence":  "[tacnet-01 시각 07:45 (t+105분), 활성 단계 기동] [F1]{확신}.",
+                          "sentence":  "tacnet-01 시각 07:45 (t+105분), 활성 단계는 기동 [F1]{확신}.",
                           "band":  "확신",
                           "verdict":  "no-number",
                           "numbers":  [
@@ -251,11 +284,12 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t105-r3.brief.json",
-                          "sentence":  "임무 M-C2의 원인 분해: 환경 단독 79.04%, 상호작용 0% [F3]{확신}.",
+                          "sentence":  "임무 M-C2의 원인 분해: 환경 단독 79.04%, 공격 단독 0%, 상호작용 0% [F3]{확신}.",
                           "band":  "확신",
                           "verdict":  "wrong",
                           "numbers":  [
                                           "79.04%",
+                                          "0%",
                                           "0%"
                                       ],
                           "unmatched":  [
@@ -267,7 +301,37 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t105-r3.brief.json",
-                          "sentence":  "자산 BN-SRV, BN-CP, SAT-TERM, FO-TAB이 기동으로 인해 비가용 상태다 [F4][F5][F6][F7]{확신}.",
+                          "sentence":  "자산 BN-SRV, BN-CP, SAT-TERM, FO-TAB이 비가용 상태로, 원인은 모두 기동이다 [F4]{확신}, [F5]{확신}, [F6]{확신}, [F7]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "qwen2_5_14b_instruct_q4_K_M-t105-r3.brief.json",
+                          "sentence":  "TOC-SRV을 격리하면 임무 저하도가 M-C2 +21.0%p 변한다 [F15]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "21.0%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "qwen2_5_14b_instruct_q4_K_M-t120-r1.brief.json",
+                          "sentence":  "시각은 08:00 (t+120분)이고 활성 단계는 기동이다 [F1]{확신}.",
                           "band":  "확신",
                           "verdict":  "no-number",
                           "numbers":  [
@@ -282,22 +346,7 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t120-r1.brief.json",
-                          "sentence":  "tacnet-01 시각 08:00 (t+120분), 활성 단계는 기동, 표적 획득이다 [F1]{확신}.",
-                          "band":  "확신",
-                          "verdict":  "no-number",
-                          "numbers":  [
-
-                                      ],
-                          "unmatched":  [
-
-                                        ],
-                          "forbidden_hit":  [
-
-                                            ]
-                      },
-                      {
-                          "file":  "qwen2_5_14b_instruct_q4_K_M-t120-r1.brief.json",
-                          "sentence":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 79.04%다 [F2]{확신}.",
+                          "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 79.04%다 [F2]{확신}.",
                           "band":  "확신",
                           "verdict":  "wrong",
                           "numbers":  [
@@ -312,13 +361,11 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t120-r1.brief.json",
-                          "sentence":  "임무 M-C2의 원인 분해: 공격 단독 0%, 환경 단독 79.04%, 상호작용 0% [F3]{확신}.",
+                          "sentence":  "M-C2의 저하 원인은 환경 단독 79.04%로, 기동과 지형 등 환경적 요인이 주요하다 [F3]{확신}.",
                           "band":  "확신",
                           "verdict":  "wrong",
                           "numbers":  [
-                                          "0%",
-                                          "79.04%",
-                                          "0%"
+                                          "79.04%"
                                       ],
                           "unmatched":  [
                                             "79.04%"
@@ -329,7 +376,7 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t120-r1.brief.json",
-                          "sentence":  "자산 BN-SRV이(가) 비가용, 원인 기동, 비고 지휘소 이동(철수-전개) [F6]{확신}.",
+                          "sentence":  "자산 BN-SRV와 BN-CP가 비가용 상태로, 원인은 지휘소 이동(철수-전개)이다 [F6]{확신}, [F7]{확신}.",
                           "band":  "확신",
                           "verdict":  "no-number",
                           "numbers":  [
@@ -344,7 +391,7 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t120-r1.brief.json",
-                          "sentence":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-C2 +21.0%p, M-FIRE +40.0%p 변한다 [F15]{확신}.",
+                          "sentence":  "격리 비용 중 지휘관이 알아야 할 것은 TOC-SRV 격리로, M-C2의 저하도가 +21.0%p, M-FIRE의 저하도가 +40.0%p 증가한다 [F15]{확신}.",
                           "band":  "확신",
                           "verdict":  "correct",
                           "numbers":  [
@@ -375,7 +422,7 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t120-r2.brief.json",
-                          "sentence":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 79.04%다 [F2]{확신}.",
+                          "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 79.04%다 [F2]{확신}.",
                           "band":  "확신",
                           "verdict":  "wrong",
                           "numbers":  [
@@ -390,13 +437,11 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t120-r2.brief.json",
-                          "sentence":  "임무 M-C2의 원인 분해: 공격 단독 0%, 환경 단독 79.04%, 상호작용 0% [F3]{확신}.",
+                          "sentence":  "M-C2의 저하 원인은 환경 단독으로 79.04%이며, 공격 단독과 상호작용은 없다 [F3]{확신}.",
                           "band":  "확신",
                           "verdict":  "wrong",
                           "numbers":  [
-                                          "0%",
-                                          "79.04%",
-                                          "0%"
+                                          "79.04%"
                                       ],
                           "unmatched":  [
                                             "79.04%"
@@ -407,22 +452,13 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t120-r2.brief.json",
-                          "sentence":  "자산 BN-SRV이(가) 비가용, 원인 기동, 비고 지휘소 이동(철수-전개) [F6]{확신}.",
-                          "band":  "확신",
-                          "verdict":  "no-number",
-                          "numbers":  [
-
-                                      ],
-                          "unmatched":  [
-
-                                        ],
-                          "forbidden_hit":  [
-
-                                            ]
+                          "sentence":  "임무 M-C2의 저하를 만든 자산과 링크의 상태에 대한 구체적인 정보는 근거 없음 [F0]{근거없음}.",
+                          "band":  "근거없음",
+                          "verdict":  "abstain"
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t120-r2.brief.json",
-                          "sentence":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-C2 +21.0%p, M-FIRE +40.0%p 변한다 [F15]{확신}.",
+                          "sentence":  "격리 비용 중 지휘관이 알아야 할 사항은 TOC-SRV을 격리하면 M-C2와 M-FIRE의 저하도가 각각 +21.0%p, +40.0%p 증가한다 [F15]{확신}.",
                           "band":  "확신",
                           "verdict":  "correct",
                           "numbers":  [
@@ -453,7 +489,7 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t120-r3.brief.json",
-                          "sentence":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 79.04%다 [F2]{확신}.",
+                          "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 79.04%다 [F2]{확신}.",
                           "band":  "확신",
                           "verdict":  "wrong",
                           "numbers":  [
@@ -468,13 +504,11 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t120-r3.brief.json",
-                          "sentence":  "임무 M-C2의 원인 분해: 공격 단독 0%, 환경 단독 79.04%, 상호작용 0% [F3]{확신}.",
+                          "sentence":  "임무 M-C2의 저하 원인은 환경 단독으로 79.04%이다 [F3]{확신}.",
                           "band":  "확신",
                           "verdict":  "wrong",
                           "numbers":  [
-                                          "0%",
-                                          "79.04%",
-                                          "0%"
+                                          "79.04%"
                                       ],
                           "unmatched":  [
                                             "79.04%"
@@ -485,7 +519,7 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t120-r3.brief.json",
-                          "sentence":  "자산 BN-SRV이(가) 비가용, 원인 기동, 비고 지휘소 이동(철수-전개) [F6]{확신}.",
+                          "sentence":  "자산 BN-SRV와 BN-CP가 비가용 상태로, 원인은 기동이다 [F6]{확신}, [F7]{확신}.",
                           "band":  "확신",
                           "verdict":  "no-number",
                           "numbers":  [
@@ -500,7 +534,7 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t120-r3.brief.json",
-                          "sentence":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-C2 +21.0%p, M-FIRE +40.0%p 변한다 [F15]{확신}.",
+                          "sentence":  "격리 비용 중 지휘관이 알아야 할 사항은 TOC-SRV을 격리하면 M-C2와 M-FIRE의 저하도가 각각 +21.0%p, +40.0%p 증가한다 [F15]{확신}.",
                           "band":  "확신",
                           "verdict":  "correct",
                           "numbers":  [
@@ -516,85 +550,6 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t150-r1.brief.json",
-                          "sentence":  "tacnet-01 시각 08:30 (t+150분), 활성 단계는 기동, 표적 획득 단계다 [F1]{확신}.",
-                          "band":  "확신",
-                          "verdict":  "no-number",
-                          "numbers":  [
-
-                                      ],
-                          "unmatched":  [
-
-                                        ],
-                          "forbidden_hit":  [
-
-                                            ]
-                      },
-                      {
-                          "file":  "qwen2_5_14b_instruct_q4_K_M-t150-r1.brief.json",
-                          "sentence":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 32.14%다 [F2]{확신}.",
-                          "band":  "확신",
-                          "verdict":  "wrong",
-                          "numbers":  [
-                                          "32.14%"
-                                      ],
-                          "unmatched":  [
-                                            "32.14%"
-                                        ],
-                          "forbidden_hit":  [
-
-                                            ]
-                      },
-                      {
-                          "file":  "qwen2_5_14b_instruct_q4_K_M-t150-r1.brief.json",
-                          "sentence":  "임무 M-C2의 원인 분해: 공격 단독 10.71%, 환경 단독 21.43%, 상호작용 0% [F3]{확신}.",
-                          "band":  "확신",
-                          "verdict":  "wrong",
-                          "numbers":  [
-                                          "10.71%",
-                                          "21.43%",
-                                          "0%"
-                                      ],
-                          "unmatched":  [
-                                            "10.71%",
-                                            "21.43%"
-                                        ],
-                          "forbidden_hit":  [
-
-                                            ]
-                      },
-                      {
-                          "file":  "qwen2_5_14b_instruct_q4_K_M-t150-r1.brief.json",
-                          "sentence":  "링크 L-VHF-CO1(CO1-VEH\u003c-\u003eRELAY-1, vhf)이(가) 단절, 원인은 지형, 비고 능선 차폐 [F6]{확신}.",
-                          "band":  "확신",
-                          "verdict":  "no-number",
-                          "numbers":  [
-
-                                      ],
-                          "unmatched":  [
-
-                                        ],
-                          "forbidden_hit":  [
-
-                                            ]
-                      },
-                      {
-                          "file":  "qwen2_5_14b_instruct_q4_K_M-t150-r1.brief.json",
-                          "sentence":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-C2 +7.0%p, M-FIRE +40.0%p 변한다 [F10]{확신}.",
-                          "band":  "확신",
-                          "verdict":  "correct",
-                          "numbers":  [
-                                          "7.0%",
-                                          "40.0%"
-                                      ],
-                          "unmatched":  [
-
-                                        ],
-                          "forbidden_hit":  [
-
-                                            ]
-                      },
-                      {
-                          "file":  "qwen2_5_14b_instruct_q4_K_M-t150-r2.brief.json",
                           "sentence":  "tacnet-01 시각 08:30 (t+150분), 활성 단계는 기동, 표적 획득 [F1]{확신}.",
                           "band":  "확신",
                           "verdict":  "no-number",
@@ -609,7 +564,7 @@
                                             ]
                       },
                       {
-                          "file":  "qwen2_5_14b_instruct_q4_K_M-t150-r2.brief.json",
+                          "file":  "qwen2_5_14b_instruct_q4_K_M-t150-r1.brief.json",
                           "sentence":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 32.14%다 [F2]{확신}.",
                           "band":  "확신",
                           "verdict":  "wrong",
@@ -624,7 +579,7 @@
                                             ]
                       },
                       {
-                          "file":  "qwen2_5_14b_instruct_q4_K_M-t150-r2.brief.json",
+                          "file":  "qwen2_5_14b_instruct_q4_K_M-t150-r1.brief.json",
                           "sentence":  "임무 M-C2의 원인 분해: 공격 단독 10.71%, 환경 단독 21.43%, 상호작용 0% [F3]{확신}.",
                           "band":  "확신",
                           "verdict":  "wrong",
@@ -642,7 +597,7 @@
                                             ]
                       },
                       {
-                          "file":  "qwen2_5_14b_instruct_q4_K_M-t150-r2.brief.json",
+                          "file":  "qwen2_5_14b_instruct_q4_K_M-t150-r1.brief.json",
                           "sentence":  "링크 L-VHF-CO1(CO1-VEH\u003c-\u003eRELAY-1, vhf)이(가) 단절, 원인 지형, 비고 능선 차폐 [F6]{확신}.",
                           "band":  "확신",
                           "verdict":  "no-number",
@@ -658,12 +613,71 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t150-r2.brief.json",
-                          "sentence":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-C2 +7.0%p, M-FIRE +40.0%p 변한다 [F10]{확신}.",
+                          "sentence":  "[F1]{확신}.",
                           "band":  "확신",
-                          "verdict":  "correct",
+                          "verdict":  "no-number",
                           "numbers":  [
-                                          "7.0%",
-                                          "40.0%"
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "qwen2_5_14b_instruct_q4_K_M-t150-r2.brief.json",
+                          "sentence":  "[F2]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "qwen2_5_14b_instruct_q4_K_M-t150-r2.brief.json",
+                          "sentence":  "[F3]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "qwen2_5_14b_instruct_q4_K_M-t150-r2.brief.json",
+                          "sentence":  "[F6]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "qwen2_5_14b_instruct_q4_K_M-t150-r2.brief.json",
+                          "sentence":  "[F10]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
                                       ],
                           "unmatched":  [
 
@@ -674,7 +688,7 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t150-r3.brief.json",
-                          "sentence":  "tacnet-01 시각 08:30 (t+150분), 활성 단계는 기동, 표적 획득 [F1]{확신}.",
+                          "sentence":  "tacnet-01 시각 08:30 (t+150분), 활성 단계 기동, 표적 획득 [F1]{확신}.",
                           "band":  "확신",
                           "verdict":  "no-number",
                           "numbers":  [
@@ -727,22 +741,6 @@
                           "verdict":  "no-number",
                           "numbers":  [
 
-                                      ],
-                          "unmatched":  [
-
-                                        ],
-                          "forbidden_hit":  [
-
-                                            ]
-                      },
-                      {
-                          "file":  "qwen2_5_14b_instruct_q4_K_M-t150-r3.brief.json",
-                          "sentence":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-C2 +7.0%p, M-FIRE +40.0%p 변한다 [F10]{확신}.",
-                          "band":  "확신",
-                          "verdict":  "correct",
-                          "numbers":  [
-                                          "7.0%",
-                                          "40.0%"
                                       ],
                           "unmatched":  [
 
@@ -783,13 +781,17 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t210-r1.brief.json",
-                          "sentence":  "임무 M-C2의 원인 분해: 상호작용 -17.14% [F3]{확신}.",
+                          "sentence":  "임무 M-C2의 원인 분해: 공격 단독 17.14%, 환경 단독 21.43%, 상호작용 -17.14% [F3]{확신}.",
                           "band":  "확신",
                           "verdict":  "wrong",
                           "numbers":  [
+                                          "17.14%",
+                                          "21.43%",
                                           "17.14%"
                                       ],
                           "unmatched":  [
+                                            "17.14%",
+                                            "21.43%",
                                             "17.14%"
                                         ],
                           "forbidden_hit":  [
@@ -1036,26 +1038,11 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t255-r1.brief.json",
-                          "sentence":  "링크 L-VHF-FO가 지형으로 인해 단절되었다 [F6]{확신}.",
-                          "band":  "확신",
-                          "verdict":  "no-number",
-                          "numbers":  [
-
-                                      ],
-                          "unmatched":  [
-
-                                        ],
-                          "forbidden_hit":  [
-
-                                            ]
-                      },
-                      {
-                          "file":  "qwen2_5_14b_instruct_q4_K_M-t255-r1.brief.json",
-                          "sentence":  "TOC-SRV을 격리하면 M-FIRE의 저하도가 +41.4%p 변한다 [F9]{확신}.",
+                          "sentence":  "격리 비용 중 지휘관이 알아야 할 것은 FDC-SRV 격리로 M-FIRE의 저하도가 +100.0%p 변한다 [F11]{확신}.",
                           "band":  "확신",
                           "verdict":  "correct",
                           "numbers":  [
-                                          "41.4%"
+                                          "100.0%"
                                       ],
                           "unmatched":  [
 
@@ -1096,7 +1083,7 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t255-r2.brief.json",
-                          "sentence":  "M-C2의 원인 분해는 공격 단독 0%, 환경 단독 0%, 상호작용 0%이다 [F3]{확신}.",
+                          "sentence":  "임무 M-C2의 원인 분해는 공격 단독 0%, 환경 단독 0%, 상호작용 0% [F3]{확신}.",
                           "band":  "확신",
                           "verdict":  "correct",
                           "numbers":  [
@@ -1113,26 +1100,11 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t255-r2.brief.json",
-                          "sentence":  "링크 L-VHF-FO가 지형으로 인해 단절되었다 [F6]{확신}.",
-                          "band":  "확신",
-                          "verdict":  "no-number",
-                          "numbers":  [
-
-                                      ],
-                          "unmatched":  [
-
-                                        ],
-                          "forbidden_hit":  [
-
-                                            ]
-                      },
-                      {
-                          "file":  "qwen2_5_14b_instruct_q4_K_M-t255-r2.brief.json",
-                          "sentence":  "TOC-SRV을 격리하면 임무 M-FIRE의 저하도가 +41.4%p 변한다 [F9]{확신}.",
+                          "sentence":  "격리 비용 중 지휘관이 알아야 할 것은 FDC-SRV 격리로 M-FIRE의 저하도가 +100.0%p 변한다 [F11]{확신}.",
                           "band":  "확신",
                           "verdict":  "correct",
                           "numbers":  [
-                                          "41.4%"
+                                          "100.0%"
                                       ],
                           "unmatched":  [
 
@@ -1173,7 +1145,7 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t255-r3.brief.json",
-                          "sentence":  "임무 M-C2의 원인 분해는 공격 단독 0%, 환경 단독 0%, 상호작용 0%이다 [F3]{확신}.",
+                          "sentence":  "임무 M-C2의 원인 분해는 공격 단독 0%, 환경 단독 0%, 상호작용 0% [F3]{확신}.",
                           "band":  "확신",
                           "verdict":  "correct",
                           "numbers":  [
@@ -1190,26 +1162,11 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t255-r3.brief.json",
-                          "sentence":  "링크 L-VHF-FO가 지형으로 인해 단절되었다 [F6]{확신}.",
-                          "band":  "확신",
-                          "verdict":  "no-number",
-                          "numbers":  [
-
-                                      ],
-                          "unmatched":  [
-
-                                        ],
-                          "forbidden_hit":  [
-
-                                            ]
-                      },
-                      {
-                          "file":  "qwen2_5_14b_instruct_q4_K_M-t255-r3.brief.json",
-                          "sentence":  "TOC-SRV을 격리하면 임무 M-FIRE의 저하도가 41.4%p 상승한다 [F9]{확신}.",
+                          "sentence":  "격리 비용 중 지휘관이 알아야 할 것은 FDC-SRV 격리로 M-FIRE 임무 저하도가 +100.0%p 변한다 [F11]{확신}.",
                           "band":  "확신",
                           "verdict":  "correct",
                           "numbers":  [
-                                          "41.4%"
+                                          "100.0%"
                                       ],
                           "unmatched":  [
 
@@ -1297,7 +1254,7 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t300-r2.brief.json",
-                          "sentence":  "시각 11:00 (t+300분), 활성 단계는 목표 확보, 화력 유도 [F1]{확신}.",
+                          "sentence":  "tacnet-01 시각 11:00 (t+300분), 활성 단계 목표 확보, 화력 유도 [F1]{확신}.",
                           "band":  "확신",
                           "verdict":  "no-number",
                           "numbers":  [
@@ -1327,10 +1284,12 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t300-r2.brief.json",
-                          "sentence":  "임무 M-C2의 원인은 상호작용 100%로, 다른 요인은 없다 [F3]{확신}.",
+                          "sentence":  "임무 M-C2의 원인 분해: 공격 단독 0%, 환경 단독 0%, 상호작용 100% [F3]{확신}.",
                           "band":  "확신",
                           "verdict":  "correct",
                           "numbers":  [
+                                          "0%",
+                                          "0%",
                                           "100%"
                                       ],
                           "unmatched":  [
@@ -1342,11 +1301,26 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t300-r2.brief.json",
-                          "sentence":  "링크 L-SAT-TOC(SAT-TERM\u003c-\u003eTOC-SRV)이 단절되었으나 원인은 미상 [F6]{확신}.",
+                          "sentence":  "링크 L-SAT-TOC(SAT-TERM\u003c-\u003eTOC-SRV, satcom)이(가) 단절, 원인 미상 [F6]{확신}.",
                           "band":  "확신",
                           "verdict":  "no-number",
                           "numbers":  [
 
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "qwen2_5_14b_instruct_q4_K_M-t300-r2.brief.json",
+                          "sentence":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-FIRE +71.4%p 변한다 [F15]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "71.4%"
                                       ],
                           "unmatched":  [
 
@@ -1481,7 +1455,22 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t345-r1.brief.json",
-                          "sentence":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-C2 +40.0%p, M-FIRE +28.6%p 변한다 [F21]{확신}.",
+                          "sentence":  "자산 CO2-VEH의 침해 수준은 80%다 [F6]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "wrong",
+                          "numbers":  [
+                                          "80%"
+                                      ],
+                          "unmatched":  [
+                                            "80%"
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "qwen2_5_14b_instruct_q4_K_M-t345-r1.brief.json",
+                          "sentence":  "TOC-SRV을 격리하면 임무 저하도가 M-C2 +40.0%p, M-FIRE +28.6%p 변한다 [F21]{확신}.",
                           "band":  "확신",
                           "verdict":  "correct",
                           "numbers":  [
@@ -1670,7 +1659,28 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t390-r1.brief.json",
-                          "sentence":  "TOC-SRV을 격리해도 임무 저하도는 변하지 않는다(추가 비용 0) [F21]{확신}.",
+                          "sentence":  "자산 CO2-VEH의 침해 수준은 근거 없음 [F0]{근거없음}.",
+                          "band":  "근거없음",
+                          "verdict":  "abstain"
+                      },
+                      {
+                          "file":  "qwen2_5_14b_instruct_q4_K_M-t390-r1.brief.json",
+                          "sentence":  "자산 BN-SRV의 침해 수준은 100%다 [F7]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "100%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "qwen2_5_14b_instruct_q4_K_M-t390-r1.brief.json",
+                          "sentence":  "TOC-SRV을(를) 격리해도 임무 저하도는 변하지 않는다(추가 비용 0) [F21]{확신}.",
                           "band":  "확신",
                           "verdict":  "no-number",
                           "numbers":  [
@@ -1732,7 +1742,28 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t390-r2.brief.json",
-                          "sentence":  "TOC-SRV을 격리해도 임무 저하도는 변하지 않는다(추가 비용 0) [F21]{확신}.",
+                          "sentence":  "자산 CO2-VEH의 침해 수준은 근거 없음 [F0]{근거없음}.",
+                          "band":  "근거없음",
+                          "verdict":  "abstain"
+                      },
+                      {
+                          "file":  "qwen2_5_14b_instruct_q4_K_M-t390-r2.brief.json",
+                          "sentence":  "자산 BN-SRV의 침해 수준은 100%다 [F7]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "100%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "qwen2_5_14b_instruct_q4_K_M-t390-r2.brief.json",
+                          "sentence":  "TOC-SRV을(를) 격리해도 임무 저하도는 변하지 않는다(추가 비용 0) [F21]{확신}.",
                           "band":  "확신",
                           "verdict":  "no-number",
                           "numbers":  [
@@ -1794,7 +1825,28 @@
                       },
                       {
                           "file":  "qwen2_5_14b_instruct_q4_K_M-t390-r3.brief.json",
-                          "sentence":  "TOC-SRV을 격리해도 임무 저하도는 변하지 않는다(추가 비용 0) [F21]{확신}.",
+                          "sentence":  "자산 CO2-VEH의 침해 수준은 근거 없음 [F0]{근거없음}.",
+                          "band":  "근거없음",
+                          "verdict":  "abstain"
+                      },
+                      {
+                          "file":  "qwen2_5_14b_instruct_q4_K_M-t390-r3.brief.json",
+                          "sentence":  "자산 BN-SRV의 침해 수준은 100%다 [F7]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "100%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "qwen2_5_14b_instruct_q4_K_M-t390-r3.brief.json",
+                          "sentence":  "TOC-SRV을(를) 격리해도 임무 저하도는 변하지 않는다(추가 비용 0) [F21]{확신}.",
                           "band":  "확신",
                           "verdict":  "no-number",
                           "numbers":  [
