@@ -150,6 +150,8 @@ public class EcarWindowScan
         return e < 0 ? null : s.Substring(i, e - i);
     }
 
+    public long Vanished = 0;
+
     public void Run(string[] files, HashSet<string> pos, string outCsv, int win, int negSample, int seed)
     {
         _pos = pos; _win = win; _negSample = negSample; _rng = (uint)(seed == 0 ? 1 : seed);
@@ -164,16 +166,48 @@ public class EcarWindowScan
 
             foreach (string f in files)
             {
-                using (FileStream fs = File.OpenRead(f))
-                using (GZipStream gz = new GZipStream(fs, CompressionMode.Decompress))
-                using (StreamReader sr = new StreamReader(gz, Encoding.ASCII, false, 1 << 20))
+                // The list of files is taken once, at the start, and this scan
+                // runs for two hours over a tree that fetch-optc.ps1 is still
+                // writing to. On 2026-09-09 the 60 s pass died three hours in
+                // with FileNotFoundException: the fetcher had deleted a
+                // 2,009-byte quota-error page that was on disk when the list
+                // was built. That deletion is correct - leaving it there is how
+                // a resumed download ends up as [HTML][gzip] at exactly the
+                // right length - so the scan is what has to tolerate it.
+                //
+                // Skipped files are counted and reported. A silent skip would
+                // turn a partial scan into a result that looks complete.
+                try
                 {
-                    string line;
-                    while ((line = sr.ReadLine()) != null)
+                    using (FileStream fs = File.OpenRead(f))
+                    using (GZipStream gz = new GZipStream(fs, CompressionMode.Decompress))
+                    using (StreamReader sr = new StreamReader(gz, Encoding.ASCII, false, 1 << 20))
                     {
-                        Lines++;
-                        Consume(line);
+                        string line;
+                        while ((line = sr.ReadLine()) != null)
+                        {
+                            Lines++;
+                            Consume(line);
+                        }
                     }
+                }
+                catch (FileNotFoundException)
+                {
+                    Vanished++;
+                    continue;
+                }
+                catch (IOException)
+                {
+                    // being written right now, or a partial gzip. Same answer.
+                    Vanished++;
+                    continue;
+                }
+                catch (InvalidDataException)
+                {
+                    // not gzip at all. Test-GzipIntegrity.ps1 is the place that
+                    // reports on that; here it is one more file to skip.
+                    Vanished++;
+                    continue;
                 }
                 // NOT a flush point. AIA-201-225 ships as two files (ecar-last and a
                 // dated one) covering the same hosts and the same hours, so closing
@@ -392,6 +426,7 @@ Write-Output ("  hosts seen       : {0:N0}" -f $scan.Hosts)
 Write-Output ("  cells created    : {0:N0}" -f $scan.Cells)
 Write-Output ("  emitted          : {0:N0}  (pos {1:N0}, neg {2:N0})" -f $scan.Emitted, $scan.Positives, $scan.NegKept)
 Write-Output ("  LATE records     : {0:N0}" -f $scan.Late)
+Write-Output ("  SKIPPED files    : {0:N0}   (deleted or unreadable mid-scan)" -f $scan.Vanished)
 if ($scan.Late -gt $scan.Lines / 1000) {
   Write-Output '  ** LATE is over 0.1% of records. The flush watermark is closing cells'
   Write-Output '     too early and the cell contents are wrong. Do not use this output.'
@@ -416,6 +451,7 @@ $report = [ordered]@{
   bundles        = $files.Count
   records_read   = $scan.Lines
   malformed      = $scan.Malformed
+  vanished_files = $scan.Vanished   # deleted or unreadable while the scan was running
   hosts          = $scan.Hosts
   cells_created  = $scan.Cells
   emitted        = $scan.Emitted
