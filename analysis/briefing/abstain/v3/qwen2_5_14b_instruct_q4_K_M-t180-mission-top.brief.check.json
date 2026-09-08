@@ -1,0 +1,57 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T22:48:56.8341785+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\qwen2_5_14b_instruct_q4_K_M-t180-mission-top.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t180.mission-top.pack.json",
+    "prompt_version":  "briefing.ko v3",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:14b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  3,
+    "sentences_cited":  3,
+    "citation_rate":  1,
+    "citations_total":  4,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "tacnet-01 시나리오의 시각은 09:00 (t+180분)이며, 활성 단계는 기동, 표적 획득, 화력 유도이다 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2,F3",
+                          "abstain":  false,
+                          "text":  "임무 M-FIRE의 저하도는 0%로, 공격, 환경, 상호작용 모두 원인으로 작용하지 않았다 [F2][F3]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F4",
+                          "abstain":  false,
+                          "text":  "링크 L-VHF-CO1이 지형적 요인인 능선 차폐로 인해 단절되었다 [F4]{확신}."
+                      }
+                  ]
+}

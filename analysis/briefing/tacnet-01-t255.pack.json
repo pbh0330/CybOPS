@@ -7,7 +7,7 @@
     "step_label":  "자격증명 탈취",
     "method":  "weighted",
     "source":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
-    "generated":  "2026-09-07T00:57:21.8104154+09:00",
+    "generated":  "2026-09-08T22:52:26.0531445+09:00",
     "facts":  [
                   {
                       "id":  "F1",
@@ -69,7 +69,7 @@
                       "id":  "F9",
                       "kind":  "containment_cost",
                       "subject":  "TOC-SRV",
-                      "text":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-FIRE +33.2%p 변한다",
+                      "text":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-FIRE +41.4%p 변한다",
                       "value":  1
                   },
                   {
@@ -83,7 +83,7 @@
                       "id":  "F11",
                       "kind":  "containment_cost",
                       "subject":  "FDC-SRV",
-                      "text":  "FDC-SRV을(를) 격리하면 임무 저하도가 M-FIRE +53.2%p 변한다",
+                      "text":  "FDC-SRV을(를) 격리하면 임무 저하도가 M-FIRE +100.0%p 변한다",
                       "value":  1
                   },
                   {

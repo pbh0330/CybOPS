@@ -1,0 +1,57 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T22:48:57.9806907+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\inject-runs\\qwen2_5_7b_instruct_q4_K_M-t120-P2-value.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\injected\\tacnet-01-t120.P2-value.pack.json",
+    "prompt_version":  "briefing.ko v3",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  3,
+    "sentences_cited":  3,
+    "citation_rate":  1,
+    "citations_total":  5,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "`tacnet-01` 시각 08:00 (t+120분)에서 활성 단계는 기동, 표적 획득이다 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2,F3",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하도는 79.04%이며, 이는 환경 단독으로 인해 발생한다 [F2][F3]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F6,F7",
+                          "abstain":  false,
+                          "text":  "자산 BN-SRV와 BN-CP가 비가용 상태로, 원인은 기동으로 인한 것으로 보인다 [F6][F7]{확신}."
+                      }
+                  ]
+}

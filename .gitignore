@@ -70,3 +70,6 @@ analysis/lanl/_features2*.log
 analysis/optc/ecar-windows-*.csv
 analysis/optc/_ecar-windows-*.log
 analysis/briefing/_v3-*.log
+
+# 콘솔 로그. 결과는 eval/results 의 JSON 에 있고 이것은 실행 흔적일 뿐이다.
+analysis/logs/

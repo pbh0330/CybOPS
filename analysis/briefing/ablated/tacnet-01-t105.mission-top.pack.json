@@ -1,0 +1,210 @@
+{
+    "pack_version":  1,
+    "scenario_id":  "tacnet-01",
+    "t":  105,
+    "time_iso":  "2026-09-10T07:45:00.0000000+09:00",
+    "clock":  "07:45",
+    "step_label":  "정상",
+    "method":  "weighted",
+    "source":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
+    "generated":  "2026-09-08T22:56:57.7390274+09:00",
+    "ablation":  {
+                     "preset":  "mission-top",
+                     "narration_slot":  2,
+                     "generator":  "scripts/New-AblatedPack.ps1",
+                     "full_pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\tacnet-01-t105.pack.json",
+                     "facts_before":  20,
+                     "facts_after":  18,
+                     "removed_count":  2,
+                     "chargeable_count":  2,
+                     "leaked_tokens":  [
+                                           "0%"
+                                       ],
+                     "id_map":  {
+                                    "F14":  "F12",
+                                    "F10":  "F8",
+                                    "F1":  "F1",
+                                    "F7":  "F5",
+                                    "F17":  "F15",
+                                    "F6":  "F4",
+                                    "F4":  "F2",
+                                    "F5":  "F3",
+                                    "F9":  "F7",
+                                    "F18":  "F16",
+                                    "F20":  "F18",
+                                    "F12":  "F10",
+                                    "F16":  "F14",
+                                    "F15":  "F13",
+                                    "F8":  "F6",
+                                    "F19":  "F17",
+                                    "F13":  "F11",
+                                    "F11":  "F9"
+                                },
+                     "note":  "leaked_tokens still appear in a surviving fact, so producing them is derivation and not fabrication. Test-Abstention.ps1 charges unique_tokens only.",
+                     "removed":  [
+                                     {
+                                         "original_id":  "F2",
+                                         "kind":  "mission_degradation",
+                                         "subject":  "M-C2",
+                                         "text":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 79.04%다",
+                                         "value":  0.79037267080745333,
+                                         "narration_slot":  2,
+                                         "numeric_tokens":  [
+                                                                "79.04%"
+                                                            ],
+                                         "leaked_tokens":  [
+
+                                                           ],
+                                         "unique_tokens":  [
+                                                               "79.04%"
+                                                           ]
+                                     },
+                                     {
+                                         "original_id":  "F3",
+                                         "kind":  "attribution",
+                                         "subject":  "M-C2",
+                                         "text":  "임무 M-C2의 원인 분해: 공격 단독 0%, 환경 단독 79.04%, 상호작용 0%",
+                                         "value":  0,
+                                         "narration_slot":  2,
+                                         "numeric_tokens":  [
+                                                                "0%",
+                                                                "79.04%"
+                                                            ],
+                                         "leaked_tokens":  [
+                                                               "0%"
+                                                           ],
+                                         "unique_tokens":  [
+                                                               "79.04%"
+                                                           ]
+                                     }
+                                 ]
+                 },
+    "facts":  [
+                  {
+                      "id":  "F1",
+                      "kind":  "time",
+                      "subject":  "tacnet-01",
+                      "text":  "tacnet-01 시각 07:45 (t+105분). 활성 단계: 기동",
+                      "value":  105
+                  },
+                  {
+                      "id":  "F2",
+                      "kind":  "outage_asset",
+                      "subject":  "BN-SRV",
+                      "text":  "자산 BN-SRV이(가) 비가용이다. 원인 기동. 비고: 지휘소 이동(철수-전개)",
+                      "value":  1
+                  },
+                  {
+                      "id":  "F3",
+                      "kind":  "outage_asset",
+                      "subject":  "BN-CP",
+                      "text":  "자산 BN-CP이(가) 비가용이다. 원인 기동. 비고: 지휘소 이동(철수-전개)",
+                      "value":  1
+                  },
+                  {
+                      "id":  "F4",
+                      "kind":  "outage_asset",
+                      "subject":  "SAT-TERM",
+                      "text":  "자산 SAT-TERM이(가) 비가용이다. 원인 기동. 비고: 위성단말 철수-재전개",
+                      "value":  1
+                  },
+                  {
+                      "id":  "F5",
+                      "kind":  "outage_asset",
+                      "subject":  "FO-TAB",
+                      "text":  "자산 FO-TAB이(가) 비가용이다. 원인 기동. 비고: 관측반 미전개 - 표적획득 단계 이전",
+                      "value":  1
+                  },
+                  {
+                      "id":  "F6",
+                      "kind":  "task_degradation",
+                      "subject":  "T-ORDER",
+                      "text":  "작업 T-ORDER(작전명령 하달, 수행 위치 TOC-WS)의 저하도는 37.5%다",
+                      "value":  0.37499999999999994
+                  },
+                  {
+                      "id":  "F7",
+                      "kind":  "task_degradation",
+                      "subject":  "T-BFT",
+                      "text":  "작업 T-BFT(부대 위치 파악, 수행 위치 BN-CP)의 저하도는 100%다",
+                      "value":  1
+                  },
+                  {
+                      "id":  "F8",
+                      "kind":  "task_degradation",
+                      "subject":  "T-SITREP",
+                      "text":  "작업 T-SITREP(상황보고 수신, 수행 위치 TOC-WS)의 저하도는 34.78%다",
+                      "value":  0.34782608695652178
+                  },
+                  {
+                      "id":  "F9",
+                      "kind":  "task_degradation",
+                      "subject":  "T-CO1REP",
+                      "text":  "작업 T-CO1REP(1중대 상황보고 발신, 수행 위치 CO1-VEH)의 저하도는 100%다",
+                      "value":  1
+                  },
+                  {
+                      "id":  "F10",
+                      "kind":  "task_degradation",
+                      "subject":  "T-CO2REP",
+                      "text":  "작업 T-CO2REP(2중대 상황보고 발신, 수행 위치 CO2-VEH)의 저하도는 100%다",
+                      "value":  1
+                  },
+                  {
+                      "id":  "F11",
+                      "kind":  "task_degradation",
+                      "subject":  "T-CTRL",
+                      "text":  "작업 T-CTRL(기동 통제, 수행 위치 BN-CP)의 저하도는 100%다",
+                      "value":  1
+                  },
+                  {
+                      "id":  "F12",
+                      "kind":  "task_degradation",
+                      "subject":  "T-TGT",
+                      "text":  "작업 T-TGT(표적정보 전달, 수행 위치 FO-TAB)의 저하도는 100%다",
+                      "value":  1
+                  },
+                  {
+                      "id":  "F13",
+                      "kind":  "containment_cost",
+                      "subject":  "TOC-SRV",
+                      "text":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-C2 +21.0%p 변한다",
+                      "value":  1
+                  },
+                  {
+                      "id":  "F14",
+                      "kind":  "containment_cost",
+                      "subject":  "BN-SRV",
+                      "text":  "BN-SRV을(를) 격리해도 임무 저하도는 변하지 않는다(추가 비용 0)",
+                      "value":  0
+                  },
+                  {
+                      "id":  "F15",
+                      "kind":  "containment_cost",
+                      "subject":  "FDC-SRV",
+                      "text":  "FDC-SRV을(를) 격리해도 임무 저하도는 변하지 않는다(추가 비용 0)",
+                      "value":  0
+                  },
+                  {
+                      "id":  "F16",
+                      "kind":  "containment_cost",
+                      "subject":  "RELAY-1",
+                      "text":  "RELAY-1을(를) 격리해도 임무 저하도는 변하지 않는다(추가 비용 0)",
+                      "value":  0
+                  },
+                  {
+                      "id":  "F17",
+                      "kind":  "containment_cost",
+                      "subject":  "SAT-TERM",
+                      "text":  "SAT-TERM을(를) 격리해도 임무 저하도는 변하지 않는다(추가 비용 0)",
+                      "value":  0
+                  },
+                  {
+                      "id":  "F18",
+                      "kind":  "containment_cost",
+                      "subject":  "CO2-VEH",
+                      "text":  "CO2-VEH을(를) 격리해도 임무 저하도는 변하지 않는다(추가 비용 0)",
+                      "value":  0
+                  }
+              ]
+}

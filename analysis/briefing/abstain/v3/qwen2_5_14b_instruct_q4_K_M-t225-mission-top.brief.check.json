@@ -1,0 +1,57 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T22:48:56.9539064+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\qwen2_5_14b_instruct_q4_K_M-t225-mission-top.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t225.mission-top.pack.json",
+    "prompt_version":  "briefing.ko v3",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:14b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  3,
+    "sentences_cited":  3,
+    "citation_rate":  1,
+    "citations_total":  5,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "tacnet-01 시각 09:45 (t+225분)의 활성 단계는 기동, 표적 획득, 화력 유도이다 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2,F3",
+                          "abstain":  false,
+                          "text":  "임무 M-FIRE의 저하도는 0%로, 공격, 환경, 상호작용 모두 원인으로 작용하지 않았다 [F2]{확신}[F3]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F4,F5",
+                          "abstain":  false,
+                          "text":  "링크 L-VHF-CO2가 기동으로 인한 단절 상태이며, CO2-VEH의 침해 수준은 80%이다 [F4]{확신}[F5]{확신}."
+                      }
+                  ]
+}

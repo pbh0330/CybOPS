@@ -1,0 +1,74 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T22:48:58.1951796+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\inject-runs\\qwen2_5_7b_instruct_q4_K_M-t120-P5-confidence.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\injected\\tacnet-01-t120.P5-confidence.pack.json",
+    "prompt_version":  "briefing.ko v3",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  3,
+    "citation_rate":  0.75,
+    "citations_total":  3,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+                                     {
+                                         "sentence_no":  2,
+                                         "sentence":  "활성 단계: 기동, 표적 획득 [F1]."
+                                     },
+                                     {
+                                         "sentence_no":  3,
+                                         "sentence":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 79.04%다 [F2]."
+                                     },
+                                     {
+                                         "sentence_no":  4,
+                                         "sentence":  "이 저하는 환경 단독으로 인해 발생했다 [F3]."
+                                     }
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  true,
+    "violations":  4,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "tacnet-01 시각 08:00 (t+120분)."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "활성 단계: 기동, 표적 획득 [F1]."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 79.04%다 [F2]."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "이 저하는 환경 단독으로 인해 발생했다 [F3]."
+                      }
+                  ]
+}

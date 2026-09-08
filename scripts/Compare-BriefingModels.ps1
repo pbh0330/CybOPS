@@ -13,13 +13,33 @@
 # violations and latency per model. Nothing here judges prose quality; a model
 # that writes beautifully and cites a fact that does not exist still fails.
 #
+# Since the golden set exists (eval/golden/, 488 items derived from the engine
+# rather than hand written) each model is also scored on fact accuracy and on
+# calibration. The two halves answer different questions and a model can pass
+# one and fail the other: the verifier asks whether every claim is anchored,
+# the golden scorer asks whether the anchored claims are the engine's numbers,
+# and ECE asks whether the model's own stated confidence tracks how often it is
+# right. A model with a clean verifier report and an ECE of 0.30 is a model
+# that is wrong confidently and in the correct format.
+#
+# The model list spans two families on purpose. Comparing 7B against 14B of the
+# same family measures size; it says nothing about whether the result is a
+# property of Qwen. exaone3.5 is Korean-first and gemma2 is a third lineage, so
+# a finding that survives all four is about the task rather than about one
+# vendor's instruction tuning.
+#
 # Usage:
 #   .\scripts\Compare-BriefingModels.ps1
 #   .\scripts\Compare-BriefingModels.ps1 -Models 'qwen2.5:7b-instruct-q4_K_M','qwen2.5:14b-instruct-q4_K_M'
 #   .\scripts\Compare-BriefingModels.ps1 -Times 120,300,390 -Repeats 2
 
 param(
-  [string[]]$Models = @('qwen2.5:7b-instruct-q4_K_M', 'qwen2.5:14b-instruct-q4_K_M'),
+  [string[]]$Models = @(
+    'qwen2.5:7b-instruct-q4_K_M',
+    'qwen2.5:14b-instruct-q4_K_M',
+    'exaone3.5:7.8b',
+    'gemma2:9b-instruct-q4_K_M'
+  ),
   [int[]]$Times     = @(105, 120, 150, 210, 255, 300, 345, 390),
   [int]$Repeats     = 1,
   [string]$Replay   = "$PSScriptRoot\..\ui\public\data\tacnet-01.replay.json",
@@ -80,8 +100,9 @@ foreach ($model in $Models) {
       $c = Get-Content $rep -Raw -Encoding utf8 | ConvertFrom-Json
       $b = Get-Content $out -Raw -Encoding utf8 | ConvertFrom-Json
 
-      [void]$rows.Add([ordered]@{
+      [void]$rows.Add([pscustomobject][ordered]@{
         model            = $model
+        safe             = $safe
         t                = $t
         repeat           = $r
         pass             = $ok
@@ -115,6 +136,18 @@ $summary = New-Object System.Collections.ArrayList
 foreach ($model in $Models) {
   $mr = @($rows | Where-Object { $_.model -eq $model })
   if ($mr.Count -eq 0) { continue }
+  $safe = ($model -replace '[^0-9A-Za-z]', '_')
+
+  # fact accuracy and calibration on the same briefings the verifier just read
+  $gJson = Join-Path (Join-Path $root 'eval') ('results/e3-golden-{0}.json' -f $safe)
+  $gld = $null
+  try {
+    & (Join-Path $PSScriptRoot 'Test-GoldenBriefing.ps1') `
+      -Glob (Join-Path $tmpDir ("{0}-*.brief.json" -f $safe)) -OutJson $gJson | Out-Null
+    $gld = Get-Content $gJson -Raw -Encoding utf8 | ConvertFrom-Json
+  } catch {
+    Write-Output ("  golden scoring failed for {0}: {1}" -f $model, $_.Exception.Message)
+  }
   $passN = @($mr | Where-Object { $_.pass }).Count
   $cite  = ($mr | Measure-Object citation_rate -Average).Average
   $viol  = ($mr | Measure-Object violations -Sum).Sum
@@ -132,15 +165,31 @@ foreach ($model in $Models) {
     unknown_escalations = ($mr | Measure-Object unknown_escal -Sum).Sum
     mean_latency_ms = [int]$lat
     mean_chars = [int](($mr | Measure-Object chars -Average).Average)
+    golden_sentences = $(if ($gld) { $gld.totals.sentences } else { $null })
+    golden_untagged  = $(if ($gld) { $gld.totals.untagged } else { $null })
+    golden_correct   = $(if ($gld) { $gld.totals.correct } else { $null })
+    golden_wrong     = $(if ($gld) { $gld.totals.wrong } else { $null })
+    golden_abstain   = $(if ($gld) { $gld.totals.abstain } else { $null })
+    ece              = $(if ($gld) { $gld.ece } else { $null })
+    brier            = $(if ($gld) { $gld.brier } else { $null })
+    golden_report    = $(if ($gld) { $gJson } else { $null })
   })
 
+  $gTxt = '-'
+  if ($gld) {
+    $gTxt = "{0}/{1} ok  abst {2}  ECE {3}  Brier {4}" -f `
+      $gld.totals.correct, ([int]$gld.totals.correct + [int]$gld.totals.wrong), $gld.totals.abstain, `
+      $(if ($null -ne $gld.ece) { '{0:N3}' -f $gld.ece } else { 'n/a' }), `
+      $(if ($null -ne $gld.brier) { '{0:N3}' -f $gld.brier } else { 'n/a' })
+  }
   Write-Output ("{0,-32} {1,5} {2,6} {3,8:P1} {4,8} {5,9}" -f $model, $mr.Count, $passN, $cite, $viol, [int]$lat)
+  Write-Output ("{0,-32} {1}" -f '', $gTxt)
 }
 
 $payload = [ordered]@{
   generated = (Get-Date).ToString('o')
   generator = 'scripts/Compare-BriefingModels.ps1'
-  note      = 'Measurement for the 7-8B vs 12-14B question left open by ADR-0016. Compared on verifier violations and latency, not on prose quality.'
+  note      = 'Measurement for the 7-8B vs 12-14B question left open by ADR-0016. Compared on verifier violations, golden fact accuracy, calibration and latency - never on prose quality. Two model families so that a finding is not a property of one vendor.'
   scenario  = 'tacnet-01'
   times     = $Times
   repeats   = $Repeats

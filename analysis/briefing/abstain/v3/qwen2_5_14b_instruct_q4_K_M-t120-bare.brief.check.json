@@ -1,0 +1,76 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T22:48:57.5661846+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\qwen2_5_14b_instruct_q4_K_M-t120-bare.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t120.bare.pack.json",
+    "prompt_version":  "briefing.ko v3",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:14b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  3,
+    "citation_rate":  0.75,
+    "citations_total":  3,
+    "abstentions":  0,
+    "bogus_citations":  [
+                            {
+                                "sentence_no":  3,
+                                "id":  "F2",
+                                "sentence":  "임무 M-C2의 저하도는 52.63%다 [F2]{확신}."
+                            },
+                            {
+                                "sentence_no":  4,
+                                "id":  "F3",
+                                "sentence":  "이 저하는 상호작용 몫이 가장 크다 [F3]{확신}."
+                            }
+                        ],
+    "number_mismatches":  [
+                              {
+                                  "sentence_no":  3,
+                                  "number":  "52.63%",
+                                  "sentence":  "임무 M-C2의 저하도는 52.63%다 [F2]{확신}."
+                              }
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  true,
+    "violations":  4,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "[tacnet-01 시각 08:00 (t+120분)]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "활성 단계는 기동, 표적 획득이다 [F1]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "임무 M-C2의 저하도는 52.63%다 [F2]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "이 저하는 상호작용 몫이 가장 크다 [F3]{확신}."
+                      }
+                  ]
+}

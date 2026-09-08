@@ -1,0 +1,57 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T22:48:55.8097669+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\qwen2_5_7b_instruct_q4_K_M-t195-mission-top.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t195.mission-top.pack.json",
+    "prompt_version":  "briefing.ko v3",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  3,
+    "sentences_cited":  3,
+    "citation_rate":  1,
+    "citations_total":  3,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "임무 M-FIRE의 저하도는 0%이다 [F2]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "이 저하는 공격, 환경, 상호작용의 원인이 모두 0%로 분석되었다 [F3]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F4",
+                          "abstain":  false,
+                          "text":  "자산 CO2-VEH의 침해 수준은 50%로 판단된다 [F4]{추정}."
+                      }
+                  ]
+}
