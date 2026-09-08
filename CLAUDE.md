@@ -105,3 +105,26 @@ BOM 없는 UTF-8 `.ps1`을 시스템 ANSI 코드페이지로 읽는다. 실제�
    `-Check`는 필요한 파일이 있으면 exit 1이므로 CI에 넣는다.
 3. 사람이 읽는 문자열은 가능하면 **JSON 데이터 파일**에 둔다(`-Encoding utf8`로 읽으므로 안전).
 4. 콘솔 한글 출력이 필요하면 `[Console]::OutputEncoding = [System.Text.Encoding]::UTF8`.
+
+### PowerShell 5.1 변수 이름 규칙 (이것도 다섯 번 사고가 났다)
+
+**변수 이름은 대소문자를 구분하지 않는다. `$Tag` 와 `$tag` 는 같은 변수다.**
+이 저장소에서 다섯 번 났고, 셋은 오류 대신 **그럴듯한 숫자**를 냈다.
+
+| 충돌 | 파일 | 증상 |
+|---|---|---|
+| `$T` / `$t` | `New-GoldenSet.ps1` | 생성된 질문이 전부 빈 문자열 |
+| `$l` / `$L` | `New-BriefingPack.ps1` | 사실 문장이 라벨 없이 값만 |
+| `$BAND` / `$band` | `Test-GoldenBriefing.ps1` | 정확도 83% 모델의 ECE 가 0.8333 |
+| `$SlotTerms` / `$slotTerms` | `Test-Abstention.ps1` | `System.String` 에 `ContainsKey` 호출 |
+| `$Tag` / `$tag` | `Compare-BriefingModels.ps1` | 보고서가 엉뚱한 이름으로 저장 |
+
+**대문자로 쓰는 것은 방어가 아니다.** 이름이 대소문자로만 다르면 같은 변수다.
+네 번째와 다섯 번째는 이 문장을 방금 읽은 사람이 만들었다. 아는 것으로는 안 막힌다.
+
+```powershell
+.\scripts\Test-CaseCollisions.ps1     # exit 1 이면 이름을 고친다. CI에 넣는다.
+```
+
+함수 파라미터는 자기 스코프가 있으므로 검사에서 제외된다. 걸리는 것은 같은 스코프의
+진짜 충돌이다.
