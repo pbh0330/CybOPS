@@ -59,7 +59,20 @@ param(
     [string[]] $Only = @(),
 
     # Keep this much free on the chosen volume (docs/05-data-lifecycle.md).
-    [double] $ReserveGB = 50
+    [double] $ReserveGB = 50,
+
+    # Try the smallest files first.
+    #
+    # Google Drive refuses a file whose per-file quota is exhausted and lets it
+    # through hours later. A pass therefore does not download "some fraction of
+    # the bytes" - it downloads whichever FILES happen to be open right now. In
+    # manifest order the first thing a pass meets is often a 4.7 GB file, and a
+    # pass that spends its window on one of those finishes with one more file.
+    #
+    # Ordering by size ascending gets more files per window, and files are the
+    # unit that matters here: a host range is usable when its file is complete,
+    # and useless at 90%.
+    [switch] $SmallestFirst
 )
 
 $ErrorActionPreference = 'Stop'
@@ -102,6 +115,12 @@ Write-Host ('  manifest    : ' + $Manifest)
 Write-Host ('  phases      : ' + $(if ($Phase.Count -gt 0) { $Phase -join ',' } else { 'all' }))
 Write-Host ('  file count  : {0}' -f $files.Count)
 Write-Host ('  total size  : {0:N2} GB' -f ($totalBytes / 1GB))
+
+if ($SmallestFirst) {
+    $files = @($files | Sort-Object { [long]$_.bytes })
+    Write-Host ('  order: smallest first ({0:N2} GB .. {1:N2} GB)' -f `
+        ($files[0].bytes / 1GB), ($files[$files.Count - 1].bytes / 1GB))
+}
 
 $byPhase = $files | Group-Object -Property phase | Sort-Object { [int]$_.Name }
 Write-Host ''

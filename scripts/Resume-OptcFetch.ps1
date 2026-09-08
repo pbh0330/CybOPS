@@ -76,7 +76,11 @@ for ($i = 1; $i -le $Passes; $i++) {
     $before = Get-RawBytes
     Write-Line ("pass {0}/{1}: starting, have {2:N1} GB" -f $i, $Passes, ($before / 1GB))
     try {
-      & (Join-Path $PSScriptRoot 'fetch-optc.ps1') -Phase $Phase -Confirm *>&1 | Out-Null
+      # -SmallestFirst: a pass does not get a fraction of the bytes, it gets
+      # whichever FILES are not quota-blocked right now. Taking the small ones
+      # first finishes more of them per window, and a host range is only usable
+      # when its file is complete.
+      & (Join-Path $PSScriptRoot 'fetch-optc.ps1') -Phase $Phase -SmallestFirst -Confirm *>&1 | Out-Null
     } catch {
       Write-Line ("pass {0}/{1}: fetch threw: {2}" -f $i, $Passes, $_.Exception.Message)
     }
