@@ -135,6 +135,10 @@ def main():
     ap.add_argument("--labels", default=os.path.join(here, "analysis", "optc", "window-labels.json"))
     ap.add_argument("--out", default=None)
     ap.add_argument("--tag", default="w300")
+    ap.add_argument("--split", choices=("day", "hour"), default="day",
+                    help="hour = split inside one day. Smoke test only: train and test "
+                         "share the campaign and the hosts, so it is not a generalization "
+                         "result. Use it when a day boundary has no positives on one side.")
     ap.add_argument("--window", type=int, default=0,
                     help="window seconds. 0 = read it from <features>.summary.json")
     args = ap.parse_args()
@@ -243,6 +247,31 @@ def main():
     days = sorted(df.day.unique())
     print(f"  days {days}")
 
+    # SPLIT UNIT
+    #
+    # docs/19 section 6 fixed the boundary at the day, because OpTC runs a
+    # different scenario each day and a day boundary is the only cut that asks
+    # a real question: can a model trained on one campaign day rank the next.
+    #
+    # With the phase 4 downloads at 0% that cut has nothing on the far side.
+    # Every labelled cell that has telemetry sits on 2019-09-23 between 11:00
+    # and 15:00. So --split hour exists to get the scoring path to run at all,
+    # and it answers a much weaker question: given the first hours of ONE
+    # attack day, can the model rank the later hours of the SAME day.
+    #
+    # It is not a generalization result and it is not E1-b. Train and test
+    # share the campaign, the day and most of the hosts, so a host's
+    # behavioural signature crosses the cut even though host_key is not a
+    # feature. The report says so in its own protocol block, because a number
+    # in a JSON file outlives the caveat in a terminal.
+    if args.split == "hour":
+        df["day"] = pd.to_datetime(df.bucket * win, unit="s", utc=True) \
+                      .dt.tz_convert("Etc/GMT+4").dt.strftime("%Y-%m-%d %H")
+        days = sorted(df.day.unique())
+        pos_hours = sorted(df[df.label == 1].day.unique())
+        print(f"  SPLIT BY HOUR (smoke test, not a generalization claim)")
+        print(f"  hours with positives: {pos_hours}")
+
     results = {
         "generated": datetime.now(timezone.utc).isoformat(),
         "generator": "scripts/run_e1b.py",
@@ -267,8 +296,18 @@ def main():
             "hosts_without_telemetry": lab.get("dropped_hosts", {}),
             "why": lab.get("dropped_reason"),
         },
+        "split_unit": args.split,
         "protocol": {
             "unit": "(host, window) cell - the only unit the ground truth exists at",
+            "split_caveat": (
+                "SMOKE TEST. Train and test are hours of the same attack day on the same "
+                "hosts, so a host's behavioural signature crosses the cut and this is not "
+                "a generalization result. The day-boundary split that E1-b actually asks "
+                "for needs the phase 4 (24Sep19) downloads, which are at 0%."
+            ) if args.split == "hour" else (
+                "day boundary. OpTC runs a different scenario each day, so this asks "
+                "whether a model generalizes to an unseen attack pattern."
+            ),
             "sampling": "no negative subsampling; every cell is present, so precision@k is exact",
             "tuning": "selected on the training days only; test scored once",
         },
