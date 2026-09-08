@@ -1,0 +1,63 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:07:03.8060136+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\inject-runs\\v4m3\\exaone3_5_7_8b-t120-P2-value.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\injected\\tacnet-01-t120.P2-value.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  4,
+    "citation_rate":  1,
+    "citations_total":  5,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "시나리오 tacnet-01은 현재 활성 단계 기동 중 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하도는 79.04%로, 환경 요인에 의한 것으로 분석됨 [F2]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F7,F8",
+                          "abstain":  false,
+                          "text":  "자산 BN-SRV와 SAT-TERM의 비가용 상태가 M-C2 저하도에 영향을 미침, 원인은 기동으로 인한 철수-전개 정정 공지 [F7]{확신}, [F8]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F15",
+                          "abstain":  false,
+                          "text":  "TOC-SRV 격리 시 M-C2 임무 저하도는 추가로 21.0% 상승 예상됨 [F15]{확신}."
+                      }
+                  ]
+}

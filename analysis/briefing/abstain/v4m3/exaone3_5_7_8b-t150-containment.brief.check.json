@@ -1,0 +1,74 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:04:31.7895165+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m3\\exaone3_5_7_8b-t150-containment.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t150.containment.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  4,
+    "citation_rate":  1,
+    "citations_total":  4,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+                                 {
+                                     "sentence_no":  2,
+                                     "number":  "32.14%",
+                                     "cited":  "F3",
+                                     "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 32.14%로 확인되며, 이 저하의 주요 원인은 환경 요인이 21.43%로 가장 크게 작용하고 있음 [F3]{확신}."
+                                 },
+                                 {
+                                     "sentence_no":  3,
+                                     "number":  "50%",
+                                     "cited":  "F6",
+                                     "sentence":  "자산 CO2-VEH는 침해 수준이 50%로 나타나며, 이 자산의 연결 링크 L-VHF-CO1은 지형에 의한 단절 상태로 확인됨 [F6]{확신}."
+                                 }
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "tacnet-01 작전은 현재 활성 단계 기동 중에 있으며 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하도는 32.14%로 확인되며, 이 저하의 주요 원인은 환경 요인이 21.43%로 가장 크게 작용하고 있음 [F3]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F6",
+                          "abstain":  false,
+                          "text":  "자산 CO2-VEH는 침해 수준이 50%로 나타나며, 이 자산의 연결 링크 L-VHF-CO1은 지형에 의한 단절 상태로 확인됨 [F6]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "격리 비용 관련 구체적인 정보는 현재 제공되지 않아 확인 불가 [F0]{근거없음}."
+                      }
+                  ]
+}

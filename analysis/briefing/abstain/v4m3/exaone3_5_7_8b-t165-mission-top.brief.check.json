@@ -1,0 +1,75 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:04:03.0020359+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m3\\exaone3_5_7_8b-t165-mission-top.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t165.mission-top.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  6,
+    "sentences_cited":  5,
+    "citation_rate":  0.8333,
+    "citations_total":  5,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "시나리오 tacnet-01은 현재 활성 단계인 기동 단계에서 진행 중이다 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무 M-FIRE의 저하도는 0%로, 현재 정상적으로 수행 중이다 [F2]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "원인 분해 결과 공격 단독, 환경 단독, 상호작용 모두 0%로 나타났다 [F3]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F4",
+                          "abstain":  false,
+                          "text":  "링크 L-VHF-CO1의 단절은 지형에 의한 것으로 확인되었다 [F4]{확신}."
+                      },
+                      {
+                          "no":  5,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "단절된 자산과 링크의 상태는 원인 라벨에 따라 정확히 기록되었다."
+                      },
+                      {
+                          "no":  6,
+                          "cited":  "F8",
+                          "abstain":  false,
+                          "text":  "격리 비용 중 지휘관이 알아야 할 사항은 TOC-SRV를 격리할 경우 M-C2 임무의 저하도가 7.0% 증가할 것으로 예상된다 [F8]{확신}."
+                      }
+                  ]
+}

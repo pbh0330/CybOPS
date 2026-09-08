@@ -1,0 +1,99 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:04:00.4242440+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m3\\exaone3_5_7_8b-t150-mission-top.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t150.mission-top.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  10,
+    "sentences_cited":  6,
+    "citation_rate":  0.6,
+    "citations_total":  6,
+    "abstentions":  1,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  true,
+    "violations":  1,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "**시각 및 활성 단계**"
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "tacnet-01 시각 08:30 (t+150분), 활성 단계 기동 중 [F1]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "**우선순위가 가장 높은 임무의 저하도 및 원인 분해**"
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F0",
+                          "abstain":  true,
+                          "text":  "우선순위가 가장 높은 임무의 저하도는 근거 없음 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  5,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "해당 임무의 원인 분해는 공격 단독 0%, 환경 단독 0%, 상호작용 0% [F3]{확신}."
+                      },
+                      {
+                          "no":  6,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "**자산과 링크 상태**"
+                      },
+                      {
+                          "no":  7,
+                          "cited":  "F5",
+                          "abstain":  false,
+                          "text":  "링크 L-VHF-CO1이 지형으로 인해 단절되었으며, 자산 CO2-VEH의 침해 수준은 50% [F5]{확신}."
+                      },
+                      {
+                          "no":  8,
+                          "cited":  "F4",
+                          "abstain":  false,
+                          "text":  "단절 사실이 확인되었으며, 원인은 지형으로 인한 차폐 [F4]{확신}."
+                      },
+                      {
+                          "no":  9,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "**격리 비용 중 지휘관이 알아야 할 것**"
+                      },
+                      {
+                          "no":  10,
+                          "cited":  "F13",
+                          "abstain":  false,
+                          "text":  "CO2-VEH 격리 시 임무 저하도가 M-C2에 +10.7%p 변화 [F13]{확신}."
+                      }
+                  ]
+}

@@ -1,0 +1,57 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T23:59:58.1329594+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m3\\qwen2_5_7b_instruct_q4_K_M-t150-containment.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t150.containment.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  3,
+    "sentences_cited":  2,
+    "citation_rate":  0.6667,
+    "citations_total":  2,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  true,
+    "violations":  1,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "[tacnet-01 시각 08:30 (t+150분), 활성 단계 기동, 표적 획득]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하도는 32.14%다 [F2]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F6",
+                          "abstain":  false,
+                          "text":  "링크 L-VHF-CO1이 단절되어 원인은 지형, 비고 능선 차폐로 판명되었다 [F6]{확신}."
+                      }
+                  ]
+}

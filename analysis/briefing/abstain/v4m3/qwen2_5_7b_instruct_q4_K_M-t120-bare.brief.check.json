@@ -1,0 +1,67 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:00:09.7983586+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m3\\qwen2_5_7b_instruct_q4_K_M-t120-bare.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t120.bare.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  4,
+    "citation_rate":  1,
+    "citations_total":  4,
+    "abstentions":  1,
+    "bogus_citations":  [
+                            {
+                                "sentence_no":  2,
+                                "id":  "F3",
+                                "sentence":  "원인을 분석한 결과, 저하의 주요 원인은 상호작용 몫이 가장 크다 [F3]{확신}."
+                            }
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  1,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F0",
+                          "abstain":  true,
+                          "text":  "기동 중인 단계에서 표적을 획득했지만, 우선순위가 가장 높은 임무의 저하도는 근거 없음 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "원인을 분석한 결과, 저하의 주요 원인은 상호작용 몫이 가장 크다 [F3]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "표적과의 연결이 끊긴 상태로, 이는 기동과 지형에 의한 것이 구분 불가 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "격리 비용은 120,000 KRW다 [F1]{확신}."
+                      }
+                  ]
+}

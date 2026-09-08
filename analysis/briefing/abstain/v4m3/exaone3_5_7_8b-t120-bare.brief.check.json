@@ -1,0 +1,69 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:04:49.9154868+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m3\\exaone3_5_7_8b-t120-bare.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t120.bare.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  5,
+    "sentences_cited":  5,
+    "citation_rate":  1,
+    "citations_total":  5,
+    "abstentions":  1,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "활성 단계가 기동 단계로 유지되고 있으며 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "현재 시각은 08:00 (t+120분)으로 전술 상황은 안정적입니다 [F1]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F0",
+                          "abstain":  true,
+                          "text":  "우선순위가 가장 높은 임무의 저하도는 근거 없음 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "자산과 링크의 단절 상태에 대한 구체적인 정보는 현재 제공되지 않았습니다 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  5,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "격리 비용 관련 정보는 현재 제공되지 않았습니다 [F0]{근거없음}."
+                      }
+                  ]
+}

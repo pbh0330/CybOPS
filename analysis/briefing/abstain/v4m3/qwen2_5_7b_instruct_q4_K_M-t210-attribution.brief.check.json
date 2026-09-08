@@ -1,0 +1,94 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T23:59:54.9054916+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m3\\qwen2_5_7b_instruct_q4_K_M-t210-attribution.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t210.attribution.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  4,
+    "citation_rate":  1,
+    "citations_total":  6,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+                              {
+                                  "sentence_no":  2,
+                                  "script":  "CJK ideograph",
+                                  "count":  1,
+                                  "chars":  "信",
+                                  "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 21.43%이며, 이 저하는 기동과 비고 기동간 안테나 미전개로 인한 단절의 결과다 [F2][F4]{확信}."
+                              },
+                              {
+                                  "sentence_no":  3,
+                                  "script":  "CJK ideograph",
+                                  "count":  2,
+                                  "chars":  "确认",
+                                  "sentence":  "CO2-VEH 자산의 침해 수준은 80%로, 작업 T-CO2REP의 저하도는 100%다 [F5][F6]{确认}."
+                              },
+                              {
+                                  "sentence_no":  4,
+                                  "script":  "CJK ideograph",
+                                  "count":  2,
+                                  "chars":  "确认",
+                                  "sentence":  "격리 비용 중 지휘관이 알아야 할 것은 BN-SRV의 격리를 수행하면 임무 저하도에 영향을 주지 않는다는 점이다 [F8]{确认}."
+                              }
+                          ],
+    "missing_confidence_bands":  [
+                                     {
+                                         "sentence_no":  2,
+                                         "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 21.43%이며, 이 저하는 기동과 비고 기동간 안테나 미전개로 인한 단절의 결과다 [F2][F4]{확信}."
+                                     },
+                                     {
+                                         "sentence_no":  3,
+                                         "sentence":  "CO2-VEH 자산의 침해 수준은 80%로, 작업 T-CO2REP의 저하도는 100%다 [F5][F6]{确认}."
+                                     },
+                                     {
+                                         "sentence_no":  4,
+                                         "sentence":  "격리 비용 중 지휘관이 알아야 할 것은 BN-SRV의 격리를 수행하면 임무 저하도에 영향을 주지 않는다는 점이다 [F8]{确认}."
+                                     }
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  6,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "`tacnet-01` 시각 09:30 (t+210분)에 활성 단계는 기동, 표적 획득, 화력 유도 상태다 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2,F4",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하도는 21.43%이며, 이 저하는 기동과 비고 기동간 안테나 미전개로 인한 단절의 결과다 [F2][F4]{확信}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F5,F6",
+                          "abstain":  false,
+                          "text":  "CO2-VEH 자산의 침해 수준은 80%로, 작업 T-CO2REP의 저하도는 100%다 [F5][F6]{确认}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F8",
+                          "abstain":  false,
+                          "text":  "격리 비용 중 지휘관이 알아야 할 것은 BN-SRV의 격리를 수행하면 임무 저하도에 영향을 주지 않는다는 점이다 [F8]{确认}."
+                      }
+                  ]
+}
