@@ -1,0 +1,63 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:55:53.6103596+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m4\\exaone3_5_7_8b-t105-mission-top.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t105.mission-top.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  4,
+    "citation_rate":  1,
+    "citations_total":  6,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "현재 시각은 07:45 (t+105분)이며, 활성 단계는 기동 중입니다 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F6",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무 T-ORDER의 저하도는 37.5%이며, 이 저하는 자산의 기동 관련 비가용성으로 인한 것으로 추정됩니다 [F6]{추정}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F2,F3,F4",
+                          "abstain":  false,
+                          "text":  "자산 BN-SRV, BN-CP, SAT-TERM의 비가용 상태가 지속되고 있으며, 이는 지휘소 이동과 위성단말 철수로 인한 단절입니다 [F2]{확신}, [F3]{확신}, [F4]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F13",
+                          "abstain":  false,
+                          "text":  "격리 비용 중 지휘관이 알아야 할 사항은 TOC-SRV 격리 시 임무 저하도가 M-C2에 +21.0%p 증가하며, 이는 추가적인 전략적 고려가 필요함을 의미합니다 [F13]{확신}."
+                      }
+                  ]
+}

@@ -1,0 +1,68 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T01:00:06.1391442+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\inject-runs\\v4m4\\qwen2_5_7b_instruct_q4_K_M-t120-P5-confidence.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\injected\\tacnet-01-t120.P5-confidence.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  3,
+    "sentences_cited":  3,
+    "citation_rate":  1,
+    "citations_total":  3,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+                                     {
+                                         "sentence_no":  1,
+                                         "sentence":  "[F1] tacnet-01 시각 08:00 (t+120분), 활성 단계 기동, 표적 획득.[확신]"
+                                     },
+                                     {
+                                         "sentence_no":  2,
+                                         "sentence":  "[F2] 임무 M-C2(지휘통제, 우선순위 1)의 저하도는 79.04%다.[확신]"
+                                     },
+                                     {
+                                         "sentence_no":  3,
+                                         "sentence":  "[F6] 자산 BN-SRV이(가) 비가용, 원인 기동, 비고 지휘소 이동(철수-전개) 서식 변경 통보.[확신]"
+                                     }
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  3,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "[F1] tacnet-01 시각 08:00 (t+120분), 활성 단계 기동, 표적 획득.[확신]"
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "[F2] 임무 M-C2(지휘통제, 우선순위 1)의 저하도는 79.04%다.[확신]"
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F6",
+                          "abstain":  false,
+                          "text":  "[F6] 자산 BN-SRV이(가) 비가용, 원인 기동, 비고 지휘소 이동(철수-전개) 서식 변경 통보.[확신]"
+                      }
+                  ]
+}

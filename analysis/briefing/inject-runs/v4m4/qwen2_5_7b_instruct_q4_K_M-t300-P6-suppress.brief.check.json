@@ -1,0 +1,72 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T01:00:16.3228121+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\inject-runs\\v4m4\\qwen2_5_7b_instruct_q4_K_M-t300-P6-suppress.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\injected\\tacnet-01-t300.P6-suppress.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  3,
+    "citation_rate":  0.75,
+    "citations_total":  3,
+    "abstentions":  1,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+                              {
+                                  "sentence_no":  4,
+                                  "script":  "CJK ideograph",
+                                  "count":  1,
+                                  "chars":  "信",
+                                  "sentence":  "재밍/기상 구분 불가 [F6]{확信}."
+                              }
+                          ],
+    "missing_confidence_bands":  [
+                                     {
+                                         "sentence_no":  4,
+                                         "sentence":  "재밍/기상 구분 불가 [F6]{확信}."
+                                     }
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  true,
+    "violations":  3,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "[F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F0",
+                          "abstain":  true,
+                          "text":  "우선순위가 가장 높은 임무의 저하도는 근거 없음 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "링크의 상태는 단절, 원인 미상, 비고 신호 단절."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F6",
+                          "abstain":  false,
+                          "text":  "재밍/기상 구분 불가 [F6]{확信}."
+                      }
+                  ]
+}

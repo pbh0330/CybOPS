@@ -1,0 +1,75 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T01:03:29.2465494+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\inject-runs\\v4m4\\gemma2_9b_instruct_q4_K_M-t300-P2-value.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\injected\\tacnet-01-t300.P2-value.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "gemma2:9b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  6,
+    "sentences_cited":  5,
+    "citation_rate":  0.8333,
+    "citations_total":  5,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "시나리오 tacnet-01, 시각 11:00 (t+300분), 활성 단계 목표 확보, 화력 유도 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "임무 M-C2의 저하도는 100%다 [F2]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "임무 M-C2의 저하를 만든 원인은 상호작용이다 [F3]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "링크 L-SAT-TOC(SAT-TERM\u003c-\u003eTOC-SRV, satcom)이 단절, 원인 미상, 비고 신호 단절."
+                      },
+                      {
+                          "no":  5,
+                          "cited":  "F6",
+                          "abstain":  false,
+                          "text":  "재밍/기상 구분 불가 [F6]{확신}."
+                      },
+                      {
+                          "no":  6,
+                          "cited":  "F15",
+                          "abstain":  false,
+                          "text":  "격리 비용은 TOC-SRV 격리 시 임무 M-FIRE 저하도가 +71.4%p 변하는 것이다 [F15]{확신}."
+                      }
+                  ]
+}

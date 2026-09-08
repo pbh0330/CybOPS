@@ -58,6 +58,12 @@ Write-Line ("=== resume loop start: {0} passes, {1} min apart, phases {2} ===" -
 
 for ($i = 1; $i -le $Passes; $i++) {
 
+  # A reader can break the writer. On 2026-09-09 pass 2 died instantly with
+  # "the file is in use by another process": a tail -f on _acquire.log, armed
+  # to watch for completed downloads, held a handle that fetch-optc.ps1 could
+  # not append through. Watching a log is not a read-only act on Windows.
+  # Read the log with Get-Content after the fact, not with a live tail.
+
   # Do not start a second fetch on top of a running one. Two curls resuming the
   # same file with -C - would interleave writes into one -o target, and the
   # result would be the right length and the wrong bytes - the exact failure
@@ -75,7 +81,7 @@ for ($i = 1; $i -le $Passes; $i++) {
       Write-Line ("pass {0}/{1}: fetch threw: {2}" -f $i, $Passes, $_.Exception.Message)
     }
     $after = Get-RawBytes
-    Write-Line ("pass {0}/{1}: done, {1:N1} GB -> {2:N1} GB (+{3:N2} GB)" -f `
+    Write-Line ("pass {0}/{1}: done, {2:N1} GB -> {3:N1} GB (+{4:N2} GB)" -f `
       $i, $Passes, ($before / 1GB), ($after / 1GB), (($after - $before) / 1GB))
   }
 

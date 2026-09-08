@@ -1,0 +1,63 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:56:08.7713567+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m4\\exaone3_5_7_8b-t210-mission-top.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t210.mission-top.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  4,
+    "citation_rate":  1,
+    "citations_total":  4,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "시나리오 tacnet-01은 현재 활성 단계인 기동, 표적 획득, 화력 유도 단계에 있으며 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무 M-FIRE의 저하도는 0%로, 현재 정상 작동 중입니다 [F2]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F4",
+                          "abstain":  false,
+                          "text":  "링크 L-VHF-CO2의 단절은 기동 관련 안테나 미전개로 인한 것으로 확인됩니다 [F4]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F12",
+                          "abstain":  false,
+                          "text":  "CO2-VEH 자산의 격리 비용은 현재로서는 추가적인 임무 저하도 변화가 없으므로 0으로 추정됩니다 [F12]{근거없음}."
+                      }
+                  ]
+}

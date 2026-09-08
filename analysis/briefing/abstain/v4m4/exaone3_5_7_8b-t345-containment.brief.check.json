@@ -1,0 +1,63 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:56:32.4387874+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m4\\exaone3_5_7_8b-t345-containment.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t345.containment.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  4,
+    "citation_rate":  1,
+    "citations_total":  4,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "시나리오 tacnet-01은 현재 활성 단계인 목표 확보와 화력 유도를 진행 중이다 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하도는 60%이며, 이는 공격 단독 요인에 기인한다 [F2]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F6",
+                          "abstain":  false,
+                          "text":  "자산 CO2-VEH는 침해 수준 80%로 단절 상태이며, 이는 원인 분해 결과 공격 단독 요인으로 확인된다 [F6]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F7",
+                          "abstain":  false,
+                          "text":  "지휘관이 알아야 할 격리 비용 중 하나는 자산 BN-SRV의 격리 비용이 100%로 가장 높다는 점이다 [F7]{확신}."
+                      }
+                  ]
+}

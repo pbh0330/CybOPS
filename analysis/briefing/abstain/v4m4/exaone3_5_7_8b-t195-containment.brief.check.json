@@ -1,0 +1,66 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:56:30.2460925+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m4\\exaone3_5_7_8b-t195-containment.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t195.containment.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  4,
+    "citation_rate":  1,
+    "citations_total":  4,
+    "abstentions":  1,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+                                     {
+                                         "sentence_no":  3,
+                                         "sentence":  "자산 CO2-VEH와 관련된 작업 T-CO2REP의 저하도는 50%로, 상호작용이나 환경 요인에 의한 단절은 확인되지 않았다 [F7]{근사}."
+                                     }
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  1,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "tacnet-01 작전은 현재 활성 단계인 기동, 표적 획득, 화력 유도 단계에 있으며 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "임무 M-C2의 저하도는 10.71%로 가장 높은 우선순위를 가진 임무이며, 이는 공격 단독 요인에 기인한다 [F2]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F7",
+                          "abstain":  true,
+                          "text":  "자산 CO2-VEH와 관련된 작업 T-CO2REP의 저하도는 50%로, 상호작용이나 환경 요인에 의한 단절은 확인되지 않았다 [F7]{근사}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "격리 비용에 대한 구체적인 정보는 현재 제공되지 않았다 [F0]{근거없음}."
+                      }
+                  ]
+}
