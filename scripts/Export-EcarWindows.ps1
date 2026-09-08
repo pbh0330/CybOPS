@@ -175,10 +175,21 @@ public class EcarWindowScan
                         Consume(line);
                     }
                 }
-                // a bundle boundary is a safe place to close everything: the next
-                // bundle is a different host range or a different day
-                FlushAll();
+                // NOT a flush point. AIA-201-225 ships as two files (ecar-last and a
+                // dated one) covering the same hosts and the same hours, so closing
+                // cells at a bundle boundary guarantees that the second file arrives
+                // after its cells are gone. That produced 3.8M LATE records at the
+                // 900 s window - 0.6% of the corpus - and the guard below caught it.
+                // Cells are cheap here (180k at the finest window, about 130 MB), so
+                // they are all held open until the end.
+
             }
+
+            // The only flush. Everything has been read, so no cell can still be
+            // waiting for records and LATE must come out at zero. If it does
+            // not, the assumption that a record's own timestamp decides its cell
+            // is wrong and the run is void.
+            FlushAll();
         }
         Hosts = _hostId.Count;
     }
@@ -273,9 +284,7 @@ public class EcarWindowScan
         string pid = Field(line, "\"pid\":");
         if (pid != null) { int p; if (int.TryParse(pid.Split(',')[0].Trim(), out p)) c.Pids.Add(p); }
 
-        // close cells the stream has moved a long way past
         if (epoch > _watermark) _watermark = epoch;
-        if (_open.Count > 200000) FlushBelow(_watermark - (long)_win * 4);
     }
 
     void FlushBelow(long cutoffEpoch)
