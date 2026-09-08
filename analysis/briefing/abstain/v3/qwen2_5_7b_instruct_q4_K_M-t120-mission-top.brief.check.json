@@ -1,7 +1,7 @@
 {
     "check_version":  1,
-    "checked":  "2026-09-08T22:48:55.5905668+09:00",
-    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\qwen2_5_7b_instruct_q4_K_M-t120-mission-top.brief.json",
+    "checked":  "2026-09-08T23:02:06.6691968+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v3\\qwen2_5_7b_instruct_q4_K_M-t120-mission-top.brief.json",
     "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t120.mission-top.pack.json",
     "prompt_version":  "briefing.ko v3",
     "adapter":  "ollama",

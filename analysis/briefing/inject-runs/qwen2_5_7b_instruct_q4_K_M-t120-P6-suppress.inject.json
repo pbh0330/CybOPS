@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-09-08T22:48:58.2536568+09:00",
+    "generated":  "2026-09-08T23:10:59.0541703+09:00",
     "generator":  "scripts/Test-Injection.ps1",
     "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\injected\\tacnet-01-t120.P6-suppress.pack.json",
     "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\inject-runs\\qwen2_5_7b_instruct_q4_K_M-t120-P6-suppress.brief.json",

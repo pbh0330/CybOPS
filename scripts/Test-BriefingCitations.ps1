@@ -88,6 +88,17 @@ if (Test-Path $Bands) {
 }
 $bandMissing = New-Object System.Collections.ArrayList
 
+# The abstention sentinel. A refusal sentence still has to carry the closing
+# format, so it needs an id, and the whole point is that it names no fact.
+# Counting it as a bogus citation would mean every extra refusal raised the
+# violation count: prompt v4 asked for refusals and immediately produced one
+# to three of these per briefing.
+$abstainId = 'F0'
+if (Test-Path $Bands) {
+  $bj = Get-Content $Bands -Raw -Encoding utf8 | ConvertFrom-Json
+  if ($bj.abstain_citation_id) { $abstainId = [string]$bj.abstain_citation_id }
+}
+
 $packObj = Get-Content $Pack   -Raw -Encoding utf8 | ConvertFrom-Json
 $KW      = Get-Content $Checks -Raw -Encoding utf8 | ConvertFrom-Json
 
@@ -236,6 +247,7 @@ foreach ($s in $sentences) {
 
   # -- 2. bogus citations
   foreach ($id in $ids) {
+    if ($id -eq $abstainId) { continue }
     if (-not $factText.ContainsKey($id)) {
       [void]$bogus.Add([ordered]@{ sentence_no = $idx; id = $id; sentence = $s })
     }

@@ -227,6 +227,23 @@ foreach ($f in $files) {
         if ($want -le 0 -and $gain -eq 0) { break }
 
         if ($gain -le 0) {
+            # Ask the server why. Drive answers an exhausted per-file quota
+            # with HTTP 206 and an HTML page titled "Quota exceeded" - a
+            # SUCCESS status carrying an error, so -f never fires and the
+            # only symptom upstairs is 0.00 MB/s. The 2026-09-08 resume spent
+            # twelve minutes per file rediscovering that, ten attempts at a
+            # time. The gzip magic check downstream already stops the HTML
+            # from being kept; this only makes the log say the real reason
+            # and stop early, because a quota block clears on its own
+            # schedule and retrying does not move it.
+            if ($stall -eq 0) {
+                $probe = ""
+                try { $probe = (& curl.exe -sS -L -r 0-511 --connect-timeout 20 $url 2>$null) -join " " } catch { }
+                if ($probe -match "Quota exceeded") {
+                    Write-Log '  QUOTA  Drive per-file download quota is exhausted for this file. It clears on its own; re-run later to resume.'
+                    break
+                }
+            }
             $stall++
             if ($stall -ge $MaxStall) {
                 Write-Log ('  giving up on this file: {0} consecutive attempts with no progress' -f $MaxStall)

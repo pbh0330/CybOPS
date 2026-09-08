@@ -1,0 +1,87 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T23:02:11.0638308+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4\\qwen2_5_14b_instruct_q4_K_M-t210-compromise.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t210.compromise.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:14b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  8,
+    "sentences_cited":  5,
+    "citation_rate":  0.625,
+    "citations_total":  5,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  true,
+    "violations":  1,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "tacnet-01 시각 09:30 (t+210분)."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "활성 단계: 기동, 표적 획득, 화력 유도 [F1]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 21.43%다 [F2]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "임무 M-C2의 원인 분해: 공격 단독 17.14%, 환경 단독 21.43%, 상호작용 -17.14% [F3]{확신}."
+                      },
+                      {
+                          "no":  5,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "링크 L-VHF-CO2(CO2-VEH\u003c-\u003eRELAY-1, vhf)이(가) 단절됐다."
+                      },
+                      {
+                          "no":  6,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "원인 기동."
+                      },
+                      {
+                          "no":  7,
+                          "cited":  "F6",
+                          "abstain":  false,
+                          "text":  "비고: 기동간 안테나 미전개 [F6]{확신}."
+                      },
+                      {
+                          "no":  8,
+                          "cited":  "F8",
+                          "abstain":  false,
+                          "text":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-C2 +7.0%p, M-FIRE +41.4%p 변한다 [F8]{확신}."
+                      }
+                  ]
+}

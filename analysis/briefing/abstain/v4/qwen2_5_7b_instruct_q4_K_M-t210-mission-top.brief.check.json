@@ -1,6 +1,6 @@
 {
     "check_version":  1,
-    "checked":  "2026-09-08T22:57:46.8799009+09:00",
+    "checked":  "2026-09-08T23:02:09.6899154+09:00",
     "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4\\qwen2_5_7b_instruct_q4_K_M-t210-mission-top.brief.json",
     "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t210.mission-top.pack.json",
     "prompt_version":  "briefing.ko v4",
@@ -13,16 +13,7 @@
     "citations_total":  5,
     "abstentions":  1,
     "bogus_citations":  [
-                            {
-                                "sentence_no":  2,
-                                "id":  "F0",
-                                "sentence":  "우선순위가 가장 높은 임무의 저하도는 근거 없음 [F0]{근거없음}."
-                            },
-                            {
-                                "sentence_no":  3,
-                                "id":  "F0",
-                                "sentence":  "원인 분해도 알려져 있지 않다 [F0]{근거없음}."
-                            }
+
                         ],
     "number_mismatches":  [
 
@@ -41,8 +32,8 @@
 
                              ],
     "citation_rate_below_min":  false,
-    "violations":  2,
-    "pass":  false,
+    "violations":  0,
+    "pass":  true,
     "sentences":  [
                       {
                           "no":  1,

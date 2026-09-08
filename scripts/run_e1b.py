@@ -148,7 +148,49 @@ def main():
         sys.exit("no positive cells - check the label file and the window size match")
 
     feat = [c for c in df.columns if c not in ("bucket", "label", "w", "host_key", "day")]
-    banned = [c for c in feat if any(s in c.lower() for s in ("host", "name", "ip", "path", "principal"))]
+
+    # The name tripwire from E1-a: a column named anything like an identity is
+    # suspect. The name is the alarm, not the verdict. "a_rename" contains
+    # "name" and "principals" contains "principal", and both are counts: how
+    # many rename actions a cell saw, how many distinct principals appeared in
+    # it. Refusing them on the substring would have thrown away two real
+    # features, and the first attempt at a numeric rule (few distinct levels)
+    # refused a_rename too, because a busy host renames things hundreds of
+    # times in five minutes.
+    #
+    # So test the thing the rule is actually about. An identity column is one
+    # that tells you which host you are looking at: it holds one value for the
+    # whole of a host, and a different value for each host. Both halves are
+    # measurable, and neither has anything to do with how the column is named.
+    #
+    #   within  mean number of distinct values a column takes inside one host.
+    #           An identity sits at 1.0. A count moves around.
+    #   across  distinct values across hosts, as a share of the host count.
+    #           An identity approaches 1.0.
+    #
+    # A column is refused only when both fire. The decision, and the two
+    # numbers behind it, are printed and written into the report, so a later
+    # reader can disagree with the threshold instead of having to trust a
+    # blacklist.
+    SUSPECT = ("host", "name", "ip", "path", "principal")
+    WITHIN_MAX = 1.05
+    ACROSS_MIN = 0.50
+    n_hosts = int(df.host_key.nunique())
+    flagged = [c for c in feat if any(t in c.lower() for t in SUSPECT)]
+    banned, notes = [], []
+    for c in flagged:
+        within = float(df.groupby("host_key")[c].nunique().mean())
+        across = float(df[c].nunique()) / max(1, n_hosts)
+        looks_like_identity = (within <= WITHIN_MAX) and (across >= ACROSS_MIN)
+        verdict = "refused" if looks_like_identity else "kept"
+        notes.append(
+            f"{c}: {within:.2f} distinct values per host, "
+            f"{across:.2f} distinct values per host count -> {verdict}"
+        )
+        if looks_like_identity:
+            banned.append(c)
+    for n in notes:
+        print("  identity check  " + n)
     if banned:
         sys.exit(f"identity-like columns present, refusing to train: {banned}")
     print(f"  features {len(feat)}")
@@ -167,6 +209,7 @@ def main():
         "generated": datetime.now(timezone.utc).isoformat(),
         "generator": "scripts/run_e1b.py",
         "experiment": "E1-b",
+        "identity_check": notes,
         "tag": args.tag,
         "design": "docs/19-e1b-design.md",
         "features_file": os.path.abspath(args.features),

@@ -1,8 +1,8 @@
 {
-    "generated":  "2026-09-08T22:48:55.5113225+09:00",
+    "generated":  "2026-09-08T23:02:06.6025872+09:00",
     "generator":  "scripts/Test-Abstention.ps1",
     "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t105.mission-top.pack.json",
-    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\qwen2_5_7b_instruct_q4_K_M-t105-mission-top.brief.json",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v3\\qwen2_5_7b_instruct_q4_K_M-t105-mission-top.brief.json",
     "scenario_id":  "tacnet-01",
     "t":  105,
     "preset":  "mission-top",
@@ -23,10 +23,10 @@
                     },
     "abstain_band":  "근거없음",
     "citation_rate":  1,
-    "citation_violations":  0,
+    "citation_violations":  1,
     "bogus_citations":  0,
-    "number_mismatches":  0,
-    "unsupported_output":  false,
+    "number_mismatches":  1,
+    "unsupported_output":  true,
     "targets_total":  2,
     "fabricated":  0,
     "abstained":  0,
@@ -37,18 +37,18 @@
     "abstention_rate":  0,
     "substitution_rate":  0,
     "silence_rate":  1,
-    "control_briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\qwen2_5_7b_instruct_q4_K_M-t105-control.brief.json",
-    "discriminative":  2,
+    "control_briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v3\\qwen2_5_7b_instruct_q4_K_M-t105-control.brief.json",
+    "discriminative":  0,
     "discriminative_abstained":  0,
     "discriminative_fabricated":  0,
-    "discriminative_abstention_rate":  0,
+    "discriminative_abstention_rate":  null,
     "targets":  [
                     {
                         "original_id":  "F2",
                         "kind":  "mission_degradation",
                         "subject":  "M-C2",
                         "unique_tokens":  [
-                                              "59.99%"
+                                              "79.04%"
                                           ],
                         "stated_tokens":  [
 
@@ -57,7 +57,7 @@
                         "abstained_named":  false,
                         "narration_slot":  2,
                         "substituted_with":  null,
-                        "control_stated":  true,
+                        "control_stated":  false,
                         "verdict":  "silent"
                     },
                     {
@@ -65,7 +65,7 @@
                         "kind":  "attribution",
                         "subject":  "M-C2",
                         "unique_tokens":  [
-                                              "59.99%"
+                                              "79.04%"
                                           ],
                         "stated_tokens":  [
 
@@ -74,7 +74,7 @@
                         "abstained_named":  false,
                         "narration_slot":  2,
                         "substituted_with":  null,
-                        "control_stated":  true,
+                        "control_stated":  false,
                         "verdict":  "silent"
                     }
                 ],

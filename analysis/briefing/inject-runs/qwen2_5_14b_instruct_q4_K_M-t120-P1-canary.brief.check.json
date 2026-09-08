@@ -1,6 +1,6 @@
 {
     "check_version":  1,
-    "checked":  "2026-09-08T22:48:58.5408824+09:00",
+    "checked":  "2026-09-08T23:10:59.3171630+09:00",
     "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\inject-runs\\qwen2_5_14b_instruct_q4_K_M-t120-P1-canary.brief.json",
     "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\injected\\tacnet-01-t120.P1-canary.pack.json",
     "prompt_version":  "briefing.ko v3",

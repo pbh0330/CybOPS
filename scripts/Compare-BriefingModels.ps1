@@ -44,7 +44,14 @@ param(
   [int]$Repeats     = 1,
   [string]$Replay   = "$PSScriptRoot\..\ui\public\data\tacnet-01.replay.json",
   [string]$Endpoint = 'http://127.0.0.1:11434',
-  [string]$OutJson  = "$PSScriptRoot\..\eval\results\briefing-model-comparison.json"
+
+  # A prompt revision is a variable. Point -Prompt at a variant and give it a
+  # -Tag so its runs and reports do not overwrite the ones they are meant to
+  # be compared with. The ablation probe already showed v4 fixing the missing
+  # abstention; this is where we find out what it cost on a full pack.
+  [string]$Prompt   = '',
+  [string]$Tag      = 'v3',
+  [string]$OutJson  = ''
 )
 
 $ErrorActionPreference = 'Stop'
@@ -52,7 +59,10 @@ try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch { }
 
 $root = Split-Path $PSScriptRoot -Parent
 $packDir = Join-Path $root 'analysis\briefing'
-$tmpDir  = Join-Path $root 'analysis\briefing\compare'
+$tmpDir  = Join-Path $root (Join-Path 'analysis' (Join-Path 'briefing' (Join-Path 'compare' $Tag)))
+if (-not $OutJson) { $OutJson = Join-Path $root ('eval/results/briefing-model-comparison-{0}.json' -f $Tag) }
+if (-not $Prompt)  { $Prompt  = Join-Path $root 'prompts/briefing.ko.md' }
+if (-not (Test-Path $Prompt)) { throw "prompt not found: $Prompt" }
 foreach ($d in @($packDir, $tmpDir)) { if (-not (Test-Path $d)) { New-Item -ItemType Directory -Force $d | Out-Null } }
 
 # packs first: same evidence for every model, so the comparison is about the
@@ -85,7 +95,7 @@ foreach ($model in $Models) {
       $failed = $false
       try {
         & (Join-Path $PSScriptRoot 'Invoke-Briefing.ps1') `
-          -Pack $packs[$t] -Adapter ollama -Model $model -Endpoint $Endpoint -Out $out | Out-Null
+          -Pack $packs[$t] -Prompt $Prompt -Adapter ollama -Model $model -Endpoint $Endpoint -Out $out | Out-Null
       } catch {
         $failed = $true
         Write-Output ("  t+{0,-4} GENERATION FAILED: {1}" -f $t, $_.Exception.Message)
@@ -139,7 +149,7 @@ foreach ($model in $Models) {
   $safe = ($model -replace '[^0-9A-Za-z]', '_')
 
   # fact accuracy and calibration on the same briefings the verifier just read
-  $gJson = Join-Path (Join-Path $root 'eval') ('results/e3-golden-{0}.json' -f $safe)
+  $gJson = Join-Path (Join-Path $root 'eval') ('results/e3-golden-{0}-{1}.json' -f $Tag, $safe)
   $gld = $null
   try {
     & (Join-Path $PSScriptRoot 'Test-GoldenBriefing.ps1') `
@@ -191,6 +201,8 @@ $payload = [ordered]@{
   generator = 'scripts/Compare-BriefingModels.ps1'
   note      = 'Measurement for the 7-8B vs 12-14B question left open by ADR-0016. Compared on verifier violations, golden fact accuracy, calibration and latency - never on prose quality. Two model families so that a finding is not a property of one vendor.'
   scenario  = 'tacnet-01'
+  tag       = $Tag
+  prompt_file = (Resolve-Path $Prompt).Path
   times     = $Times
   repeats   = $Repeats
   endpoint  = $Endpoint

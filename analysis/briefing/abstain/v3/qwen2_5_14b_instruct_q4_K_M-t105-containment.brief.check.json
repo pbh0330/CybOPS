@@ -1,7 +1,7 @@
 {
     "check_version":  1,
-    "checked":  "2026-09-08T22:48:57.1874705+09:00",
-    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\qwen2_5_14b_instruct_q4_K_M-t105-containment.brief.json",
+    "checked":  "2026-09-08T23:02:08.4594350+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v3\\qwen2_5_14b_instruct_q4_K_M-t105-containment.brief.json",
     "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t105.containment.pack.json",
     "prompt_version":  "briefing.ko v3",
     "adapter":  "ollama",
@@ -16,7 +16,11 @@
 
                         ],
     "number_mismatches":  [
-
+                              {
+                                  "sentence_no":  2,
+                                  "number":  "59.99%",
+                                  "sentence":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 59.99%다 [F2]{확신}."
+                              }
                           ],
     "unknown_escalations":  [
 
@@ -32,8 +36,8 @@
 
                              ],
     "citation_rate_below_min":  false,
-    "violations":  0,
-    "pass":  true,
+    "violations":  1,
+    "pass":  false,
     "sentences":  [
                       {
                           "no":  1,

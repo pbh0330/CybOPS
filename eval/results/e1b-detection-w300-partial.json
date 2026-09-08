@@ -1,0 +1,72 @@
+{
+  "generated": "2026-09-08T14:08:56.177006+00:00",
+  "generator": "scripts/run_e1b.py",
+  "experiment": "E1-b",
+  "identity_check": [
+    "a_rename: 27.48 distinct values per host, 0.59 distinct values per host count -> kept",
+    "principals: 4.76 distinct values per host, 0.04 distinct values per host count -> kept"
+  ],
+  "tag": "w300-partial",
+  "design": "docs/19-e1b-design.md",
+  "features_file": "F:\\F\\other_class\\CybOPS\\analysis\\optc\\ecar-windows-300.csv",
+  "window_sec": 300,
+  "n_cells": 38139,
+  "n_positives": 60,
+  "feature_columns": [
+    "n",
+    "n_file",
+    "n_proc",
+    "n_flow",
+    "n_module",
+    "n_other",
+    "a_create",
+    "a_write",
+    "a_delete",
+    "a_read",
+    "a_rename",
+    "a_start",
+    "a_terminate",
+    "a_open",
+    "a_msg",
+    "images",
+    "new_images",
+    "new_image_share",
+    "dirs",
+    "dsts",
+    "new_dsts",
+    "new_dst_share",
+    "external_share",
+    "principals",
+    "system_share",
+    "pids",
+    "n_z",
+    "dsts_z",
+    "hour",
+    "dow"
+  ],
+  "excluded": {
+    "hosts_without_telemetry": {
+      "DC1": 10
+    },
+    "why": "no eCAR telemetry for this host; excluded from evaluation and reported (docs/19 section 3)"
+  },
+  "protocol": {
+    "unit": "(host, window) cell - the only unit the ground truth exists at",
+    "sampling": "no negative subsampling; every cell is present, so precision@k is exact",
+    "tuning": "selected on the training days only; test scored once"
+  },
+  "splits": [
+    {
+      "cut_day": "2019-09-22",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 0,
+      "test_pos": 60
+    },
+    {
+      "cut_day": "2019-09-23",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 59,
+      "test_pos": 1
+    }
+  ]
+}

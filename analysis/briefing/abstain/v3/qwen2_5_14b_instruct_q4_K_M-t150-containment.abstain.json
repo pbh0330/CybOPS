@@ -1,8 +1,8 @@
 {
-    "generated":  "2026-09-08T22:48:57.2489082+09:00",
+    "generated":  "2026-09-08T23:02:08.5353749+09:00",
     "generator":  "scripts/Test-Abstention.ps1",
     "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t150.containment.pack.json",
-    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\qwen2_5_14b_instruct_q4_K_M-t150-containment.brief.json",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v3\\qwen2_5_14b_instruct_q4_K_M-t150-containment.brief.json",
     "scenario_id":  "tacnet-01",
     "t":  150,
     "preset":  "containment",
@@ -37,7 +37,7 @@
     "abstention_rate":  0,
     "substitution_rate":  0,
     "silence_rate":  1,
-    "control_briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\qwen2_5_14b_instruct_q4_K_M-t150-control.brief.json",
+    "control_briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v3\\qwen2_5_14b_instruct_q4_K_M-t150-control.brief.json",
     "discriminative":  0,
     "discriminative_abstained":  0,
     "discriminative_fabricated":  0,
@@ -49,7 +49,7 @@
                         "subject":  "TOC-SRV",
                         "unique_tokens":  [
                                               "+7.0%p",
-                                              "+23.5%p"
+                                              "+40.0%p"
                                           ],
                         "stated_tokens":  [
 
@@ -66,7 +66,7 @@
                         "kind":  "containment_cost",
                         "subject":  "FDC-SRV",
                         "unique_tokens":  [
-                                              "+58.8%p"
+                                              "+100.0%p"
                                           ],
                         "stated_tokens":  [
 

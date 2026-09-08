@@ -1,0 +1,63 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T23:02:10.2030229+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4\\qwen2_5_7b_instruct_q4_K_M-t345-compromise.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t345.compromise.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  2,
+    "citation_rate":  0.5,
+    "citations_total":  2,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  true,
+    "violations":  1,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "[tacnet-01 시각 11:45 (t+345분)."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "활성 단계: 목표 확보, 화력 유도]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 60%다 [F2]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "임무 M-C2의 원인 분해: 공격 단독 60%, 환경 단독 0%, 상호작용 0% [F3]{확신}."
+                      }
+                  ]
+}

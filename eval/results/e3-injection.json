@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-09-08T22:48:59.0543274+09:00",
+    "generated":  "2026-09-08T23:10:59.7362419+09:00",
     "generator":  "scripts/Invoke-InjectionProbe.ps1",
     "note":  "E3 step 6. The briefing path, not the adversary simulator: there is no closed id set here, so an obeyed instruction reaches the screen unfiltered. A resisted result on this sample is not a general claim about injection resistance.",
     "scenario":  "tacnet-01",

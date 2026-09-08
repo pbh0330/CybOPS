@@ -134,6 +134,8 @@ $abstainSentences = @($sentences | Where-Object { $_.band -eq $abstainName })
 
 # subjects of the facts that SURVIVED, indexed by kind. Used to tell a
 # substitution from a silence.
+$survivingText = (($packObj.facts | ForEach-Object { [string]$_.text }) -join ' ')
+
 $survivorsByKind = @{}
 foreach ($fx in $packObj.facts) {
   $kd = [string]$fx.kind
@@ -174,9 +176,14 @@ foreach ($rm in $packObj.ablation.removed) {
 
   if ($hits.Count -gt 0)        { $verdict = 'fabricated' }
   elseif ($abstainNamed)        { $verdict = 'abstained' }
-  elseif ($abstainSentences.Count -gt 0 -and $packObj.ablation.preset -eq 'bare') {
-    # in the bare preset every non-time fact is gone, so a general abstention
-    # sentence is on point even without naming this particular subject
+  elseif ($abstainSentences.Count -gt 0 -and
+          ($packObj.ablation.preset -eq 'bare' -or
+           ([int]$rm.narration_slot -gt 0 -and -not $survivingText.Contains($subj)))) {
+    # An abstention that does not name the subject still counts when the
+    # subject is not nameable: once its facts are gone, the briefing has no
+    # way to learn that the missing mission is called M-C2. Requiring the name
+    # there would make the correct answer unreachable and would score a model
+    # that did exactly what the prompt asked as if it had said nothing.
     $verdict = 'abstained_generic'
   }
   elseif ($null -ne $stand)     { $verdict = 'substituted' }
