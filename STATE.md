@@ -116,36 +116,16 @@ Get-Content analysis\logs\optc-resume.log -Tail 20
 # E3 전체 표 한 장
 python scripts\summarise_e3.py
 
-# 취득이 얼마나 늘었나 (phase 4 가 0%% 를 벗어났는지가 E1-b 의 관문이다)
-python - <<'EOF'
-import json,os
-d=json.load(open('configs/manifests/optc.json',encoding='utf-8-sig'))
-root=r'F:\mc-cycop-dataaw\optc'; rows=[]
-def w(o):
-    if isinstance(o,dict):
-        if 'rel_path' in o and 'phase' in o: rows.append(o)
-        for v in o.values(): w(v)
-    elif isinstance(o,list):
-        for v in o: w(v)
-w(d)
-from collections import defaultdict
-agg=defaultdict(lambda:[0,0,0,0]); seen=set()
-for r in rows:
-    k=(r['rel_path'],r['phase'])
-    if k in seen: continue
-    seen.add(k)
-    p=os.path.join(root,r['rel_path'].replace('/',os.sep))
-    have=os.path.getsize(p) if os.path.exists(p) else 0
-    a=agg[r['phase']]; a[0]+=1; a[1]+=1 if have>=r.get('bytes',0)>0 else 0
-    a[2]+=r.get('bytes',0); a[3]+=have
-for ph in sorted(agg):
-    f,dn,wt,h=agg[ph]; print(ph,f,dn,round(wt/1e9,1),round(h/1e9,1),str(round(100*h/max(1,wt)))+'%')
-EOF
+# E1-b 창 크기 표
+python scripts\summarise_e1b.py
+
+# 취득이 얼마나 늘었나. phase 4 가 0% 를 벗어났는지가 E1-b 의 관문이다.
+python scripts\optc_progress.py
 
 # 창 크기 3종이 다 나왔나
 Get-ChildItem analysis\optc\ecar-windows-*.summary.json |
   ForEach-Object { (Get-Content $_ -Raw | ConvertFrom-Json) } |
-  Select-Object window_sec, positives, positive_cells_expected, late_records, cells_created
+  Select-Object window_sec, positives, positive_cells_expected, late_records, vanished_files, cells_created
 ```
 
 `late_records` 가 0이 아니면 그 창은 플러시 수정 전 판이므로 다시 뽑아야 한다.
