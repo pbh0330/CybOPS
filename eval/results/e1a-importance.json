@@ -1,0 +1,612 @@
+{
+  "generated": "2026-09-08T05:06:54.713899+00:00",
+  "generator": "scripts/e1a_importance.py",
+  "metric": "weighted PR-AUC drop under permutation",
+  "features_file": "F:\\F\\other_class\\CybOPS\\analysis\\lanl\\auth-features2-n100.csv",
+  "dropped_lifetime": [
+    "src_life_events",
+    "src_life_dst",
+    "src_life_failrate",
+    "pair_seen",
+    "dst_life_src",
+    "usr_life_src",
+    "usr_life_dst"
+  ],
+  "caveat": "explanatory statistic on a subsampled test set, not a reported headline metric",
+  "cuts": [
+    {
+      "cut_day": 10.0,
+      "baseline_pr_auc": 0.5135157399464885,
+      "train_pos": 316,
+      "test_pos": 386,
+      "importances": [
+        {
+          "feature": "auth_ntlm",
+          "mean_drop": 0.49328777423264497,
+          "sd": 0.007413510903911505
+        },
+        {
+          "feature": "src_hr_events",
+          "mean_drop": 0.3183505365438619,
+          "sd": 0.04248135445207815
+        },
+        {
+          "feature": "dow",
+          "mean_drop": 0.22182989979589304,
+          "sd": 0.03300109756311712
+        },
+        {
+          "feature": "dst_hr_src",
+          "mean_drop": 0.21634671832136876,
+          "sd": 0.11520594011692645
+        },
+        {
+          "feature": "src_hr_newdst_share",
+          "mean_drop": 0.16429297128198725,
+          "sd": 0.0011554394668885908
+        },
+        {
+          "feature": "hour",
+          "mean_drop": 0.1446111443334007,
+          "sd": 0.019791166119569197
+        },
+        {
+          "feature": "src_gap_log",
+          "mean_drop": 0.11881976118621193,
+          "sd": 0.013733178798958733
+        },
+        {
+          "feature": "dst_rarity",
+          "mean_drop": 0.10668274215761583,
+          "sd": 0.007307331796807562
+        },
+        {
+          "feature": "src_hr_failrate",
+          "mean_drop": 0.09745012346885287,
+          "sd": 0.0025039588675095036
+        },
+        {
+          "feature": "src_hr_dst_z",
+          "mean_drop": 0.07542252427515936,
+          "sd": 0.04827998531971198
+        },
+        {
+          "feature": "is_fail",
+          "mean_drop": 0.07124141150188851,
+          "sd": 0.0027137012878402627
+        },
+        {
+          "feature": "usr_gap_log",
+          "mean_drop": 0.06607497729505923,
+          "sd": 0.006776709392261665
+        },
+        {
+          "feature": "src_new_dst",
+          "mean_drop": 0.06564565479026715,
+          "sd": 0.0010514770602770948
+        },
+        {
+          "feature": "src_hr_dst_share",
+          "mean_drop": 0.05841852069061002,
+          "sd": 0.021781646310817877
+        },
+        {
+          "feature": "usr_hr_dst",
+          "mean_drop": 0.050036917397250545,
+          "sd": 0.09087823492153474
+        },
+        {
+          "feature": "src_min_events",
+          "mean_drop": 0.03791017680004327,
+          "sd": 0.0067582715798237
+        },
+        {
+          "feature": "src_prev_dst",
+          "mean_drop": 0.011985716903320575,
+          "sd": 0.0097546834437583
+        },
+        {
+          "feature": "src_hr_fail_z",
+          "mean_drop": 0.004805237469303425,
+          "sd": 0.02292584793500749
+        },
+        {
+          "feature": "usr_new_dst",
+          "mean_drop": 0.0007183570453874078,
+          "sd": 1.660666687600606e-09
+        },
+        {
+          "feature": "usr_hr_failrate",
+          "mean_drop": 0.0006324087476008655,
+          "sd": 0.0011659944589368476
+        },
+        {
+          "feature": "auth_kerb",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "auth_other",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "lt_network",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "lt_service",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "lt_batch",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "lt_interactive",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "lt_other",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "or_logon",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "or_logoff",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "or_tgs",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "or_tgt",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "or_other",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "src_new_usr",
+          "mean_drop": -4.357894598070455e-05,
+          "sd": 1.7404671430539912e-15
+        },
+        {
+          "feature": "src_min_dst",
+          "mean_drop": -0.0029156312655710835,
+          "sd": 0.003439666370913459
+        },
+        {
+          "feature": "src_hr_usr",
+          "mean_drop": -0.008653912010604847,
+          "sd": 0.023085722599769674
+        },
+        {
+          "feature": "usr_hr_src",
+          "mean_drop": -0.008669936160357194,
+          "sd": 0.018269372370428874
+        },
+        {
+          "feature": "src_hr_newdst",
+          "mean_drop": -0.041341559798030315,
+          "sd": 4.236199854320752e-06
+        },
+        {
+          "feature": "src_hr_dst",
+          "mean_drop": -0.049460630010898995,
+          "sd": 0.004799339991816479
+        }
+      ]
+    },
+    {
+      "cut_day": 12.0,
+      "baseline_pr_auc": 0.6744506476931501,
+      "train_pos": 316,
+      "test_pos": 386,
+      "importances": [
+        {
+          "feature": "auth_ntlm",
+          "mean_drop": 0.6413433116318188,
+          "sd": 0.006870068135009448
+        },
+        {
+          "feature": "src_hr_dst_z",
+          "mean_drop": 0.3937484014197511,
+          "sd": 0.05123604123033699
+        },
+        {
+          "feature": "dst_hr_src",
+          "mean_drop": 0.38228293158591675,
+          "sd": 0.03442114048120747
+        },
+        {
+          "feature": "src_hr_events",
+          "mean_drop": 0.35491172073944843,
+          "sd": 0.012172593982189662
+        },
+        {
+          "feature": "dow",
+          "mean_drop": 0.24577092144976756,
+          "sd": 0.08550093349804475
+        },
+        {
+          "feature": "src_hr_newdst_share",
+          "mean_drop": 0.21157246739283342,
+          "sd": 0.000990193818948491
+        },
+        {
+          "feature": "src_prev_dst",
+          "mean_drop": 0.19738914272454716,
+          "sd": 0.09402681511010762
+        },
+        {
+          "feature": "usr_hr_dst",
+          "mean_drop": 0.17879840556405413,
+          "sd": 0.06737296108757414
+        },
+        {
+          "feature": "dst_rarity",
+          "mean_drop": 0.10927143276492765,
+          "sd": 0.004530795538346938
+        },
+        {
+          "feature": "usr_hr_src",
+          "mean_drop": 0.10058961904785586,
+          "sd": 0.014471010005286788
+        },
+        {
+          "feature": "hour",
+          "mean_drop": 0.0916059178204138,
+          "sd": 0.021495532032521646
+        },
+        {
+          "feature": "src_gap_log",
+          "mean_drop": 0.08527981110067229,
+          "sd": 0.031264762239893516
+        },
+        {
+          "feature": "src_hr_failrate",
+          "mean_drop": 0.08346381857607184,
+          "sd": 0.0017899689358861488
+        },
+        {
+          "feature": "src_hr_fail_z",
+          "mean_drop": 0.07440144139273137,
+          "sd": 0.010400623593038056
+        },
+        {
+          "feature": "src_hr_dst_share",
+          "mean_drop": 0.07115428885904573,
+          "sd": 0.02712886470998913
+        },
+        {
+          "feature": "usr_gap_log",
+          "mean_drop": 0.0691964070907211,
+          "sd": 0.023079868968547947
+        },
+        {
+          "feature": "src_new_dst",
+          "mean_drop": 0.04046967367857694,
+          "sd": 5.947035907056585e-06
+        },
+        {
+          "feature": "src_hr_dst",
+          "mean_drop": 0.009236150853181701,
+          "sd": 0.008441168840961678
+        },
+        {
+          "feature": "src_min_events",
+          "mean_drop": 0.00575838168910423,
+          "sd": 0.013244606868434088
+        },
+        {
+          "feature": "is_fail",
+          "mean_drop": 0.003935476045455744,
+          "sd": 0.003009554178931075
+        },
+        {
+          "feature": "src_hr_newdst",
+          "mean_drop": 0.0030524416516458873,
+          "sd": 3.848094779852866e-07
+        },
+        {
+          "feature": "auth_other",
+          "mean_drop": 0.0013482884509545378,
+          "sd": 0.0011256737192962092
+        },
+        {
+          "feature": "usr_hr_failrate",
+          "mean_drop": 5.61733184957891e-05,
+          "sd": 7.692605619697738e-05
+        },
+        {
+          "feature": "usr_new_dst",
+          "mean_drop": 4.6336074524200296e-06,
+          "sd": 4.1853321771461626e-10
+        },
+        {
+          "feature": "auth_kerb",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "lt_network",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "lt_service",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "lt_batch",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "lt_interactive",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "lt_other",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "or_logon",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "or_logoff",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "or_tgs",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "or_tgt",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "or_other",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "src_new_usr",
+          "mean_drop": -0.00012466913958293359,
+          "sd": 1.5384809118404927e-10
+        },
+        {
+          "feature": "src_min_dst",
+          "mean_drop": -0.0007566534146204562,
+          "sd": 0.002164564299568627
+        },
+        {
+          "feature": "src_hr_usr",
+          "mean_drop": -0.004211322252060334,
+          "sd": 0.00983702608054714
+        }
+      ]
+    },
+    {
+      "cut_day": 15.0,
+      "baseline_pr_auc": 0.0011362685897951066,
+      "train_pos": 623,
+      "test_pos": 79,
+      "importances": [
+        {
+          "feature": "src_hr_dst",
+          "mean_drop": 0.0011227141885619015,
+          "sd": 2.423749871124938e-07
+        },
+        {
+          "feature": "src_hr_dst_share",
+          "mean_drop": 0.0010877754485722536,
+          "sd": 4.465404010226277e-06
+        },
+        {
+          "feature": "src_hr_events",
+          "mean_drop": 0.0010846339542229656,
+          "sd": 2.937220027821709e-06
+        },
+        {
+          "feature": "src_hr_dst_z",
+          "mean_drop": 0.0010818540550701018,
+          "sd": 6.071500443016988e-06
+        },
+        {
+          "feature": "src_hr_newdst",
+          "mean_drop": 0.0010087442898335957,
+          "sd": 9.894879936469123e-06
+        },
+        {
+          "feature": "src_prev_dst",
+          "mean_drop": 0.0009817360024305807,
+          "sd": 1.0863910540305534e-05
+        },
+        {
+          "feature": "src_hr_failrate",
+          "mean_drop": 0.0006837155492110558,
+          "sd": 0.00010163633042736085
+        },
+        {
+          "feature": "src_hr_fail_z",
+          "mean_drop": 0.0006626877123464901,
+          "sd": 2.81339134965093e-05
+        },
+        {
+          "feature": "auth_ntlm",
+          "mean_drop": 0.0006468071930062039,
+          "sd": 8.027623954314403e-05
+        },
+        {
+          "feature": "usr_hr_dst",
+          "mean_drop": 0.0006020380439957829,
+          "sd": 3.155476749633621e-05
+        },
+        {
+          "feature": "src_hr_usr",
+          "mean_drop": 0.00023959236729145388,
+          "sd": 9.252748097863961e-05
+        },
+        {
+          "feature": "dst_hr_src",
+          "mean_drop": 0.00020355889142019846,
+          "sd": 0.0001285768223168854
+        },
+        {
+          "feature": "is_fail",
+          "mean_drop": 8.468429230202834e-05,
+          "sd": 6.867422973560791e-08
+        },
+        {
+          "feature": "usr_hr_src",
+          "mean_drop": 7.796566881689728e-05,
+          "sd": 4.844782341905887e-05
+        },
+        {
+          "feature": "dst_rarity",
+          "mean_drop": 7.065841934599539e-05,
+          "sd": 3.5963767167895685e-05
+        },
+        {
+          "feature": "usr_gap_log",
+          "mean_drop": 5.86629484063047e-05,
+          "sd": 7.163109224422819e-05
+        },
+        {
+          "feature": "usr_hr_failrate",
+          "mean_drop": 4.559406896926729e-05,
+          "sd": 3.4135014987807014e-05
+        },
+        {
+          "feature": "usr_new_dst",
+          "mean_drop": 3.249509064264838e-05,
+          "sd": 3.887595543418915e-05
+        },
+        {
+          "feature": "src_gap_log",
+          "mean_drop": 2.1595514104919998e-05,
+          "sd": 0.00012544531165870738
+        },
+        {
+          "feature": "or_logon",
+          "mean_drop": 1.5858353735829362e-08,
+          "sd": 1.5325075567854244e-08
+        },
+        {
+          "feature": "or_tgt",
+          "mean_drop": 6.827488874825219e-09,
+          "sd": 5.577239078798011e-09
+        },
+        {
+          "feature": "or_other",
+          "mean_drop": 1.8109689529227646e-12,
+          "sd": 1.9565113925748093e-13
+        },
+        {
+          "feature": "src_new_usr",
+          "mean_drop": 5.712201978785858e-13,
+          "sd": 2.335384693083389e-13
+        },
+        {
+          "feature": "lt_service",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "lt_batch",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "lt_interactive",
+          "mean_drop": -6.517833148200758e-15,
+          "sd": 5.858357654857942e-15
+        },
+        {
+          "feature": "lt_other",
+          "mean_drop": -1.1164418087933336e-11,
+          "sd": 1.7502650401164796e-11
+        },
+        {
+          "feature": "lt_network",
+          "mean_drop": -6.893658551420865e-09,
+          "sd": 5.628849912563334e-09
+        },
+        {
+          "feature": "auth_kerb",
+          "mean_drop": -1.3051143079121503e-07,
+          "sd": 1.789183416282769e-07
+        },
+        {
+          "feature": "auth_other",
+          "mean_drop": -1.7710345874364513e-07,
+          "sd": 3.400064190909412e-07
+        },
+        {
+          "feature": "or_logoff",
+          "mean_drop": -4.133687588342948e-07,
+          "sd": 2.3835735456225582e-07
+        },
+        {
+          "feature": "or_tgs",
+          "mean_drop": -6.295520655848208e-07,
+          "sd": 6.761170126995206e-07
+        },
+        {
+          "feature": "src_min_dst",
+          "mean_drop": -9.869901268483046e-07,
+          "sd": 9.361991143739325e-07
+        },
+        {
+          "feature": "dow",
+          "mean_drop": -1.7623355166017287e-06,
+          "sd": 7.822874422317577e-05
+        },
+        {
+          "feature": "hour",
+          "mean_drop": -3.0378998628101937e-05,
+          "sd": 0.00015575077521863702
+        },
+        {
+          "feature": "src_hr_newdst_share",
+          "mean_drop": -0.00010123025024816966,
+          "sd": 8.54843850806416e-05
+        },
+        {
+          "feature": "src_new_dst",
+          "mean_drop": -0.0001927880230373903,
+          "sd": 4.073574944875656e-05
+        },
+        {
+          "feature": "src_min_events",
+          "mean_drop": -0.0003420929897935439,
+          "sd": 0.00015069431180968828
+        }
+      ]
+    }
+  ]
+}

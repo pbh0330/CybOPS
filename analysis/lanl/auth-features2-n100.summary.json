@@ -1,0 +1,23 @@
+{
+    "generated":  "2026-09-08T00:51:32.5745158+09:00",
+    "generator":  "scripts/Export-AuthFeatures2.ps1",
+    "experiment":  "E1-a pass 2",
+    "pass1":  "scripts/Export-AuthFeatures.ps1",
+    "why_second_pass":  "raw counts cannot separate a busy host from a host acting unlike itself. Pass 2 adds self-normalised (per-host running z), lifetime-share, first-contact burst, minute-scale burst, inter-arrival gap and pair familiarity.",
+    "chosen_how":  "from anomaly-detection principle, before looking at any test result. docs/04: picking features off the ranking table is training on the test labels.",
+    "redteam_unique":  715,
+    "labels_matched":  702,
+    "negative_sample":  100,
+    "seed":  20260907,
+    "rows_read":  1051430459,
+    "emitted":  10509184,
+    "positives":  702,
+    "negatives_kept":  10508482,
+    "distinct_src":  16230,
+    "distinct_dst":  15895,
+    "distinct_usr":  80553,
+    "pairs_src_dst":  419744,
+    "elapsed_sec":  6804.4,
+    "identity_excluded":  "host and account strings are interned to ints for state keys only; no identity column is written",
+    "causality":  "features from state strictly before the event; state updated after emission"
+}

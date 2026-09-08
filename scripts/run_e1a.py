@@ -331,6 +331,10 @@ def main():
     ap.add_argument("--tag", default="pass1")
     ap.add_argument("--splits", default="20,25,30,35")
     ap.add_argument("--no-tune", action="store_true", help="skip the search, fit one default model")
+    ap.add_argument("--drop-lifetime", action="store_true",
+                    help="remove cumulative per-entity features. They are an identity fingerprint: "
+                         "with all labels on four source hosts, a model can re-identify a host from "
+                         "its accumulated profile without ever seeing its name (ADR-0011 by the back door).")
     ap.add_argument("--train-weight", default="balanced", choices=["true", "uniform", "balanced"],
                     help="weights used to FIT. metrics stay weighted by w regardless.")
     args = ap.parse_args()
@@ -359,6 +363,17 @@ def main():
     feat_cols = [c for c in df.columns if c not in ("t", "label", "w", "day", "grp")]
     has_grp = "grp" in df.columns
 
+    # Lifetime counters accumulate from the first event to the current one. They
+    # are legitimate anomaly features in general, and in THIS dataset they are
+    # also a fingerprint: 670 of 702 labels sit on one source host, so "a host
+    # whose lifetime profile looks like this" is the host id wearing a hat.
+    # --drop-lifetime is the ablation that says how much of the result is the
+    # behaviour and how much is the fingerprint.
+    lifetime = [c for c in feat_cols if "_life_" in c or c in ("pair_seen",)]
+    if args.drop_lifetime:
+        feat_cols = [c for c in feat_cols if c not in lifetime]
+        print(f"  dropped {len(lifetime)} lifetime/familiarity features: {', '.join(lifetime)}")
+
     banned = [c for c in feat_cols if any(s in c.lower() for s in ("comp", "user", "host"))
               or c.lower() in ("id", "src", "dst", "usr", "grp")]
     if banned:
@@ -380,6 +395,8 @@ def main():
                       "the test split is scored once with the winner and nothing is changed after",
             "weights": "each kept negative carries w = NegSample; all metrics weighted",
             "identity": "no host/account identity in the feature file; asserted at load",
+            "drop_lifetime": bool(args.drop_lifetime),
+            "lifetime_columns": lifetime,
             "train_weight": args.train_weight,
             "train_vs_eval_weight": "fitting uses train_weight; every reported metric is weighted by w (the extraction weight), so the numbers remain population estimates",
         },
