@@ -64,12 +64,24 @@ def main():
             if sp.get("skipped"):
                 continue
             any_scored = True
-            print("  {:<10} {:>5}s  cut {}  train_pos {:>4}  test_pos {:>4}  "
-                  "PR-AUC {}  P@100 {}  MTTD {}".format(
-                      r.get("tag", "?"), r.get("window_sec", 0), sp.get("cut_day"),
-                      sp.get("train_pos", 0), sp.get("test_pos", 0),
-                      fmt(sp.get("pr_auc")), fmt(sp.get("p_at_100"), "{:.2%}"),
-                      fmt(sp.get("mttd_cells"), "{:.1f}")))
+            print("  {:<10} {:>5}s  cut {}  train_pos {:>4}  test_pos {:>4}".format(
+                r.get("tag", "?"), r.get("window_sec", 0), sp.get("cut_day"),
+                sp.get("train_pos", 0), sp.get("test_pos", 0)))
+            # Every model, not just the best one. A learned model that loses to
+            # "count the new destinations" is the most useful line in the table
+            # and a best-of summary would hide it.
+            base = sp.get("test_pos", 0) / max(1, sp.get("test_cells", 1))
+            for m in sp.get("models", []):
+                lift = (m.get("pr_auc") or 0) / base if base else 0
+                print("        {:<26} PR-AUC {}  ROC {}  lift x{:.0f}".format(
+                    m.get("model", "?"), fmt(m.get("pr_auc"), "{:.5f}"),
+                    fmt(m.get("roc_auc"), "{:.3f}"), lift))
+            mt = sp.get("mttd") or []
+            for row in mt:
+                if row.get("budget") == 100:
+                    print("        MTTD@100  hosts {}  caught {}  missed {}".format(
+                        row.get("hosts_with_positives"), row.get("hosts_caught"),
+                        row.get("hosts_missed")))
     if not any_scored:
         print("  none. Every split was refused for having fewer than 20 positives on one side.")
         print("  That is the rule from docs/19-e1b-design.md section 6 doing its job, not a failure:")

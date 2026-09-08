@@ -1,0 +1,84 @@
+{
+  "generated": "2026-09-08T21:39:42.902011+00:00",
+  "generator": "scripts/run_e1b.py",
+  "experiment": "E1-b",
+  "identity_check": [
+    "a_rename: 22.87 distinct values per host, 1.17 distinct values per host count -> kept",
+    "principals: 5.57 distinct values per host, 0.04 distinct values per host count -> kept"
+  ],
+  "tag": "w900",
+  "design": "docs/19-e1b-design.md",
+  "features_file": "F:\\F\\other_class\\CybOPS\\analysis\\optc\\ecar-windows-900.csv",
+  "window_sec": 900,
+  "window_source": "ecar-windows-900.summary.json",
+  "labelled_cells_expected": 89,
+  "labelled_cells_found": 52,
+  "label_coverage": 0.5842696629213483,
+  "n_cells": 18413,
+  "n_positives": 52,
+  "feature_columns": [
+    "n",
+    "n_file",
+    "n_proc",
+    "n_flow",
+    "n_module",
+    "n_other",
+    "a_create",
+    "a_write",
+    "a_delete",
+    "a_read",
+    "a_rename",
+    "a_start",
+    "a_terminate",
+    "a_open",
+    "a_msg",
+    "images",
+    "new_images",
+    "new_image_share",
+    "dirs",
+    "dsts",
+    "new_dsts",
+    "new_dst_share",
+    "external_share",
+    "principals",
+    "system_share",
+    "pids",
+    "n_z",
+    "dsts_z",
+    "hour",
+    "dow"
+  ],
+  "excluded": {
+    "hosts_without_telemetry": {
+      "DC1": 10
+    },
+    "why": "no eCAR telemetry for this host; excluded from evaluation and reported (docs/19 section 3)"
+  },
+  "split_unit": "day",
+  "protocol": {
+    "unit": "(host, window) cell - the only unit the ground truth exists at",
+    "split_caveat": "day boundary. OpTC runs a different scenario each day, so this asks whether a model generalizes to an unseen attack pattern.",
+    "sampling": "no negative subsampling; every cell is present, so precision@k is exact",
+    "tuning": "selected on the training days only; test scored once"
+  },
+  "splits": [
+    {
+      "cut_day": "2019-09-22",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 0,
+      "test_pos": 52
+    },
+    {
+      "cut_day": "2019-09-23",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 49,
+      "test_pos": 3
+    },
+    {
+      "cut_day": "2019-09-24",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 49,
+      "test_pos": 3
+    }
+  ]
+}
