@@ -420,3 +420,27 @@ max( combine(모든 requires, method), max(hard 인 requires 의 서비스 저�
 ADR-0020 이 재검토 조건으로 적은 대로 **tacnet 시간축에서 100% 스텝 비율을 계속 본다.**
 현재 M-C2 기준 28스텝 중 5스텝이다. 이 비율이 계속 오르면 hard 지정을 다시 봐야 한다.
 임무 저하도는 변별하라고 있는 값이지 경보를 크게 울리라고 있는 값이 아니다.
+
+### 11.1 포화 재확인 (2026-09-08)
+
+11절이 "이 비율이 계속 오르면 hard 지정을 다시 봐야 한다"고 적어둔 감시 항목이다.
+그 뒤로 시나리오를 여러 번 고쳤다(지형·좌표 재작성, 자산 표고 재계산, 링크 추가).
+
+```
+tacnet-01, weighted, 28스텝
+  M-C2     100%  5/28    >=50% 10/28   평균 0.353
+  M-FIRE   100%  0/28    >=50%  2/28   평균 0.097
+```
+
+**5/28 그대로다.** 오르지 않았으므로 hard 지정을 재검토할 이유가 없다.
+
+M-FIRE 는 한 스텝도 포화하지 않고 평균이 0.097 이다. 두 임무가 서로 다른 값을 유지하고
+있다는 뜻이고, 그것이 이 값의 용도다 - **임무 저하도는 변별하라고 있는 값이지 경보를
+크게 울리라고 있는 값이 아니다.**
+
+재확인 방법(엔진을 다시 돌릴 필요 없다. 리플레이가 이미 그 산출이다):
+
+```powershell
+$py = 'C:\Users\qwert\AppData\Local\Programs\Python\Python312\python.exe'
+& $py -c "import json;d=json.load(open('ui/public/data/tacnet-01.replay.json',encoding='utf-8-sig'));s=d['steps'];[print(m['id'], sum(1 for x in s if x['mission'].get(m['id'],0)>=0.9999), '/', len(s)) for m in d['graph']['missions']]"
+```
