@@ -1,0 +1,1528 @@
+{
+    "generated":  "2026-09-09T07:02:45.4541308+09:00",
+    "generator":  "scripts/Test-GoldenBriefing.ps1",
+    "experiment":  "E3",
+    "refs":  [
+                 "docs/04-evaluation.md 2.3",
+                 "docs/20-e3-design.md",
+                 "ADR-0009"
+             ],
+    "briefings":  [
+                      "exaone3_5_7_8b-t105-r1.brief.json",
+                      "exaone3_5_7_8b-t105-r2.brief.json",
+                      "exaone3_5_7_8b-t105-r3.brief.json",
+                      "exaone3_5_7_8b-t120-r1.brief.json",
+                      "exaone3_5_7_8b-t120-r2.brief.json",
+                      "exaone3_5_7_8b-t120-r3.brief.json",
+                      "exaone3_5_7_8b-t150-r1.brief.json",
+                      "exaone3_5_7_8b-t150-r2.brief.json",
+                      "exaone3_5_7_8b-t150-r3.brief.json",
+                      "exaone3_5_7_8b-t210-r1.brief.json",
+                      "exaone3_5_7_8b-t210-r2.brief.json",
+                      "exaone3_5_7_8b-t210-r3.brief.json",
+                      "exaone3_5_7_8b-t255-r1.brief.json",
+                      "exaone3_5_7_8b-t255-r2.brief.json",
+                      "exaone3_5_7_8b-t255-r3.brief.json",
+                      "exaone3_5_7_8b-t300-r1.brief.json",
+                      "exaone3_5_7_8b-t300-r2.brief.json",
+                      "exaone3_5_7_8b-t300-r3.brief.json",
+                      "exaone3_5_7_8b-t345-r1.brief.json",
+                      "exaone3_5_7_8b-t345-r2.brief.json",
+                      "exaone3_5_7_8b-t345-r3.brief.json",
+                      "exaone3_5_7_8b-t390-r1.brief.json",
+                      "exaone3_5_7_8b-t390-r2.brief.json",
+                      "exaone3_5_7_8b-t390-r3.brief.json"
+                  ],
+    "golden_dir":  "F:\\F\\other_class\\CybOPS\\eval\\golden",
+    "band_confidence":  {
+                            "확신":  0.95,
+                            "추정":  0.7,
+                            "근거없음":  0
+                        },
+    "totals":  {
+                   "sentences":  102,
+                   "tagged":  102,
+                   "untagged":  0,
+                   "correct":  29,
+                   "wrong":  14,
+                   "abstain":  12,
+                   "by_band":  {
+                                   "추정":  {
+                                              "n":  4,
+                                              "correct":  0,
+                                              "wrong":  0
+                                          },
+                                   "확신":  {
+                                              "n":  86,
+                                              "correct":  29,
+                                              "wrong":  14
+                                          },
+                                   "근거없음":  {
+                                                "n":  12,
+                                                "correct":  0,
+                                                "wrong":  0
+                                            }
+                               }
+               },
+    "bands":  [
+                  {
+                      "band":  "확신",
+                      "stated_confidence":  0.95,
+                      "n":  86,
+                      "scored":  43,
+                      "correct":  29,
+                      "wrong":  14,
+                      "accuracy":  0.67441860465116277
+                  },
+                  {
+                      "band":  "추정",
+                      "stated_confidence":  0.7,
+                      "n":  4,
+                      "scored":  0,
+                      "correct":  0,
+                      "wrong":  0,
+                      "accuracy":  null
+                  },
+                  {
+                      "band":  "근거없음",
+                      "stated_confidence":  0,
+                      "n":  12,
+                      "scored":  0,
+                      "correct":  0,
+                      "wrong":  0,
+                      "accuracy":  null
+                  }
+              ],
+    "ece":  0.27558139534883719,
+    "brier":  0.2955232558139535,
+    "abstention_note":  "abstentions are counted separately and never as errors; scoring them wrong would train the option out of the prompt",
+    "scope_note":  "this measures whether the stated numbers are the engine numbers. whether the briefing is USEFUL is not measured (docs/20 section 4, ADR-0015)",
+    "sentences":  [
+                      {
+                          "file":  "exaone3_5_7_8b-t105-r1.brief.json",
+                          "sentence":  "시나리오 tacnet-01은 현재 활성 단계 기동 중 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t105-r1.brief.json",
+                          "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 79.04%이며, 환경 단독 요인이 주요 원인 [F3]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "wrong",
+                          "numbers":  [
+                                          "79.04%"
+                                      ],
+                          "unmatched":  [
+                                            "79.04%"
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t105-r1.brief.json",
+                          "sentence":  "자산 BN-SRV, BN-CP, SAT-TERM의 비가용 상태가 단절을 초래하고 있으며, 원인은 기동 관련 지휘소 이동 [F4]{확신}, [F5]{확신}, [F6]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t105-r1.brief.json",
+                          "sentence":  "지휘관이 알아야 할 격리 비용으로 TOC-SRV 격리 시 임무 저하도가 M-C2 임무에 +21.0%p 증가할 것으로 예상됨 [F15]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "21.0%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t105-r2.brief.json",
+                          "sentence":  "시나리오 tacnet-01은 현재 활성 단계 기동 중 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t105-r2.brief.json",
+                          "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 79.04%로, 환경 단독 요인이 주요 원인 [F3]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "wrong",
+                          "numbers":  [
+                                          "79.04%"
+                                      ],
+                          "unmatched":  [
+                                            "79.04%"
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t105-r2.brief.json",
+                          "sentence":  "자산 BN-SRV, BN-CP, SAT-TERM의 비가용 상태가 단절을 초래하였으며, 원인은 기동에 따른 철수-재전개 [F4]{확신}, [F5]{확신}, [F6]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t105-r2.brief.json",
+                          "sentence":  "지휘관이 알아야 할 격리 비용으로 TOC-SRV 격리 시 임무 저하도가 M-C2 임무에 대해 +21.0%p 증가할 것으로 예상됨 [F15]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "21.0%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t105-r3.brief.json",
+                          "sentence":  "시나리오 tacnet-01은 현재 활성 단계 기동 중 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t105-r3.brief.json",
+                          "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 79.04%이며, 환경 요인 단독으로 인한 것으로 분석됨 [F2]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "wrong",
+                          "numbers":  [
+                                          "79.04%"
+                                      ],
+                          "unmatched":  [
+                                            "79.04%"
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t105-r3.brief.json",
+                          "sentence":  "자산 BN-SRV, BN-CP, SAT-TERM의 비가용 상태가 기동으로 인한 단절이며, 현재 상태는 각각 비가용 [F4]{확신}, [F5]{확신}, [F6]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t105-r3.brief.json",
+                          "sentence":  "지휘관이 알아야 할 격리 비용 중, TOC-SRV 격리 시 임무 저하도가 M-C2 임무에 대해 +21.0%p 증가하며, 이는 중요한 고려사항임 [F15]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "21.0%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t120-r1.brief.json",
+                          "sentence":  "시나리오 tacnet-01은 현재 활성 단계인 기동 단계에서 운영 중이다 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t120-r1.brief.json",
+                          "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 79.04%로 매우 높으며, 환경 요인에 의해 발생한 것으로 분석된다 [F2]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "wrong",
+                          "numbers":  [
+                                          "79.04%"
+                                      ],
+                          "unmatched":  [
+                                            "79.04%"
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t120-r1.brief.json",
+                          "sentence":  "원인 분해 결과 상호작용 요인은 영향을 미치지 않았다 [F3]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t120-r1.brief.json",
+                          "sentence":  "자산 BN-SRV와 BN-CP의 비가용 상태가 확인되며, 이는 지휘소 이동으로 인한 기동 중단이 원인으로 보인다 [F6]{확신}, [F7]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t120-r1.brief.json",
+                          "sentence":  "자산 SAT-TERM의 비가용 또한 지휘소의 위성단말 철수와 재전개 과정에서 발생한 것으로 추정된다 [F8]{추정}.",
+                          "band":  "추정",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t120-r1.brief.json",
+                          "sentence":  "TOC-SRV 격리 시 임무 저하도에 가장 큰 영향을 미치며, 특히 임무 M-C2의 저하도가 21.0%p 상승할 것으로 예상된다 [F15]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "21.0%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t120-r1.brief.json",
+                          "sentence":  "격리 비용에 대한 구체적인 정보는 현재 제공되지 않았다 [F0]{근거없음}.",
+                          "band":  "근거없음",
+                          "verdict":  "abstain"
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t120-r2.brief.json",
+                          "sentence":  "시나리오 tacnet-01은 현재 활성 단계 기동 중 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t120-r2.brief.json",
+                          "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 79.04%이며, 환경 요인이 주요 원인 [F3]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "wrong",
+                          "numbers":  [
+                                          "79.04%"
+                                      ],
+                          "unmatched":  [
+                                            "79.04%"
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t120-r2.brief.json",
+                          "sentence":  "자산 BN-SRV와 BN-CP의 비가용 상태가 지속되고 있으며, 이는 기동 철수-전개로 인한 단절 [F6]{확신}, [F7]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t120-r2.brief.json",
+                          "sentence":  "TOC-SRV 격리 시 M-C2 임무 저하도가 추가로 21.0%p 증가할 것으로 예상됨 [F15]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "21.0%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t120-r3.brief.json",
+                          "sentence":  "**시각**: 08:00 (t+120분), **활성 단계**: 기동 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t120-r3.brief.json",
+                          "sentence":  "**우선순위가 가장 높은 임무 M-C2의 저하도는 79.04%이며, 원인은 환경 단독으로 인한 것으로 분해됩니다 [F2]{확신}.**\n\n**자산 BN-SRV와 BN-CP의 비가용 상태는 기동으로 인한 것이며, 이로 인한 링크 단절은 확인되지 않았습니다 [F6]{근거없음}.**\n\n**TOC-SRV 격리 시 임무 저하도 변화는 M-C2와 M-FIRE에 영향을 미치며, 특히 M-C2는 +21.0%p 저하될 것으로 예상됩니다 [F15]{확신}.**",
+                          "band":  "확신",
+                          "verdict":  "wrong",
+                          "numbers":  [
+                                          "79.04%",
+                                          "21.0%"
+                                      ],
+                          "unmatched":  [
+                                            "79.04%"
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t150-r1.brief.json",
+                          "sentence":  "tacnet-01의 활성 단계는 기동 중이며, 표적 획득이 완료된 상태 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t150-r1.brief.json",
+                          "sentence":  "임무 M-C2의 저하도는 32.14%로, 우선순위가 가장 높은 임무 중 가장 높은 저하도를 보임 [F2]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "wrong",
+                          "numbers":  [
+                                          "32.14%"
+                                      ],
+                          "unmatched":  [
+                                            "32.14%"
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t150-r1.brief.json",
+                          "sentence":  "임무 M-C2의 저하 원인 분해 결과, 환경 요인이 가장 크게 기여하고 있으며 상호작용 요인은 영향을 미치지 않음 [F3]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t150-r1.brief.json",
+                          "sentence":  "링크 L-VHF-CO1의 단절은 지형으로 인한 것으로 확인됨 [F6]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t150-r1.brief.json",
+                          "sentence":  "격리 비용 중 지휘관이 알아야 할 것은, 자산 CO2-VEH를 격리할 경우 임무 M-C2의 저하도가 10.7%p 증가함 [F15]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "10.7%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t150-r2.brief.json",
+                          "sentence":  "시나리오 tacnet-01은 현재 활성 단계인 기동 단계에서 진행 중이다 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t150-r2.brief.json",
+                          "sentence":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 32.14%이며, 이는 상호작용 요인에 의한 것이 아님을 확인 [F2]{확신}[F3]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "wrong",
+                          "numbers":  [
+                                          "32.14%"
+                                      ],
+                          "unmatched":  [
+                                            "32.14%"
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t150-r2.brief.json",
+                          "sentence":  "링크 L-VHF-CO1은 지형에 의한 단절 상태로, 원인은 명확히 지형의 차폐로 인한 것이다 [F6]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t150-r2.brief.json",
+                          "sentence":  "격리 비용 중 지휘관이 알아야 할 것은 자산 CO2-VEH를 격리할 경우 임무 M-C2의 저하도가 10.7%p 증가한다는 점이다 [F15]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "10.7%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t150-r3.brief.json",
+                          "sentence":  "tacnet-01 시각 08:30 (t+150분), 활성 단계 기동 중 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t150-r3.brief.json",
+                          "sentence":  "임무 M-C2(우선순위 1)의 저하도는 32.14%로 가장 높은 우선순위 임무의 저하도를 보임 [F2]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "wrong",
+                          "numbers":  [
+                                          "32.14%"
+                                      ],
+                          "unmatched":  [
+                                            "32.14%"
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t150-r3.brief.json",
+                          "sentence":  "임무 M-C2의 저하 원인 분해 결과, 환경 요인이 주요 원인으로 추정됨 [F3]{추정}.",
+                          "band":  "추정",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t150-r3.brief.json",
+                          "sentence":  "링크 L-VHF-CO1의 단절은 지형에 의한 것으로 확인됨 [F6]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t150-r3.brief.json",
+                          "sentence":  "TOC-SRV 격리 시 임무 저하도는 M-C2에서 추가로 +7.0%p 증가 예상됨 [F10]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "7.0%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t210-r1.brief.json",
+                          "sentence":  "현재 시각은 09:30 (t+210분)이며, 활성 단계는 자격증명 탈취 진행 중 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t210-r1.brief.json",
+                          "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 21.43%로, 환경 요인이 주요 원인으로 분석됨 [F2]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "wrong",
+                          "numbers":  [
+                                          "21.43%"
+                                      ],
+                          "unmatched":  [
+                                            "21.43%"
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t210-r1.brief.json",
+                          "sentence":  "상호작용 요인이 가장 큰 영향을 미침 [F3]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t210-r1.brief.json",
+                          "sentence":  "자산 CO2-VEH의 링크 L-VHF-CO2 단절은 기동 관련 안테나 미전개로 인한 것으로 보임 [F6]{추정}.",
+                          "band":  "추정",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t210-r1.brief.json",
+                          "sentence":  "단절 상태에서 추가적인 자산 침해는 확인되지 않음 [F0]{근거없음}.",
+                          "band":  "근거없음",
+                          "verdict":  "abstain"
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t210-r1.brief.json",
+                          "sentence":  "TOC-SRV 격리 시 임무 저하도에 가장 큰 영향을 미치는 것은 M-C2 임무로, 약 7.0%p 증가 예상됨 [F9]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "7.0%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t210-r1.brief.json",
+                          "sentence":  "격리 비용에 대한 구체적인 정보는 제공되지 않음 [F0]{근거없음}.",
+                          "band":  "근거없음",
+                          "verdict":  "abstain"
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t210-r2.brief.json",
+                          "sentence":  "**시각 09:30 (t+210분), 활성 단계 자격증명 탈취 중** [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t210-r2.brief.json",
+                          "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 21.43%이며, 환경 요인이 주요 원인으로 분석됨 [F2]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "wrong",
+                          "numbers":  [
+                                          "21.43%"
+                                      ],
+                          "unmatched":  [
+                                            "21.43%"
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t210-r2.brief.json",
+                          "sentence":  "링크 L-VHF-CO2의 단절은 기동 관련 안테나 미전개로 인한 것으로 확인됨 [F6]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t210-r2.brief.json",
+                          "sentence":  "격리 비용 중 지휘관이 알아야 할 것은 자산 CO2-VEH 격리 시 임무 저하도에 영향을 미치지 않음 [F14]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t210-r3.brief.json",
+                          "sentence":  "**시각 09:30 (t+210분), 활성 단계 자격증명 탈취 중** [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t210-r3.brief.json",
+                          "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 21.43%이며, 이는 환경 요인에 의해 주로 발생 [F2]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "wrong",
+                          "numbers":  [
+                                          "21.43%"
+                                      ],
+                          "unmatched":  [
+                                            "21.43%"
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t210-r3.brief.json",
+                          "sentence":  "상호작용 요인이 가장 큰 영향을 미치지 않음 [F3]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t210-r3.brief.json",
+                          "sentence":  "링크 L-VHF-CO2의 단절으로 인해 자산 CO2-VEH의 통신이 중단되었으며, 원인은 기동 중 안테나 미전개로 인한 것으로 보임 [F6]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t210-r3.brief.json",
+                          "sentence":  "TOC-SRV 격리 시 임무 M-C2의 저하도는 추가로 7.0% 증가할 것으로 예상됨 [F9]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "7.0%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t255-r1.brief.json",
+                          "sentence":  "10:15 (t+255분) 현재 활성 단계는 목표 확보, 표적 획득, 화력 유도 중 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t255-r1.brief.json",
+                          "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 0%로 현재 영향 없음 [F2]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "0%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t255-r1.brief.json",
+                          "sentence":  "임무 M-C2의 저하도 원인 분해 결과 공격 단독, 환경 단독, 상호작용 모두 0% [F3]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "0%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t255-r1.brief.json",
+                          "sentence":  "자산 CO2-VEH와 관련된 작업 T-CO2REP의 저하도는 80%로, 이는 지형적 요인에 의한 단절 [F6]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "wrong",
+                          "numbers":  [
+                                          "80%"
+                                      ],
+                          "unmatched":  [
+                                            "80%"
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t255-r2.brief.json",
+                          "sentence":  "10:15 (t+255분) 현재 활성 단계는 목표 확보, 표적 획득, 화력 유도로 진행 중 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t255-r2.brief.json",
+                          "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 0%로 현재 정상 작동 중 [F2]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "0%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t255-r2.brief.json",
+                          "sentence":  "임무 M-C2의 저하도 저하 원인은 공격 단독, 환경 단독, 상호작용 모두 0%로 확인됨 [F3]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "0%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t255-r2.brief.json",
+                          "sentence":  "자산 CO2-VEH와 관련된 작업 T-CO2REP의 저하도는 80%이며, 이는 지형적 요인으로 인한 단절 [F6]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "wrong",
+                          "numbers":  [
+                                          "80%"
+                                      ],
+                          "unmatched":  [
+                                            "80%"
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t255-r3.brief.json",
+                          "sentence":  "10:15 (t+255분) 현재 tacnet-01 시나리오의 활성 단계는 목표 확보, 표적 획득, 화력 유도 중이다 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t255-r3.brief.json",
+                          "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 0%로, 현재 어떠한 저하 요인도 확인되지 않았다 [F2]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "0%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t255-r3.brief.json",
+                          "sentence":  "원인 분해 결과 공격 단독, 환경 단독, 상호작용 모두 0%이다 [F3]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "0%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t255-r3.brief.json",
+                          "sentence":  "자산 CO2-VEH와 관련된 링크 L-VHF-FO의 단절은 지형으로 인한 것으로 확인되었으며, 이로 인한 추가 저하는 없다 [F6]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t255-r3.brief.json",
+                          "sentence":  "격리 비용 중 지휘관이 알아야 할 사항은, 임무 저하도에 영향을 미치는 자산으로는 M-FIRE 임무에만 영향을 미치는 SAT-TERM과 FDC-SRV 격리가 있으며, 각각 M-FIRE 저하도에 +41.4%p와 +100.0%p 변화를 초래한다 [F9]{확신}, [F11]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "41.4%",
+                                          "100.0%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t300-r1.brief.json",
+                          "sentence":  "시나리오 tacnet-01은 현재 활성 단계인 목표 확보와 화력 유도를 진행 중이다 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t300-r1.brief.json",
+                          "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 100%로, 상호작용이 원인 분해의 주요 요인이다 [F2]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "100%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t300-r1.brief.json",
+                          "sentence":  "링크 L-SAT-TOC의 상태는 단절되어 있으며, 원인은 미상이고 신호 단절로 추정된다 [F6]{근거없음}.",
+                          "band":  "근거없음",
+                          "verdict":  "abstain"
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t300-r1.brief.json",
+                          "sentence":  "TOC-SRV 격리 시 임무 저하도에 변화가 예상되며, 격리 비용은 추가 정보 없이 결정할 수 없다 [F15]{근거없음}.",
+                          "band":  "근거없음",
+                          "verdict":  "abstain"
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t300-r2.brief.json",
+                          "sentence":  "11:00 (t+300분) 현재 활성 단계는 목표 확보 및 화력 유도 중 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t300-r2.brief.json",
+                          "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 100%로, 상호작용이 원인임 [F2]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "100%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t300-r2.brief.json",
+                          "sentence":  "링크 L-SAT-TOC의 단절 상태는 원인 미상으로, 신호 단절이 확인됨 [F6]{근거없음}.",
+                          "band":  "근거없음",
+                          "verdict":  "abstain"
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t300-r2.brief.json",
+                          "sentence":  "TOC-SRV 격리 시 임무 저하도에 변화가 없으나, 격리 비용은 근거 없음 [F0]{근거없음}.",
+                          "band":  "근거없음",
+                          "verdict":  "abstain"
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t300-r3.brief.json",
+                          "sentence":  "11:00 (t+300분) 현재 활성 단계는 목표 확보 및 화력 유도 중 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t300-r3.brief.json",
+                          "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 100%로, 상호작용이 원인임 [F2]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "100%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t300-r3.brief.json",
+                          "sentence":  "링크 L-SAT-TOC의 상태는 단절되었으며, 원인은 미상이고 신호 단절로 추정됨 [F6]{추정}.",
+                          "band":  "추정",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t300-r3.brief.json",
+                          "sentence":  "TOC-SRV 격리 시 임무 저하도에 영향을 미치지 않으나, BN-SRV 격리 시 추가 비용은 발생하지 않음 [F16]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t345-r1.brief.json",
+                          "sentence":  "11:45 (t+345분) 현재 대대급 전술 지휘소는 여단 TOC 침투 활성 단계를 진행 중이다 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t345-r1.brief.json",
+                          "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 60%로, 이는 공격 단독 요인에 기인한다 [F2]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "60%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t345-r1.brief.json",
+                          "sentence":  "자산 BN-SRV와 TOC-SRV는 각각 100%, 60%의 침해 수준을 보이고 있으며, 이로 인한 단절은 원인 미상이다 [F7]{근거없음}.",
+                          "band":  "근거없음",
+                          "verdict":  "abstain"
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t345-r1.brief.json",
+                          "sentence":  "TOC-SRV 격리 시 M-C2 임무 저하도가 40%p 증가할 것으로 예상되며, 격리 비용은 별도로 명시되지 않았다 [F21]{근거없음}.",
+                          "band":  "근거없음",
+                          "verdict":  "abstain"
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t345-r2.brief.json",
+                          "sentence":  "11:45 (t+345분) 현재 대대급 전술 지휘소는 **활성 단계 목표 확보, 화력 유도** 단계에 있다 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t345-r2.brief.json",
+                          "sentence":  "우선순위가 가장 높은 임무 **M-C2**의 저하도는 60%로, **공격 단독** 요인이 주요 원인으로 분석된다 [F2]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "60%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t345-r2.brief.json",
+                          "sentence":  "자산 **BN-SRV**의 침해 수준이 100%로 가장 높으며, 이 자산의 단절은 **원인 미상**으로 판단된다 [F7]{근거없음}.",
+                          "band":  "근거없음",
+                          "verdict":  "abstain"
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t345-r2.brief.json",
+                          "sentence":  "격리 비용 중 지휘관이 주목해야 할 사항은 **TOC-SRV 격리 시 임무 저하도에 큰 영향을 미치며, M-C2 임무 저하도가 +40.0%p 증가**할 것으로 예상된다 [F21]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "40.0%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t345-r3.brief.json",
+                          "sentence":  "**브리핑**\n\n시나리오 tacnet-01은 현재 활성 단계인 목표 확보 및 화력 유도 중에 있다 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t345-r3.brief.json",
+                          "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 60%이며, 이는 공격 단독 요인에 의해 발생했다 [F2]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "60%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t345-r3.brief.json",
+                          "sentence":  "자산 CO2-VEH의 침해 수준은 80%로, 이 자산의 단절은 임무 저하에 영향을 미치지 않는다 [F6]{근거없음}.",
+                          "band":  "근거없음",
+                          "verdict":  "abstain"
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t345-r3.brief.json",
+                          "sentence":  "TOC-SRV 격리 시 M-C2 임무 저하도는 +40.0%p 증가할 것으로 예상된다 [F21]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "40.0%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t390-r1.brief.json",
+                          "sentence":  "12:30 (t+390분), 활성 단계 TOC-SRV 장악 중 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t390-r1.brief.json",
+                          "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 100%로, 공격 단독으로 인한 것으로 확인됨 [F2]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "100%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t390-r1.brief.json",
+                          "sentence":  "자산 TOC-SRV의 침해 상태는 100%로, 이 자산의 단절은 임무 저하에 직접적인 원인으로 분석됨 [F8]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "100%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t390-r1.brief.json",
+                          "sentence":  "격리 비용 중 지휘관이 알아야 할 사항은 TOC-SRV 격리 시 추가 비용이 없음 [F21]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t390-r2.brief.json",
+                          "sentence":  "**시각 및 활성 단계**  \ntacnet-01 시각 12:30 (t+390분), 활성 단계 목표 확보 및 화력 유도 중 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t390-r2.brief.json",
+                          "sentence":  "**우선순위가 가장 높은 임무의 저하도와 원인 분해**  \n임무 M-C2의 저하도는 100%로, 원인 분해 결과 공격 단독으로 인한 것으로 확인됨 [F2]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "100%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t390-r2.brief.json",
+                          "sentence":  "**자산과 링크 상태**  \n자산 BN-SRV와 TOC-SRV의 침해 수준이 각각 100%로 심각하며, 단절 상태는 원인 미상 [F8]{근거없음}.",
+                          "band":  "근거없음",
+                          "verdict":  "abstain"
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t390-r2.brief.json",
+                          "sentence":  "**격리 비용**  \n자산 BN-SRV와 TOC-SRV의 격리는 추가 비용 없이 임무 저하도에 영향을 미치지 않음 [F22]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t390-r3.brief.json",
+                          "sentence":  "**시각**: 12:30 (t+390분), **활성 단계**: 목표 확보, 화력 유도 [F1]{확신}.",
+                          "band":  "확신",
+                          "verdict":  "no-number",
+                          "numbers":  [
+
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      },
+                      {
+                          "file":  "exaone3_5_7_8b-t390-r3.brief.json",
+                          "sentence":  "**우선순위가 가장 높은 임무 M-C2의 저하도는 100%이며, 원인 분해는 공격 단독으로 인한 것이다 [F2]{확신}.**\n\n**자산 BN-SRV와 TOC-SRV의 침해 상태는 각각 100%로, 이들 자산의 단절은 임무 저하에 직접적인 원인으로 작용하고 있다 [F8]{확신}.**\n\n**격리 비용 중 지휘관이 알아야 할 사항은, FDC-SRV를 격리할 경우 임무 M-FIRE의 저하도가 추가로 28.6% 증가할 것으로 예상된다 [F23]{확신}.**",
+                          "band":  "확신",
+                          "verdict":  "correct",
+                          "numbers":  [
+                                          "100%",
+                                          "100%",
+                                          "28.6%"
+                                      ],
+                          "unmatched":  [
+
+                                        ],
+                          "forbidden_hit":  [
+
+                                            ]
+                      }
+                  ]
+}
