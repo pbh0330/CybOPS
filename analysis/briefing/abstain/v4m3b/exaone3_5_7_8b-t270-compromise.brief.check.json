@@ -1,0 +1,81 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:34:13.1278095+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m3b\\exaone3_5_7_8b-t270-compromise.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t270.compromise.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  7,
+    "sentences_cited":  7,
+    "citation_rate":  1,
+    "citations_total":  7,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "10:30 (t+270분) 현재 대대 지휘소 서버 침해 상황에서 활성 단계는 목표 확보, 표적 획득, 화력 유도 진행 중 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하도는 0%로 현재 정상 작동 중 [F2]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "원인 분해 결과 공격 단독, 환경 단독, 상호작용 모두 0%로 확인됨 [F3]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F6",
+                          "abstain":  false,
+                          "text":  "링크 L-VHF-FO의 단절은 지형으로 인한 것으로 확인됨 [F6]{확신}."
+                      },
+                      {
+                          "no":  5,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "다른 단절 사항은 현재 보고되지 않음 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  6,
+                          "cited":  "F8",
+                          "abstain":  false,
+                          "text":  "TOC-SRV 격리 시 임무 저하도에 영향을 미치지만, M-C2는 +70.0%p 증가할 것으로 예상됨 [F8]{확신}."
+                      },
+                      {
+                          "no":  7,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "격리 비용에 대한 구체적인 정보는 제공되지 않음 [F0]{근거없음}."
+                      }
+                  ]
+}

@@ -1,0 +1,74 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:34:00.1531143+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m3b\\exaone3_5_7_8b-t150-containment.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t150.containment.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  5,
+    "sentences_cited":  5,
+    "citation_rate":  1,
+    "citations_total":  6,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+                                 {
+                                     "sentence_no":  2,
+                                     "number":  "32.14%",
+                                     "cited":  "F3",
+                                     "sentence":  "우선순위가 가장 높은 임무 M-C2의 저하도는 32.14%로 확인되었으며, 이는 상호작용 요인에 의한 것이 아님을 [F3]{확신} 확인했습니다."
+                                 }
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "tacnet-01 작전은 현재 활성 단계 기동 중에 있으며 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하도는 32.14%로 확인되었으며, 이는 상호작용 요인에 의한 것이 아님을 [F3]{확신} 확인했습니다."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "임무 M-C2의 저하 원인은 공격 단독 요인과 환경 단독 요인에 의해 발생한 것으로 분해되었습니다 [F2]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F6,F7",
+                          "abstain":  false,
+                          "text":  "링크 L-VHF-CO1은 지형적 요인으로 인해 단절되었으며 [F6]{확신}, 이로 인한 자산 CO2-VEH의 침해 수준은 50%로 나타났습니다 [F7]{확신}."
+                      },
+                      {
+                          "no":  5,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "격리 비용 관련 구체적인 정보는 현재 제공되지 않았습니다 [F0]{근거없음}."
+                      }
+                  ]
+}

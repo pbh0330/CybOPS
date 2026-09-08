@@ -1,0 +1,63 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:34:02.4765484+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m3b\\exaone3_5_7_8b-t195-containment.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t195.containment.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  4,
+    "citation_rate":  1,
+    "citations_total":  4,
+    "abstentions":  1,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "시나리오 tacnet-01은 현재 활성 단계인 기동, 표적 획득, 화력 유도 단계에 있다 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하도는 10.71%이며, 이는 공격 단독으로 인한 것이다 [F2]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F7",
+                          "abstain":  true,
+                          "text":  "자산 CO2-VEH와 관련된 작업 T-CO2REP의 저하도는 50%로, 상호작용이나 환경 요인에 의한 영향은 확인되지 않았다 [F7]{근거없음}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F6",
+                          "abstain":  false,
+                          "text":  "격리 비용 중 지휘관이 주목해야 할 사항은 현재 자산 CO2-VEH의 침해 수준이 50%로, 추가적인 보안 조치가 필요할 수 있다는 점이다 [F6]{확신}."
+                      }
+                  ]
+}
