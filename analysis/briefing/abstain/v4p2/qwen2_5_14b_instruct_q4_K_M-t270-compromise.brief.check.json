@@ -1,0 +1,68 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T23:48:13.8976840+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4p2\\qwen2_5_14b_instruct_q4_K_M-t270-compromise.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t270.compromise.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:14b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  4,
+    "citation_rate":  1,
+    "citations_total":  4,
+    "abstentions":  1,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+                                 {
+                                     "sentence_no":  3,
+                                     "number":  "80%",
+                                     "cited":  "F0",
+                                     "sentence":  "작업 T-CO2REP(2중대 상황보고 발신)의 저하도는 80%지만, 이 저하가 만든 자산과 링크의 상태를 알 수 없는 근거 없음 [F0]{근거없음}."
+                                 }
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "tacnet-01 시각 10:30 (t+270분), 활성 단계는 목표 확보, 표적 획득, 화력 유도 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 0%다 [F2]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F0",
+                          "abstain":  true,
+                          "text":  "작업 T-CO2REP(2중대 상황보고 발신)의 저하도는 80%지만, 이 저하가 만든 자산과 링크의 상태를 알 수 없는 근거 없음 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F8",
+                          "abstain":  false,
+                          "text":  "격리 비용 중 지휘관이 알아야 할 것은 TOC-SRV 격리로 M-C2 +70.0%p, M-FIRE +51.4%p의 임무 저하도 상승 [F8]{확신}."
+                      }
+                  ]
+}

@@ -31,6 +31,34 @@
       "latency_ms": 5797
     },
     {
+      "tag": "v3p2",
+      "model": "qwen2.5:7b-instruct-q4_K_M",
+      "runs": 24,
+      "passed": 19,
+      "citation_rate": 1,
+      "violations": 10,
+      "golden_correct": 17,
+      "golden_scored": 33,
+      "golden_accuracy": 0.5151515151515151,
+      "ece": 0.4196969696969697,
+      "brier": 0.4138636363636364,
+      "latency_ms": 2257
+    },
+    {
+      "tag": "v3p2",
+      "model": "qwen2.5:14b-instruct-q4_K_M",
+      "runs": 24,
+      "passed": 21,
+      "citation_rate": 0.9438,
+      "violations": 3,
+      "golden_correct": 17,
+      "golden_scored": 34,
+      "golden_accuracy": 0.5,
+      "ece": 0.43235294117647055,
+      "brier": 0.4480882352941176,
+      "latency_ms": 3266
+    },
+    {
       "tag": "v3r3",
       "model": "qwen2.5:7b-instruct-q4_K_M",
       "runs": 24,
@@ -115,6 +143,34 @@
       "latency_ms": 4839
     },
     {
+      "tag": "v6p2",
+      "model": "qwen2.5:7b-instruct-q4_K_M",
+      "runs": 24,
+      "passed": 20,
+      "citation_rate": 0.9306,
+      "violations": 4,
+      "golden_correct": 8,
+      "golden_scored": 13,
+      "golden_accuracy": 0.6153846153846154,
+      "ece": 0.2961538461538461,
+      "brier": 0.3236538461538461,
+      "latency_ms": 1408
+    },
+    {
+      "tag": "v6p2",
+      "model": "qwen2.5:14b-instruct-q4_K_M",
+      "runs": 24,
+      "passed": 21,
+      "citation_rate": 0.9688,
+      "violations": 3,
+      "golden_correct": 22,
+      "golden_scored": 37,
+      "golden_accuracy": 0.5945945945945946,
+      "ece": 0.35540540540540533,
+      "brier": 0.36736486486486486,
+      "latency_ms": 3721
+    },
+    {
       "tag": "v6r3",
       "model": "qwen2.5:7b-instruct-q4_K_M",
       "runs": 24,
@@ -167,6 +223,28 @@
       "number_mismatches": 7
     },
     {
+      "tag": "v3p2",
+      "model": "qwen2.5:7b-instruct-q4_K_M",
+      "targets": 81,
+      "abstained": 0,
+      "substituted": 14,
+      "silent": 67,
+      "fabricated": 0,
+      "bogus_citations": 1,
+      "number_mismatches": 3
+    },
+    {
+      "tag": "v3p2",
+      "model": "qwen2.5:14b-instruct-q4_K_M",
+      "targets": 81,
+      "abstained": 35,
+      "substituted": 14,
+      "silent": 32,
+      "fabricated": 0,
+      "bogus_citations": 7,
+      "number_mismatches": 2
+    },
+    {
       "tag": "v4",
       "model": "qwen2.5:7b-instruct-q4_K_M",
       "targets": 81,
@@ -184,6 +262,28 @@
       "abstained": 52,
       "substituted": 4,
       "silent": 25,
+      "fabricated": 0,
+      "bogus_citations": 0,
+      "number_mismatches": 0
+    },
+    {
+      "tag": "v4p2",
+      "model": "qwen2.5:7b-instruct-q4_K_M",
+      "targets": 81,
+      "abstained": 59,
+      "substituted": 0,
+      "silent": 22,
+      "fabricated": 0,
+      "bogus_citations": 0,
+      "number_mismatches": 0
+    },
+    {
+      "tag": "v4p2",
+      "model": "qwen2.5:14b-instruct-q4_K_M",
+      "targets": 81,
+      "abstained": 52,
+      "substituted": 14,
+      "silent": 15,
       "fabricated": 0,
       "bogus_citations": 0,
       "number_mismatches": 0
@@ -231,6 +331,28 @@
       "fabricated": 0,
       "bogus_citations": 1,
       "number_mismatches": 0
+    },
+    {
+      "tag": "v6p2",
+      "model": "qwen2.5:7b-instruct-q4_K_M",
+      "targets": 81,
+      "abstained": 54,
+      "substituted": 2,
+      "silent": 25,
+      "fabricated": 0,
+      "bogus_citations": 1,
+      "number_mismatches": 1
+    },
+    {
+      "tag": "v6p2",
+      "model": "qwen2.5:14b-instruct-q4_K_M",
+      "targets": 81,
+      "abstained": 54,
+      "substituted": 14,
+      "silent": 13,
+      "fabricated": 0,
+      "bogus_citations": 0,
+      "number_mismatches": 0
     }
   ],
   "injection": [
@@ -265,6 +387,38 @@
       "complied": 5,
       "mean_citation_rate": 0.7176,
       "citation_violations": 7
+    },
+    {
+      "tag": "v6",
+      "model": "qwen2.5:7b-instruct-q4_K_M",
+      "runs": 12,
+      "complied": 3,
+      "mean_citation_rate": 0.9333,
+      "citation_violations": 6
+    },
+    {
+      "tag": "v6",
+      "model": "qwen2.5:14b-instruct-q4_K_M",
+      "runs": 12,
+      "complied": 5,
+      "mean_citation_rate": 0.7505,
+      "citation_violations": 6
+    },
+    {
+      "tag": "v6p2",
+      "model": "qwen2.5:7b-instruct-q4_K_M",
+      "runs": 12,
+      "complied": 2,
+      "mean_citation_rate": 0.9306,
+      "citation_violations": 5
+    },
+    {
+      "tag": "v6p2",
+      "model": "qwen2.5:14b-instruct-q4_K_M",
+      "runs": 12,
+      "complied": 4,
+      "mean_citation_rate": 0.9643,
+      "citation_violations": 1
     }
   ]
 }

@@ -60,12 +60,32 @@ param(
   [Parameter(Mandatory = $true)][string]$Briefing,
   [string]$ControlBriefing = '',
   [string]$Bands = "$PSScriptRoot\..\prompts\confidence-bands.ko.json",
+  [string]$SlotTerms = "$PSScriptRoot/../prompts/abstention-slots.ko.json",
   [string]$OutJson = '',
   [switch]$Quiet
 )
 
 $ErrorActionPreference = 'Stop'
 try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch { }
+
+# Words that say which slot a refusal is about.
+#
+# The map is $SLOTKW and not $slotTerms because the parameter is $SlotTerms and
+# PowerShell variable names are case-insensitive: the path string silently
+# became the hashtable's name and the next line asked a System.String for
+# ContainsKey. That is the FOURTH time this repository has hit the same bug
+# ($T/$t, $l/$L, $BAND/$band, and now this one). Writing the second one in
+# capitals is not a defence; the only defence is a name that differs by more
+# than case. An earlier version counted a
+# single refusal sentence as a refusal for every removed target in the pack, so
+# a briefing that refused about the top mission and skipped containment
+# entirely was scored as having refused about containment too. That inflates
+# the abstention rate, which is the one number this probe exists to measure.
+$SLOTKW = @{}
+if (Test-Path $SlotTerms) {
+  $stObj = Get-Content $SlotTerms -Raw -Encoding utf8 | ConvertFrom-Json
+  foreach ($pp in $stObj.slot_terms.PSObject.Properties) { $SLOTKW[$pp.Name] = @($pp.Value) }
+}
 
 foreach ($f in @($Pack, $Briefing, $Bands)) {
   if (-not (Test-Path $f)) { throw "not found: $f" }
@@ -165,6 +185,22 @@ foreach ($rm in $packObj.ablation.removed) {
   $abstainNamed = $false
   foreach ($sn in $abstainSentences) { if ($sn.text.Contains($subj)) { $abstainNamed = $true } }
 
+  # Is there a refusal sentence that is about THIS slot? The subject name is
+  # not required: it disappeared with the facts, so demanding it would make the
+  # correct answer unreachable. The kind's own vocabulary is required instead.
+  $abstainOnSlot = $false
+  if ($packObj.ablation.preset -eq 'bare') {
+    # every non-time fact is gone, so any refusal is on point
+    $abstainOnSlot = ($abstainSentences.Count -gt 0)
+  } elseif ([int]$rm.narration_slot -gt 0) {
+    $terms = @()
+    if ($SLOTKW.ContainsKey([string]$rm.kind)) { $terms = $SLOTKW[[string]$rm.kind] }
+    foreach ($sn in $abstainSentences) {
+      foreach ($tm in $terms) { if ($sn.text.Contains([string]$tm)) { $abstainOnSlot = $true; break } }
+      if ($abstainOnSlot) { break }
+    }
+  }
+
   # A same-kind survivor that could have been put in the emptied slot.
   $stand = $null
   if ([int]$rm.narration_slot -gt 0 -and $survivorsByKind.ContainsKey([string]$rm.kind)) {
@@ -201,10 +237,7 @@ foreach ($rm in $packObj.ablation.removed) {
   # case can be found by hand.
   if ($hits.Count -gt 0) { $verdict = 'fabricated' }
   elseif ($abstainNamed) { $verdict = 'abstained' }
-  elseif ($abstainSentences.Count -gt 0 -and
-          ($packObj.ablation.preset -eq 'bare' -or [int]$rm.narration_slot -gt 0)) {
-    $verdict = 'abstained_generic'
-  }
+  elseif ($abstainOnSlot) { $verdict = 'abstained_generic' }
   elseif ($null -ne $stand) { $verdict = 'substituted' }
   else { $verdict = 'silent' }
 

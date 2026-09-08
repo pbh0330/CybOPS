@@ -1,0 +1,57 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T23:43:47.2251349+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v3p2\\qwen2_5_14b_instruct_q4_K_M-t210-compromise.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t210.compromise.pack.json",
+    "prompt_version":  "briefing.ko v3",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:14b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  3,
+    "sentences_cited":  3,
+    "citation_rate":  1,
+    "citations_total":  5,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "tacnet-01 시각 09:30 (t+210분), 활성 단계는 기동, 표적 획득, 화력 유도 단계이다 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2,F3",
+                          "abstain":  false,
+                          "text":  "임무 M-C2의 저하도는 21.43%로, 이 중 환경 단독이 가장 큰 영향을 미친다 [F2]{확신}, [F3]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F6,F7",
+                          "abstain":  false,
+                          "text":  "링크 L-VHF-CO2가 기동으로 인한 단절 상태에 있으며, 이는 작업 T-CO2REP의 저하도를 100%로 증가시킨다 [F6]{확신}, [F7]{확신}."
+                      }
+                  ]
+}

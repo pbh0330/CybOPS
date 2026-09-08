@@ -1,6 +1,6 @@
 {
     "check_version":  1,
-    "checked":  "2026-09-08T23:36:49.3760264+09:00",
+    "checked":  "2026-09-08T23:48:28.3326074+09:00",
     "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v6p2\\qwen2_5_14b_instruct_q4_K_M-t105-containment.brief.json",
     "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t105.containment.pack.json",
     "prompt_version":  "briefing.ko v6",

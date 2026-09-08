@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-09-08T23:34:34.2574920+09:00",
+    "generated":  "2026-09-08T23:48:27.0418976+09:00",
     "generator":  "scripts/Test-Abstention.ps1",
     "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t195.mission-top.pack.json",
     "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v6p2\\qwen2_5_7b_instruct_q4_K_M-t195-mission-top.brief.json",
@@ -30,18 +30,18 @@
     "targets_total":  2,
     "fabricated":  0,
     "abstained":  0,
-    "abstained_generic":  2,
+    "abstained_generic":  1,
     "substituted":  0,
-    "silent":  0,
+    "silent":  1,
     "fabrication_rate":  0,
-    "abstention_rate":  1,
+    "abstention_rate":  0.5,
     "substitution_rate":  0,
-    "silence_rate":  0,
+    "silence_rate":  0.5,
     "control_briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v6p2\\qwen2_5_7b_instruct_q4_K_M-t195-control.brief.json",
     "discriminative":  2,
-    "discriminative_abstained":  2,
+    "discriminative_abstained":  1,
     "discriminative_fabricated":  0,
-    "discriminative_abstention_rate":  1,
+    "discriminative_abstention_rate":  0.5,
     "targets":  [
                     {
                         "original_id":  "F2",
@@ -75,7 +75,7 @@
                         "narration_slot":  2,
                         "substituted_with":  null,
                         "control_stated":  true,
-                        "verdict":  "abstained_generic"
+                        "verdict":  "silent"
                     }
                 ],
     "note":  "silent is not folded into abstained. A model that changed the subject did not admit ignorance. substituted is a separate verdict: the narration slot was filled with a different subject of the same kind, which passes the citation checker and is still a false briefing."

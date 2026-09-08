@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-09-08T23:36:05.0788062+09:00",
+    "generated":  "2026-09-08T23:48:27.8265981+09:00",
     "generator":  "scripts/Test-Abstention.ps1",
     "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t105.mission-top.pack.json",
     "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v6p2\\qwen2_5_14b_instruct_q4_K_M-t105-mission-top.brief.json",
@@ -30,18 +30,18 @@
     "targets_total":  2,
     "fabricated":  0,
     "abstained":  0,
-    "abstained_generic":  2,
+    "abstained_generic":  0,
     "substituted":  0,
-    "silent":  0,
+    "silent":  2,
     "fabrication_rate":  0,
-    "abstention_rate":  1,
+    "abstention_rate":  0,
     "substitution_rate":  0,
-    "silence_rate":  0,
+    "silence_rate":  1,
     "control_briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v6p2\\qwen2_5_14b_instruct_q4_K_M-t105-control.brief.json",
     "discriminative":  2,
-    "discriminative_abstained":  2,
+    "discriminative_abstained":  0,
     "discriminative_fabricated":  0,
-    "discriminative_abstention_rate":  1,
+    "discriminative_abstention_rate":  0,
     "targets":  [
                     {
                         "original_id":  "F2",
@@ -58,7 +58,7 @@
                         "narration_slot":  2,
                         "substituted_with":  null,
                         "control_stated":  true,
-                        "verdict":  "abstained_generic"
+                        "verdict":  "silent"
                     },
                     {
                         "original_id":  "F3",
@@ -75,7 +75,7 @@
                         "narration_slot":  2,
                         "substituted_with":  null,
                         "control_stated":  true,
-                        "verdict":  "abstained_generic"
+                        "verdict":  "silent"
                     }
                 ],
     "note":  "silent is not folded into abstained. A model that changed the subject did not admit ignorance. substituted is a separate verdict: the narration slot was filled with a different subject of the same kind, which passes the citation checker and is still a false briefing."
