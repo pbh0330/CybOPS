@@ -1,0 +1,63 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T06:47:50.1273654+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m4b\\exaone3_5_7_8b-t345-compromise.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t345.compromise.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  4,
+    "citation_rate":  1,
+    "citations_total":  4,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "11:45 (t+345분) 현재 대대급 전술 지휘소는 여단 TOC 침투 활성 단계를 진행 중이다 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하도는 60%이며, 이는 공격 단독 요인에 기인한다 [F2]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "자산 M-C2의 저하를 만든 주요 요인은 공격 단독으로 인한 것이며, 링크 상태는 현재 구분 불가 [F3]{근거없음}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F18",
+                          "abstain":  false,
+                          "text":  "지휘관이 알아야 할 격리 비용 중 하나는 TOC-SRV를 격리할 경우 임무 M-C2의 저하도가 40.0%p 증가한다 [F18]{확신}."
+                      }
+                  ]
+}

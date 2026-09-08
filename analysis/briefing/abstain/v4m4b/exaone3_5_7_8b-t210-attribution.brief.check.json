@@ -1,0 +1,81 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T06:47:31.5380246+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m4b\\exaone3_5_7_8b-t210-attribution.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t210.attribution.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  7,
+    "sentences_cited":  7,
+    "citation_rate":  1,
+    "citations_total":  7,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "현재 시각은 09:30 (t+210분)이며, 활성 단계는 기동, 표적 획득, 화력 유도 중이다 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하도는 21.43%로 확인된다 [F2]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "이 저하는 주로 상호작용 요인에 기인한다 [F3]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F4",
+                          "abstain":  false,
+                          "text":  "링크 L-VHF-CO2의 단절은 원인 미상으로, 기동 중 안테나 미전개로 인한 것으로 추정된다 [F4]{추정}."
+                      },
+                      {
+                          "no":  5,
+                          "cited":  "F5",
+                          "abstain":  false,
+                          "text":  "단절된 자산 CO2-VEH의 침해 수준은 80%이다 [F5]{확신}."
+                      },
+                      {
+                          "no":  6,
+                          "cited":  "F7",
+                          "abstain":  false,
+                          "text":  "TOC-SRV 격리 시 임무 저하도는 M-C2에서 추가로 7.0% 증가할 것으로 예상된다 [F7]{확신}."
+                      },
+                      {
+                          "no":  7,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "격리 비용에 대한 구체적인 정보는 제공되지 않았다 [F0]{근거없음}."
+                      }
+                  ]
+}

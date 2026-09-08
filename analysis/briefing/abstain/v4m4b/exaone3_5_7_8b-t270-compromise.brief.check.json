@@ -1,0 +1,93 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T06:47:47.7524721+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m4b\\exaone3_5_7_8b-t270-compromise.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t270.compromise.pack.json",
+    "prompt_version":  "briefing.ko v4",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  9,
+    "sentences_cited":  5,
+    "citation_rate":  0.5556,
+    "citations_total":  5,
+    "abstentions":  1,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  true,
+    "violations":  1,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "**시각 및 활성 단계**"
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "tacnet-01 작전은 현재 시각 10:30 (t+270분)에 대대 지휘소 서버 침해 상황에서 활성 단계 목표 확보, 표적 획득, 화력 유도를 진행 중이다 [F1]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "**우선순위가 가장 높은 임무의 저하도 및 원인 분해**"
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F2",
+                          "abstain":  true,
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하도는 0%로, 현재 어떠한 저하 요인도 확인되지 않았다 [F2]{확신}."
+                      },
+                      {
+                          "no":  5,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "원인 분해 결과 공격 단독, 환경 단독, 상호작용 모두 0%로 나타났다 [F3]{확신}."
+                      },
+                      {
+                          "no":  6,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "**자산 및 링크 상태**"
+                      },
+                      {
+                          "no":  7,
+                          "cited":  "F6",
+                          "abstain":  false,
+                          "text":  "링크 L-VHF-FO(FO-TAB\u003c-\u003eRELAY-1, vhf)가 지형으로 인한 단절 상태에 있으며, 이 외에 명시된 단절 자산은 없다 [F6]{확신}."
+                      },
+                      {
+                          "no":  8,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "**격리 비용 중 지휘관이 알아야 할 사항**"
+                      },
+                      {
+                          "no":  9,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "현재 격리 비용 관련 특정 임무에 대한 추가 정보는 제공되지 않았다 [F0]{근거없음}."
+                      }
+                  ]
+}

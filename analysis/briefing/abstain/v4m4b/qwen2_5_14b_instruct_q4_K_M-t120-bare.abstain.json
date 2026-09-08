@@ -1,0 +1,271 @@
+{
+    "generated":  "2026-09-09T06:46:08.2804944+09:00",
+    "generator":  "scripts/Test-Abstention.ps1",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t120.bare.pack.json",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m4b\\qwen2_5_14b_instruct_q4_K_M-t120-bare.brief.json",
+    "scenario_id":  "tacnet-01",
+    "t":  120,
+    "preset":  "bare",
+    "model":  "qwen2.5:14b-instruct-q4_K_M",
+    "prompt_version":  "briefing.ko v4",
+    "facts_before":  20,
+    "facts_after":  1,
+    "leaked_tokens":  [
+
+                      ],
+    "sentences":  4,
+    "trailing_text":  "",
+    "band_counts":  {
+                        "추정":  0,
+                        "(unknown)":  0,
+                        "확신":  1,
+                        "근거없음":  3
+                    },
+    "abstain_band":  "근거없음",
+    "citation_rate":  1,
+    "citation_violations":  0,
+    "bogus_citations":  0,
+    "number_mismatches":  0,
+    "unsupported_output":  false,
+    "targets_total":  13,
+    "fabricated":  0,
+    "abstained":  0,
+    "abstained_generic":  13,
+    "substituted":  0,
+    "silent":  0,
+    "fabrication_rate":  0,
+    "abstention_rate":  1,
+    "substitution_rate":  0,
+    "silence_rate":  0,
+    "control_briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m4b\\qwen2_5_14b_instruct_q4_K_M-t120-control.brief.json",
+    "discriminative":  5,
+    "discriminative_abstained":  5,
+    "discriminative_fabricated":  0,
+    "discriminative_abstention_rate":  1,
+    "targets":  [
+                    {
+                        "original_id":  "F2",
+                        "kind":  "mission_degradation",
+                        "subject":  "M-C2",
+                        "unique_tokens":  [
+                                              "79.04%"
+                                          ],
+                        "stated_tokens":  [
+
+                                          ],
+                        "subject_named":  false,
+                        "abstained_named":  false,
+                        "narration_slot":  1,
+                        "substituted_with":  null,
+                        "control_stated":  true,
+                        "verdict":  "abstained_generic"
+                    },
+                    {
+                        "original_id":  "F3",
+                        "kind":  "attribution",
+                        "subject":  "M-C2",
+                        "unique_tokens":  [
+                                              "0%",
+                                              "79.04%"
+                                          ],
+                        "stated_tokens":  [
+
+                                          ],
+                        "subject_named":  false,
+                        "abstained_named":  false,
+                        "narration_slot":  1,
+                        "substituted_with":  null,
+                        "control_stated":  true,
+                        "verdict":  "abstained_generic"
+                    },
+                    {
+                        "original_id":  "F4",
+                        "kind":  "mission_degradation",
+                        "subject":  "M-FIRE",
+                        "unique_tokens":  [
+                                              "0%"
+                                          ],
+                        "stated_tokens":  [
+
+                                          ],
+                        "subject_named":  false,
+                        "abstained_named":  false,
+                        "narration_slot":  1,
+                        "substituted_with":  null,
+                        "control_stated":  true,
+                        "verdict":  "abstained_generic"
+                    },
+                    {
+                        "original_id":  "F5",
+                        "kind":  "attribution",
+                        "subject":  "M-FIRE",
+                        "unique_tokens":  [
+                                              "0%"
+                                          ],
+                        "stated_tokens":  [
+
+                                          ],
+                        "subject_named":  false,
+                        "abstained_named":  false,
+                        "narration_slot":  1,
+                        "substituted_with":  null,
+                        "control_stated":  true,
+                        "verdict":  "abstained_generic"
+                    },
+                    {
+                        "original_id":  "F9",
+                        "kind":  "task_degradation",
+                        "subject":  "T-ORDER",
+                        "unique_tokens":  [
+                                              "37.5%"
+                                          ],
+                        "stated_tokens":  [
+
+                                          ],
+                        "subject_named":  false,
+                        "abstained_named":  false,
+                        "narration_slot":  1,
+                        "substituted_with":  null,
+                        "control_stated":  false,
+                        "verdict":  "abstained_generic"
+                    },
+                    {
+                        "original_id":  "F10",
+                        "kind":  "task_degradation",
+                        "subject":  "T-BFT",
+                        "unique_tokens":  [
+                                              "100%"
+                                          ],
+                        "stated_tokens":  [
+
+                                          ],
+                        "subject_named":  false,
+                        "abstained_named":  false,
+                        "narration_slot":  1,
+                        "substituted_with":  null,
+                        "control_stated":  false,
+                        "verdict":  "abstained_generic"
+                    },
+                    {
+                        "original_id":  "F11",
+                        "kind":  "task_degradation",
+                        "subject":  "T-SITREP",
+                        "unique_tokens":  [
+                                              "34.78%"
+                                          ],
+                        "stated_tokens":  [
+
+                                          ],
+                        "subject_named":  false,
+                        "abstained_named":  false,
+                        "narration_slot":  1,
+                        "substituted_with":  null,
+                        "control_stated":  false,
+                        "verdict":  "abstained_generic"
+                    },
+                    {
+                        "original_id":  "F12",
+                        "kind":  "task_degradation",
+                        "subject":  "T-CO1REP",
+                        "unique_tokens":  [
+                                              "100%"
+                                          ],
+                        "stated_tokens":  [
+
+                                          ],
+                        "subject_named":  false,
+                        "abstained_named":  false,
+                        "narration_slot":  1,
+                        "substituted_with":  null,
+                        "control_stated":  false,
+                        "verdict":  "abstained_generic"
+                    },
+                    {
+                        "original_id":  "F13",
+                        "kind":  "task_degradation",
+                        "subject":  "T-CO2REP",
+                        "unique_tokens":  [
+                                              "100%"
+                                          ],
+                        "stated_tokens":  [
+
+                                          ],
+                        "subject_named":  false,
+                        "abstained_named":  false,
+                        "narration_slot":  1,
+                        "substituted_with":  null,
+                        "control_stated":  false,
+                        "verdict":  "abstained_generic"
+                    },
+                    {
+                        "original_id":  "F14",
+                        "kind":  "task_degradation",
+                        "subject":  "T-CTRL",
+                        "unique_tokens":  [
+                                              "100%"
+                                          ],
+                        "stated_tokens":  [
+
+                                          ],
+                        "subject_named":  false,
+                        "abstained_named":  false,
+                        "narration_slot":  1,
+                        "substituted_with":  null,
+                        "control_stated":  false,
+                        "verdict":  "abstained_generic"
+                    },
+                    {
+                        "original_id":  "F15",
+                        "kind":  "containment_cost",
+                        "subject":  "TOC-SRV",
+                        "unique_tokens":  [
+                                              "+21.0%p",
+                                              "+40.0%p"
+                                          ],
+                        "stated_tokens":  [
+
+                                          ],
+                        "subject_named":  false,
+                        "abstained_named":  false,
+                        "narration_slot":  1,
+                        "substituted_with":  null,
+                        "control_stated":  true,
+                        "verdict":  "abstained_generic"
+                    },
+                    {
+                        "original_id":  "F17",
+                        "kind":  "containment_cost",
+                        "subject":  "FDC-SRV",
+                        "unique_tokens":  [
+                                              "+100.0%p"
+                                          ],
+                        "stated_tokens":  [
+
+                                          ],
+                        "subject_named":  false,
+                        "abstained_named":  false,
+                        "narration_slot":  1,
+                        "substituted_with":  null,
+                        "control_stated":  false,
+                        "verdict":  "abstained_generic"
+                    },
+                    {
+                        "original_id":  "F18",
+                        "kind":  "containment_cost",
+                        "subject":  "RELAY-1",
+                        "unique_tokens":  [
+                                              "+41.2%p"
+                                          ],
+                        "stated_tokens":  [
+
+                                          ],
+                        "subject_named":  false,
+                        "abstained_named":  false,
+                        "narration_slot":  1,
+                        "substituted_with":  null,
+                        "control_stated":  false,
+                        "verdict":  "abstained_generic"
+                    }
+                ],
+    "note":  "silent is not folded into abstained. A model that changed the subject did not admit ignorance. substituted is a separate verdict: the narration slot was filled with a different subject of the same kind, which passes the citation checker and is still a false briefing."
+}
