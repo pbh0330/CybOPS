@@ -1,0 +1,99 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:16:40.4437234+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v8\\exaone3_5_7_8b-t225-compromise.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t225.compromise.pack.json",
+    "prompt_version":  "briefing.ko v8",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  10,
+    "sentences_cited":  6,
+    "citation_rate":  0.6,
+    "citations_total":  7,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  true,
+    "violations":  1,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "**시각 및 활성 단계**"
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "tacnet-01 시나리오는 현재 시각 09:45 (t+225분)에 활성 단계인 기동, 표적 획득, 화력 유도 단계에 있다 [F1]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "**우선순위가 가장 높은 임무의 저하도와 원인 분해**"
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F2,F3",
+                          "abstain":  false,
+                          "text":  "임무 M-C2의 저하도는 21.43%로 가장 높은 우선순위를 가진 임무이며, 원인 분해 결과 공격 단독 요인이 17.14%, 환경 단독 요인이 21.43%로 나타났다 [F2]{확신}, 상호작용 요인은 -17.14%이다 [F3]{확신}."
+                      },
+                      {
+                          "no":  5,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "**자산과 링크 상태**"
+                      },
+                      {
+                          "no":  6,
+                          "cited":  "F6",
+                          "abstain":  false,
+                          "text":  "링크 L-VHF-CO2가 단절되었으며, 원인은 기동 중 안테나 미전개로 인한 것으로 확인된다 [F6]{확신}."
+                      },
+                      {
+                          "no":  7,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "단절 외에 다른 자산의 상태 변화는 보고되지 않았다 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  8,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "**격리 비용**"
+                      },
+                      {
+                          "no":  9,
+                          "cited":  "F8",
+                          "abstain":  false,
+                          "text":  "TOC-SRV 격리 시 임무 저하도에 가장 큰 영향을 미치며, 특히 임무 M-C2의 저하도가 7.0%p 증가할 것으로 예상된다 [F8]{확신}."
+                      },
+                      {
+                          "no":  10,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "격리 비용에 대한 구체적인 수치는 제공되지 않았다 [F0]{근거없음}."
+                      }
+                  ]
+}

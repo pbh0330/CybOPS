@@ -1,0 +1,81 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:15:55.2027203+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v8\\exaone3_5_7_8b-t165-mission-top.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t165.mission-top.pack.json",
+    "prompt_version":  "briefing.ko v8",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  7,
+    "sentences_cited":  7,
+    "citation_rate":  1,
+    "citations_total":  8,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "**시각** 08:45 (t+165분), **활성 단계** 기동 중 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "**우선순위가 가장 높은 임무의 저하도**는 근거 블록에 명시되지 않음 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "**원인 분해** 역시 특정 임무에 대한 정보가 부족하여 확인 불가 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F4,F5",
+                          "abstain":  false,
+                          "text":  "**자산과 링크 상태**: 링크 L-VHF-CO1이 지형으로 인해 단절되었으며 [F4]{확신}, 자산 CO2-VEH의 침해 수준은 50%로 확인됨 [F5]{확신}."
+                      },
+                      {
+                          "no":  5,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "다른 자산과 링크의 단절 원인은 미상으로 구분 불가 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  6,
+                          "cited":  "F8",
+                          "abstain":  false,
+                          "text":  "**격리 비용 중 지휘관이 알아야 할 것**: TOC-SRV 격리 시 M-C2 임무 저하도가 +7.0%p 증가할 것으로 예상됨 [F8]{확신}."
+                      },
+                      {
+                          "no":  7,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "격리 비용에 대한 구체적인 정보는 제공되지 않음 [F0]{근거없음}."
+                      }
+                  ]
+}

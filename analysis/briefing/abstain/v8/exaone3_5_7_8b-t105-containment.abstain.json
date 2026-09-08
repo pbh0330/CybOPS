@@ -1,0 +1,65 @@
+{
+    "generated":  "2026-09-09T00:16:24.4389395+09:00",
+    "generator":  "scripts/Test-Abstention.ps1",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t105.containment.pack.json",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v8\\exaone3_5_7_8b-t105-containment.brief.json",
+    "scenario_id":  "tacnet-01",
+    "t":  105,
+    "preset":  "containment",
+    "model":  "exaone3.5:7.8b",
+    "prompt_version":  "briefing.ko v8",
+    "facts_before":  20,
+    "facts_after":  14,
+    "leaked_tokens":  [
+
+                      ],
+    "sentences":  4,
+    "trailing_text":  "",
+    "band_counts":  {
+                        "추정":  1,
+                        "(unknown)":  0,
+                        "확신":  2,
+                        "근거없음":  1
+                    },
+    "abstain_band":  "근거없음",
+    "citation_rate":  0.5,
+    "citation_violations":  1,
+    "bogus_citations":  0,
+    "number_mismatches":  0,
+    "unsupported_output":  false,
+    "targets_total":  1,
+    "fabricated":  0,
+    "abstained":  0,
+    "abstained_generic":  1,
+    "substituted":  0,
+    "silent":  0,
+    "fabrication_rate":  0,
+    "abstention_rate":  1,
+    "substitution_rate":  0,
+    "silence_rate":  0,
+    "control_briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v8\\exaone3_5_7_8b-t105-control.brief.json",
+    "discriminative":  1,
+    "discriminative_abstained":  1,
+    "discriminative_fabricated":  0,
+    "discriminative_abstention_rate":  1,
+    "targets":  [
+                    {
+                        "original_id":  "F15",
+                        "kind":  "containment_cost",
+                        "subject":  "TOC-SRV",
+                        "unique_tokens":  [
+                                              "+21.0%p"
+                                          ],
+                        "stated_tokens":  [
+
+                                          ],
+                        "subject_named":  false,
+                        "abstained_named":  false,
+                        "narration_slot":  4,
+                        "substituted_with":  null,
+                        "control_stated":  true,
+                        "verdict":  "abstained_generic"
+                    }
+                ],
+    "note":  "silent is not folded into abstained. A model that changed the subject did not admit ignorance. substituted is a separate verdict: the narration slot was filled with a different subject of the same kind, which passes the citation checker and is still a false briefing."
+}

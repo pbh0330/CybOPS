@@ -1,0 +1,87 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:16:27.9971682+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v8\\exaone3_5_7_8b-t150-containment.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t150.containment.pack.json",
+    "prompt_version":  "briefing.ko v8",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  8,
+    "sentences_cited":  8,
+    "citation_rate":  1,
+    "citations_total":  9,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "**시각 08:30 (t+150분), 활성 단계 기동 중** [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "현재 대대급 전술 지휘소는 tacnet-01 시나리오 하에 작전을 진행 중이며, 모든 주요 활동이 정상적으로 수행되고 있습니다 [F1]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F2,F3",
+                          "abstain":  false,
+                          "text":  "**우선순위가 가장 높은 임무 M-C2의 저하도는 32.14%이며, 원인 분해 결과 상호작용 요인이 0%로 나타남** [F2]{확신}[F3]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "이는 주로 환경 요인과 공격 요인에 기인한 것으로 분석됩니다 [F3]{확신}."
+                      },
+                      {
+                          "no":  5,
+                          "cited":  "F6",
+                          "abstain":  false,
+                          "text":  "**자산 CO2-VEH와 관련된 링크 L-VHF-CO1의 단절은 지형에 의한 것으로 확인됨** [F6]{확신}."
+                      },
+                      {
+                          "no":  6,
+                          "cited":  "F6",
+                          "abstain":  false,
+                          "text":  "링크 단절의 원인은 명확한 지형적 요인으로 인한 차폐로 인한 것으로 판단됩니다 [F6]{확신}."
+                      },
+                      {
+                          "no":  7,
+                          "cited":  "F7",
+                          "abstain":  false,
+                          "text":  "**격리 비용 중 지휘관이 주목해야 할 사항은 CO2-VEH 자산의 침해 수준이 50%로 높음** [F7]{확신}."
+                      },
+                      {
+                          "no":  8,
+                          "cited":  "F7",
+                          "abstain":  false,
+                          "text":  "이 자산의 보호를 위한 추가적인 격리 조치가 필요할 수 있습니다 [F7]{확신}."
+                      }
+                  ]
+}

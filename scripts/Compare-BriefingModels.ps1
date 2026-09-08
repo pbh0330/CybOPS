@@ -87,9 +87,9 @@ foreach ($model in $Models) {
 
   foreach ($t in $Times) {
     for ($r = 1; $r -le $Repeats; $r++) {
-      $tag  = "t$t" + $(if ($Repeats -gt 1) { "-r$r" } else { '' })
+      $runTag = "t$t" + $(if ($Repeats -gt 1) { "-r$r" } else { '' })
       $safe = ($model -replace '[^0-9A-Za-z]', '_')
-      $out  = Join-Path $tmpDir ("{0}-{1}.brief.json" -f $safe, $tag)
+      $out  = Join-Path $tmpDir ("{0}-{1}.brief.json" -f $safe, $runTag)
 
       $sw = [Diagnostics.Stopwatch]::StartNew()
       $failed = $false
@@ -103,7 +103,7 @@ foreach ($model in $Models) {
       $sw.Stop()
       if ($failed) { continue }
 
-      $rep = Join-Path $tmpDir ("{0}-{1}.check.json" -f $safe, $tag)
+      $rep = Join-Path $tmpDir ("{0}-{1}.check.json" -f $safe, $runTag)
       & (Join-Path $PSScriptRoot 'Test-BriefingCitations.ps1') -Briefing $out -OutJson $rep | Out-Null
       $ok = ($LASTEXITCODE -eq 0)
 

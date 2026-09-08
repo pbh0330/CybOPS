@@ -1,0 +1,57 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:11:47.3588319+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v8\\qwen2_5_7b_instruct_q4_K_M-t225-mission-top.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t225.mission-top.pack.json",
+    "prompt_version":  "briefing.ko v8",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  3,
+    "sentences_cited":  2,
+    "citation_rate":  0.6667,
+    "citations_total":  2,
+    "abstentions":  1,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  true,
+    "violations":  1,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "[tacnet-01 시각 09:45 (t+225분), 활성 단계 기동]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F0",
+                          "abstain":  true,
+                          "text":  "우선순위가 가장 높은 임무의 저하도는 근거 없음 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "링크의 상태는 단절이 하나도 없어 저하도를 만드는 자산과 링크를 알 수 없음 [F0]{근거없음}."
+                      }
+                  ]
+}

@@ -1,0 +1,105 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:16:46.6916760+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v8\\exaone3_5_7_8b-t345-compromise.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t345.compromise.pack.json",
+    "prompt_version":  "briefing.ko v8",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  11,
+    "sentences_cited":  4,
+    "citation_rate":  0.3636,
+    "citations_total":  4,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  true,
+    "violations":  1,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "1."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "현재 시각은 11:45 (t+345분)이며, 활성 단계는 목표 확보와 화력 유도를 진행 중이다 [F1]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "2."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하도는 60%로, 이는 공격 단독 요인에 의해 발생한 것으로 분석된다 [F2]{확신}."
+                      },
+                      {
+                          "no":  5,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "원인 분해 결과 상호작용과 환경 요인은 영향을 미치지 않았다 {추정}."
+                      },
+                      {
+                          "no":  6,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "3."
+                      },
+                      {
+                          "no":  7,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "임무 M-C2의 저하를 유발한 자산과 링크 상태는 현재 구분 불가 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  8,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "관련 단절 사실이 명확히 제시되지 않았다."
+                      },
+                      {
+                          "no":  9,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "4."
+                      },
+                      {
+                          "no":  10,
+                          "cited":  "F18",
+                          "abstain":  false,
+                          "text":  "임무 M-C2 격리 시 추가 비용은 명시되지 않았으나, 격리로 인한 저하도 증가폭은 +40.0%p로 예상된다 [F18]{확신}."
+                      },
+                      {
+                          "no":  11,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "격리 비용에 대한 구체적인 수치는 제공되지 않았다."
+                      }
+                  ]
+}

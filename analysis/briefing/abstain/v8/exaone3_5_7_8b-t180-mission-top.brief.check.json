@@ -1,0 +1,110 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:15:59.3567307+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v8\\exaone3_5_7_8b-t180-mission-top.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t180.mission-top.pack.json",
+    "prompt_version":  "briefing.ko v8",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  11,
+    "sentences_cited":  7,
+    "citation_rate":  0.6364,
+    "citations_total":  7,
+    "abstentions":  1,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+                                 {
+                                     "sentence_no":  5,
+                                     "number":  "100%",
+                                     "cited":  "F7",
+                                     "sentence":  "다른 임무들 중에서 우선순위가 명시되지 않았으나, 작업 T-CO1REP의 저하도가 100%로 가장 높은 상태를 보이고 있다 [F7]{추정}."
+                                 }
+                             ],
+    "citation_rate_below_min":  true,
+    "violations":  1,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "**시각 및 활성 단계**"
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "tacnet-01 시나리오는 현재 시각 09:00 (t+180분)에 활성 단계인 기동, 표적 획득, 화력 유도 단계에 있다 [F1]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "**우선순위가 가장 높은 임무의 저하도와 원인 분해**"
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무의 저하도에 대한 정보가 부족하여 확인 불가 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  5,
+                          "cited":  "F7",
+                          "abstain":  false,
+                          "text":  "다른 임무들 중에서 우선순위가 명시되지 않았으나, 작업 T-CO1REP의 저하도가 100%로 가장 높은 상태를 보이고 있다 [F7]{추정}."
+                      },
+                      {
+                          "no":  6,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "해당 임무의 저하 원인 분해는 현재 근거에서 확인 불가 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  7,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "**자산과 링크 상태**"
+                      },
+                      {
+                          "no":  8,
+                          "cited":  "F4",
+                          "abstain":  false,
+                          "text":  "링크 L-VHF-CO1이 지형으로 인한 단절 상태에 있으며, 이는 CO2-VEH 자산과의 연결이 중단되었음을 나타낸다 [F4]{확신}."
+                      },
+                      {
+                          "no":  9,
+                          "cited":  "F0",
+                          "abstain":  true,
+                          "text":  "다른 단절 사례는 확인되지 않았다 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  10,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "**격리 비용 중 지휘관이 알아야 할 사항**"
+                      },
+                      {
+                          "no":  11,
+                          "cited":  "F8",
+                          "abstain":  false,
+                          "text":  "TOC-SRV 격리 시 M-C2 임무의 저하도가 증가할 것으로 예상되며, 구체적으로는 M-C2 저하도가 현재 상태에서 +7.0%p 증가할 것으로 보인다 [F8]{확신}."
+                      }
+                  ]
+}

@@ -1,0 +1,69 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:16:02.2061534+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v8\\exaone3_5_7_8b-t195-mission-top.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t195.mission-top.pack.json",
+    "prompt_version":  "briefing.ko v8",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  5,
+    "sentences_cited":  4,
+    "citation_rate":  0.8,
+    "citations_total":  5,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "**시각**: 09:15 (t+195분), **활성 단계**: 기동, 표적 획득, 화력 유도 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "**우선순위가 가장 높은 임무의 저하도**: 근거 블록 내에서 가장 높은 우선순위 임무의 저하도 정보가 없음 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "다른 임무로 대체하지 않음."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F4,F5",
+                          "abstain":  false,
+                          "text":  "**자산과 링크 상태**: CO2-VEH 자산의 침해 수준은 50%이며, 이 자산과 관련된 작업 T-CO2REP의 저하도는 50%로, 현재 단절 원인은 명확히 파악되지 않음 [F4]{확신}, [F5]{확신}."
+                      },
+                      {
+                          "no":  5,
+                          "cited":  "F11",
+                          "abstain":  false,
+                          "text":  "**격리 비용**: CO2-VEH 격리 시 임무 저하도 변화는 M-C2에 +10.7%p 영향을 미치며, 격리 비용은 결정되지 않음 [F11]{확신}."
+                      }
+                  ]
+}

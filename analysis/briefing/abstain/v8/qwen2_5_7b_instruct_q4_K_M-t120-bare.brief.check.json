@@ -1,0 +1,70 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:12:03.0435454+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v8\\qwen2_5_7b_instruct_q4_K_M-t120-bare.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t120.bare.pack.json",
+    "prompt_version":  "briefing.ko v8",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  3,
+    "sentences_cited":  3,
+    "citation_rate":  1,
+    "citations_total":  3,
+    "abstentions":  1,
+    "bogus_citations":  [
+                            {
+                                "sentence_no":  1,
+                                "id":  "F2",
+                                "sentence":  "임무 M-C2의 저하도는 52.63%다 [F2]{확신}."
+                            },
+                            {
+                                "sentence_no":  2,
+                                "id":  "F3",
+                                "sentence":  "이 저하는 상호작용 몫이 가장 크다 [F3]{확신}."
+                            }
+                        ],
+    "number_mismatches":  [
+                              {
+                                  "sentence_no":  1,
+                                  "number":  "52.63%",
+                                  "sentence":  "임무 M-C2의 저하도는 52.63%다 [F2]{확신}."
+                              }
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  3,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "임무 M-C2의 저하도는 52.63%다 [F2]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "이 저하는 상호작용 몫이 가장 크다 [F3]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F0",
+                          "abstain":  true,
+                          "text":  "단절 사실은 근거 없음 [F0]{근거없음}."
+                      }
+                  ]
+}

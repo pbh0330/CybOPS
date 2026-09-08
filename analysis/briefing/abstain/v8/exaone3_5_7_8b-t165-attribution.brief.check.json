@@ -1,0 +1,104 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:16:14.8982704+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v8\\exaone3_5_7_8b-t165-attribution.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t165.attribution.pack.json",
+    "prompt_version":  "briefing.ko v8",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  10,
+    "sentences_cited":  6,
+    "citation_rate":  0.6,
+    "citations_total":  6,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+                                 {
+                                     "sentence_no":  7,
+                                     "number":  "50%",
+                                     "cited":  "F4",
+                                     "sentence":  "자산 CO2-VEH의 침해 수준은 50%로 보고되었으며, 링크 L-VHF-CO1은 지형적 요인으로 인해 단절 상태에 있다 [F4]{확신}."
+                                 }
+                             ],
+    "citation_rate_below_min":  true,
+    "violations":  1,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "**시각 및 활성 단계**"
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "tacnet-01 시나리오는 현재 시각 08:45 (t+165분)에 활성 단계인 기동 단계에서 표적 획득을 진행 중이다 [F1]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "**우선순위가 가장 높은 임무의 저하도와 원인 분해**"
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하도는 32.14%로 확인되었다 [F2]{확신}."
+                      },
+                      {
+                          "no":  5,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "이 저하도는 주로 상호작용 요인에 의해 발생한 것으로 보인다 [F3]{추정}."
+                      },
+                      {
+                          "no":  6,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "**자산과 링크 상태**"
+                      },
+                      {
+                          "no":  7,
+                          "cited":  "F4",
+                          "abstain":  false,
+                          "text":  "자산 CO2-VEH의 침해 수준은 50%로 보고되었으며, 링크 L-VHF-CO1은 지형적 요인으로 인해 단절 상태에 있다 [F4]{확신}."
+                      },
+                      {
+                          "no":  8,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "**격리 비용 중 지휘관이 알아야 할 사항**"
+                      },
+                      {
+                          "no":  9,
+                          "cited":  "F8",
+                          "abstain":  false,
+                          "text":  "TOC-SRV를 격리할 경우 임무 저하도에 가장 큰 영향을 미치며, 특히 M-C2 임무의 저하도가 추가로 7.0% 증가할 것으로 예상된다 [F8]{확신}."
+                      },
+                      {
+                          "no":  10,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "격리 비용에 대한 구체적인 수치는 제공되지 않았다 [F0]{근거없음}."
+                      }
+                  ]
+}

@@ -1,0 +1,87 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:16:52.7628914+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v8\\exaone3_5_7_8b-t375-bare.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t375.bare.pack.json",
+    "prompt_version":  "briefing.ko v8",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  8,
+    "sentences_cited":  4,
+    "citation_rate":  0.5,
+    "citations_total":  4,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  true,
+    "violations":  1,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "1."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "현재 시각은 12:15 (t+375분)이며, 활성 단계는 목표 확보와 화력 유도를 진행 중이다 [F1]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "2."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무의 저하도는 현재 근거 블록에서 확인되지 않아, 특정 임무의 저하도를 명시할 수 없다 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  5,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "3."
+                      },
+                      {
+                          "no":  6,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "단절 상태와 관련된 구체적인 자산 및 링크의 상태에 대한 정보는 제공되지 않았으며, 따라서 단절 원인과 관련된 세부 사항을 확인할 수 없다 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  7,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "4."
+                      },
+                      {
+                          "no":  8,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "격리 비용에 대한 구체적인 정보는 현재 근거 블록에 포함되어 있지 않아, 지휘관이 알아야 할 특정 격리 비용에 대한 내용을 제공할 수 없다 [F0]{근거없음}."
+                      }
+                  ]
+}

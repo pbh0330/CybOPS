@@ -1,0 +1,81 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:15:44.1634002+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v8\\exaone3_5_7_8b-t105-mission-top.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t105.mission-top.pack.json",
+    "prompt_version":  "briefing.ko v8",
+    "adapter":  "ollama",
+    "model":  "exaone3.5:7.8b",
+    "min_citation_rate":  0.8,
+    "sentences_total":  7,
+    "sentences_cited":  7,
+    "citation_rate":  1,
+    "citations_total":  7,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "**시각** 07:45 (t+105분), 현재 **활성 단계**는 기동 중 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F6",
+                          "abstain":  false,
+                          "text":  "**우선순위가 가장 높은 임무**인 T-ORDER의 저하도는 37.5%로 확인됨 [F6]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "원인은 자산 BN-SRV의 비가용으로 인한 것으로 보임 [F2]{추정}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "자산 BN-SRV의 비가용은 **기동**으로 인한 단절이며, 이로 인해 자산 간 링크 상태가 불안정함 [F2]{확신}."
+                      },
+                      {
+                          "no":  5,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "다른 단절 사례는 확인되지 않음 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  6,
+                          "cited":  "F13",
+                          "abstain":  false,
+                          "text":  "**격리 비용** 중 지휘관이 주목해야 할 사항은 TOC-SRV 격리 시 임무 저하도가 M-C2에 대해 +21.0% 증가할 것으로 예상됨 [F13]{확신}."
+                      },
+                      {
+                          "no":  7,
+                          "cited":  "F0",
+                          "abstain":  false,
+                          "text":  "격리 비용은 추가적으로 명시되지 않음 [F0]{근거없음}."
+                      }
+                  ]
+}

@@ -7,7 +7,7 @@
     "step_label":  "BN-SRV 장악",
     "method":  "weighted",
     "source":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
-    "generated":  "2026-09-08T23:58:54.1195497+09:00",
+    "generated":  "2026-09-09T00:11:06.2907900+09:00",
     "ablation":  {
                      "preset":  "outage",
                      "narration_slot":  3,

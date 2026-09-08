@@ -1,0 +1,68 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-09T00:13:18.9782219+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v8\\qwen2_5_14b_instruct_q4_K_M-t105-mission-top.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t105.mission-top.pack.json",
+    "prompt_version":  "briefing.ko v8",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:14b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  4,
+    "citation_rate":  1,
+    "citations_total":  4,
+    "abstentions":  2,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+                                 {
+                                     "sentence_no":  3,
+                                     "number":  "100%",
+                                     "cited":  "F0",
+                                     "sentence":  "작업 T-BFT의 저하도는 100%로 가장 높은 우선순위를 가진 임무 중 하나지만, 그 원인은 근거 없음 [F0]{근거없음}."
+                                 }
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "tacnet-01의 시각은 07:45 (t+105분)이고 활성 단계는 기동이다 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F0",
+                          "abstain":  true,
+                          "text":  "우선순위가 가장 높은 임무의 저하도는 근거 없음 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F0",
+                          "abstain":  true,
+                          "text":  "작업 T-BFT의 저하도는 100%로 가장 높은 우선순위를 가진 임무 중 하나지만, 그 원인은 근거 없음 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F13",
+                          "abstain":  false,
+                          "text":  "격리 비용 중 지휘관이 알아야 할 사항은 TOC-SRV을 격리하면 M-C2 임무 저하도가 +21.0%p 변동한다 [F13]{확신}."
+                      }
+                  ]
+}
