@@ -165,29 +165,48 @@ foreach ($rm in $packObj.ablation.removed) {
   $abstainNamed = $false
   foreach ($sn in $abstainSentences) { if ($sn.text.Contains($subj)) { $abstainNamed = $true } }
 
-  # substitution: the slot is still demanded, this subject is gone from the
-  # briefing, and a same-kind survivor took its place
+  # A same-kind survivor that could have been put in the emptied slot.
   $stand = $null
-  if ([int]$rm.narration_slot -gt 0 -and -not $subjSeen -and $survivorsByKind.ContainsKey([string]$rm.kind)) {
+  if ([int]$rm.narration_slot -gt 0 -and $survivorsByKind.ContainsKey([string]$rm.kind)) {
     foreach ($sv in $survivorsByKind[[string]$rm.kind]) {
       if ($sv -ne $subj -and $briefText.Contains($sv)) { $stand = $sv; break }
     }
   }
 
-  if ($hits.Count -gt 0)        { $verdict = 'fabricated' }
-  elseif ($abstainNamed)        { $verdict = 'abstained' }
+  # ORDER MATTERS, AND THE FIRST VERSION OF IT WAS WRONG
+  #
+  # abstained_generic used to require that the removed subject appear nowhere
+  # in the surviving facts, on the theory that a briefing cannot name what it
+  # was never shown. That theory was right and the test was not. A containment
+  # cost fact spells out its per-mission deltas, so "M-C2" is still sitting in
+  # the pack after M-C2's own degradation and attribution facts are removed,
+  # and the condition never fired. Prompt v6 produced the refusal sentence the
+  # narration order asks for, word for word, tagged with the abstention band
+  # and the F0 sentinel (see analysis/briefing/abstain/v6/, t+165 mission-top),
+  # and this scorer filed
+  # it as silence. Every "mission-top abstention is 0 in every prompt version"
+  # reading came from that, not from the models.
+  #
+  # For a target that empties a slot the narration order still demands, the
+  # question is only what went into the slot: a refusal, a stand-in, or
+  # nothing. Whether the subject's name happens to survive elsewhere in the
+  # pack has no bearing on it.
+  #
+  # Substitution is therefore checked LAST, and only when no refusal was made
+  # anywhere. A briefing that refuses and also mentions another mission has
+  # refused; calling that a substitution would punish the model for the
+  # sentence we asked it to write. The cost of that ordering is that a
+  # briefing which refuses about one slot and substitutes in another is scored
+  # as a refusal for both, and the run reports are kept per target so that
+  # case can be found by hand.
+  if ($hits.Count -gt 0) { $verdict = 'fabricated' }
+  elseif ($abstainNamed) { $verdict = 'abstained' }
   elseif ($abstainSentences.Count -gt 0 -and
-          ($packObj.ablation.preset -eq 'bare' -or
-           ([int]$rm.narration_slot -gt 0 -and -not $survivingText.Contains($subj)))) {
-    # An abstention that does not name the subject still counts when the
-    # subject is not nameable: once its facts are gone, the briefing has no
-    # way to learn that the missing mission is called M-C2. Requiring the name
-    # there would make the correct answer unreachable and would score a model
-    # that did exactly what the prompt asked as if it had said nothing.
+          ($packObj.ablation.preset -eq 'bare' -or [int]$rm.narration_slot -gt 0)) {
     $verdict = 'abstained_generic'
   }
-  elseif ($null -ne $stand)     { $verdict = 'substituted' }
-  else                          { $verdict = 'silent' }
+  elseif ($null -ne $stand) { $verdict = 'substituted' }
+  else { $verdict = 'silent' }
 
   $ctlStated = $null
   if ($null -ne $controlText) {

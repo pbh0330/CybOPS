@@ -7,7 +7,7 @@
     "step_label":  "대대 지휘소 서버 침해",
     "method":  "weighted",
     "source":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
-    "generated":  "2026-09-08T23:23:41.2681540+09:00",
+    "generated":  "2026-09-08T23:33:58.5258640+09:00",
     "ablation":  {
                      "preset":  "compromise",
                      "narration_slot":  0,
@@ -78,7 +78,7 @@
                       "id":  "F1",
                       "kind":  "time",
                       "subject":  "tacnet-01",
-                      "text":  "tacnet-01 시각 10:30 (t+270분). 활성 단계: 목표 확보, 표적 획득, 화력 유도",
+                      "text":  "tacnet-01 시각 10:30 (t+270분), 활성 단계 목표 확보, 표적 획득, 화력 유도",
                       "value":  270
                   },
                   {
@@ -113,7 +113,7 @@
                       "id":  "F6",
                       "kind":  "outage_link",
                       "subject":  "L-VHF-FO",
-                      "text":  "링크 L-VHF-FO(FO-TAB\u003c-\u003eRELAY-1, vhf)이(가) 단절됐다. 원인 지형. 비고: 계곡 진입",
+                      "text":  "링크 L-VHF-FO(FO-TAB\u003c-\u003eRELAY-1, vhf)이(가) 단절, 원인 지형, 비고 계곡 진입",
                       "value":  1
                   },
                   {

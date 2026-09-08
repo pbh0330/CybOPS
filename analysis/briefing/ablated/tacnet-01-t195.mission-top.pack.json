@@ -7,7 +7,7 @@
     "step_label":  "노획 단말 비인가 접속",
     "method":  "weighted",
     "source":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
-    "generated":  "2026-09-08T23:23:41.1447383+09:00",
+    "generated":  "2026-09-08T23:33:58.3165978+09:00",
     "ablation":  {
                      "preset":  "mission-top",
                      "narration_slot":  2,
@@ -77,7 +77,7 @@
                       "id":  "F1",
                       "kind":  "time",
                       "subject":  "tacnet-01",
-                      "text":  "tacnet-01 시각 09:15 (t+195분). 활성 단계: 기동, 표적 획득, 화력 유도",
+                      "text":  "tacnet-01 시각 09:15 (t+195분), 활성 단계 기동, 표적 획득, 화력 유도",
                       "value":  195
                   },
                   {
@@ -112,7 +112,7 @@
                       "id":  "F6",
                       "kind":  "containment_cost",
                       "subject":  "TOC-SRV",
-                      "text":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-C2 +7.0%p, M-FIRE +33.2%p 변한다",
+                      "text":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-C2 +7.0%p, M-FIRE +41.4%p 변한다",
                       "value":  1
                   },
                   {
@@ -126,7 +126,7 @@
                       "id":  "F8",
                       "kind":  "containment_cost",
                       "subject":  "FDC-SRV",
-                      "text":  "FDC-SRV을(를) 격리하면 임무 저하도가 M-FIRE +53.2%p 변한다",
+                      "text":  "FDC-SRV을(를) 격리하면 임무 저하도가 M-FIRE +100.0%p 변한다",
                       "value":  1
                   },
                   {

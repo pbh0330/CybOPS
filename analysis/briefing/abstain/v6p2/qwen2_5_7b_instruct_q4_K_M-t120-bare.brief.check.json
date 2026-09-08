@@ -1,0 +1,71 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T23:34:55.4522825+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v6p2\\qwen2_5_7b_instruct_q4_K_M-t120-bare.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t120.bare.pack.json",
+    "prompt_version":  "briefing.ko v6",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  4,
+    "citation_rate":  1,
+    "citations_total":  4,
+    "abstentions":  1,
+    "bogus_citations":  [
+                            {
+                                "sentence_no":  2,
+                                "id":  "F2",
+                                "sentence":  "이 저하는 공격에 의한 것이 가장 크다 [F2]{확신}."
+                            }
+                        ],
+    "number_mismatches":  [
+                              {
+                                  "sentence_no":  1,
+                                  "number":  "37.45%",
+                                  "sentence":  "임무 M-C2의 저하도는 37.45%다 [F1]{확신}."
+                              }
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  2,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "임무 M-C2의 저하도는 37.45%다 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "이 저하는 공격에 의한 것이 가장 크다 [F2]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F0",
+                          "abstain":  true,
+                          "text":  "FDC-TERM의 침해 여부는 근거 없음 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "격리 비용은 12,500원이다 [F1]{확신}."
+                      }
+                  ]
+}

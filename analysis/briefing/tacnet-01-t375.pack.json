@@ -7,27 +7,27 @@
     "step_label":  "여단 TOC 침투",
     "method":  "weighted",
     "source":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
-    "generated":  "2026-09-07T00:57:22.0401480+09:00",
+    "generated":  "2026-09-08T23:33:58.6385908+09:00",
     "facts":  [
                   {
                       "id":  "F1",
                       "kind":  "time",
                       "subject":  "tacnet-01",
-                      "text":  "tacnet-01 시각 12:15 (t+375분). 활성 단계: 목표 확보, 화력 유도",
+                      "text":  "tacnet-01 시각 12:15 (t+375분), 활성 단계 목표 확보, 화력 유도",
                       "value":  375
                   },
                   {
                       "id":  "F2",
                       "kind":  "mission_degradation",
                       "subject":  "M-C2",
-                      "text":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 31.58%다",
-                      "value":  0.31578947368421051
+                      "text":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 60%다",
+                      "value":  0.6
                   },
                   {
                       "id":  "F3",
                       "kind":  "attribution",
                       "subject":  "M-C2",
-                      "text":  "임무 M-C2의 원인 분해: 공격 단독 31.58%, 환경 단독 0%, 상호작용 0%",
+                      "text":  "임무 M-C2의 원인 분해: 공격 단독 60%, 환경 단독 0%, 상호작용 0%",
                       "value":  0
                   },
                   {
@@ -69,8 +69,8 @@
                       "id":  "F9",
                       "kind":  "task_degradation",
                       "subject":  "T-ORDER",
-                      "text":  "작업 T-ORDER(작전명령 하달, 수행 위치 TOC-WS)의 저하도는 37.5%다",
-                      "value":  0.37499999999999994
+                      "text":  "작업 T-ORDER(작전명령 하달, 수행 위치 TOC-WS)의 저하도는 60%다",
+                      "value":  0.6
                   },
                   {
                       "id":  "F10",
@@ -83,15 +83,15 @@
                       "id":  "F11",
                       "kind":  "task_degradation",
                       "subject":  "T-SITREP",
-                      "text":  "작업 T-SITREP(상황보고 수신, 수행 위치 TOC-WS)의 저하도는 39.13%다",
-                      "value":  0.391304347826087
+                      "text":  "작업 T-SITREP(상황보고 수신, 수행 위치 TOC-WS)의 저하도는 60%다",
+                      "value":  0.6
                   },
                   {
                       "id":  "F12",
                       "kind":  "task_degradation",
                       "subject":  "T-CO1REP",
-                      "text":  "작업 T-CO1REP(1중대 상황보고 발신, 수행 위치 CO1-VEH)의 저하도는 33.33%다",
-                      "value":  0.33333333333333331
+                      "text":  "작업 T-CO1REP(1중대 상황보고 발신, 수행 위치 CO1-VEH)의 저하도는 60%다",
+                      "value":  0.6
                   },
                   {
                       "id":  "F13",
@@ -104,15 +104,15 @@
                       "id":  "F14",
                       "kind":  "task_degradation",
                       "subject":  "T-CTRL",
-                      "text":  "작업 T-CTRL(기동 통제, 수행 위치 BN-CP)의 저하도는 31.58%다",
-                      "value":  0.31578947368421051
+                      "text":  "작업 T-CTRL(기동 통제, 수행 위치 BN-CP)의 저하도는 60%다",
+                      "value":  0.6
                   },
                   {
                       "id":  "F15",
                       "kind":  "task_degradation",
                       "subject":  "T-TGT",
-                      "text":  "작업 T-TGT(표적정보 전달, 수행 위치 FO-TAB)의 저하도는 14.12%다",
-                      "value":  0.14117647058823529
+                      "text":  "작업 T-TGT(표적정보 전달, 수행 위치 FO-TAB)의 저하도는 24%다",
+                      "value":  0.24
                   },
                   {
                       "id":  "F16",
@@ -153,7 +153,7 @@
                       "id":  "F21",
                       "kind":  "containment_cost",
                       "subject":  "TOC-SRV",
-                      "text":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-C2 +21.1%p, M-FIRE +28.6%p 변한다",
+                      "text":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-C2 +40.0%p, M-FIRE +28.6%p 변한다",
                       "value":  1
                   },
                   {
@@ -167,7 +167,7 @@
                       "id":  "F23",
                       "kind":  "containment_cost",
                       "subject":  "FDC-SRV",
-                      "text":  "FDC-SRV을(를) 격리하면 임무 저하도가 M-FIRE +36.2%p 변한다",
+                      "text":  "FDC-SRV을(를) 격리하면 임무 저하도가 M-FIRE +57.1%p 변한다",
                       "value":  1
                   },
                   {

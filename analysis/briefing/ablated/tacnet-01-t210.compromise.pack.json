@@ -7,7 +7,7 @@
     "step_label":  "자격증명 탈취",
     "method":  "weighted",
     "source":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
-    "generated":  "2026-09-08T23:23:41.1979614+09:00",
+    "generated":  "2026-09-08T23:33:58.3681631+09:00",
     "ablation":  {
                      "preset":  "compromise",
                      "narration_slot":  0,
@@ -61,7 +61,7 @@
                       "id":  "F1",
                       "kind":  "time",
                       "subject":  "tacnet-01",
-                      "text":  "tacnet-01 시각 09:30 (t+210분). 활성 단계: 기동, 표적 획득, 화력 유도",
+                      "text":  "tacnet-01 시각 09:30 (t+210분), 활성 단계 기동, 표적 획득, 화력 유도",
                       "value":  210
                   },
                   {
@@ -96,7 +96,7 @@
                       "id":  "F6",
                       "kind":  "outage_link",
                       "subject":  "L-VHF-CO2",
-                      "text":  "링크 L-VHF-CO2(CO2-VEH\u003c-\u003eRELAY-1, vhf)이(가) 단절됐다. 원인 기동. 비고: 기동간 안테나 미전개",
+                      "text":  "링크 L-VHF-CO2(CO2-VEH\u003c-\u003eRELAY-1, vhf)이(가) 단절, 원인 기동, 비고 기동간 안테나 미전개",
                       "value":  1
                   },
                   {

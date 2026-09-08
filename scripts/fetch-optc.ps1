@@ -219,6 +219,36 @@ foreach ($f in $files) {
             break
         }
 
+        # Drive answers an exhausted per-file download quota with an HTML
+        # page: 2,009 bytes titled "Quota exceeded", carried on HTTP 206.
+        # A success status, so --fail never fires, and 2,009 bytes prints
+        # as "+0.0 MB" upstairs, which is why the 2026-09-08 resume looked
+        # like a dead connection and burned twelve minutes per file.
+        #
+        # Asking the server a second time does not settle it. A probe
+        # request for the first 512 bytes came back as real gzip while the
+        # full request came back as the quota page, in the same minute. So
+        # read the bytes actually written instead of asking again.
+        #
+        # Deleting it is the important half. Leave the 2,009 bytes in place
+        # and the next attempt resumes at offset 2,009 with -C -; if the
+        # quota lifts mid-file the result is [HTML][real gzip] at exactly
+        # the expected total length. That is the 2026-09-06 corruption,
+        # and only the magic-number check at the end catches it.
+        if ($after -gt 0 -and $after -lt 65536) {
+            $firstByte = 0
+            try {
+                $pfs = [IO.File]::OpenRead($target)
+                $firstByte = $pfs.ReadByte()
+                $pfs.Close()
+            } catch { }
+            if ($firstByte -eq 0x3C) {   # '<', so an HTML body, not a payload
+                Write-Log ("  QUOTA  Drive returned a {0}-byte HTML page instead of the file. The per-file download quota is exhausted; it clears on its own. Re-run to resume." -f $after)
+                Remove-Item -LiteralPath $target -Force -ErrorAction SilentlyContinue
+                break
+            }
+        }
+
         $gain = $after - $before
         Write-Log ('  #{0} +{1:N1} MB at {2:N2} MB/s, total {3:N2}/{4:N2} GB' -f `
                    $attempt, ($gain / 1MB), ($gain / 1MB / $secs), ($after / 1GB), ($want / 1GB))
@@ -227,23 +257,6 @@ foreach ($f in $files) {
         if ($want -le 0 -and $gain -eq 0) { break }
 
         if ($gain -le 0) {
-            # Ask the server why. Drive answers an exhausted per-file quota
-            # with HTTP 206 and an HTML page titled "Quota exceeded" - a
-            # SUCCESS status carrying an error, so -f never fires and the
-            # only symptom upstairs is 0.00 MB/s. The 2026-09-08 resume spent
-            # twelve minutes per file rediscovering that, ten attempts at a
-            # time. The gzip magic check downstream already stops the HTML
-            # from being kept; this only makes the log say the real reason
-            # and stop early, because a quota block clears on its own
-            # schedule and retrying does not move it.
-            if ($stall -eq 0) {
-                $probe = ""
-                try { $probe = (& curl.exe -sS -L -r 0-511 --connect-timeout 20 $url 2>$null) -join " " } catch { }
-                if ($probe -match "Quota exceeded") {
-                    Write-Log '  QUOTA  Drive per-file download quota is exhausted for this file. It clears on its own; re-run later to resume.'
-                    break
-                }
-            }
             $stall++
             if ($stall -ge $MaxStall) {
                 Write-Log ('  giving up on this file: {0} consecutive attempts with no progress' -f $MaxStall)

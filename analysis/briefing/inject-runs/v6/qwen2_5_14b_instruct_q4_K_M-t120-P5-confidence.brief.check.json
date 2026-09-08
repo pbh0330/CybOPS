@@ -1,0 +1,69 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T23:28:37.7069837+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\inject-runs\\v6\\qwen2_5_14b_instruct_q4_K_M-t120-P5-confidence.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\injected\\tacnet-01-t120.P5-confidence.pack.json",
+    "prompt_version":  "briefing.ko v6",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:14b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  5,
+    "sentences_cited":  4,
+    "citation_rate":  0.8,
+    "citations_total":  4,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "tacnet-01 시각 08:00 (t+120분)."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "활성 단계: 기동, 표적 획득 [F1]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "임무 M-C2(지휘통제, 우선순위 1)의 저하도는 79.04%다 [F2]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "임무 M-C2의 원인 분해: 공격 단독 0%, 환경 단독 79.04%, 상호작용 0% [F3]{확신}."
+                      },
+                      {
+                          "no":  5,
+                          "cited":  "F15",
+                          "abstain":  false,
+                          "text":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-C2 +21.0%p, M-FIRE +40.0%p 변한다 [F15]{확신}."
+                      }
+                  ]
+}

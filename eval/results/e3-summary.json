@@ -1,0 +1,270 @@
+{
+  "generator": "scripts/summarise_e3.py",
+  "note": "Per-preset and per-violation-kind breakdowns are printed because the single summary numbers were misread twice: an abstention rate whose denominator was one preset, and a violation total that was partly the 7B leaking a Chinese character into its own confidence tag.",
+  "full_pack": [
+    {
+      "tag": "v3",
+      "model": "qwen2.5:7b-instruct-q4_K_M",
+      "runs": 8,
+      "passed": 7,
+      "citation_rate": 0.9125,
+      "violations": 1,
+      "golden_correct": 8,
+      "golden_scored": 14,
+      "golden_accuracy": 0.5714285714285714,
+      "ece": 0.4035714285714285,
+      "brier": 0.3944642857142857,
+      "latency_ms": 3360
+    },
+    {
+      "tag": "v3",
+      "model": "qwen2.5:14b-instruct-q4_K_M",
+      "runs": 8,
+      "passed": 4,
+      "citation_rate": 0.8184,
+      "violations": 4,
+      "golden_correct": 11,
+      "golden_scored": 18,
+      "golden_accuracy": 0.6111111111111112,
+      "ece": 0.3388888888888888,
+      "brier": 0.3525,
+      "latency_ms": 5797
+    },
+    {
+      "tag": "v3r3",
+      "model": "qwen2.5:7b-instruct-q4_K_M",
+      "runs": 24,
+      "passed": 24,
+      "citation_rate": 1,
+      "violations": 0,
+      "golden_correct": 21,
+      "golden_scored": 37,
+      "golden_accuracy": 0.5675675675675675,
+      "ece": 0.3824324324324324,
+      "brier": 0.39168918918918916,
+      "latency_ms": 2172
+    },
+    {
+      "tag": "v3r3",
+      "model": "qwen2.5:14b-instruct-q4_K_M",
+      "runs": 24,
+      "passed": 15,
+      "citation_rate": 0.8479,
+      "violations": 9,
+      "golden_correct": 31,
+      "golden_scored": 54,
+      "golden_accuracy": 0.5740740740740741,
+      "ece": 0.38240740740740736,
+      "brier": 0.3874537037037037,
+      "latency_ms": 4010
+    },
+    {
+      "tag": "v4",
+      "model": "qwen2.5:7b-instruct-q4_K_M",
+      "runs": 8,
+      "passed": 8,
+      "citation_rate": 1,
+      "violations": 0,
+      "golden_correct": 8,
+      "golden_scored": 12,
+      "golden_accuracy": 0.6666666666666666,
+      "ece": 0.3416666666666666,
+      "brier": 0.31708333333333333,
+      "latency_ms": 2782
+    },
+    {
+      "tag": "v4",
+      "model": "qwen2.5:14b-instruct-q4_K_M",
+      "runs": 8,
+      "passed": 6,
+      "citation_rate": 0.7958,
+      "violations": 2,
+      "golden_correct": 12,
+      "golden_scored": 19,
+      "golden_accuracy": 0.631578947368421,
+      "ece": 0.31842105263157894,
+      "brier": 0.3340789473684211,
+      "latency_ms": 6207
+    },
+    {
+      "tag": "v4r3",
+      "model": "qwen2.5:7b-instruct-q4_K_M",
+      "runs": 24,
+      "passed": 22,
+      "citation_rate": 0.9583,
+      "violations": 2,
+      "golden_correct": 21,
+      "golden_scored": 36,
+      "golden_accuracy": 0.5833333333333334,
+      "ece": 0.3666666666666666,
+      "brier": 0.3775,
+      "latency_ms": 1815
+    },
+    {
+      "tag": "v4r3",
+      "model": "qwen2.5:14b-instruct-q4_K_M",
+      "runs": 24,
+      "passed": 16,
+      "citation_rate": 0.7645,
+      "violations": 8,
+      "golden_correct": 38,
+      "golden_scored": 62,
+      "golden_accuracy": 0.6129032258064516,
+      "ece": 0.33709677419354833,
+      "brier": 0.35088709677419355,
+      "latency_ms": 4839
+    },
+    {
+      "tag": "v6r3",
+      "model": "qwen2.5:7b-instruct-q4_K_M",
+      "runs": 24,
+      "passed": 20,
+      "citation_rate": 0.9514,
+      "violations": 8,
+      "golden_correct": 17,
+      "golden_scored": 24,
+      "golden_accuracy": 0.7083333333333334,
+      "ece": 0.25625,
+      "brier": 0.2686458333333333,
+      "latency_ms": 1700
+    },
+    {
+      "tag": "v6r3",
+      "model": "qwen2.5:14b-instruct-q4_K_M",
+      "runs": 24,
+      "passed": 17,
+      "citation_rate": 0.7937,
+      "violations": 7,
+      "golden_correct": 25,
+      "golden_scored": 46,
+      "golden_accuracy": 0.5434782608695652,
+      "ece": 0.40652173913043477,
+      "brier": 0.4133695652173913,
+      "latency_ms": 4239
+    }
+  ],
+  "ablation": [
+    {
+      "tag": "v3",
+      "model": "qwen2.5:7b-instruct-q4_K_M",
+      "targets": 81,
+      "abstained": 0,
+      "substituted": 8,
+      "silent": 73,
+      "fabricated": 0,
+      "bogus_citations": 2,
+      "number_mismatches": 11
+    },
+    {
+      "tag": "v3",
+      "model": "qwen2.5:14b-instruct-q4_K_M",
+      "targets": 81,
+      "abstained": 0,
+      "substituted": 10,
+      "silent": 71,
+      "fabricated": 0,
+      "bogus_citations": 8,
+      "number_mismatches": 7
+    },
+    {
+      "tag": "v4",
+      "model": "qwen2.5:7b-instruct-q4_K_M",
+      "targets": 81,
+      "abstained": 48,
+      "substituted": 0,
+      "silent": 33,
+      "fabricated": 0,
+      "bogus_citations": 0,
+      "number_mismatches": 0
+    },
+    {
+      "tag": "v4",
+      "model": "qwen2.5:14b-instruct-q4_K_M",
+      "targets": 81,
+      "abstained": 52,
+      "substituted": 4,
+      "silent": 25,
+      "fabricated": 0,
+      "bogus_citations": 0,
+      "number_mismatches": 0
+    },
+    {
+      "tag": "v5",
+      "model": "qwen2.5:7b-instruct-q4_K_M",
+      "targets": 81,
+      "abstained": 49,
+      "substituted": 2,
+      "silent": 30,
+      "fabricated": 0,
+      "bogus_citations": 0,
+      "number_mismatches": 0
+    },
+    {
+      "tag": "v5",
+      "model": "qwen2.5:14b-instruct-q4_K_M",
+      "targets": 81,
+      "abstained": 36,
+      "substituted": 0,
+      "silent": 45,
+      "fabricated": 0,
+      "bogus_citations": 0,
+      "number_mismatches": 0
+    },
+    {
+      "tag": "v6",
+      "model": "qwen2.5:7b-instruct-q4_K_M",
+      "targets": 81,
+      "abstained": 50,
+      "substituted": 0,
+      "silent": 31,
+      "fabricated": 0,
+      "bogus_citations": 0,
+      "number_mismatches": 0
+    },
+    {
+      "tag": "v6",
+      "model": "qwen2.5:14b-instruct-q4_K_M",
+      "targets": 81,
+      "abstained": 48,
+      "substituted": 2,
+      "silent": 31,
+      "fabricated": 0,
+      "bogus_citations": 1,
+      "number_mismatches": 0
+    }
+  ],
+  "injection": [
+    {
+      "tag": "v3",
+      "model": "qwen2.5:7b-instruct-q4_K_M",
+      "runs": 12,
+      "complied": 3,
+      "mean_citation_rate": 0.9583,
+      "citation_violations": 9
+    },
+    {
+      "tag": "v3",
+      "model": "qwen2.5:14b-instruct-q4_K_M",
+      "runs": 12,
+      "complied": 6,
+      "mean_citation_rate": 0.9014,
+      "citation_violations": 10
+    },
+    {
+      "tag": "v4",
+      "model": "qwen2.5:7b-instruct-q4_K_M",
+      "runs": 12,
+      "complied": 2,
+      "mean_citation_rate": 0.9792,
+      "citation_violations": 8
+    },
+    {
+      "tag": "v4",
+      "model": "qwen2.5:14b-instruct-q4_K_M",
+      "runs": 12,
+      "complied": 5,
+      "mean_citation_rate": 0.7176,
+      "citation_violations": 7
+    }
+  ]
+}

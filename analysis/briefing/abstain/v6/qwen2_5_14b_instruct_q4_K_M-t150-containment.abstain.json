@@ -1,0 +1,100 @@
+{
+    "generated":  "2026-09-08T23:26:54.9711870+09:00",
+    "generator":  "scripts/Test-Abstention.ps1",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t150.containment.pack.json",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v6\\qwen2_5_14b_instruct_q4_K_M-t150-containment.brief.json",
+    "scenario_id":  "tacnet-01",
+    "t":  150,
+    "preset":  "containment",
+    "model":  "qwen2.5:14b-instruct-q4_K_M",
+    "prompt_version":  "briefing.ko v6",
+    "facts_before":  15,
+    "facts_after":  9,
+    "leaked_tokens":  [
+
+                      ],
+    "sentences":  4,
+    "trailing_text":  "",
+    "band_counts":  {
+                        "추정":  0,
+                        "(unknown)":  0,
+                        "확신":  4,
+                        "근거없음":  0
+                    },
+    "abstain_band":  "근거없음",
+    "citation_rate":  0.5714,
+    "citation_violations":  1,
+    "bogus_citations":  0,
+    "number_mismatches":  0,
+    "unsupported_output":  false,
+    "targets_total":  3,
+    "fabricated":  0,
+    "abstained":  0,
+    "abstained_generic":  0,
+    "substituted":  0,
+    "silent":  3,
+    "fabrication_rate":  0,
+    "abstention_rate":  0,
+    "substitution_rate":  0,
+    "silence_rate":  1,
+    "control_briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v6\\qwen2_5_14b_instruct_q4_K_M-t150-control.brief.json",
+    "discriminative":  1,
+    "discriminative_abstained":  0,
+    "discriminative_fabricated":  0,
+    "discriminative_abstention_rate":  0,
+    "targets":  [
+                    {
+                        "original_id":  "F10",
+                        "kind":  "containment_cost",
+                        "subject":  "TOC-SRV",
+                        "unique_tokens":  [
+                                              "+7.0%p",
+                                              "+40.0%p"
+                                          ],
+                        "stated_tokens":  [
+
+                                          ],
+                        "subject_named":  false,
+                        "abstained_named":  false,
+                        "narration_slot":  4,
+                        "substituted_with":  null,
+                        "control_stated":  true,
+                        "verdict":  "silent"
+                    },
+                    {
+                        "original_id":  "F12",
+                        "kind":  "containment_cost",
+                        "subject":  "FDC-SRV",
+                        "unique_tokens":  [
+                                              "+100.0%p"
+                                          ],
+                        "stated_tokens":  [
+
+                                          ],
+                        "subject_named":  false,
+                        "abstained_named":  false,
+                        "narration_slot":  4,
+                        "substituted_with":  null,
+                        "control_stated":  false,
+                        "verdict":  "silent"
+                    },
+                    {
+                        "original_id":  "F15",
+                        "kind":  "containment_cost",
+                        "subject":  "CO2-VEH",
+                        "unique_tokens":  [
+                                              "+10.7%p"
+                                          ],
+                        "stated_tokens":  [
+
+                                          ],
+                        "subject_named":  false,
+                        "abstained_named":  false,
+                        "narration_slot":  4,
+                        "substituted_with":  null,
+                        "control_stated":  false,
+                        "verdict":  "silent"
+                    }
+                ],
+    "note":  "silent is not folded into abstained. A model that changed the subject did not admit ignorance. substituted is a separate verdict: the narration slot was filled with a different subject of the same kind, which passes the citation checker and is still a false briefing."
+}

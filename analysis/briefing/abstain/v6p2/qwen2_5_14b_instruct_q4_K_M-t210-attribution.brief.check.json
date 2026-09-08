@@ -1,0 +1,63 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T23:36:45.6995260+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v6p2\\qwen2_5_14b_instruct_q4_K_M-t210-attribution.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t210.attribution.pack.json",
+    "prompt_version":  "briefing.ko v6",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:14b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  4,
+    "citation_rate":  1,
+    "citations_total":  4,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "tacnet-01 시각 09:30 (t+210분), 활성 단계는 기동이다 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하도는 21.43%다 [F2]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F4",
+                          "abstain":  false,
+                          "text":  "링크 L-VHF-CO2(CO2-VEH\u003c-\u003eRELAY-1, vhf)이(가) 단절, 원인은 기동이다 [F4]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F7",
+                          "abstain":  false,
+                          "text":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-C2 +7.0%p, M-FIRE +41.4%p 변한다 [F7]{확신}."
+                      }
+                  ]
+}

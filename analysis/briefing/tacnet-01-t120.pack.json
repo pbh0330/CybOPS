@@ -7,13 +7,13 @@
     "step_label":  "정상",
     "method":  "weighted",
     "source":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
-    "generated":  "2026-09-08T23:21:15.0026739+09:00",
+    "generated":  "2026-09-08T23:31:52.3100343+09:00",
     "facts":  [
                   {
                       "id":  "F1",
                       "kind":  "time",
                       "subject":  "tacnet-01",
-                      "text":  "tacnet-01 시각 08:00 (t+120분). 활성 단계: 기동, 표적 획득",
+                      "text":  "tacnet-01 시각 08:00 (t+120분), 활성 단계 기동, 표적 획득",
                       "value":  120
                   },
                   {
@@ -48,21 +48,21 @@
                       "id":  "F6",
                       "kind":  "outage_asset",
                       "subject":  "BN-SRV",
-                      "text":  "자산 BN-SRV이(가) 비가용이다. 원인 기동. 비고: 지휘소 이동(철수-전개)",
+                      "text":  "자산 BN-SRV이(가) 비가용, 원인 기동, 비고 지휘소 이동(철수-전개)",
                       "value":  1
                   },
                   {
                       "id":  "F7",
                       "kind":  "outage_asset",
                       "subject":  "BN-CP",
-                      "text":  "자산 BN-CP이(가) 비가용이다. 원인 기동. 비고: 지휘소 이동(철수-전개)",
+                      "text":  "자산 BN-CP이(가) 비가용, 원인 기동, 비고 지휘소 이동(철수-전개)",
                       "value":  1
                   },
                   {
                       "id":  "F8",
                       "kind":  "outage_asset",
                       "subject":  "SAT-TERM",
-                      "text":  "자산 SAT-TERM이(가) 비가용이다. 원인 기동. 비고: 위성단말 철수-재전개",
+                      "text":  "자산 SAT-TERM이(가) 비가용, 원인 기동, 비고 위성단말 철수-재전개",
                       "value":  1
                   },
                   {

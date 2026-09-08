@@ -1,0 +1,63 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T23:37:02.5538733+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v6p2\\qwen2_5_14b_instruct_q4_K_M-t345-containment.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t345.containment.pack.json",
+    "prompt_version":  "briefing.ko v6",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:14b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  4,
+    "citation_rate":  1,
+    "citations_total":  5,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "시각 11:45 (t+345분), 활성 단계는 목표 확보, 화력 유도 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하도는 60%다 [F2]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "임무 M-C2의 원인은 공격 단독으로 60%다 [F3]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F6,F2",
+                          "abstain":  false,
+                          "text":  "자산 CO2-VEH의 침해 수준은 80%로, 이 자산과 관련된 링크의 상태는 공격 단독으로 60%다 [F6][F2]{추정}."
+                      }
+                  ]
+}
