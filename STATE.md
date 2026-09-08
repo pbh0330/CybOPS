@@ -181,6 +181,19 @@ node ui\tools\parity.mjs                                                  # JS �
 .\scripts\Export-ReplayData.ps1                                           # mission.json 을 고쳤으면 반드시
 ```
 
+정적 검사 (전부 exit 1 로 실패를 알린다. CI 에 넣을 것들):
+
+```powershell
+.\scripts\Add-Bom.ps1 -Check              # 한글 들어간 .ps1 에 BOM 이 있는가
+.\scripts\Test-CaseCollisions.ps1         # 대소문자만 다른 변수 (다섯 번 사고 났다)
+.\scripts\Test-OcsfConformance.ps1        # 정규화 스키마 (ADR-0005)
+.\scripts\Test-BundleConfig.ps1 -Bundle ui\dist -Posture hosted   # 배포 게이트
+```
+
+마지막 것은 **지금 상태로 돌리면 일부러 FAIL 이 난다.** 빌드 산출물의 기본
+`config.json` 이 `127.0.0.1` 을 가리키는데, 공개 호스트에서 그 주소는 접속한
+사람의 PC 다. 절차는 `docs/21-deployment.md`.
+
 **`scenarios/*/mission.json` 을 고치면 `Export-ReplayData.ps1` 을 다시 돌려야 한다.**
 UI 는 `ui/public/data/*.replay.json` 만 읽는다. 이걸 잊으면 시나리오를 고쳤는데
 화면이 안 바뀌고, 코드를 의심하며 한참을 보낸다.
