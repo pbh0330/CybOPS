@@ -1,0 +1,63 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T23:24:12.4903449+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v6\\qwen2_5_7b_instruct_q4_K_M-t105-mission-top.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t105.mission-top.pack.json",
+    "prompt_version":  "briefing.ko v6",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  4,
+    "citation_rate":  1,
+    "citations_total":  8,
+    "abstentions":  1,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "시각 07:45 (t+105분)에 활성 단계는 기동이다 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F0",
+                          "abstain":  true,
+                          "text":  "우선순위가 가장 높은 임무의 저하도는 근거 없음 [F0]{근거없음}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F2,F3",
+                          "abstain":  false,
+                          "text":  "원인은 기동으로 추정된다 [F2][F3]{추정}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F2,F3,F4,F5",
+                          "abstain":  false,
+                          "text":  "BN-SRV, BN-CP, SAT-TERM, FO-TAB이(가) 비가용 상태로 빠져 기동 원인으로 인해 지휘소 이동(철수-전개)이 진행 중이다 [F2][F3][F4][F5]{확신}."
+                      }
+                  ]
+}

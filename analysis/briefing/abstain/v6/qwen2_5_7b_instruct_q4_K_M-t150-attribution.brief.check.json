@@ -1,0 +1,63 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T23:24:27.0008784+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v6\\qwen2_5_7b_instruct_q4_K_M-t150-attribution.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t150.attribution.pack.json",
+    "prompt_version":  "briefing.ko v6",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  2,
+    "citation_rate":  0.5,
+    "citations_total":  2,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  true,
+    "violations":  1,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "[tacnet-01 시각 08:30 (t+150분)."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "활성 단계: 기동, 표적 획득]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하도는 32.14%다 [F2]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F4",
+                          "abstain":  false,
+                          "text":  "링크 L-VHF-CO1이 단절되어 원인은 지형(능선 차폐)이다 [F4]{확신}."
+                      }
+                  ]
+}

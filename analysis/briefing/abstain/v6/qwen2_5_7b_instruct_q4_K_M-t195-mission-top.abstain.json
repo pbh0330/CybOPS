@@ -1,0 +1,82 @@
+{
+    "generated":  "2026-09-08T23:24:21.0903250+09:00",
+    "generator":  "scripts/Test-Abstention.ps1",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t195.mission-top.pack.json",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v6\\qwen2_5_7b_instruct_q4_K_M-t195-mission-top.brief.json",
+    "scenario_id":  "tacnet-01",
+    "t":  195,
+    "preset":  "mission-top",
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "prompt_version":  "briefing.ko v6",
+    "facts_before":  13,
+    "facts_after":  11,
+    "leaked_tokens":  [
+                          "0%"
+                      ],
+    "sentences":  3,
+    "trailing_text":  "",
+    "band_counts":  {
+                        "추정":  0,
+                        "(unknown)":  0,
+                        "확신":  1,
+                        "근거없음":  2
+                    },
+    "abstain_band":  "근거없음",
+    "citation_rate":  0.5,
+    "citation_violations":  1,
+    "bogus_citations":  0,
+    "number_mismatches":  0,
+    "unsupported_output":  false,
+    "targets_total":  2,
+    "fabricated":  0,
+    "abstained":  0,
+    "abstained_generic":  0,
+    "substituted":  0,
+    "silent":  2,
+    "fabrication_rate":  0,
+    "abstention_rate":  0,
+    "substitution_rate":  0,
+    "silence_rate":  1,
+    "control_briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v6\\qwen2_5_7b_instruct_q4_K_M-t195-control.brief.json",
+    "discriminative":  2,
+    "discriminative_abstained":  0,
+    "discriminative_fabricated":  0,
+    "discriminative_abstention_rate":  0,
+    "targets":  [
+                    {
+                        "original_id":  "F2",
+                        "kind":  "mission_degradation",
+                        "subject":  "M-C2",
+                        "unique_tokens":  [
+                                              "10.71%"
+                                          ],
+                        "stated_tokens":  [
+
+                                          ],
+                        "subject_named":  false,
+                        "abstained_named":  false,
+                        "narration_slot":  2,
+                        "substituted_with":  null,
+                        "control_stated":  true,
+                        "verdict":  "silent"
+                    },
+                    {
+                        "original_id":  "F3",
+                        "kind":  "attribution",
+                        "subject":  "M-C2",
+                        "unique_tokens":  [
+                                              "10.71%"
+                                          ],
+                        "stated_tokens":  [
+
+                                          ],
+                        "subject_named":  false,
+                        "abstained_named":  false,
+                        "narration_slot":  2,
+                        "substituted_with":  null,
+                        "control_stated":  true,
+                        "verdict":  "silent"
+                    }
+                ],
+    "note":  "silent is not folded into abstained. A model that changed the subject did not admit ignorance. substituted is a separate verdict: the narration slot was filled with a different subject of the same kind, which passes the citation checker and is still a false briefing."
+}

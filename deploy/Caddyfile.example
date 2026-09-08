@@ -1,0 +1,48 @@
+# MC-CyCOP hosted bundle - Caddy example. ASCII only.
+#
+# Read deploy/nginx.example.conf first: the reasoning about which Ollama paths
+# may be reached is the same and is not repeated here.
+#
+# NOTE ON RATE LIMITING. Caddy has no built-in rate limiter; the usual answer
+# is the caddy-ratelimit plugin, which means a custom build. If this deployment
+# cannot take that dependency, use the `off` posture rather than an unlimited
+# proxy. An open inference endpoint with authentication but no rate limit is
+# still an open inference endpoint for whoever has the password.
+
+mc-cycop.example.ac.kr {
+    root * /srv/mc-cycop
+    encode gzip
+
+    handle /config.json {
+        header Cache-Control "no-store"
+        file_server
+    }
+
+    # ---- model, only if this deployment has one ---------------------------
+    handle /api/llm/api/generate {
+        basicauth {
+            demo $2a$14$REPLACE_WITH_A_REAL_BCRYPT_HASH
+        }
+        reverse_proxy 127.0.0.1:11434 {
+            rewrite /api/generate
+        }
+    }
+
+    handle /api/llm/api/tags {
+        basicauth {
+            demo $2a$14$REPLACE_WITH_A_REAL_BCRYPT_HASH
+        }
+        reverse_proxy 127.0.0.1:11434 {
+            rewrite /api/tags
+        }
+    }
+
+    handle /api/llm/* {
+        respond 403
+    }
+
+    handle {
+        try_files {path} /index.html
+        file_server
+    }
+}

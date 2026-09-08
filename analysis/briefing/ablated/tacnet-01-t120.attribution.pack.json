@@ -7,7 +7,7 @@
     "step_label":  "정상",
     "method":  "weighted",
     "source":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
-    "generated":  "2026-09-08T23:07:07.7342011+09:00",
+    "generated":  "2026-09-08T23:23:40.9829238+09:00",
     "ablation":  {
                      "preset":  "attribution",
                      "narration_slot":  2,

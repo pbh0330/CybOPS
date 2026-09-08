@@ -1,0 +1,63 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T23:24:37.6324206+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v6\\qwen2_5_7b_instruct_q4_K_M-t150-containment.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t150.containment.pack.json",
+    "prompt_version":  "briefing.ko v6",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  4,
+    "citation_rate":  1,
+    "citations_total":  5,
+    "abstentions":  1,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "시각 08:30 (t+150분)에 활성 단계는 기동, 표적 획득이다 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2,F3",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하도는 32.14%이며, 원인 분해는 공격 단독 10.71%, 환경 단독 21.43%, 상호작용 0%이다 [F2][F3]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F6",
+                          "abstain":  false,
+                          "text":  "링크 L-VHF-CO1이 단절되었으며, 원인은 지형으로, 비고는 능선 차폐이다 [F6]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F0",
+                          "abstain":  true,
+                          "text":  "격리 비용은 근거 없음 [F0]{근거없음}."
+                      }
+                  ]
+}

@@ -1,0 +1,68 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T23:24:33.8922419+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v6\\qwen2_5_7b_instruct_q4_K_M-t210-attribution.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\ablated\\tacnet-01-t210.attribution.pack.json",
+    "prompt_version":  "briefing.ko v6",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  4,
+    "citation_rate":  1,
+    "citations_total":  4,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+                                 {
+                                     "sentence_no":  4,
+                                     "number":  "100%",
+                                     "cited":  "F5",
+                                     "sentence":  "자산 CO2-VEH의 침해 수준은 80%로, 작업 T-CO2REP의 저하도는 100%다 [F5]{확신}."
+                                 }
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "`tacnet-01` 시각 09:30 (t+210분)에서 활성 단계는 기동, 표적 획득, 화력 유도다 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하도는 21.43%다 [F2]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F4",
+                          "abstain":  false,
+                          "text":  "이 저하는 기동으로 인해 발생한다 [F4]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F5",
+                          "abstain":  false,
+                          "text":  "자산 CO2-VEH의 침해 수준은 80%로, 작업 T-CO2REP의 저하도는 100%다 [F5]{확신}."
+                      }
+                  ]
+}
