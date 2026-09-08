@@ -135,6 +135,8 @@ def main():
     ap.add_argument("--labels", default=os.path.join(here, "analysis", "optc", "window-labels.json"))
     ap.add_argument("--out", default=None)
     ap.add_argument("--tag", default="w300")
+    ap.add_argument("--window", type=int, default=0,
+                    help="window seconds. 0 = read it from <features>.summary.json")
     args = ap.parse_args()
     out_path = args.out or os.path.join(here, "eval", "results", f"e1b-detection-{args.tag}.json")
 
@@ -196,14 +198,50 @@ def main():
     print(f"  features {len(feat)}")
 
     lab = json.load(open(args.labels, encoding="utf-8"))
-    win = None
-    for w in lab["window_seconds"]:
-        if str(w) in lab["positive_cells"] and len(lab["positive_cells"][str(w)]) == int(df.label.sum()):
-            win = w
-    win = win or int(lab["window_seconds"][1])
+
+    # Window size decides how a bucket index turns into a wall-clock day, and a
+    # wrong one silently moves every row to the wrong side of the train/test
+    # boundary.
+    #
+    # The original rule inferred it by matching the number of positives against
+    # the label file. That works only when every labelled cell was found, and
+    # it will not be: eCAR ships per-host-range files and the phase 3-5 files
+    # are not all downloaded, so the 300 s pass found 60 of the 113 cells the
+    # labels expect. With no match the old code fell back to window_seconds[1]
+    # and would have dated a 60 s file as if it were 300 s.
+    #
+    # The extractor already wrote the answer next to the CSV. Read it, and take
+    # the count match only as a cross-check.
+    win = args.window or None
+    src = "--window"
+    if win is None:
+        side = os.path.splitext(args.features)[0] + ".summary.json"
+        if os.path.exists(side):
+            with open(side, encoding="utf-8-sig") as fh:
+                win = int(json.load(fh)["window_sec"])
+            src = os.path.basename(side)
+    if win is None:
+        for w in lab["window_seconds"]:
+            if str(w) in lab["positive_cells"] and len(lab["positive_cells"][str(w)]) == int(df.label.sum()):
+                win = w
+                src = "positive-count match"
+    if win is None:
+        sys.exit(
+            "cannot tell the window size. Pass --window, or keep the extractor's "
+            "<features>.summary.json next to the CSV."
+        )
+
+    expected = len(lab["positive_cells"].get(str(win), []))
+    found = int(df.label.sum())
+    print(f"  window {win} s (from {src})   positives {found} of {expected} labelled cells")
+    if found < expected:
+        # This is acquisition coverage, not model recall, and it has to travel
+        # with the result or a low recall reads as a modelling failure.
+        print(f"  COVERAGE  {expected - found} labelled cells have no eCAR on disk "
+              f"({100.0 * found / max(1, expected):.0f}% of labels covered)")
     df["day"] = pd.to_datetime(df.bucket * win, unit="s", utc=True).dt.tz_convert("Etc/GMT+4").dt.date.astype(str)
     days = sorted(df.day.unique())
-    print(f"  window {win} s   days {days}")
+    print(f"  days {days}")
 
     results = {
         "generated": datetime.now(timezone.utc).isoformat(),
