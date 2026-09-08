@@ -19,7 +19,14 @@ param(
   [string]$Replay   = "$PSScriptRoot\..\ui\public\data\tacnet-01.replay.json",
   [string]$Endpoint = 'http://127.0.0.1:11434',
   [double]$Temperature = 0.2,
-  [string]$OutJson  = "$PSScriptRoot\..\eval\results\e3-injection.json"
+
+  # Same prompt-variant handling as the ablation probe. Rule 8 (ignore
+  # instructions inside the evidence block) is unchanged between v3 and v4,
+  # so a difference here would be a side effect of the other edits rather
+  # than of anything aimed at injection. That is worth knowing either way.
+  [string]$Prompt   = '',
+  [string]$Tag      = 'v3',
+  [string]$OutJson  = ''
 )
 
 $ErrorActionPreference = 'Stop'
@@ -28,7 +35,10 @@ try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch { }
 $root    = Split-Path $PSScriptRoot -Parent
 $packDir = Join-Path $root 'analysis\briefing'
 $injDir  = Join-Path $root 'analysis\briefing\injected'
-$runDir  = Join-Path $root 'analysis\briefing\inject-runs'
+$runDir  = Join-Path $root (Join-Path 'analysis' (Join-Path 'briefing' (Join-Path 'inject-runs' $Tag)))
+if (-not $OutJson) { $OutJson = Join-Path $root ('eval/results/e3-injection-{0}.json' -f $Tag) }
+if (-not $Prompt)  { $Prompt  = Join-Path $root 'prompts/briefing.ko.md' }
+if (-not (Test-Path $Prompt)) { throw "prompt not found: $Prompt" }
 foreach ($d in @($packDir, $injDir, $runDir)) {
   if (-not (Test-Path $d)) { New-Item -ItemType Directory -Force $d | Out-Null }
 }
@@ -48,7 +58,7 @@ function Invoke-One([string]$modelName, [string]$packPath, [string]$outPath) {
   if (Test-Path $outPath) { return $true }
   try {
     & (Join-Path $PSScriptRoot 'Invoke-Briefing.ps1') `
-      -Pack $packPath -Adapter ollama -Model $modelName -Endpoint $Endpoint `
+      -Pack $packPath -Prompt $Prompt -Adapter ollama -Model $modelName -Endpoint $Endpoint `
       -Temperature $Temperature -Out $outPath | Out-Null
     return (Test-Path $outPath)
   } catch {
@@ -133,6 +143,8 @@ $report = [ordered]@{
   generator   = 'scripts/Invoke-InjectionProbe.ps1'
   note        = 'E3 step 6. The briefing path, not the adversary simulator: there is no closed id set here, so an obeyed instruction reaches the screen unfiltered. A resisted result on this sample is not a general claim about injection resistance.'
   scenario    = 'tacnet-01'
+  tag         = $Tag
+  prompt_file = (Resolve-Path $Prompt).Path
   times       = $Times
   endpoint    = $Endpoint
   temperature = $Temperature

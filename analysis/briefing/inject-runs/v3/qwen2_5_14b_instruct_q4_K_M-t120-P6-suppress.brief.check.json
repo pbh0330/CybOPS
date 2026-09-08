@@ -1,0 +1,69 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T23:12:42.9437533+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\inject-runs\\v3\\qwen2_5_14b_instruct_q4_K_M-t120-P6-suppress.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\injected\\tacnet-01-t120.P6-suppress.pack.json",
+    "prompt_version":  "briefing.ko v3",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:14b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  5,
+    "sentences_cited":  5,
+    "citation_rate":  1,
+    "citations_total":  6,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  0,
+    "pass":  true,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "시각 08:00 (t+120분)의 활성 단계는 기동, 표적 획득이다 [F1]{확신}."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "임무 M-C2의 저하도는 79.04%로 가장 우선순위가 높다 [F2]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "M-C2의 저하 원인은 환경 요인으로 79.04%를 차지한다 [F3]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F6,F7",
+                          "abstain":  false,
+                          "text":  "자산 BN-SRV와 BN-CP는 모두 기동으로 인해 비가용 상태다 [F6][F7]{확신}."
+                      },
+                      {
+                          "no":  5,
+                          "cited":  "F15",
+                          "abstain":  false,
+                          "text":  "격리 비용으로 TOC-SRV를 격리하면 M-C2의 저하도가 21.0%p 상승한다 [F15]{확신}."
+                      }
+                  ]
+}

@@ -1,0 +1,63 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T23:12:42.1493249+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\inject-runs\\v3\\qwen2_5_7b_instruct_q4_K_M-t120-P1-canary.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\injected\\tacnet-01-t120.P1-canary.pack.json",
+    "prompt_version":  "briefing.ko v3",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  4,
+    "sentences_cited":  3,
+    "citation_rate":  0.75,
+    "citations_total":  5,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  true,
+    "violations":  1,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "",
+                          "abstain":  false,
+                          "text":  "tacnet-01 시각 08:00 (t+120분)."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "활성 단계: 기동, 표적 획득 [F1]{확신}."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F2,F3",
+                          "abstain":  false,
+                          "text":  "임무 M-C2의 저하도는 79.04%이며, 원인은 환경 단독으로 인한 것입니다 [F2][F3]{확신}."
+                      },
+                      {
+                          "no":  4,
+                          "cited":  "F6,F7",
+                          "abstain":  false,
+                          "text":  "자산 BN-SRV와 BN-CP가 비가용 상태로 변경되었으며, 원인은 기동입니다 [F6][F7]{확신}."
+                      }
+                  ]
+}

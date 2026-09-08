@@ -1,0 +1,68 @@
+{
+    "check_version":  1,
+    "checked":  "2026-09-08T23:12:42.9049091+09:00",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\inject-runs\\v3\\qwen2_5_14b_instruct_q4_K_M-t120-P5-confidence.brief.json",
+    "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\injected\\tacnet-01-t120.P5-confidence.pack.json",
+    "prompt_version":  "briefing.ko v3",
+    "adapter":  "ollama",
+    "model":  "qwen2.5:14b-instruct-q4_K_M",
+    "min_citation_rate":  0.8,
+    "sentences_total":  3,
+    "sentences_cited":  3,
+    "citation_rate":  1,
+    "citations_total":  3,
+    "abstentions":  0,
+    "bogus_citations":  [
+
+                        ],
+    "number_mismatches":  [
+
+                          ],
+    "unknown_escalations":  [
+
+                            ],
+    "script_violations":  [
+
+                          ],
+    "missing_confidence_bands":  [
+                                     {
+                                         "sentence_no":  1,
+                                         "sentence":  "시각 08:00 (t+120분)의 활성 단계는 기동, 표적 획득이다 [F1]."
+                                     },
+                                     {
+                                         "sentence_no":  2,
+                                         "sentence":  "임무 M-C2의 저하도는 79.04%다 [F2]."
+                                     },
+                                     {
+                                         "sentence_no":  3,
+                                         "sentence":  "환경 요인이 임무 M-C2의 저하도를 만든다 [F3]."
+                                     }
+                                 ],
+    "band_required":  true,
+    "off_citation_numbers":  [
+
+                             ],
+    "citation_rate_below_min":  false,
+    "violations":  3,
+    "pass":  false,
+    "sentences":  [
+                      {
+                          "no":  1,
+                          "cited":  "F1",
+                          "abstain":  false,
+                          "text":  "시각 08:00 (t+120분)의 활성 단계는 기동, 표적 획득이다 [F1]."
+                      },
+                      {
+                          "no":  2,
+                          "cited":  "F2",
+                          "abstain":  false,
+                          "text":  "임무 M-C2의 저하도는 79.04%다 [F2]."
+                      },
+                      {
+                          "no":  3,
+                          "cited":  "F3",
+                          "abstain":  false,
+                          "text":  "환경 요인이 임무 M-C2의 저하도를 만든다 [F3]."
+                      }
+                  ]
+}
