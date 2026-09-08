@@ -220,9 +220,19 @@ node ui\tools\parity.mjs                                                  # JS �
 .\scripts\Add-Bom.ps1 -Check              # 한글 들어간 .ps1 에 BOM 이 있는가
 .\scripts\Test-CaseCollisions.ps1         # 대소문자만 다른 변수 (다섯 번 사고 났다)
 .\scripts\Test-OcsfConformance.ps1        # 정규화 스키마 (ADR-0005)
-.\scripts\Test-BriefingCoverage.ps1     # 서술 순서가 요구한 임무를 실제로 다뤘는가
 .\scripts\Test-BundleConfig.ps1 -Bundle ui\dist -Posture hosted   # 배포 게이트
 ```
+
+브리핑 하나에 대한 검사 둘(둘 다 브리핑 파일을 인자로 받는다):
+
+```powershell
+.\scripts\Test-BriefingCitations.ps1 -Briefing <brief.json>   # 인용·숫자·확신도 등급
+.\scripts\Test-BriefingCoverage.ps1  -Briefing <brief.json>   # 서술 순서가 요구한 임무를 다뤘는가
+```
+
+**둘째 것이 첫째 것이 통과시키는 실패를 잡는다.** 최우선 임무의 근거가 없을 때
+모델이 두 번째 임무를 그 자리에 넣으면 인용도 숫자도 맞아서 첫째 검사는 PASS 다
+(`docs/20-e3-design.md` 10.8절).
 
 마지막 것은 **지금 상태로 돌리면 일부러 FAIL 이 난다.** 빌드 산출물의 기본
 `config.json` 이 `127.0.0.1` 을 가리키는데, 공개 호스트에서 그 주소는 접속한
