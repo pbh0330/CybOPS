@@ -1,0 +1,43 @@
+{
+    "generated":  "2026-09-09T07:09:24.6506350+09:00",
+    "generator":  "scripts/Test-BriefingCoverage.ps1",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m4\\qwen2_5_7b_instruct_q4_K_M-t120-mission-top.brief.json",
+    "replay":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
+    "scenario_id":  "tacnet-01",
+    "t":  120,
+    "model":  "qwen2.5:7b-instruct-q4_K_M",
+    "prompt_version":  "briefing.ko v4",
+    "demanded_slot":  "narration order item 2: the highest priority mission",
+    "top_mission":  "M-C2",
+    "top_priority":  1,
+    "other_missions":  [
+                           "M-FIRE"
+                       ],
+    "abstain_band":  "근거없음",
+    "slot_terms":  [
+                       "저하도",
+                       "임무"
+                   ],
+    "abstain_sentences":  1,
+    "named":  false,
+    "named_in":  "",
+    "refused":  true,
+    "substituted_with":  null,
+    "verdict":  "refused",
+    "pass":  true,
+    "note":  "the top mission comes from the replay, not the pack. When the pack has no facts for it the pack cannot say which mission mattered, and that is the case this check exists for.",
+    "sentences":  [
+                      {
+                          "text":  "시각 08:00 (t+120분), 활성 단계 기동, 표적 획득 [F1]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "우선순위가 가장 높은 임무의 저하도는 근거 없음 [F0]{근거없음}.",
+                          "band":  "근거없음"
+                      },
+                      {
+                          "text":  "자산 BN-SRV, BN-CP, SAT-TERM이 비가용, 원인 기동, 비고 지휘소 이동(철수-전개) [F4][F5][F6]{확신}.",
+                          "band":  "확신"
+                      }
+                  ]
+}

@@ -1,0 +1,47 @@
+{
+    "generated":  "2026-09-09T07:09:23.8519288+09:00",
+    "generator":  "scripts/Test-BriefingCoverage.ps1",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m4\\exaone3_5_7_8b-t210-mission-top.brief.json",
+    "replay":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
+    "scenario_id":  "tacnet-01",
+    "t":  210,
+    "model":  "exaone3.5:7.8b",
+    "prompt_version":  "briefing.ko v4",
+    "demanded_slot":  "narration order item 2: the highest priority mission",
+    "top_mission":  "M-C2",
+    "top_priority":  1,
+    "other_missions":  [
+                           "M-FIRE"
+                       ],
+    "abstain_band":  "근거없음",
+    "slot_terms":  [
+                       "저하도",
+                       "임무"
+                   ],
+    "abstain_sentences":  1,
+    "named":  false,
+    "named_in":  "",
+    "refused":  true,
+    "substituted_with":  "M-FIRE",
+    "verdict":  "refused",
+    "pass":  true,
+    "note":  "the top mission comes from the replay, not the pack. When the pack has no facts for it the pack cannot say which mission mattered, and that is the case this check exists for.",
+    "sentences":  [
+                      {
+                          "text":  "시나리오 tacnet-01은 현재 활성 단계인 기동, 표적 획득, 화력 유도 단계에 있으며 [F1]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "우선순위가 가장 높은 임무 M-FIRE의 저하도는 0%로, 현재 정상 작동 중입니다 [F2]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "링크 L-VHF-CO2의 단절은 기동 관련 안테나 미전개로 인한 것으로 확인됩니다 [F4]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "CO2-VEH 자산의 격리 비용은 현재로서는 추가적인 임무 저하도 변화가 없으므로 0으로 추정됩니다 [F12]{근거없음}.",
+                          "band":  "근거없음"
+                      }
+                  ]
+}

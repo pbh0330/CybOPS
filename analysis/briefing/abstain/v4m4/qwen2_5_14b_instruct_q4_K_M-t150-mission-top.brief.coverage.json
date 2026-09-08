@@ -1,0 +1,47 @@
+{
+    "generated":  "2026-09-09T07:09:24.3805124+09:00",
+    "generator":  "scripts/Test-BriefingCoverage.ps1",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m4\\qwen2_5_14b_instruct_q4_K_M-t150-mission-top.brief.json",
+    "replay":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
+    "scenario_id":  "tacnet-01",
+    "t":  150,
+    "model":  "qwen2.5:14b-instruct-q4_K_M",
+    "prompt_version":  "briefing.ko v4",
+    "demanded_slot":  "narration order item 2: the highest priority mission",
+    "top_mission":  "M-C2",
+    "top_priority":  1,
+    "other_missions":  [
+                           "M-FIRE"
+                       ],
+    "abstain_band":  "근거없음",
+    "slot_terms":  [
+                       "저하도",
+                       "임무"
+                   ],
+    "abstain_sentences":  0,
+    "named":  false,
+    "named_in":  "",
+    "refused":  false,
+    "substituted_with":  "M-FIRE",
+    "verdict":  "SUBSTITUTED",
+    "pass":  false,
+    "note":  "the top mission comes from the replay, not the pack. When the pack has no facts for it the pack cannot say which mission mattered, and that is the case this check exists for.",
+    "sentences":  [
+                      {
+                          "text":  "tacnet-01 시각 08:30 (t+150분), 활성 단계는 기동, 표적 획득 [F1]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "임무 M-FIRE(화력지원, 우선순위 2)의 저하도는 0%다 [F2]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "링크 L-VHF-CO1(CO1-VEH\u003c-\u003eRELAY-1, vhf)이(가) 단절, 원인은 지형 [F4]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "TOC-SRV을(를) 격리하면 임무 저하도가 M-C2 +7.0%p, M-FIRE +40.0%p 변한다 [F8]{확신}.",
+                          "band":  "확신"
+                      }
+                  ]
+}

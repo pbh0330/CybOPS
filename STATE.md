@@ -220,6 +220,7 @@ node ui\tools\parity.mjs                                                  # JS �
 .\scripts\Add-Bom.ps1 -Check              # 한글 들어간 .ps1 에 BOM 이 있는가
 .\scripts\Test-CaseCollisions.ps1         # 대소문자만 다른 변수 (다섯 번 사고 났다)
 .\scripts\Test-OcsfConformance.ps1        # 정규화 스키마 (ADR-0005)
+.\scripts\Test-BriefingCoverage.ps1     # 서술 순서가 요구한 임무를 실제로 다뤘는가
 .\scripts\Test-BundleConfig.ps1 -Bundle ui\dist -Posture hosted   # 배포 게이트
 ```
 

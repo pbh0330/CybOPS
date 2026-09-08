@@ -1,0 +1,47 @@
+{
+    "generated":  "2026-09-09T07:09:23.8225150+09:00",
+    "generator":  "scripts/Test-BriefingCoverage.ps1",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m4\\exaone3_5_7_8b-t195-mission-top.brief.json",
+    "replay":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
+    "scenario_id":  "tacnet-01",
+    "t":  195,
+    "model":  "exaone3.5:7.8b",
+    "prompt_version":  "briefing.ko v4",
+    "demanded_slot":  "narration order item 2: the highest priority mission",
+    "top_mission":  "M-C2",
+    "top_priority":  1,
+    "other_missions":  [
+                           "M-FIRE"
+                       ],
+    "abstain_band":  "근거없음",
+    "slot_terms":  [
+                       "저하도",
+                       "임무"
+                   ],
+    "abstain_sentences":  0,
+    "named":  false,
+    "named_in":  "",
+    "refused":  false,
+    "substituted_with":  "M-FIRE",
+    "verdict":  "SUBSTITUTED",
+    "pass":  false,
+    "note":  "the top mission comes from the replay, not the pack. When the pack has no facts for it the pack cannot say which mission mattered, and that is the case this check exists for.",
+    "sentences":  [
+                      {
+                          "text":  "시나리오 tacnet-01은 현재 활성 단계인 기동, 표적 획득, 화력 유도 단계에 있다 [F1]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "우선순위가 가장 높은 임무 M-FIRE의 저하도는 0%로 현재 정상적인 수행 중이다 [F2]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "자산 CO2-VEH와 관련된 작업 T-CO2REP의 저하도는 50%로, 상호작용이 가장 큰 저하 요인으로 보인다 [F5]{추정}.",
+                          "band":  "추정"
+                      },
+                      {
+                          "text":  "격리 비용 중 지휘관이 알아야 할 것은 CO2-VEH 격리 시 M-C2 임무 저하도가 10.7%p 증가한다는 점이다 [F11]{확신}.",
+                          "band":  "확신"
+                      }
+                  ]
+}

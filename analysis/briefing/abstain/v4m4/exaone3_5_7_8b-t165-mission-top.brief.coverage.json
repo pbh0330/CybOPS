@@ -1,0 +1,51 @@
+{
+    "generated":  "2026-09-09T07:09:23.7366910+09:00",
+    "generator":  "scripts/Test-BriefingCoverage.ps1",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m4\\exaone3_5_7_8b-t165-mission-top.brief.json",
+    "replay":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
+    "scenario_id":  "tacnet-01",
+    "t":  165,
+    "model":  "exaone3.5:7.8b",
+    "prompt_version":  "briefing.ko v4",
+    "demanded_slot":  "narration order item 2: the highest priority mission",
+    "top_mission":  "M-C2",
+    "top_priority":  1,
+    "other_missions":  [
+                           "M-FIRE"
+                       ],
+    "abstain_band":  "근거없음",
+    "slot_terms":  [
+                       "저하도",
+                       "임무"
+                   ],
+    "abstain_sentences":  1,
+    "named":  false,
+    "named_in":  "",
+    "refused":  false,
+    "substituted_with":  "M-FIRE",
+    "verdict":  "SUBSTITUTED",
+    "pass":  false,
+    "note":  "the top mission comes from the replay, not the pack. When the pack has no facts for it the pack cannot say which mission mattered, and that is the case this check exists for.",
+    "sentences":  [
+                      {
+                          "text":  "현재 시각은 08:45 (t+165분)이며, 활성 단계는 기동 중입니다 [F1]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "우선순위가 가장 높은 임무 M-FIRE의 저하도는 0%로, 현재 영향을 받지 않고 있습니다 [F2]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "원인 분해 결과 공격 단독, 환경 단독, 상호작용 모두 0%로 나타났습니다 [F3]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "링크 L-VHF-CO1은 지형으로 인한 단절 상태이며, 이로 인한 추가 자산 영향은 확인되지 않았습니다 [F4]{근거없음}.",
+                          "band":  "근거없음"
+                      },
+                      {
+                          "text":  "TOC-SRV 격리 시 임무 M-C2의 저하도는 +7.0%p 증가할 것으로 예상되며, 이는 주요 고려 사항입니다 [F8]{확신}.",
+                          "band":  "확신"
+                      }
+                  ]
+}

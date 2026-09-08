@@ -1,0 +1,51 @@
+{
+    "generated":  "2026-09-09T07:09:24.2657866+09:00",
+    "generator":  "scripts/Test-BriefingCoverage.ps1",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m4\\gemma2_9b_instruct_q4_K_M-t225-mission-top.brief.json",
+    "replay":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
+    "scenario_id":  "tacnet-01",
+    "t":  225,
+    "model":  "gemma2:9b-instruct-q4_K_M",
+    "prompt_version":  "briefing.ko v4",
+    "demanded_slot":  "narration order item 2: the highest priority mission",
+    "top_mission":  "M-C2",
+    "top_priority":  1,
+    "other_missions":  [
+                           "M-FIRE"
+                       ],
+    "abstain_band":  "근거없음",
+    "slot_terms":  [
+                       "저하도",
+                       "임무"
+                   ],
+    "abstain_sentences":  1,
+    "named":  false,
+    "named_in":  "",
+    "refused":  true,
+    "substituted_with":  "M-FIRE",
+    "verdict":  "refused",
+    "pass":  true,
+    "note":  "the top mission comes from the replay, not the pack. When the pack has no facts for it the pack cannot say which mission mattered, and that is the case this check exists for.",
+    "sentences":  [
+                      {
+                          "text":  "시각 09:45 (t+225분)이며 활성 단계는 기동, 표적 획득, 화력 유도다 [F1]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "우선순위가 가장 높은 임무의 저하도는 근거 없음 [F0]{근거없음}.",
+                          "band":  "근거없음"
+                      },
+                      {
+                          "text":  "임무 M-FIRE의 저하도는 0%이며 원인 분해 결과 공격 단독 0%, 환경 단독 0%, 상호작용 0%다 [F2]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "링크 L-VHF-CO2(CO2-VEH\u003c-\u003eRELAY-1, vhf)이 단절되었으며 원인은 기동, 비고는 기동간 안테나 미전개다 [F4]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "격리 비용은 TOC-SRV을 격리하면 임무 저하도가 M-C2 +7.0%p, M-FIRE +41.4%p 변한다 [F7]{확신}.",
+                          "band":  "확신"
+                      }
+                  ]
+}
