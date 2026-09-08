@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-08T05:06:54.713899+00:00",
+  "generated": "2026-09-08T07:02:02.885126+00:00",
   "generator": "scripts/e1a_importance.py",
   "metric": "weighted PR-AUC drop under permutation",
   "features_file": "F:\\F\\other_class\\CybOPS\\analysis\\lanl\\auth-features2-n100.csv",
@@ -12,113 +12,87 @@
     "usr_life_src",
     "usr_life_dst"
   ],
-  "caveat": "explanatory statistic on a subsampled test set, not a reported headline metric",
+  "caveat": "explanatory statistic. pr_auc_full_test is the reportable number and agrees with the evaluation JSON. pr_auc_subsample_reference is the level the permutation deltas are measured against - it is inflated by negative subsampling and must not be quoted as performance.",
+  "selected_from": "F:\\F\\other_class\\CybOPS\\eval\\results\\e1a-detection-dense-nolife.json",
   "cuts": [
     {
-      "cut_day": 10.0,
-      "baseline_pr_auc": 0.5135157399464885,
-      "train_pos": 316,
-      "test_pos": 386,
+      "cut_day": 8.0,
+      "pr_auc_full_test": 0.024285303661606073,
+      "pr_auc_subsample_reference": 0.056227982204482906,
+      "neg_subsample": 300000,
+      "model": "histgb(lr=0.1,leaves=15,w=true)",
+      "train_pos": 50,
+      "test_pos": 652,
       "importances": [
         {
           "feature": "auth_ntlm",
-          "mean_drop": 0.49328777423264497,
-          "sd": 0.007413510903911505
-        },
-        {
-          "feature": "src_hr_events",
-          "mean_drop": 0.3183505365438619,
-          "sd": 0.04248135445207815
-        },
-        {
-          "feature": "dow",
-          "mean_drop": 0.22182989979589304,
-          "sd": 0.03300109756311712
-        },
-        {
-          "feature": "dst_hr_src",
-          "mean_drop": 0.21634671832136876,
-          "sd": 0.11520594011692645
-        },
-        {
-          "feature": "src_hr_newdst_share",
-          "mean_drop": 0.16429297128198725,
-          "sd": 0.0011554394668885908
-        },
-        {
-          "feature": "hour",
-          "mean_drop": 0.1446111443334007,
-          "sd": 0.019791166119569197
-        },
-        {
-          "feature": "src_gap_log",
-          "mean_drop": 0.11881976118621193,
-          "sd": 0.013733178798958733
-        },
-        {
-          "feature": "dst_rarity",
-          "mean_drop": 0.10668274215761583,
-          "sd": 0.007307331796807562
-        },
-        {
-          "feature": "src_hr_failrate",
-          "mean_drop": 0.09745012346885287,
-          "sd": 0.0025039588675095036
-        },
-        {
-          "feature": "src_hr_dst_z",
-          "mean_drop": 0.07542252427515936,
-          "sd": 0.04827998531971198
-        },
-        {
-          "feature": "is_fail",
-          "mean_drop": 0.07124141150188851,
-          "sd": 0.0027137012878402627
-        },
-        {
-          "feature": "usr_gap_log",
-          "mean_drop": 0.06607497729505923,
-          "sd": 0.006776709392261665
-        },
-        {
-          "feature": "src_new_dst",
-          "mean_drop": 0.06564565479026715,
-          "sd": 0.0010514770602770948
+          "mean_drop": 0.05517390072452672,
+          "sd": 0.0014442607364055769
         },
         {
           "feature": "src_hr_dst_share",
-          "mean_drop": 0.05841852069061002,
-          "sd": 0.021781646310817877
+          "mean_drop": 0.021689229412719547,
+          "sd": 0.006500702428308074
+        },
+        {
+          "feature": "is_fail",
+          "mean_drop": 0.015209476576102993,
+          "sd": 2.575949959500021e-05
         },
         {
           "feature": "usr_hr_dst",
-          "mean_drop": 0.050036917397250545,
-          "sd": 0.09087823492153474
+          "mean_drop": 0.012483737648403057,
+          "sd": 0.023144598982138838
         },
         {
-          "feature": "src_min_events",
-          "mean_drop": 0.03791017680004327,
-          "sd": 0.0067582715798237
+          "feature": "src_hr_newdst_share",
+          "mean_drop": 0.010462817309534862,
+          "sd": 4.074312931524582e-05
         },
         {
-          "feature": "src_prev_dst",
-          "mean_drop": 0.011985716903320575,
-          "sd": 0.0097546834437583
+          "feature": "src_hr_dst_z",
+          "mean_drop": 0.009554592200550313,
+          "sd": 0.0014787588469336308
         },
         {
-          "feature": "src_hr_fail_z",
-          "mean_drop": 0.004805237469303425,
-          "sd": 0.02292584793500749
+          "feature": "src_new_dst",
+          "mean_drop": 0.009460852607650165,
+          "sd": 0.0007272242174474636
         },
         {
-          "feature": "usr_new_dst",
-          "mean_drop": 0.0007183570453874078,
-          "sd": 1.660666687600606e-09
+          "feature": "src_hr_failrate",
+          "mean_drop": 0.0066753897734023555,
+          "sd": 4.474225463712437e-05
+        },
+        {
+          "feature": "dow",
+          "mean_drop": 0.005926321279857795,
+          "sd": 0.010143326662253505
+        },
+        {
+          "feature": "usr_hr_src",
+          "mean_drop": 0.003987796204544071,
+          "sd": 0.0021569987141994897
+        },
+        {
+          "feature": "src_hr_dst",
+          "mean_drop": 0.00012201069258663728,
+          "sd": 1.955595970044e-05
         },
         {
           "feature": "usr_hr_failrate",
-          "mean_drop": 0.0006324087476008655,
-          "sd": 0.0011659944589368476
+          "mean_drop": 4.0973493900276865e-06,
+          "sd": 1.3727942718564768e-06
+        },
+        {
+          "feature": "src_new_usr",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "usr_new_dst",
+          "mean_drop": 0.0,
+          "sd": 0.0
         },
         {
           "feature": "auth_kerb",
@@ -181,165 +155,399 @@
           "sd": 0.0
         },
         {
-          "feature": "src_new_usr",
-          "mean_drop": -4.357894598070455e-05,
-          "sd": 1.7404671430539912e-15
-        },
-        {
-          "feature": "src_min_dst",
-          "mean_drop": -0.0029156312655710835,
-          "sd": 0.003439666370913459
+          "feature": "src_hr_fail_z",
+          "mean_drop": -0.002068013026672274,
+          "sd": 0.0030010480550871498
         },
         {
           "feature": "src_hr_usr",
-          "mean_drop": -0.008653912010604847,
-          "sd": 0.023085722599769674
+          "mean_drop": -0.002209033413961052,
+          "sd": 0.0029842195220057344
         },
         {
-          "feature": "usr_hr_src",
-          "mean_drop": -0.008669936160357194,
-          "sd": 0.018269372370428874
+          "feature": "src_hr_events",
+          "mean_drop": -0.003197358882305682,
+          "sd": 0.024487360542946163
+        },
+        {
+          "feature": "usr_gap_log",
+          "mean_drop": -0.0076867435293512575,
+          "sd": 0.023811873845990303
+        },
+        {
+          "feature": "src_min_events",
+          "mean_drop": -0.011915595849377724,
+          "sd": 0.04532298106105172
+        },
+        {
+          "feature": "dst_hr_src",
+          "mean_drop": -0.012155842698741167,
+          "sd": 0.06708565960881335
         },
         {
           "feature": "src_hr_newdst",
-          "mean_drop": -0.041341559798030315,
-          "sd": 4.236199854320752e-06
+          "mean_drop": -0.014666068619010571,
+          "sd": 7.003558189627695e-06
+        },
+        {
+          "feature": "dst_rarity",
+          "mean_drop": -0.0153653132996302,
+          "sd": 0.02437388836879913
+        },
+        {
+          "feature": "hour",
+          "mean_drop": -0.02917542494747682,
+          "sd": 0.04998797696919155
+        },
+        {
+          "feature": "src_min_dst",
+          "mean_drop": -0.052151905337950034,
+          "sd": 0.046732094527867404
+        },
+        {
+          "feature": "src_gap_log",
+          "mean_drop": -0.07184381940310253,
+          "sd": 0.06992542033834152
+        },
+        {
+          "feature": "src_prev_dst",
+          "mean_drop": -0.2056031119714393,
+          "sd": 0.05245837078149209
+        }
+      ]
+    },
+    {
+      "cut_day": 10.0,
+      "pr_auc_full_test": 0.09960214758637495,
+      "pr_auc_subsample_reference": 0.048212429413337025,
+      "neg_subsample": 300000,
+      "model": "histgb(lr=0.1,leaves=15,w=true)",
+      "train_pos": 316,
+      "test_pos": 386,
+      "importances": [
+        {
+          "feature": "src_hr_newdst_share",
+          "mean_drop": 0.029900078965657776,
+          "sd": 0.00013527254487555697
+        },
+        {
+          "feature": "auth_ntlm",
+          "mean_drop": 0.026979568783958782,
+          "sd": 0.012865956389939433
+        },
+        {
+          "feature": "src_hr_dst_z",
+          "mean_drop": 0.016107828738715496,
+          "sd": 0.004727472061362272
+        },
+        {
+          "feature": "src_gap_log",
+          "mean_drop": 0.009536240269560898,
+          "sd": 0.008595702386497393
+        },
+        {
+          "feature": "usr_gap_log",
+          "mean_drop": 0.009445352517328287,
+          "sd": 0.004383529669796196
+        },
+        {
+          "feature": "src_hr_fail_z",
+          "mean_drop": 0.008576535390157784,
+          "sd": 0.001244556280248565
+        },
+        {
+          "feature": "dow",
+          "mean_drop": 0.005014953501423403,
+          "sd": 0.004459702819580494
+        },
+        {
+          "feature": "src_hr_failrate",
+          "mean_drop": 0.004344611125308086,
+          "sd": 0.00014607466603096803
+        },
+        {
+          "feature": "usr_new_dst",
+          "mean_drop": 0.0028698338143472654,
+          "sd": 4.4167058949978654e-10
+        },
+        {
+          "feature": "usr_hr_src",
+          "mean_drop": 0.001317620570133203,
+          "sd": 0.004917478601137854
+        },
+        {
+          "feature": "src_hr_usr",
+          "mean_drop": 0.0010964130640237744,
+          "sd": 0.0025555617830065464
         },
         {
           "feature": "src_hr_dst",
-          "mean_drop": -0.049460630010898995,
-          "sd": 0.004799339991816479
+          "mean_drop": 0.0008448413189107879,
+          "sd": 0.00016203107819187044
+        },
+        {
+          "feature": "src_min_events",
+          "mean_drop": 0.00080060744815588,
+          "sd": 0.0036000264988563964
+        },
+        {
+          "feature": "src_new_usr",
+          "mean_drop": 0.0005982973589700827,
+          "sd": 1.6062966826047947e-09
+        },
+        {
+          "feature": "is_fail",
+          "mean_drop": 0.00022015207173352544,
+          "sd": 0.00012195758540026254
+        },
+        {
+          "feature": "src_hr_newdst",
+          "mean_drop": 0.00021691526451592807,
+          "sd": 1.1202727831236844e-05
+        },
+        {
+          "feature": "src_min_dst",
+          "mean_drop": 0.00013247016019751756,
+          "sd": 0.0003829367518175798
+        },
+        {
+          "feature": "src_new_dst",
+          "mean_drop": 8.38594962516102e-05,
+          "sd": 0.0005833922779165616
+        },
+        {
+          "feature": "usr_hr_failrate",
+          "mean_drop": 1.261147723721536e-05,
+          "sd": 2.6320199619482896e-05
+        },
+        {
+          "feature": "auth_kerb",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "auth_other",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "lt_network",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "lt_service",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "lt_batch",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "lt_interactive",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "lt_other",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "or_logon",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "or_logoff",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "or_tgs",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "or_tgt",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "or_other",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "hour",
+          "mean_drop": -0.009762619858498542,
+          "sd": 0.013859102590139049
+        },
+        {
+          "feature": "dst_rarity",
+          "mean_drop": -0.01732431566007541,
+          "sd": 0.026518305824864044
+        },
+        {
+          "feature": "dst_hr_src",
+          "mean_drop": -0.020315497327728207,
+          "sd": 0.07196297741471425
+        },
+        {
+          "feature": "usr_hr_dst",
+          "mean_drop": -0.024022253948454846,
+          "sd": 0.03666790222884333
+        },
+        {
+          "feature": "src_prev_dst",
+          "mean_drop": -0.11287577824190953,
+          "sd": 0.023629076314526754
+        },
+        {
+          "feature": "src_hr_events",
+          "mean_drop": -0.12346101419035797,
+          "sd": 0.026682788467519213
+        },
+        {
+          "feature": "src_hr_dst_share",
+          "mean_drop": -0.18581488182870434,
+          "sd": 0.1701933722417717
         }
       ]
     },
     {
       "cut_day": 12.0,
-      "baseline_pr_auc": 0.6744506476931501,
+      "pr_auc_full_test": 0.2302961038088539,
+      "pr_auc_subsample_reference": 0.6186839231693231,
+      "neg_subsample": 300000,
+      "model": "histgb(lr=0.05,leaves=15,w=true)",
       "train_pos": 316,
       "test_pos": 386,
       "importances": [
         {
           "feature": "auth_ntlm",
-          "mean_drop": 0.6413433116318188,
-          "sd": 0.006870068135009448
-        },
-        {
-          "feature": "src_hr_dst_z",
-          "mean_drop": 0.3937484014197511,
-          "sd": 0.05123604123033699
-        },
-        {
-          "feature": "dst_hr_src",
-          "mean_drop": 0.38228293158591675,
-          "sd": 0.03442114048120747
-        },
-        {
-          "feature": "src_hr_events",
-          "mean_drop": 0.35491172073944843,
-          "sd": 0.012172593982189662
-        },
-        {
-          "feature": "dow",
-          "mean_drop": 0.24577092144976756,
-          "sd": 0.08550093349804475
-        },
-        {
-          "feature": "src_hr_newdst_share",
-          "mean_drop": 0.21157246739283342,
-          "sd": 0.000990193818948491
-        },
-        {
-          "feature": "src_prev_dst",
-          "mean_drop": 0.19738914272454716,
-          "sd": 0.09402681511010762
+          "mean_drop": 0.5926394665155479,
+          "sd": 0.004234245675945519
         },
         {
           "feature": "usr_hr_dst",
-          "mean_drop": 0.17879840556405413,
-          "sd": 0.06737296108757414
+          "mean_drop": 0.2479867416453163,
+          "sd": 0.014084325549399434
         },
         {
-          "feature": "dst_rarity",
-          "mean_drop": 0.10927143276492765,
-          "sd": 0.004530795538346938
+          "feature": "src_hr_dst_z",
+          "mean_drop": 0.23273992145427616,
+          "sd": 0.009869067301635495
         },
         {
-          "feature": "usr_hr_src",
-          "mean_drop": 0.10058961904785586,
-          "sd": 0.014471010005286788
-        },
-        {
-          "feature": "hour",
-          "mean_drop": 0.0916059178204138,
-          "sd": 0.021495532032521646
-        },
-        {
-          "feature": "src_gap_log",
-          "mean_drop": 0.08527981110067229,
-          "sd": 0.031264762239893516
+          "feature": "src_hr_newdst_share",
+          "mean_drop": 0.22755068870313347,
+          "sd": 0.0011640626143910994
         },
         {
           "feature": "src_hr_failrate",
-          "mean_drop": 0.08346381857607184,
-          "sd": 0.0017899689358861488
+          "mean_drop": 0.19931312522479883,
+          "sd": 0.0051782774249400565
         },
         {
-          "feature": "src_hr_fail_z",
-          "mean_drop": 0.07440144139273137,
-          "sd": 0.010400623593038056
+          "feature": "dow",
+          "mean_drop": 0.1952274022875503,
+          "sd": 0.09676812310564016
         },
         {
-          "feature": "src_hr_dst_share",
-          "mean_drop": 0.07115428885904573,
-          "sd": 0.02712886470998913
-        },
-        {
-          "feature": "usr_gap_log",
-          "mean_drop": 0.0691964070907211,
-          "sd": 0.023079868968547947
-        },
-        {
-          "feature": "src_new_dst",
-          "mean_drop": 0.04046967367857694,
-          "sd": 5.947035907056585e-06
-        },
-        {
-          "feature": "src_hr_dst",
-          "mean_drop": 0.009236150853181701,
-          "sd": 0.008441168840961678
-        },
-        {
-          "feature": "src_min_events",
-          "mean_drop": 0.00575838168910423,
-          "sd": 0.013244606868434088
-        },
-        {
-          "feature": "is_fail",
-          "mean_drop": 0.003935476045455744,
-          "sd": 0.003009554178931075
+          "feature": "src_hr_events",
+          "mean_drop": 0.19137258869546483,
+          "sd": 0.029082140850278427
         },
         {
           "feature": "src_hr_newdst",
-          "mean_drop": 0.0030524416516458873,
-          "sd": 3.848094779852866e-07
+          "mean_drop": 0.16983959420567163,
+          "sd": 4.4934613470614125e-05
         },
         {
-          "feature": "auth_other",
-          "mean_drop": 0.0013482884509545378,
-          "sd": 0.0011256737192962092
+          "feature": "usr_gap_log",
+          "mean_drop": 0.07934081118793342,
+          "sd": 0.0035460684214885753
+        },
+        {
+          "feature": "src_hr_dst_share",
+          "mean_drop": 0.0697014130432041,
+          "sd": 0.04591310291640159
+        },
+        {
+          "feature": "dst_hr_src",
+          "mean_drop": 0.06867522278441418,
+          "sd": 0.03666751556135385
+        },
+        {
+          "feature": "hour",
+          "mean_drop": 0.06450131556642073,
+          "sd": 0.023366641803165687
+        },
+        {
+          "feature": "src_gap_log",
+          "mean_drop": 0.06181911883945834,
+          "sd": 0.013496247193603287
+        },
+        {
+          "feature": "src_new_usr",
+          "mean_drop": 0.048317839840335296,
+          "sd": 5.238750013840908e-17
+        },
+        {
+          "feature": "src_prev_dst",
+          "mean_drop": 0.031141220647667705,
+          "sd": 0.00360431830752023
+        },
+        {
+          "feature": "src_hr_dst",
+          "mean_drop": 0.02509539584717339,
+          "sd": 0.0030587131510891497
+        },
+        {
+          "feature": "usr_hr_src",
+          "mean_drop": 0.013902638065629636,
+          "sd": 0.003030300380637212
+        },
+        {
+          "feature": "is_fail",
+          "mean_drop": 0.011561879547744717,
+          "sd": 0.0011999462654189198
+        },
+        {
+          "feature": "src_min_events",
+          "mean_drop": 0.010985127890433785,
+          "sd": 0.0009633164308052779
+        },
+        {
+          "feature": "src_hr_usr",
+          "mean_drop": 0.0028735481315766975,
+          "sd": 0.005204627748873344
         },
         {
           "feature": "usr_hr_failrate",
-          "mean_drop": 5.61733184957891e-05,
-          "sd": 7.692605619697738e-05
+          "mean_drop": 9.918766701744186e-05,
+          "sd": 5.179368948366625e-05
+        },
+        {
+          "feature": "src_min_dst",
+          "mean_drop": 6.372630596436964e-05,
+          "sd": 6.32253335086087e-05
         },
         {
           "feature": "usr_new_dst",
-          "mean_drop": 4.6336074524200296e-06,
-          "sd": 4.1853321771461626e-10
+          "mean_drop": 1.6300134072907053e-05,
+          "sd": 5.233641530164469e-17
         },
         {
           "feature": "auth_kerb",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "auth_other",
           "mean_drop": 0.0,
           "sd": 0.0
         },
@@ -394,142 +602,155 @@
           "sd": 0.0
         },
         {
-          "feature": "src_new_usr",
-          "mean_drop": -0.00012466913958293359,
-          "sd": 1.5384809118404927e-10
+          "feature": "src_hr_fail_z",
+          "mean_drop": -0.00472781937156197,
+          "sd": 0.06229631002764031
         },
         {
-          "feature": "src_min_dst",
-          "mean_drop": -0.0007566534146204562,
-          "sd": 0.002164564299568627
+          "feature": "dst_rarity",
+          "mean_drop": -0.02660854246203348,
+          "sd": 0.016514933315630496
         },
         {
-          "feature": "src_hr_usr",
-          "mean_drop": -0.004211322252060334,
-          "sd": 0.00983702608054714
+          "feature": "src_new_dst",
+          "mean_drop": -0.08963787657020646,
+          "sd": 2.0565053207934847e-06
         }
       ]
     },
     {
       "cut_day": 15.0,
-      "baseline_pr_auc": 0.0011362685897951066,
+      "pr_auc_full_test": 0.762271930139323,
+      "pr_auc_subsample_reference": 0.8994209719377567,
+      "neg_subsample": 300000,
+      "model": "histgb(lr=0.1,leaves=15,w=balanced)",
       "train_pos": 623,
       "test_pos": 79,
       "importances": [
         {
-          "feature": "src_hr_dst",
-          "mean_drop": 0.0011227141885619015,
-          "sd": 2.423749871124938e-07
-        },
-        {
-          "feature": "src_hr_dst_share",
-          "mean_drop": 0.0010877754485722536,
-          "sd": 4.465404010226277e-06
+          "feature": "auth_ntlm",
+          "mean_drop": 0.8824801851628075,
+          "sd": 0.02387886331429189
         },
         {
           "feature": "src_hr_events",
-          "mean_drop": 0.0010846339542229656,
-          "sd": 2.937220027821709e-06
+          "mean_drop": 0.3447940861000813,
+          "sd": 0.025642753509478717
+        },
+        {
+          "feature": "src_hr_dst_share",
+          "mean_drop": 0.28148400946683577,
+          "sd": 0.09501944624059923
         },
         {
           "feature": "src_hr_dst_z",
-          "mean_drop": 0.0010818540550701018,
-          "sd": 6.071500443016988e-06
-        },
-        {
-          "feature": "src_hr_newdst",
-          "mean_drop": 0.0010087442898335957,
-          "sd": 9.894879936469123e-06
-        },
-        {
-          "feature": "src_prev_dst",
-          "mean_drop": 0.0009817360024305807,
-          "sd": 1.0863910540305534e-05
-        },
-        {
-          "feature": "src_hr_failrate",
-          "mean_drop": 0.0006837155492110558,
-          "sd": 0.00010163633042736085
+          "mean_drop": 0.247562959924174,
+          "sd": 0.011892111620792173
         },
         {
           "feature": "src_hr_fail_z",
-          "mean_drop": 0.0006626877123464901,
-          "sd": 2.81339134965093e-05
+          "mean_drop": 0.19529820147719731,
+          "sd": 0.029527108309958406
         },
         {
-          "feature": "auth_ntlm",
-          "mean_drop": 0.0006468071930062039,
-          "sd": 8.027623954314403e-05
+          "feature": "src_hr_failrate",
+          "mean_drop": 0.15062431416475444,
+          "sd": 0.03572186863189778
         },
         {
           "feature": "usr_hr_dst",
-          "mean_drop": 0.0006020380439957829,
-          "sd": 3.155476749633621e-05
-        },
-        {
-          "feature": "src_hr_usr",
-          "mean_drop": 0.00023959236729145388,
-          "sd": 9.252748097863961e-05
-        },
-        {
-          "feature": "dst_hr_src",
-          "mean_drop": 0.00020355889142019846,
-          "sd": 0.0001285768223168854
+          "mean_drop": 0.06761747451990745,
+          "sd": 0.015482778560504654
         },
         {
           "feature": "is_fail",
-          "mean_drop": 8.468429230202834e-05,
-          "sd": 6.867422973560791e-08
+          "mean_drop": 0.050681275251527734,
+          "sd": 0.01031481697435225
         },
         {
-          "feature": "usr_hr_src",
-          "mean_drop": 7.796566881689728e-05,
-          "sd": 4.844782341905887e-05
+          "feature": "src_hr_newdst_share",
+          "mean_drop": 0.05051237110294893,
+          "sd": 4.782802348756463e-07
         },
         {
-          "feature": "dst_rarity",
-          "mean_drop": 7.065841934599539e-05,
-          "sd": 3.5963767167895685e-05
+          "feature": "dst_hr_src",
+          "mean_drop": 0.04179734273350033,
+          "sd": 0.02554987790915687
+        },
+        {
+          "feature": "src_prev_dst",
+          "mean_drop": 0.016912160378853385,
+          "sd": 0.015454226885609625
         },
         {
           "feature": "usr_gap_log",
-          "mean_drop": 5.86629484063047e-05,
-          "sd": 7.163109224422819e-05
+          "mean_drop": 0.01687172215567745,
+          "sd": 0.011756732954501636
+        },
+        {
+          "feature": "src_hr_dst",
+          "mean_drop": 0.016613505289589603,
+          "sd": 0.011619971777486202
+        },
+        {
+          "feature": "dst_rarity",
+          "mean_drop": 0.012940346010174872,
+          "sd": 0.027004676065891117
         },
         {
           "feature": "usr_hr_failrate",
-          "mean_drop": 4.559406896926729e-05,
-          "sd": 3.4135014987807014e-05
+          "mean_drop": 0.012569092604335955,
+          "sd": 7.745758578255525e-05
         },
         {
-          "feature": "usr_new_dst",
-          "mean_drop": 3.249509064264838e-05,
-          "sd": 3.887595543418915e-05
+          "feature": "src_hr_usr",
+          "mean_drop": 0.012519494129231886,
+          "sd": 0.00010535524086367263
         },
         {
-          "feature": "src_gap_log",
-          "mean_drop": 2.1595514104919998e-05,
-          "sd": 0.00012544531165870738
+          "feature": "hour",
+          "mean_drop": 0.01220289802265484,
+          "sd": 0.010251689351448576
         },
         {
-          "feature": "or_logon",
-          "mean_drop": 1.5858353735829362e-08,
-          "sd": 1.5325075567854244e-08
+          "feature": "usr_hr_src",
+          "mean_drop": 0.008372472878155124,
+          "sd": 0.005799394743370795
         },
         {
-          "feature": "or_tgt",
-          "mean_drop": 6.827488874825219e-09,
-          "sd": 5.577239078798011e-09
+          "feature": "src_min_events",
+          "mean_drop": 0.008356424722070507,
+          "sd": 0.02111380654617272
         },
         {
-          "feature": "or_other",
-          "mean_drop": 1.8109689529227646e-12,
-          "sd": 1.9565113925748093e-13
+          "feature": "src_new_dst",
+          "mean_drop": 7.232111207999825e-05,
+          "sd": 1.5611435975201396e-14
+        },
+        {
+          "feature": "src_min_dst",
+          "mean_drop": 5.2319049716439046e-05,
+          "sd": 0.00019794801214623411
         },
         {
           "feature": "src_new_usr",
-          "mean_drop": 5.712201978785858e-13,
-          "sd": 2.335384693083389e-13
+          "mean_drop": 1.5395092608135503e-14,
+          "sd": 1.153255207401945e-14
+        },
+        {
+          "feature": "auth_kerb",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "auth_other",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "lt_network",
+          "mean_drop": 0.0,
+          "sd": 0.0
         },
         {
           "feature": "lt_service",
@@ -543,68 +764,58 @@
         },
         {
           "feature": "lt_interactive",
-          "mean_drop": -6.517833148200758e-15,
-          "sd": 5.858357654857942e-15
+          "mean_drop": 0.0,
+          "sd": 0.0
         },
         {
           "feature": "lt_other",
-          "mean_drop": -1.1164418087933336e-11,
-          "sd": 1.7502650401164796e-11
+          "mean_drop": 0.0,
+          "sd": 0.0
         },
         {
-          "feature": "lt_network",
-          "mean_drop": -6.893658551420865e-09,
-          "sd": 5.628849912563334e-09
-        },
-        {
-          "feature": "auth_kerb",
-          "mean_drop": -1.3051143079121503e-07,
-          "sd": 1.789183416282769e-07
-        },
-        {
-          "feature": "auth_other",
-          "mean_drop": -1.7710345874364513e-07,
-          "sd": 3.400064190909412e-07
+          "feature": "or_logon",
+          "mean_drop": 0.0,
+          "sd": 0.0
         },
         {
           "feature": "or_logoff",
-          "mean_drop": -4.133687588342948e-07,
-          "sd": 2.3835735456225582e-07
+          "mean_drop": 0.0,
+          "sd": 0.0
         },
         {
           "feature": "or_tgs",
-          "mean_drop": -6.295520655848208e-07,
-          "sd": 6.761170126995206e-07
+          "mean_drop": 0.0,
+          "sd": 0.0
         },
         {
-          "feature": "src_min_dst",
-          "mean_drop": -9.869901268483046e-07,
-          "sd": 9.361991143739325e-07
+          "feature": "or_tgt",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "or_other",
+          "mean_drop": 0.0,
+          "sd": 0.0
+        },
+        {
+          "feature": "src_hr_newdst",
+          "mean_drop": -7.14752212379229e-07,
+          "sd": 2.9509474307295774e-09
+        },
+        {
+          "feature": "src_gap_log",
+          "mean_drop": -1.1931019817261005e-05,
+          "sd": 0.02012790478104225
+        },
+        {
+          "feature": "usr_new_dst",
+          "mean_drop": -5.7825818050027955e-05,
+          "sd": 5.109205668676884e-14
         },
         {
           "feature": "dow",
-          "mean_drop": -1.7623355166017287e-06,
-          "sd": 7.822874422317577e-05
-        },
-        {
-          "feature": "hour",
-          "mean_drop": -3.0378998628101937e-05,
-          "sd": 0.00015575077521863702
-        },
-        {
-          "feature": "src_hr_newdst_share",
-          "mean_drop": -0.00010123025024816966,
-          "sd": 8.54843850806416e-05
-        },
-        {
-          "feature": "src_new_dst",
-          "mean_drop": -0.0001927880230373903,
-          "sd": 4.073574944875656e-05
-        },
-        {
-          "feature": "src_min_events",
-          "mean_drop": -0.0003420929897935439,
-          "sd": 0.00015069431180968828
+          "mean_drop": -0.02487794040709586,
+          "sd": 0.00015883926201325997
         }
       ]
     }

@@ -1,0 +1,2004 @@
+{
+    "generated":  "2026-09-08T17:15:18.5241430+09:00",
+    "generator":  "scripts/New-OptcWindowLabels.ps1",
+    "experiment":  "E1-b",
+    "design":  "docs/19-e1b-design.md",
+    "source_events":  "F:\\F\\other_class\\CybOPS\\analysis\\optc\\redteam-events.jsonl",
+    "actions_total":  101,
+    "pairs_kept":  148,
+    "rows_no_host":  2,
+    "dropped_hosts":  {
+                          "DC1":  10
+                      },
+    "dropped_reason":  "no eCAR telemetry for this host; excluded from evaluation and reported (docs/19 section 3)",
+    "utc_offset_hours":  -4,
+    "clock_evidence":  "scripts/Test-OptcTimeAlign.ps1: runme.bat CREATE at 2019-09-23T11:23:43.956-04:00 vs ground truth 09/23/19 11:23:29, gap 15 s",
+    "window_seconds":  [
+                           60,
+                           300,
+                           900
+                       ],
+    "positive_cells":  {
+                           "60":  [
+                                      "SysClient0201|26154203",
+                                      "SysClient0201|26154204",
+                                      "SysClient0201|26154206",
+                                      "SysClient0201|26154213",
+                                      "SysClient0201|26154215",
+                                      "SysClient0201|26154217",
+                                      "SysClient0201|26154218",
+                                      "SysClient0201|26154219",
+                                      "SysClient0201|26154220",
+                                      "SysClient0201|26154221",
+                                      "SysClient0201|26154291",
+                                      "SysClient0201|26154298",
+                                      "SysClient0201|26154307",
+                                      "SysClient0201|26154308",
+                                      "SysClient0201|26154315",
+                                      "SysClient0201|26154324",
+                                      "SysClient0402|26154324",
+                                      "SysClient0402|26154325",
+                                      "SysClient0402|26154329",
+                                      "SysClient0402|26154335",
+                                      "SysClient0660|26154335",
+                                      "SysClient0660|26154338",
+                                      "SysClient0660|26154340",
+                                      "SysClient0660|26154344",
+                                      "SysClient0660|26154349",
+                                      "SysClient0660|26154350",
+                                      "SysClient0660|26154354",
+                                      "SysClient0660|26154356",
+                                      "SysClient0660|26154362",
+                                      "SysClient0660|26154364",
+                                      "SysClient0201|26154366",
+                                      "SysClient0402|26154366",
+                                      "SysClient0660|26154366",
+                                      "SysClient0104|26154405",
+                                      "SysClient0170|26154405",
+                                      "SysClient0205|26154405",
+                                      "SysClient0255|26154405",
+                                      "SysClient0321|26154405",
+                                      "SysClient0355|26154405",
+                                      "SysClient0419|26154405",
+                                      "SysClient0462|26154405",
+                                      "SysClient0503|26154405",
+                                      "SysClient0559|26154405",
+                                      "SysClient0609|26154405",
+                                      "SysClient0771|26154405",
+                                      "SysClient0874|26154405",
+                                      "SysClient0955|26154405",
+                                      "SysClient0104|26154444",
+                                      "SysClient0170|26154444",
+                                      "SysClient0205|26154444",
+                                      "SysClient0255|26154444",
+                                      "SysClient0321|26154444",
+                                      "SysClient0355|26154444",
+                                      "SysClient0419|26154444",
+                                      "SysClient0462|26154444",
+                                      "SysClient0503|26154444",
+                                      "SysClient0559|26154444",
+                                      "SysClient0609|26154444",
+                                      "SysClient0771|26154444",
+                                      "SysClient0874|26154444",
+                                      "SysClient0955|26154444",
+                                      "SysClient0010|26154450",
+                                      "SysClient0069|26154450",
+                                      "SysClient0201|26154450",
+                                      "SysClient0203|26154450",
+                                      "SysClient0358|26154450",
+                                      "SysClient0501|26154450",
+                                      "SysClient0618|26154450",
+                                      "SysClient0811|26154450",
+                                      "SysClient0851|26154450",
+                                      "SysClient0811|26155588",
+                                      "SysClient0501|26155596",
+                                      "SysClient0811|26155600",
+                                      "SysClient0501|26155606",
+                                      "SysClient0501|26155611",
+                                      "SysClient0501|26155624",
+                                      "SysClient0501|26155625",
+                                      "SysClient0501|26155629",
+                                      "SysClient0501|26155630",
+                                      "SysClient0501|26155633",
+                                      "SysClient0501|26155640",
+                                      "SysClient0501|26155643",
+                                      "SysClient0501|26155645",
+                                      "SysClient0501|26155646",
+                                      "SysClient0501|26155651",
+                                      "SysClient0501|26155653",
+                                      "SysClient0501|26155654",
+                                      "SysClient0501|26155655",
+                                      "SysClient0501|26155657",
+                                      "SysClient0501|26155659",
+                                      "SysClient0501|26155661",
+                                      "SysClient0501|26155745",
+                                      "SysClient0501|26155751",
+                                      "SysClient0501|26155759",
+                                      "SysClient0501|26155766",
+                                      "SysClient0501|26155771",
+                                      "SysClient0501|26155784",
+                                      "SysClient0501|26155785",
+                                      "SysClient0501|26155786",
+                                      "SysClient0974|26155786",
+                                      "SysClient0974|26155791",
+                                      "SysClient0005|26155794",
+                                      "SysClient0974|26155794",
+                                      "SysClient0005|26155806",
+                                      "SysClient0005|26155834",
+                                      "SysClient0005|26155837",
+                                      "SysClient0005|26155864",
+                                      "SysClient0005|26155882",
+                                      "SysClient0005|26155883",
+                                      "SysClient0974|26155887",
+                                      "SysClient0501|26155888",
+                                      "SysClient0010|26155902",
+                                      "SysClient0069|26155902",
+                                      "SysClient0203|26155902",
+                                      "SysClient0358|26155902",
+                                      "SysClient0618|26155902",
+                                      "SysClient0851|26155902",
+                                      "SysClient0010|26156940",
+                                      "SysClient0069|26156940",
+                                      "SysClient0203|26156940",
+                                      "SysClient0358|26156940",
+                                      "SysClient0618|26156940",
+                                      "SysClient0851|26156940",
+                                      "SysClient0051|26157000",
+                                      "SysClient0351|26157000",
+                                      "SysClient0051|26157029",
+                                      "SysClient0051|26157031",
+                                      "SysClient0051|26157032",
+                                      "SysClient0051|26157033",
+                                      "SysClient0051|26157036",
+                                      "SysClient0051|26157037",
+                                      "SysClient0051|26157038",
+                                      "SysClient0051|26157040",
+                                      "SysClient0051|26157044",
+                                      "SysClient0051|26157048",
+                                      "SysClient0051|26157053",
+                                      "SysClient0051|26157067",
+                                      "SysClient0351|26157083",
+                                      "SysClient0351|26157084",
+                                      "SysClient0051|26157222",
+                                      "SysClient0051|26157264"
+                                  ],
+                           "300":  [
+                                       "SysClient0201|5230840",
+                                       "SysClient0201|5230841",
+                                       "SysClient0201|5230842",
+                                       "SysClient0201|5230843",
+                                       "SysClient0201|5230844",
+                                       "SysClient0201|5230858",
+                                       "SysClient0201|5230859",
+                                       "SysClient0201|5230861",
+                                       "SysClient0201|5230863",
+                                       "SysClient0201|5230864",
+                                       "SysClient0402|5230864",
+                                       "SysClient0402|5230865",
+                                       "SysClient0402|5230867",
+                                       "SysClient0660|5230867",
+                                       "SysClient0660|5230868",
+                                       "SysClient0660|5230869",
+                                       "SysClient0660|5230870",
+                                       "SysClient0660|5230871",
+                                       "SysClient0660|5230872",
+                                       "SysClient0201|5230873",
+                                       "SysClient0402|5230873",
+                                       "SysClient0660|5230873",
+                                       "SysClient0104|5230881",
+                                       "SysClient0170|5230881",
+                                       "SysClient0205|5230881",
+                                       "SysClient0255|5230881",
+                                       "SysClient0321|5230881",
+                                       "SysClient0355|5230881",
+                                       "SysClient0419|5230881",
+                                       "SysClient0462|5230881",
+                                       "SysClient0503|5230881",
+                                       "SysClient0559|5230881",
+                                       "SysClient0609|5230881",
+                                       "SysClient0771|5230881",
+                                       "SysClient0874|5230881",
+                                       "SysClient0955|5230881",
+                                       "SysClient0104|5230888",
+                                       "SysClient0170|5230888",
+                                       "SysClient0205|5230888",
+                                       "SysClient0255|5230888",
+                                       "SysClient0321|5230888",
+                                       "SysClient0355|5230888",
+                                       "SysClient0419|5230888",
+                                       "SysClient0462|5230888",
+                                       "SysClient0503|5230888",
+                                       "SysClient0559|5230888",
+                                       "SysClient0609|5230888",
+                                       "SysClient0771|5230888",
+                                       "SysClient0874|5230888",
+                                       "SysClient0955|5230888",
+                                       "SysClient0010|5230890",
+                                       "SysClient0069|5230890",
+                                       "SysClient0201|5230890",
+                                       "SysClient0203|5230890",
+                                       "SysClient0358|5230890",
+                                       "SysClient0501|5230890",
+                                       "SysClient0618|5230890",
+                                       "SysClient0811|5230890",
+                                       "SysClient0851|5230890",
+                                       "SysClient0811|5231117",
+                                       "SysClient0501|5231119",
+                                       "SysClient0811|5231120",
+                                       "SysClient0501|5231121",
+                                       "SysClient0501|5231122",
+                                       "SysClient0501|5231124",
+                                       "SysClient0501|5231125",
+                                       "SysClient0501|5231126",
+                                       "SysClient0501|5231128",
+                                       "SysClient0501|5231129",
+                                       "SysClient0501|5231130",
+                                       "SysClient0501|5231131",
+                                       "SysClient0501|5231132",
+                                       "SysClient0501|5231149",
+                                       "SysClient0501|5231150",
+                                       "SysClient0501|5231151",
+                                       "SysClient0501|5231153",
+                                       "SysClient0501|5231154",
+                                       "SysClient0501|5231156",
+                                       "SysClient0501|5231157",
+                                       "SysClient0974|5231157",
+                                       "SysClient0974|5231158",
+                                       "SysClient0005|5231158",
+                                       "SysClient0005|5231161",
+                                       "SysClient0005|5231166",
+                                       "SysClient0005|5231167",
+                                       "SysClient0005|5231172",
+                                       "SysClient0005|5231176",
+                                       "SysClient0974|5231177",
+                                       "SysClient0501|5231177",
+                                       "SysClient0010|5231180",
+                                       "SysClient0069|5231180",
+                                       "SysClient0203|5231180",
+                                       "SysClient0358|5231180",
+                                       "SysClient0618|5231180",
+                                       "SysClient0851|5231180",
+                                       "SysClient0010|5231388",
+                                       "SysClient0069|5231388",
+                                       "SysClient0203|5231388",
+                                       "SysClient0358|5231388",
+                                       "SysClient0618|5231388",
+                                       "SysClient0851|5231388",
+                                       "SysClient0051|5231400",
+                                       "SysClient0351|5231400",
+                                       "SysClient0051|5231405",
+                                       "SysClient0051|5231406",
+                                       "SysClient0051|5231407",
+                                       "SysClient0051|5231408",
+                                       "SysClient0051|5231409",
+                                       "SysClient0051|5231410",
+                                       "SysClient0051|5231413",
+                                       "SysClient0351|5231416",
+                                       "SysClient0051|5231444",
+                                       "SysClient0051|5231452"
+                                   ],
+                           "900":  [
+                                       "SysClient0201|1743613",
+                                       "SysClient0201|1743614",
+                                       "SysClient0201|1743619",
+                                       "SysClient0201|1743620",
+                                       "SysClient0201|1743621",
+                                       "SysClient0402|1743621",
+                                       "SysClient0402|1743622",
+                                       "SysClient0660|1743622",
+                                       "SysClient0660|1743623",
+                                       "SysClient0660|1743624",
+                                       "SysClient0201|1743624",
+                                       "SysClient0402|1743624",
+                                       "SysClient0104|1743627",
+                                       "SysClient0170|1743627",
+                                       "SysClient0205|1743627",
+                                       "SysClient0255|1743627",
+                                       "SysClient0321|1743627",
+                                       "SysClient0355|1743627",
+                                       "SysClient0419|1743627",
+                                       "SysClient0462|1743627",
+                                       "SysClient0503|1743627",
+                                       "SysClient0559|1743627",
+                                       "SysClient0609|1743627",
+                                       "SysClient0771|1743627",
+                                       "SysClient0874|1743627",
+                                       "SysClient0955|1743627",
+                                       "SysClient0104|1743629",
+                                       "SysClient0170|1743629",
+                                       "SysClient0205|1743629",
+                                       "SysClient0255|1743629",
+                                       "SysClient0321|1743629",
+                                       "SysClient0355|1743629",
+                                       "SysClient0419|1743629",
+                                       "SysClient0462|1743629",
+                                       "SysClient0503|1743629",
+                                       "SysClient0559|1743629",
+                                       "SysClient0609|1743629",
+                                       "SysClient0771|1743629",
+                                       "SysClient0874|1743629",
+                                       "SysClient0955|1743629",
+                                       "SysClient0010|1743630",
+                                       "SysClient0069|1743630",
+                                       "SysClient0201|1743630",
+                                       "SysClient0203|1743630",
+                                       "SysClient0358|1743630",
+                                       "SysClient0501|1743630",
+                                       "SysClient0618|1743630",
+                                       "SysClient0811|1743630",
+                                       "SysClient0851|1743630",
+                                       "SysClient0811|1743705",
+                                       "SysClient0501|1743706",
+                                       "SysClient0811|1743706",
+                                       "SysClient0501|1743707",
+                                       "SysClient0501|1743708",
+                                       "SysClient0501|1743709",
+                                       "SysClient0501|1743710",
+                                       "SysClient0501|1743716",
+                                       "SysClient0501|1743717",
+                                       "SysClient0501|1743718",
+                                       "SysClient0501|1743719",
+                                       "SysClient0974|1743719",
+                                       "SysClient0005|1743719",
+                                       "SysClient0005|1743720",
+                                       "SysClient0005|1743722",
+                                       "SysClient0005|1743724",
+                                       "SysClient0005|1743725",
+                                       "SysClient0974|1743725",
+                                       "SysClient0501|1743725",
+                                       "SysClient0010|1743726",
+                                       "SysClient0069|1743726",
+                                       "SysClient0203|1743726",
+                                       "SysClient0358|1743726",
+                                       "SysClient0618|1743726",
+                                       "SysClient0851|1743726",
+                                       "SysClient0010|1743796",
+                                       "SysClient0069|1743796",
+                                       "SysClient0203|1743796",
+                                       "SysClient0358|1743796",
+                                       "SysClient0618|1743796",
+                                       "SysClient0851|1743796",
+                                       "SysClient0051|1743800",
+                                       "SysClient0351|1743800",
+                                       "SysClient0051|1743801",
+                                       "SysClient0051|1743802",
+                                       "SysClient0051|1743803",
+                                       "SysClient0051|1743804",
+                                       "SysClient0351|1743805",
+                                       "SysClient0051|1743814",
+                                       "SysClient0051|1743817"
+                                   ]
+                       },
+    "cells_note":  "key format host|floor(epoch/window)",
+    "actions":  [
+                    {
+                        "host":  "SysClient0201",
+                        "epoch":  1569252209,
+                        "date":  "09/23/19",
+                        "time":  "11:23:29",
+                        "tags":  [
+                                     "exfiltration",
+                                     "c2",
+                                     "initial_access",
+                                     "execution"
+                                 ],
+                        "text":  "Manually accessed console on Sysclient0201 and navigated to news.com:8000 to download runme.bat, a malicious news.com PowerShell empire stager"
+                    },
+                    {
+                        "host":  "SysClient0201",
+                        "epoch":  1569252259,
+                        "date":  "09/23/19",
+                        "time":  "11:24:19",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "Sysclient0201, closed Firefox tab and deleted runme.bat"
+                    },
+                    {
+                        "host":  "SysClient0201",
+                        "epoch":  1569252294,
+                        "date":  "09/23/19",
+                        "time":  "11:24:54",
+                        "tags":  [
+                                     "c2"
+                                 ],
+                        "text":  "Successful check-in for Agent VL8B5T3U on Sysclient0201 IP 142.20.56.202"
+                    },
+                    {
+                        "host":  "SysClient0201",
+                        "epoch":  1569252362,
+                        "date":  "09/23/19",
+                        "time":  "11:26:02",
+                        "tags":  [
+                                     "privilege_escalation",
+                                     "persistence",
+                                     "c2",
+                                     "execution"
+                                 ],
+                        "text":  "On Sysclient0201 agent VL8B5T3U, Used PowerShell Empire Module Bypasses UAC, which performs a registry modification of the \"windir\" value in \"Environment\" to bypass UAC."
+                    },
+                    {
+                        "host":  "SysClient0201",
+                        "epoch":  1569252398,
+                        "date":  "09/23/19",
+                        "time":  "11:26:38",
+                        "tags":  [
+                                     "privilege_escalation",
+                                     "c2"
+                                 ],
+                        "text":  "On sysclient0201, successful check-in of elevated agent LUAVR71T"
+                    },
+                    {
+                        "host":  "SysClient0201",
+                        "epoch":  1569252416,
+                        "date":  "09/23/19",
+                        "time":  "11:26:56",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "On Sysclient0201, killing agent VL8B5T3U"
+                    },
+                    {
+                        "host":  "SysClient0201",
+                        "epoch":  1569252794,
+                        "date":  "09/23/19",
+                        "time":  "11:33:14",
+                        "tags":  [
+                                     "credential_access"
+                                 ],
+                        "text":  "On Sysclient0201 agent LUAVR71T, ran Mimikatz to collect clear text passwords in memory"
+                    },
+                    {
+                        "host":  "SysClient0201",
+                        "epoch":  1569252926,
+                        "date":  "09/23/19",
+                        "time":  "11:35:26",
+                        "tags":  [
+                                     "credential_access"
+                                 ],
+                        "text":  "On Sysclient0201 agent LUAVR71T, obtained password for user systemia.com\\zleazer via Mimikatz"
+                    },
+                    {
+                        "host":  "SysClient0201",
+                        "epoch":  1569253035,
+                        "date":  "09/23/19",
+                        "time":  "11:37:15",
+                        "tags":  [
+                                     "process_injection"
+                                 ],
+                        "text":  "On Sysclient0201 agent LUAVR71T, used psinject to inject into the LSASS process"
+                    },
+                    {
+                        "host":  "SysClient0201",
+                        "epoch":  1569253089,
+                        "date":  "09/23/19",
+                        "time":  "11:38:09",
+                        "tags":  [
+                                     "process_injection"
+                                 ],
+                        "text":  "On Sysclient0201 agent LUAVR71T, Process injection seems to have failed."
+                    },
+                    {
+                        "host":  "SysClient0201",
+                        "epoch":  1569253165,
+                        "date":  "09/23/19",
+                        "time":  "11:39:25",
+                        "tags":  [
+                                     "persistence"
+                                 ],
+                        "text":  "On Sysclient0201 agent LUAVR71T, established persistence by modifying HKCU:Software\\Microsoft\\Windows\\CurrentVersion\\Debug registry entry"
+                    },
+                    {
+                        "host":  "SysClient0201",
+                        "epoch":  1569253241,
+                        "date":  "09/23/19",
+                        "time":  "11:40:41",
+                        "tags":  [
+                                     "discovery_host",
+                                     "execution"
+                                 ],
+                        "text":  "On Sysclient0201 agent LUAVR71T, obtained process listing by running ps through PowerShell"
+                    },
+                    {
+                        "host":  "SysClient0201",
+                        "epoch":  1569253310,
+                        "date":  "09/23/19",
+                        "time":  "11:41:50",
+                        "tags":  [
+                                     "process_injection"
+                                 ],
+                        "text":  "On Sysclient0201 agent LUAVR71T, retried psinject into LSASS"
+                    },
+                    {
+                        "host":  "SysClient0201",
+                        "epoch":  1569257519,
+                        "date":  "09/23/19",
+                        "time":  "12:51:59",
+                        "tags":  [
+                                     "collection"
+                                 ],
+                        "text":  "On Sysclient0201 agent LUAVR71T, collected data collection by obtaining a screenshot of the desktop."
+                    },
+                    {
+                        "host":  "SysClient0201",
+                        "epoch":  1569257900,
+                        "date":  "09/23/19",
+                        "time":  "12:58:20",
+                        "tags":  [
+                                     "discovery_network"
+                                 ],
+                        "text":  "On Sysclient0201 agent LUAVR71T, conducted ARP scan on /22 of 142.20.56.202"
+                    },
+                    {
+                        "host":  "SysClient0201",
+                        "epoch":  1569258431,
+                        "date":  "09/23/19",
+                        "time":  "13:07:11",
+                        "tags":  [
+                                     "credential_access",
+                                     "discovery_network"
+                                 ],
+                        "text":  "On Sysclient0201 agent LUAVR71T, ARP scan failed. Attempted to use SMB on 142.20.56.204 with credentials from Sysclient0201"
+                    },
+                    {
+                        "host":  "SysClient0201",
+                        "epoch":  1569258508,
+                        "date":  "09/23/19",
+                        "time":  "13:08:28",
+                        "tags":  [
+                                     "discovery_network"
+                                 ],
+                        "text":  "On Sysclient0201 agent LUAVR71T, re-attempted ARP scan without setting any values."
+                    },
+                    {
+                        "host":  "SysClient0201",
+                        "epoch":  1569258948,
+                        "date":  "09/23/19",
+                        "time":  "13:15:48",
+                        "tags":  [
+                                     "discovery_network"
+                                 ],
+                        "text":  "On Sysclient0201 agent LUAVR71T, executed ping sweep against 142.20.56.0/24"
+                    },
+                    {
+                        "host":  "SysClient0201",
+                        "epoch":  1569259476,
+                        "date":  "09/23/19",
+                        "time":  "13:24:36",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On Sysclient0201 agent LUAVR71T, pivoted to Sysclient0402 using invoke_wmi"
+                    },
+                    {
+                        "host":  "SysClient0402",
+                        "epoch":  1569259476,
+                        "date":  "09/23/19",
+                        "time":  "13:24:36",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On Sysclient0201 agent LUAVR71T, pivoted to Sysclient0402 using invoke_wmi"
+                    },
+                    {
+                        "host":  "SysClient0402",
+                        "epoch":  1569259541,
+                        "date":  "09/23/19",
+                        "time":  "13:25:41",
+                        "tags":  [
+                                     "privilege_escalation"
+                                 ],
+                        "text":  "On sysclient0402 agent NEK5H8GX checked in as an elevated agent"
+                    },
+                    {
+                        "host":  "SysClient0402",
+                        "epoch":  1569259787,
+                        "date":  "09/23/19",
+                        "time":  "13:29:47",
+                        "tags":  [
+                                     "discovery_network",
+                                     "execution"
+                                 ],
+                        "text":  "On Sysclient0402 agent NEK5H8GX, imported and ran ping sweep script to run against 142.20.57.0/24"
+                    },
+                    {
+                        "host":  "SysClient0402",
+                        "epoch":  1569260122,
+                        "date":  "09/23/19",
+                        "time":  "13:35:22",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On Sysclient0402 agent NEK5H8GX, pivoted to Sysclient0660 using invoke_wmi. Agent DS29HY41 checks in."
+                    },
+                    {
+                        "host":  "SysClient0660",
+                        "epoch":  1569260122,
+                        "date":  "09/23/19",
+                        "time":  "13:35:22",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On Sysclient0402 agent NEK5H8GX, pivoted to Sysclient0660 using invoke_wmi. Agent DS29HY41 checks in."
+                    },
+                    {
+                        "host":  "SysClient0660",
+                        "epoch":  1569260311,
+                        "date":  "09/23/19",
+                        "time":  "13:38:31",
+                        "tags":  [
+                                     "discovery_host"
+                                 ],
+                        "text":  "On Sysclient0660 agent DS29HY41, used ipconfig to obtain IP"
+                    },
+                    {
+                        "host":  "SysClient0660",
+                        "epoch":  1569260438,
+                        "date":  "09/23/19",
+                        "time":  "13:40:38",
+                        "tags":  [
+                                     "credential_access"
+                                 ],
+                        "text":  "On Sysclient0660 agent DS29HY41, used Mimikatz to obtain clear-text passwords from memory Research Projects Agency or the U.S. Government."
+                    },
+                    {
+                        "host":  "SysClient0660",
+                        "epoch":  1569260663,
+                        "date":  "09/23/19",
+                        "time":  "13:44:23",
+                        "tags":  [
+                                     "process_injection"
+                                 ],
+                        "text":  "On Sysclient0660 agent DS29HY41, attempted to migrate to local user process with psinject. Failed to inject."
+                    },
+                    {
+                        "host":  "SysClient0660",
+                        "epoch":  1569260940,
+                        "date":  "09/23/19",
+                        "time":  "13:49:00",
+                        "tags":  [
+                                     "discovery_host"
+                                 ],
+                        "text":  "On Sysclient0660 agent DS29HY41, obtained list of processes with ps"
+                    },
+                    {
+                        "host":  "SysClient0660",
+                        "epoch":  1569261056,
+                        "date":  "09/23/19",
+                        "time":  "13:50:56",
+                        "tags":  [
+                                     "process_injection"
+                                 ],
+                        "text":  "On Sysclient0660 agent DS29HY41, attempted to inject shellcode into process ID 4480. Injection failed."
+                    },
+                    {
+                        "host":  "SysClient0660",
+                        "epoch":  1569261251,
+                        "date":  "09/23/19",
+                        "time":  "13:54:11",
+                        "tags":  [
+                                     "discovery_host",
+                                     "execution"
+                                 ],
+                        "text":  "On Sysclient0660 agent DS29HY41, executed script to return domain controller information."
+                    },
+                    {
+                        "host":  "SysClient0660",
+                        "epoch":  1569261408,
+                        "date":  "09/23/19",
+                        "time":  "13:56:48",
+                        "tags":  [
+                                     "discovery_host",
+                                     "execution"
+                                 ],
+                        "text":  "On Sysclient0660 agent DS29HY41, imported and ran PowerShell script to find domain controllers"
+                    },
+                    {
+                        "host":  "SysClient0660",
+                        "epoch":  1569261732,
+                        "date":  "09/23/19",
+                        "time":  "14:02:12",
+                        "tags":  [
+                                     "exfiltration"
+                                 ],
+                        "text":  "On Sysclient0660 agent DS29HY41, downloaded file zipfldr.dll"
+                    },
+                    {
+                        "host":  "SysClient0660",
+                        "epoch":  1569261885,
+                        "date":  "09/23/19",
+                        "time":  "14:04:45",
+                        "tags":  [
+                                     "lateral_movement",
+                                     "discovery_host"
+                                 ],
+                        "text":  "On Sysclient0660 agent DS29HY41, used invoke_wmi to pivot to domain controller 1. XH32VTK5 checks in on IP 142.20.58.149"
+                    },
+                    {
+                        "host":  "SysClient0201",
+                        "epoch":  1569261961,
+                        "date":  "09/23/19",
+                        "time":  "14:06:01",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "Killed agents Sysclient0201 LUAVR71T, Sysclient0402 NEK5H8GX, and Sysclient0660 DS29HY41"
+                    },
+                    {
+                        "host":  "SysClient0402",
+                        "epoch":  1569261961,
+                        "date":  "09/23/19",
+                        "time":  "14:06:01",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "Killed agents Sysclient0201 LUAVR71T, Sysclient0402 NEK5H8GX, and Sysclient0660 DS29HY41"
+                    },
+                    {
+                        "host":  "SysClient0660",
+                        "epoch":  1569261961,
+                        "date":  "09/23/19",
+                        "time":  "14:06:01",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "Killed agents Sysclient0201 LUAVR71T, Sysclient0402 NEK5H8GX, and Sysclient0660 DS29HY41"
+                    },
+                    {
+                        "host":  "SysClient0104",
+                        "epoch":  1569264313,
+                        "date":  "09/23/19",
+                        "time":  "14:45:13",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, used Invoke_wmi to spread to: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0170",
+                        "epoch":  1569264313,
+                        "date":  "09/23/19",
+                        "time":  "14:45:13",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, used Invoke_wmi to spread to: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0205",
+                        "epoch":  1569264313,
+                        "date":  "09/23/19",
+                        "time":  "14:45:13",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, used Invoke_wmi to spread to: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0255",
+                        "epoch":  1569264313,
+                        "date":  "09/23/19",
+                        "time":  "14:45:13",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, used Invoke_wmi to spread to: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0321",
+                        "epoch":  1569264313,
+                        "date":  "09/23/19",
+                        "time":  "14:45:13",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, used Invoke_wmi to spread to: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0355",
+                        "epoch":  1569264313,
+                        "date":  "09/23/19",
+                        "time":  "14:45:13",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, used Invoke_wmi to spread to: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0419",
+                        "epoch":  1569264313,
+                        "date":  "09/23/19",
+                        "time":  "14:45:13",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, used Invoke_wmi to spread to: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0462",
+                        "epoch":  1569264313,
+                        "date":  "09/23/19",
+                        "time":  "14:45:13",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, used Invoke_wmi to spread to: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0503",
+                        "epoch":  1569264313,
+                        "date":  "09/23/19",
+                        "time":  "14:45:13",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, used Invoke_wmi to spread to: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0559",
+                        "epoch":  1569264313,
+                        "date":  "09/23/19",
+                        "time":  "14:45:13",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, used Invoke_wmi to spread to: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0609",
+                        "epoch":  1569264313,
+                        "date":  "09/23/19",
+                        "time":  "14:45:13",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, used Invoke_wmi to spread to: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0771",
+                        "epoch":  1569264313,
+                        "date":  "09/23/19",
+                        "time":  "14:45:13",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, used Invoke_wmi to spread to: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0874",
+                        "epoch":  1569264313,
+                        "date":  "09/23/19",
+                        "time":  "14:45:13",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, used Invoke_wmi to spread to: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0955",
+                        "epoch":  1569264313,
+                        "date":  "09/23/19",
+                        "time":  "14:45:13",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, used Invoke_wmi to spread to: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0104",
+                        "epoch":  1569266673,
+                        "date":  "09/23/19",
+                        "time":  "15:24:33",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0170",
+                        "epoch":  1569266673,
+                        "date":  "09/23/19",
+                        "time":  "15:24:33",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0205",
+                        "epoch":  1569266673,
+                        "date":  "09/23/19",
+                        "time":  "15:24:33",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0255",
+                        "epoch":  1569266673,
+                        "date":  "09/23/19",
+                        "time":  "15:24:33",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0321",
+                        "epoch":  1569266673,
+                        "date":  "09/23/19",
+                        "time":  "15:24:33",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0355",
+                        "epoch":  1569266673,
+                        "date":  "09/23/19",
+                        "time":  "15:24:33",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0419",
+                        "epoch":  1569266673,
+                        "date":  "09/23/19",
+                        "time":  "15:24:33",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0462",
+                        "epoch":  1569266673,
+                        "date":  "09/23/19",
+                        "time":  "15:24:33",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0503",
+                        "epoch":  1569266673,
+                        "date":  "09/23/19",
+                        "time":  "15:24:33",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0559",
+                        "epoch":  1569266673,
+                        "date":  "09/23/19",
+                        "time":  "15:24:33",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0609",
+                        "epoch":  1569266673,
+                        "date":  "09/23/19",
+                        "time":  "15:24:33",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0771",
+                        "epoch":  1569266673,
+                        "date":  "09/23/19",
+                        "time":  "15:24:33",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0874",
+                        "epoch":  1569266673,
+                        "date":  "09/23/19",
+                        "time":  "15:24:33",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0955",
+                        "epoch":  1569266673,
+                        "date":  "09/23/19",
+                        "time":  "15:24:33",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+                    },
+                    {
+                        "host":  "SysClient0010",
+                        "epoch":  1569267000,
+                        "date":  "09/23/19",
+                        "time":  "15:30:00",
+                        "tags":  [
+                                     "privilege_escalation",
+                                     "persistence",
+                                     "lateral_movement",
+                                     "discovery_host",
+                                     "discovery_account",
+                                     "exfiltration",
+                                     "c2",
+                                     "defense_evasion",
+                                     "execution"
+                                 ],
+                        "text":  "On Sysclient0201, removed registry persistence at HKCU:Software\\Microsoft\\Windows\\CurrentVersion\\Debug stagers. Once checked in, the agents were used to switch to a separate PowerShell Empire server, with configurations that were modified from default settings and were sent over https (port 443). Deathstar was used to automate enumerating the domain and obtaining an elevated shell on the domain controller. The DC agent was used to pivot back to original target to obtain an elevated agent. Persistence was established using WMI subscriptions to call back at 10:00 or within 5 minutes of boot. Ran modules to enumerate the local system looking for vulnerabilities or important files. Uploaded plink and created completed local port forwarding with SSH to the attacker server. Forwarded port 3389 to allow RDP into systemia through any network security devices. RDP’ed into target and used netcat to exfiltrate data. Used RDP to tunnel through two other hosts. On the final host, connected network share and exfiltrated a majority of files via netcat. Research Projects Agency or the U.S. Government. Cleaned up files and shut down RDP sessions. Used existing agent on DC to re-infect five workstations for overnight C2. Listener information: PowerShell launcher string -- \"powershell -NoProfile -Sta -WindowStyle 1 - EncodedCommand\" DefaultProfile -- \"/news/current.php/login/default.php/admin/process.jsp|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36\" DefaultDelay Between connections -- 30 seconds ServerVersion -- Apache IP: 202.6.172.98 Client  Agent  IP  PID Sysclient0501  4BW2MKUF  142.20.57.246  648 Sysclient0501  9HUGDCRL  142.20.57.246  5076 Sysclient0501  6H8SZPCW  142.20.57.246  1748 Sysclient0811  DS8V3RNH  142.20.59.44  3780 DC1.systemia.com VUBW3KYE  142.20.61.130  3880 Sysclient0010  6FEZ8L4N  142.20.56.11  3584 Sysclient0069  EMK3VW7F  142.20.56.70  4152 Sysclient0203  UXCSTKZ9  142.20.56.204  5388 Sysclient0358  PE54DBYX  142.20.57.103  2984 Sysclient0618  73FCWS1G  142.20.58.107  4060 Sysclient0851  5BUEZALX  142.20.59.84  4652"
+                    },
+                    {
+                        "host":  "SysClient0069",
+                        "epoch":  1569267000,
+                        "date":  "09/23/19",
+                        "time":  "15:30:00",
+                        "tags":  [
+                                     "privilege_escalation",
+                                     "persistence",
+                                     "lateral_movement",
+                                     "discovery_host",
+                                     "discovery_account",
+                                     "exfiltration",
+                                     "c2",
+                                     "defense_evasion",
+                                     "execution"
+                                 ],
+                        "text":  "On Sysclient0201, removed registry persistence at HKCU:Software\\Microsoft\\Windows\\CurrentVersion\\Debug stagers. Once checked in, the agents were used to switch to a separate PowerShell Empire server, with configurations that were modified from default settings and were sent over https (port 443). Deathstar was used to automate enumerating the domain and obtaining an elevated shell on the domain controller. The DC agent was used to pivot back to original target to obtain an elevated agent. Persistence was established using WMI subscriptions to call back at 10:00 or within 5 minutes of boot. Ran modules to enumerate the local system looking for vulnerabilities or important files. Uploaded plink and created completed local port forwarding with SSH to the attacker server. Forwarded port 3389 to allow RDP into systemia through any network security devices. RDP’ed into target and used netcat to exfiltrate data. Used RDP to tunnel through two other hosts. On the final host, connected network share and exfiltrated a majority of files via netcat. Research Projects Agency or the U.S. Government. Cleaned up files and shut down RDP sessions. Used existing agent on DC to re-infect five workstations for overnight C2. Listener information: PowerShell launcher string -- \"powershell -NoProfile -Sta -WindowStyle 1 - EncodedCommand\" DefaultProfile -- \"/news/current.php/login/default.php/admin/process.jsp|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36\" DefaultDelay Between connections -- 30 seconds ServerVersion -- Apache IP: 202.6.172.98 Client  Agent  IP  PID Sysclient0501  4BW2MKUF  142.20.57.246  648 Sysclient0501  9HUGDCRL  142.20.57.246  5076 Sysclient0501  6H8SZPCW  142.20.57.246  1748 Sysclient0811  DS8V3RNH  142.20.59.44  3780 DC1.systemia.com VUBW3KYE  142.20.61.130  3880 Sysclient0010  6FEZ8L4N  142.20.56.11  3584 Sysclient0069  EMK3VW7F  142.20.56.70  4152 Sysclient0203  UXCSTKZ9  142.20.56.204  5388 Sysclient0358  PE54DBYX  142.20.57.103  2984 Sysclient0618  73FCWS1G  142.20.58.107  4060 Sysclient0851  5BUEZALX  142.20.59.84  4652"
+                    },
+                    {
+                        "host":  "SysClient0201",
+                        "epoch":  1569267000,
+                        "date":  "09/23/19",
+                        "time":  "15:30:00",
+                        "tags":  [
+                                     "privilege_escalation",
+                                     "persistence",
+                                     "lateral_movement",
+                                     "discovery_host",
+                                     "discovery_account",
+                                     "exfiltration",
+                                     "c2",
+                                     "defense_evasion",
+                                     "execution"
+                                 ],
+                        "text":  "On Sysclient0201, removed registry persistence at HKCU:Software\\Microsoft\\Windows\\CurrentVersion\\Debug stagers. Once checked in, the agents were used to switch to a separate PowerShell Empire server, with configurations that were modified from default settings and were sent over https (port 443). Deathstar was used to automate enumerating the domain and obtaining an elevated shell on the domain controller. The DC agent was used to pivot back to original target to obtain an elevated agent. Persistence was established using WMI subscriptions to call back at 10:00 or within 5 minutes of boot. Ran modules to enumerate the local system looking for vulnerabilities or important files. Uploaded plink and created completed local port forwarding with SSH to the attacker server. Forwarded port 3389 to allow RDP into systemia through any network security devices. RDP’ed into target and used netcat to exfiltrate data. Used RDP to tunnel through two other hosts. On the final host, connected network share and exfiltrated a majority of files via netcat. Research Projects Agency or the U.S. Government. Cleaned up files and shut down RDP sessions. Used existing agent on DC to re-infect five workstations for overnight C2. Listener information: PowerShell launcher string -- \"powershell -NoProfile -Sta -WindowStyle 1 - EncodedCommand\" DefaultProfile -- \"/news/current.php/login/default.php/admin/process.jsp|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36\" DefaultDelay Between connections -- 30 seconds ServerVersion -- Apache IP: 202.6.172.98 Client  Agent  IP  PID Sysclient0501  4BW2MKUF  142.20.57.246  648 Sysclient0501  9HUGDCRL  142.20.57.246  5076 Sysclient0501  6H8SZPCW  142.20.57.246  1748 Sysclient0811  DS8V3RNH  142.20.59.44  3780 DC1.systemia.com VUBW3KYE  142.20.61.130  3880 Sysclient0010  6FEZ8L4N  142.20.56.11  3584 Sysclient0069  EMK3VW7F  142.20.56.70  4152 Sysclient0203  UXCSTKZ9  142.20.56.204  5388 Sysclient0358  PE54DBYX  142.20.57.103  2984 Sysclient0618  73FCWS1G  142.20.58.107  4060 Sysclient0851  5BUEZALX  142.20.59.84  4652"
+                    },
+                    {
+                        "host":  "SysClient0203",
+                        "epoch":  1569267000,
+                        "date":  "09/23/19",
+                        "time":  "15:30:00",
+                        "tags":  [
+                                     "privilege_escalation",
+                                     "persistence",
+                                     "lateral_movement",
+                                     "discovery_host",
+                                     "discovery_account",
+                                     "exfiltration",
+                                     "c2",
+                                     "defense_evasion",
+                                     "execution"
+                                 ],
+                        "text":  "On Sysclient0201, removed registry persistence at HKCU:Software\\Microsoft\\Windows\\CurrentVersion\\Debug stagers. Once checked in, the agents were used to switch to a separate PowerShell Empire server, with configurations that were modified from default settings and were sent over https (port 443). Deathstar was used to automate enumerating the domain and obtaining an elevated shell on the domain controller. The DC agent was used to pivot back to original target to obtain an elevated agent. Persistence was established using WMI subscriptions to call back at 10:00 or within 5 minutes of boot. Ran modules to enumerate the local system looking for vulnerabilities or important files. Uploaded plink and created completed local port forwarding with SSH to the attacker server. Forwarded port 3389 to allow RDP into systemia through any network security devices. RDP’ed into target and used netcat to exfiltrate data. Used RDP to tunnel through two other hosts. On the final host, connected network share and exfiltrated a majority of files via netcat. Research Projects Agency or the U.S. Government. Cleaned up files and shut down RDP sessions. Used existing agent on DC to re-infect five workstations for overnight C2. Listener information: PowerShell launcher string -- \"powershell -NoProfile -Sta -WindowStyle 1 - EncodedCommand\" DefaultProfile -- \"/news/current.php/login/default.php/admin/process.jsp|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36\" DefaultDelay Between connections -- 30 seconds ServerVersion -- Apache IP: 202.6.172.98 Client  Agent  IP  PID Sysclient0501  4BW2MKUF  142.20.57.246  648 Sysclient0501  9HUGDCRL  142.20.57.246  5076 Sysclient0501  6H8SZPCW  142.20.57.246  1748 Sysclient0811  DS8V3RNH  142.20.59.44  3780 DC1.systemia.com VUBW3KYE  142.20.61.130  3880 Sysclient0010  6FEZ8L4N  142.20.56.11  3584 Sysclient0069  EMK3VW7F  142.20.56.70  4152 Sysclient0203  UXCSTKZ9  142.20.56.204  5388 Sysclient0358  PE54DBYX  142.20.57.103  2984 Sysclient0618  73FCWS1G  142.20.58.107  4060 Sysclient0851  5BUEZALX  142.20.59.84  4652"
+                    },
+                    {
+                        "host":  "SysClient0358",
+                        "epoch":  1569267000,
+                        "date":  "09/23/19",
+                        "time":  "15:30:00",
+                        "tags":  [
+                                     "privilege_escalation",
+                                     "persistence",
+                                     "lateral_movement",
+                                     "discovery_host",
+                                     "discovery_account",
+                                     "exfiltration",
+                                     "c2",
+                                     "defense_evasion",
+                                     "execution"
+                                 ],
+                        "text":  "On Sysclient0201, removed registry persistence at HKCU:Software\\Microsoft\\Windows\\CurrentVersion\\Debug stagers. Once checked in, the agents were used to switch to a separate PowerShell Empire server, with configurations that were modified from default settings and were sent over https (port 443). Deathstar was used to automate enumerating the domain and obtaining an elevated shell on the domain controller. The DC agent was used to pivot back to original target to obtain an elevated agent. Persistence was established using WMI subscriptions to call back at 10:00 or within 5 minutes of boot. Ran modules to enumerate the local system looking for vulnerabilities or important files. Uploaded plink and created completed local port forwarding with SSH to the attacker server. Forwarded port 3389 to allow RDP into systemia through any network security devices. RDP’ed into target and used netcat to exfiltrate data. Used RDP to tunnel through two other hosts. On the final host, connected network share and exfiltrated a majority of files via netcat. Research Projects Agency or the U.S. Government. Cleaned up files and shut down RDP sessions. Used existing agent on DC to re-infect five workstations for overnight C2. Listener information: PowerShell launcher string -- \"powershell -NoProfile -Sta -WindowStyle 1 - EncodedCommand\" DefaultProfile -- \"/news/current.php/login/default.php/admin/process.jsp|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36\" DefaultDelay Between connections -- 30 seconds ServerVersion -- Apache IP: 202.6.172.98 Client  Agent  IP  PID Sysclient0501  4BW2MKUF  142.20.57.246  648 Sysclient0501  9HUGDCRL  142.20.57.246  5076 Sysclient0501  6H8SZPCW  142.20.57.246  1748 Sysclient0811  DS8V3RNH  142.20.59.44  3780 DC1.systemia.com VUBW3KYE  142.20.61.130  3880 Sysclient0010  6FEZ8L4N  142.20.56.11  3584 Sysclient0069  EMK3VW7F  142.20.56.70  4152 Sysclient0203  UXCSTKZ9  142.20.56.204  5388 Sysclient0358  PE54DBYX  142.20.57.103  2984 Sysclient0618  73FCWS1G  142.20.58.107  4060 Sysclient0851  5BUEZALX  142.20.59.84  4652"
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569267000,
+                        "date":  "09/23/19",
+                        "time":  "15:30:00",
+                        "tags":  [
+                                     "privilege_escalation",
+                                     "persistence",
+                                     "lateral_movement",
+                                     "discovery_host",
+                                     "discovery_account",
+                                     "exfiltration",
+                                     "c2",
+                                     "defense_evasion",
+                                     "execution"
+                                 ],
+                        "text":  "On Sysclient0201, removed registry persistence at HKCU:Software\\Microsoft\\Windows\\CurrentVersion\\Debug stagers. Once checked in, the agents were used to switch to a separate PowerShell Empire server, with configurations that were modified from default settings and were sent over https (port 443). Deathstar was used to automate enumerating the domain and obtaining an elevated shell on the domain controller. The DC agent was used to pivot back to original target to obtain an elevated agent. Persistence was established using WMI subscriptions to call back at 10:00 or within 5 minutes of boot. Ran modules to enumerate the local system looking for vulnerabilities or important files. Uploaded plink and created completed local port forwarding with SSH to the attacker server. Forwarded port 3389 to allow RDP into systemia through any network security devices. RDP’ed into target and used netcat to exfiltrate data. Used RDP to tunnel through two other hosts. On the final host, connected network share and exfiltrated a majority of files via netcat. Research Projects Agency or the U.S. Government. Cleaned up files and shut down RDP sessions. Used existing agent on DC to re-infect five workstations for overnight C2. Listener information: PowerShell launcher string -- \"powershell -NoProfile -Sta -WindowStyle 1 - EncodedCommand\" DefaultProfile -- \"/news/current.php/login/default.php/admin/process.jsp|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36\" DefaultDelay Between connections -- 30 seconds ServerVersion -- Apache IP: 202.6.172.98 Client  Agent  IP  PID Sysclient0501  4BW2MKUF  142.20.57.246  648 Sysclient0501  9HUGDCRL  142.20.57.246  5076 Sysclient0501  6H8SZPCW  142.20.57.246  1748 Sysclient0811  DS8V3RNH  142.20.59.44  3780 DC1.systemia.com VUBW3KYE  142.20.61.130  3880 Sysclient0010  6FEZ8L4N  142.20.56.11  3584 Sysclient0069  EMK3VW7F  142.20.56.70  4152 Sysclient0203  UXCSTKZ9  142.20.56.204  5388 Sysclient0358  PE54DBYX  142.20.57.103  2984 Sysclient0618  73FCWS1G  142.20.58.107  4060 Sysclient0851  5BUEZALX  142.20.59.84  4652"
+                    },
+                    {
+                        "host":  "SysClient0618",
+                        "epoch":  1569267000,
+                        "date":  "09/23/19",
+                        "time":  "15:30:00",
+                        "tags":  [
+                                     "privilege_escalation",
+                                     "persistence",
+                                     "lateral_movement",
+                                     "discovery_host",
+                                     "discovery_account",
+                                     "exfiltration",
+                                     "c2",
+                                     "defense_evasion",
+                                     "execution"
+                                 ],
+                        "text":  "On Sysclient0201, removed registry persistence at HKCU:Software\\Microsoft\\Windows\\CurrentVersion\\Debug stagers. Once checked in, the agents were used to switch to a separate PowerShell Empire server, with configurations that were modified from default settings and were sent over https (port 443). Deathstar was used to automate enumerating the domain and obtaining an elevated shell on the domain controller. The DC agent was used to pivot back to original target to obtain an elevated agent. Persistence was established using WMI subscriptions to call back at 10:00 or within 5 minutes of boot. Ran modules to enumerate the local system looking for vulnerabilities or important files. Uploaded plink and created completed local port forwarding with SSH to the attacker server. Forwarded port 3389 to allow RDP into systemia through any network security devices. RDP’ed into target and used netcat to exfiltrate data. Used RDP to tunnel through two other hosts. On the final host, connected network share and exfiltrated a majority of files via netcat. Research Projects Agency or the U.S. Government. Cleaned up files and shut down RDP sessions. Used existing agent on DC to re-infect five workstations for overnight C2. Listener information: PowerShell launcher string -- \"powershell -NoProfile -Sta -WindowStyle 1 - EncodedCommand\" DefaultProfile -- \"/news/current.php/login/default.php/admin/process.jsp|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36\" DefaultDelay Between connections -- 30 seconds ServerVersion -- Apache IP: 202.6.172.98 Client  Agent  IP  PID Sysclient0501  4BW2MKUF  142.20.57.246  648 Sysclient0501  9HUGDCRL  142.20.57.246  5076 Sysclient0501  6H8SZPCW  142.20.57.246  1748 Sysclient0811  DS8V3RNH  142.20.59.44  3780 DC1.systemia.com VUBW3KYE  142.20.61.130  3880 Sysclient0010  6FEZ8L4N  142.20.56.11  3584 Sysclient0069  EMK3VW7F  142.20.56.70  4152 Sysclient0203  UXCSTKZ9  142.20.56.204  5388 Sysclient0358  PE54DBYX  142.20.57.103  2984 Sysclient0618  73FCWS1G  142.20.58.107  4060 Sysclient0851  5BUEZALX  142.20.59.84  4652"
+                    },
+                    {
+                        "host":  "SysClient0811",
+                        "epoch":  1569267000,
+                        "date":  "09/23/19",
+                        "time":  "15:30:00",
+                        "tags":  [
+                                     "privilege_escalation",
+                                     "persistence",
+                                     "lateral_movement",
+                                     "discovery_host",
+                                     "discovery_account",
+                                     "exfiltration",
+                                     "c2",
+                                     "defense_evasion",
+                                     "execution"
+                                 ],
+                        "text":  "On Sysclient0201, removed registry persistence at HKCU:Software\\Microsoft\\Windows\\CurrentVersion\\Debug stagers. Once checked in, the agents were used to switch to a separate PowerShell Empire server, with configurations that were modified from default settings and were sent over https (port 443). Deathstar was used to automate enumerating the domain and obtaining an elevated shell on the domain controller. The DC agent was used to pivot back to original target to obtain an elevated agent. Persistence was established using WMI subscriptions to call back at 10:00 or within 5 minutes of boot. Ran modules to enumerate the local system looking for vulnerabilities or important files. Uploaded plink and created completed local port forwarding with SSH to the attacker server. Forwarded port 3389 to allow RDP into systemia through any network security devices. RDP’ed into target and used netcat to exfiltrate data. Used RDP to tunnel through two other hosts. On the final host, connected network share and exfiltrated a majority of files via netcat. Research Projects Agency or the U.S. Government. Cleaned up files and shut down RDP sessions. Used existing agent on DC to re-infect five workstations for overnight C2. Listener information: PowerShell launcher string -- \"powershell -NoProfile -Sta -WindowStyle 1 - EncodedCommand\" DefaultProfile -- \"/news/current.php/login/default.php/admin/process.jsp|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36\" DefaultDelay Between connections -- 30 seconds ServerVersion -- Apache IP: 202.6.172.98 Client  Agent  IP  PID Sysclient0501  4BW2MKUF  142.20.57.246  648 Sysclient0501  9HUGDCRL  142.20.57.246  5076 Sysclient0501  6H8SZPCW  142.20.57.246  1748 Sysclient0811  DS8V3RNH  142.20.59.44  3780 DC1.systemia.com VUBW3KYE  142.20.61.130  3880 Sysclient0010  6FEZ8L4N  142.20.56.11  3584 Sysclient0069  EMK3VW7F  142.20.56.70  4152 Sysclient0203  UXCSTKZ9  142.20.56.204  5388 Sysclient0358  PE54DBYX  142.20.57.103  2984 Sysclient0618  73FCWS1G  142.20.58.107  4060 Sysclient0851  5BUEZALX  142.20.59.84  4652"
+                    },
+                    {
+                        "host":  "SysClient0851",
+                        "epoch":  1569267000,
+                        "date":  "09/23/19",
+                        "time":  "15:30:00",
+                        "tags":  [
+                                     "privilege_escalation",
+                                     "persistence",
+                                     "lateral_movement",
+                                     "discovery_host",
+                                     "discovery_account",
+                                     "exfiltration",
+                                     "c2",
+                                     "defense_evasion",
+                                     "execution"
+                                 ],
+                        "text":  "On Sysclient0201, removed registry persistence at HKCU:Software\\Microsoft\\Windows\\CurrentVersion\\Debug stagers. Once checked in, the agents were used to switch to a separate PowerShell Empire server, with configurations that were modified from default settings and were sent over https (port 443). Deathstar was used to automate enumerating the domain and obtaining an elevated shell on the domain controller. The DC agent was used to pivot back to original target to obtain an elevated agent. Persistence was established using WMI subscriptions to call back at 10:00 or within 5 minutes of boot. Ran modules to enumerate the local system looking for vulnerabilities or important files. Uploaded plink and created completed local port forwarding with SSH to the attacker server. Forwarded port 3389 to allow RDP into systemia through any network security devices. RDP’ed into target and used netcat to exfiltrate data. Used RDP to tunnel through two other hosts. On the final host, connected network share and exfiltrated a majority of files via netcat. Research Projects Agency or the U.S. Government. Cleaned up files and shut down RDP sessions. Used existing agent on DC to re-infect five workstations for overnight C2. Listener information: PowerShell launcher string -- \"powershell -NoProfile -Sta -WindowStyle 1 - EncodedCommand\" DefaultProfile -- \"/news/current.php/login/default.php/admin/process.jsp|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36\" DefaultDelay Between connections -- 30 seconds ServerVersion -- Apache IP: 202.6.172.98 Client  Agent  IP  PID Sysclient0501  4BW2MKUF  142.20.57.246  648 Sysclient0501  9HUGDCRL  142.20.57.246  5076 Sysclient0501  6H8SZPCW  142.20.57.246  1748 Sysclient0811  DS8V3RNH  142.20.59.44  3780 DC1.systemia.com VUBW3KYE  142.20.61.130  3880 Sysclient0010  6FEZ8L4N  142.20.56.11  3584 Sysclient0069  EMK3VW7F  142.20.56.70  4152 Sysclient0203  UXCSTKZ9  142.20.56.204  5388 Sysclient0358  PE54DBYX  142.20.57.103  2984 Sysclient0618  73FCWS1G  142.20.58.107  4060 Sysclient0851  5BUEZALX  142.20.59.84  4652"
+                    },
+                    {
+                        "host":  "SysClient0811",
+                        "epoch":  1569335336,
+                        "date":  "09/24/19",
+                        "time":  "10:28:56",
+                        "tags":  [
+                                     "initial_access"
+                                 ],
+                        "text":  "Sent email with malicious word document to bantonio@systemia.com rsantilli@systemia.com on Sysclient0811 from sgerard@ameblo.jp"
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569335811,
+                        "date":  "09/24/19",
+                        "time":  "10:36:51",
+                        "tags":  [
+                                     "initial_access"
+                                 ],
+                        "text":  "On Sysclient0501, opened malicious attachment named payroll.docx. Agent K3G1U8DN checks in."
+                    },
+                    {
+                        "host":  "SysClient0811",
+                        "epoch":  1569336014,
+                        "date":  "09/24/19",
+                        "time":  "10:40:14",
+                        "tags":  [
+                                     "initial_access"
+                                 ],
+                        "text":  "On Sysclient0811, opened malicious attachment named payroll.docx. Agent DS8V3RNH checks in."
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569336362,
+                        "date":  "09/24/19",
+                        "time":  "10:46:02",
+                        "tags":  [
+                                     "lateral_movement",
+                                     "c2",
+                                     "execution"
+                                 ],
+                        "text":  "On Sysclient0501 agent K3G1U8DN, injected PowerShell script to pivot to PowerShell Empire on  sports.com 202.6.172.98 port 443, Agent 4BW2MKUF checks in."
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569336709,
+                        "date":  "09/24/19",
+                        "time":  "10:51:49",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "Killed agent K3G1U8DN on Sysclient0501"
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569337452,
+                        "date":  "09/24/19",
+                        "time":  "11:04:12",
+                        "tags":  [
+                                     "credential_access",
+                                     "c2"
+                                 ],
+                        "text":  "Deathstar via Sysclient0501 agent 4BW2MKUF, obtains domain SID"
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569337475,
+                        "date":  "09/24/19",
+                        "time":  "11:04:35",
+                        "tags":  [
+                                     "discovery_account",
+                                     "c2"
+                                 ],
+                        "text":  "Deathstar via Sysclient0501 agent 4BW2MKUF, obtains list of 43 Domain Admins"
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569337539,
+                        "date":  "09/24/19",
+                        "time":  "11:05:39",
+                        "tags":  [
+                                     "discovery_host",
+                                     "c2"
+                                 ],
+                        "text":  "Deathstar via Sysclient0501 agent 4BW2MKUF, queried to find domain controllers"
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569337748,
+                        "date":  "09/24/19",
+                        "time":  "11:09:08",
+                        "tags":  [
+                                     "lateral_movement",
+                                     "c2"
+                                 ],
+                        "text":  "Deathstar via Sysclient0501 agent 4BW2MKUF, started lateral movement"
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569337762,
+                        "date":  "09/24/19",
+                        "time":  "11:09:22",
+                        "tags":  [
+                                     "privilege_escalation",
+                                     "c2"
+                                 ],
+                        "text":  "Deathstar via Sysclient0501 agent 4BW2MKUF, started domain privilege escalation Research Projects Agency or the U.S. Government."
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569337784,
+                        "date":  "09/24/19",
+                        "time":  "11:09:44",
+                        "tags":  [
+                                     "privilege_escalation",
+                                     "c2"
+                                 ],
+                        "text":  "Deathstar via Sysclient0501 agent 4BW2MKUF, attempting to elevate using bypassuac_eventvwr"
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569337832,
+                        "date":  "09/24/19",
+                        "time":  "11:10:32",
+                        "tags":  [
+                                     "credential_access",
+                                     "privilege_escalation",
+                                     "c2"
+                                 ],
+                        "text":  "Deathstar via Sysclient0501 agent 4BW2MKUF, searched for GPOs containing credentials using GPP SYSVOL privilege escalation"
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569338012,
+                        "date":  "09/24/19",
+                        "time":  "11:13:32",
+                        "tags":  [
+                                     "discovery_host",
+                                     "c2"
+                                 ],
+                        "text":  "Deathstar via Sysclient0501 agent 4BW2MKUF, discovered current security context has admin to 1025 hosts."
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569338419,
+                        "date":  "09/24/19",
+                        "time":  "11:20:19",
+                        "tags":  [
+                                     "privilege_escalation",
+                                     "lateral_movement",
+                                     "discovery_host"
+                                 ],
+                        "text":  "On Sysclient0501 agent 4BW2MKUF, installed elevated agent on domain controller. Agent VUBW3KYE on DC1.systemia.com checks in."
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569338607,
+                        "date":  "09/24/19",
+                        "time":  "11:23:27",
+                        "tags":  [
+                                     "privilege_escalation",
+                                     "persistence"
+                                 ],
+                        "text":  "On Sysclient0501 agent 4BW2MKUF, attempted to bypassed UAC with module privesc/bypassuac_env which modifies registry entry of windir value in environment"
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569338625,
+                        "date":  "09/24/19",
+                        "time":  "11:23:45",
+                        "tags":  [
+                                     "privilege_escalation"
+                                 ],
+                        "text":  "On Sysclient0501 agent 4BW2MKUF, privesc failed."
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569338706,
+                        "date":  "09/24/19",
+                        "time":  "11:25:06",
+                        "tags":  [
+                                     "privilege_escalation"
+                                 ],
+                        "text":  "On Sysclient0501 agent 4BW2MKUF, attempted bypassuac with privesc/bypassuac_fodhelper. Failed."
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569338794,
+                        "date":  "09/24/19",
+                        "time":  "11:26:34",
+                        "tags":  [
+                                     "privilege_escalation",
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On Sysclient0501 agent 4BW2MKUF, used invoke_wmi on localhost to obtain elevated Agent. Failed to elevated, normal agent 9HUGDCRL checked in."
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569339077,
+                        "date":  "09/24/19",
+                        "time":  "11:31:17",
+                        "tags":  [
+                                     "privilege_escalation",
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On agent VUBW3KYE, attempted to pivot to obtain elevated agent using WMI. Got access denied for DC1.systemia.com Sysclient0501 and 0502"
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569339195,
+                        "date":  "09/24/19",
+                        "time":  "11:33:15",
+                        "tags":  [
+                                     "credential_access",
+                                     "privilege_escalation",
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On agent VUBW3KYE, pivoted to Sysclient0501 with an elevated agent by usign administrator DC1.systemia.com credentials. Agent 6H8SZPCW checks in."
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569339296,
+                        "date":  "09/24/19",
+                        "time":  "11:34:56",
+                        "tags":  [
+                                     "persistence",
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On Sysclient0501 agent 6H8SZPCW, set persistence using WMI subscription. Set to reach back at 10:00 every day or within 5 minutes of boot."
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569339353,
+                        "date":  "09/24/19",
+                        "time":  "11:35:53",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "Killed agents Sysclient0501 4BW2MKUF and Sysclient0501 9HUGDCRL"
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569339455,
+                        "date":  "09/24/19",
+                        "time":  "11:37:35",
+                        "tags":  [
+                                     "discovery_account",
+                                     "collection"
+                                 ],
+                        "text":  "On Sysclient0501 agent 6H8SZPCW, used findtrusteddocuments to enumerate registry to determine any trusted documents and trusted locations."
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569339578,
+                        "date":  "09/24/19",
+                        "time":  "11:39:38",
+                        "tags":  [
+                                     "discovery_host"
+                                 ],
+                        "text":  "On Sysclient0501 agent 6H8SZPCW, used winenum script with keywords \"important, Secret, classified\" to search files and obtain host information"
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569339713,
+                        "date":  "09/24/19",
+                        "time":  "11:41:53",
+                        "tags":  [
+                                     "privilege_escalation",
+                                     "discovery_network",
+                                     "exfiltration",
+                                     "execution"
+                                 ],
+                        "text":  "On Sysclient0501 agent 6H8SZPCW, ran script to check for windows privilege escalation vectors. 09/24/19 11:45:13 -- On Sysclient0501 agent 6H8SZPCW, uploaded plink.exe"
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569344703,
+                        "date":  "09/24/19",
+                        "time":  "13:05:03",
+                        "tags":  [
+                                     "exfiltration"
+                                 ],
+                        "text":  "On Sysclient0501 agent 6H8SZPCW, validated upload worked with ls command"
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569345083,
+                        "date":  "09/24/19",
+                        "time":  "13:11:23",
+                        "tags":  [
+                                     "lateral_movement",
+                                     "c2"
+                                 ],
+                        "text":  "On Sysclient0501 agent 6H8SZPCW, started reverse SSH connection to port forward RDP port to attacker system. Lost contact with agent 6H8SZPCW."
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569345578,
+                        "date":  "09/24/19",
+                        "time":  "13:19:38",
+                        "tags":  [
+                                     "lateral_movement",
+                                     "c2"
+                                 ],
+                        "text":  "On Sysclient0501, connected via RDP to host via forwarded port using sysadmin account."
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569346017,
+                        "date":  "09/24/19",
+                        "time":  "13:26:57",
+                        "tags":  [
+                                     "lateral_movement",
+                                     "exfiltration"
+                                 ],
+                        "text":  "On Sysclient0501 via RDP session, downloaded fileTransfer1000.exe (nc.exe) from news.com:8080 via chrome."
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569346289,
+                        "date":  "09/24/19",
+                        "time":  "13:31:29",
+                        "tags":  [
+                                     "lateral_movement",
+                                     "collection",
+                                     "exfiltration"
+                                 ],
+                        "text":  "On Sysclient0501 via RDP session, compressed documents in C:\\documents for exfiltration."
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569347074,
+                        "date":  "09/24/19",
+                        "time":  "13:44:34",
+                        "tags":  [
+                                     "lateral_movement",
+                                     "collection",
+                                     "exfiltration"
+                                 ],
+                        "text":  "On Sysclient0501 via RDP session, exfiltrated export.zip to port 9999 using fileTransfer1000.exe (nc.exe) news.com"
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569347112,
+                        "date":  "09/24/19",
+                        "time":  "13:45:12",
+                        "tags":  [
+                                     "lateral_movement",
+                                     "collection",
+                                     "exfiltration",
+                                     "defense_evasion"
+                                 ],
+                        "text":  "On Sysclient0501 via RDP session, cleaned up fileTransfer1000.exe and export.zip"
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569347218,
+                        "date":  "09/24/19",
+                        "time":  "13:46:58",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On Sysclient0501 via RDP session, RDPed to Sysclient0974 Research Projects Agency or the U.S. Government."
+                    },
+                    {
+                        "host":  "SysClient0974",
+                        "epoch":  1569347218,
+                        "date":  "09/24/19",
+                        "time":  "13:46:58",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On Sysclient0501 via RDP session, RDPed to Sysclient0974 Research Projects Agency or the U.S. Government."
+                    },
+                    {
+                        "host":  "SysClient0974",
+                        "epoch":  1569347505,
+                        "date":  "09/24/19",
+                        "time":  "13:51:45",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On Sysclient0974 via RDP session, browsed files in C:\\documents"
+                    },
+                    {
+                        "host":  "SysClient0005",
+                        "epoch":  1569347683,
+                        "date":  "09/24/19",
+                        "time":  "13:54:43",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On Sysclient0974 via RDP session, RDPed to Sysclient0005"
+                    },
+                    {
+                        "host":  "SysClient0974",
+                        "epoch":  1569347683,
+                        "date":  "09/24/19",
+                        "time":  "13:54:43",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On Sysclient0974 via RDP session, RDPed to Sysclient0005"
+                    },
+                    {
+                        "host":  "SysClient0005",
+                        "epoch":  1569348366,
+                        "date":  "09/24/19",
+                        "time":  "14:06:06",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On Sysclient0005 via RDP session, mounted network share \\\\142.20.61.135\\share"
+                    },
+                    {
+                        "host":  "SysClient0005",
+                        "epoch":  1569350071,
+                        "date":  "09/24/19",
+                        "time":  "14:34:31",
+                        "tags":  [
+                                     "lateral_movement",
+                                     "collection"
+                                 ],
+                        "text":  "On Sysclient0005 via RDP session, added majority of share drive files to compressed folder name allgone.zip and moved to user Download folder."
+                    },
+                    {
+                        "host":  "SysClient0005",
+                        "epoch":  1569350222,
+                        "date":  "09/24/19",
+                        "time":  "14:37:02",
+                        "tags":  [
+                                     "lateral_movement",
+                                     "initial_access"
+                                 ],
+                        "text":  "On Sysclient0005 via RDP session, navigated to news.com:4445 and downloaded movingonup.exe (nc.exe)"
+                    },
+                    {
+                        "host":  "SysClient0005",
+                        "epoch":  1569351854,
+                        "date":  "09/24/19",
+                        "time":  "15:04:14",
+                        "tags":  [
+                                     "lateral_movement",
+                                     "collection",
+                                     "exfiltration"
+                                 ],
+                        "text":  "On Sysclient0005 via RDP session, exported 3.5 gb exfil file allgona.zip"
+                    },
+                    {
+                        "host":  "SysClient0005",
+                        "epoch":  1569352968,
+                        "date":  "09/24/19",
+                        "time":  "15:22:48",
+                        "tags":  [
+                                     "lateral_movement",
+                                     "defense_evasion"
+                                 ],
+                        "text":  "On Sysclient0005 via RDP session, cleaned up files in downloads folder"
+                    },
+                    {
+                        "host":  "SysClient0005",
+                        "epoch":  1569353006,
+                        "date":  "09/24/19",
+                        "time":  "15:23:26",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On Sysclient0005 closed RDP session."
+                    },
+                    {
+                        "host":  "SysClient0974",
+                        "epoch":  1569353252,
+                        "date":  "09/24/19",
+                        "time":  "15:27:32",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On Sysclient0974 closed RDP session."
+                    },
+                    {
+                        "host":  "SysClient0501",
+                        "epoch":  1569353316,
+                        "date":  "09/24/19",
+                        "time":  "15:28:36",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On Sysclient0501 closed RDP session."
+                    },
+                    {
+                        "host":  "SysClient0010",
+                        "epoch":  1569354156,
+                        "date":  "09/24/19",
+                        "time":  "15:42:36",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On DC1.systemia.com agent VUBW3KYE, used invoke_wmi to spread to Sysclient0010, Sysclient0069, Sysclient0203, Sysclient0358, Sysclient0618, Sysclient0851"
+                    },
+                    {
+                        "host":  "SysClient0069",
+                        "epoch":  1569354156,
+                        "date":  "09/24/19",
+                        "time":  "15:42:36",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On DC1.systemia.com agent VUBW3KYE, used invoke_wmi to spread to Sysclient0010, Sysclient0069, Sysclient0203, Sysclient0358, Sysclient0618, Sysclient0851"
+                    },
+                    {
+                        "host":  "SysClient0203",
+                        "epoch":  1569354156,
+                        "date":  "09/24/19",
+                        "time":  "15:42:36",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On DC1.systemia.com agent VUBW3KYE, used invoke_wmi to spread to Sysclient0010, Sysclient0069, Sysclient0203, Sysclient0358, Sysclient0618, Sysclient0851"
+                    },
+                    {
+                        "host":  "SysClient0358",
+                        "epoch":  1569354156,
+                        "date":  "09/24/19",
+                        "time":  "15:42:36",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On DC1.systemia.com agent VUBW3KYE, used invoke_wmi to spread to Sysclient0010, Sysclient0069, Sysclient0203, Sysclient0358, Sysclient0618, Sysclient0851"
+                    },
+                    {
+                        "host":  "SysClient0618",
+                        "epoch":  1569354156,
+                        "date":  "09/24/19",
+                        "time":  "15:42:36",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On DC1.systemia.com agent VUBW3KYE, used invoke_wmi to spread to Sysclient0010, Sysclient0069, Sysclient0203, Sysclient0358, Sysclient0618, Sysclient0851"
+                    },
+                    {
+                        "host":  "SysClient0851",
+                        "epoch":  1569354156,
+                        "date":  "09/24/19",
+                        "time":  "15:42:36",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On DC1.systemia.com agent VUBW3KYE, used invoke_wmi to spread to Sysclient0010, Sysclient0069, Sysclient0203, Sysclient0358, Sysclient0618, Sysclient0851"
+                    },
+                    {
+                        "host":  "SysClient0010",
+                        "epoch":  1569416400,
+                        "date":  "09/25/19",
+                        "time":  "09:00:00",
+                        "tags":  [
+                                     "c2"
+                                 ],
+                        "text":  "Agents ran overnight on:  DC1.systemia.com VUBW3KYE, Sysclient0010 6FEZ8L4N, Sysclient0069 EMK3VW7F, Sysclient0203 UXCSTKZ9, Sysclient0358 PE54DBYX, Sysclient0618 73FCWS1G, Sysclient0851 5BUEZALX"
+                    },
+                    {
+                        "host":  "SysClient0069",
+                        "epoch":  1569416400,
+                        "date":  "09/25/19",
+                        "time":  "09:00:00",
+                        "tags":  [
+                                     "c2"
+                                 ],
+                        "text":  "Agents ran overnight on:  DC1.systemia.com VUBW3KYE, Sysclient0010 6FEZ8L4N, Sysclient0069 EMK3VW7F, Sysclient0203 UXCSTKZ9, Sysclient0358 PE54DBYX, Sysclient0618 73FCWS1G, Sysclient0851 5BUEZALX"
+                    },
+                    {
+                        "host":  "SysClient0203",
+                        "epoch":  1569416400,
+                        "date":  "09/25/19",
+                        "time":  "09:00:00",
+                        "tags":  [
+                                     "c2"
+                                 ],
+                        "text":  "Agents ran overnight on:  DC1.systemia.com VUBW3KYE, Sysclient0010 6FEZ8L4N, Sysclient0069 EMK3VW7F, Sysclient0203 UXCSTKZ9, Sysclient0358 PE54DBYX, Sysclient0618 73FCWS1G, Sysclient0851 5BUEZALX"
+                    },
+                    {
+                        "host":  "SysClient0358",
+                        "epoch":  1569416400,
+                        "date":  "09/25/19",
+                        "time":  "09:00:00",
+                        "tags":  [
+                                     "c2"
+                                 ],
+                        "text":  "Agents ran overnight on:  DC1.systemia.com VUBW3KYE, Sysclient0010 6FEZ8L4N, Sysclient0069 EMK3VW7F, Sysclient0203 UXCSTKZ9, Sysclient0358 PE54DBYX, Sysclient0618 73FCWS1G, Sysclient0851 5BUEZALX"
+                    },
+                    {
+                        "host":  "SysClient0618",
+                        "epoch":  1569416400,
+                        "date":  "09/25/19",
+                        "time":  "09:00:00",
+                        "tags":  [
+                                     "c2"
+                                 ],
+                        "text":  "Agents ran overnight on:  DC1.systemia.com VUBW3KYE, Sysclient0010 6FEZ8L4N, Sysclient0069 EMK3VW7F, Sysclient0203 UXCSTKZ9, Sysclient0358 PE54DBYX, Sysclient0618 73FCWS1G, Sysclient0851 5BUEZALX"
+                    },
+                    {
+                        "host":  "SysClient0851",
+                        "epoch":  1569416400,
+                        "date":  "09/25/19",
+                        "time":  "09:00:00",
+                        "tags":  [
+                                     "c2"
+                                 ],
+                        "text":  "Agents ran overnight on:  DC1.systemia.com VUBW3KYE, Sysclient0010 6FEZ8L4N, Sysclient0069 EMK3VW7F, Sysclient0203 UXCSTKZ9, Sysclient0358 PE54DBYX, Sysclient0618 73FCWS1G, Sysclient0851 5BUEZALX"
+                    },
+                    {
+                        "host":  "SysClient0051",
+                        "epoch":  1569420000,
+                        "date":  "09/25/19",
+                        "time":  "10:00:00",
+                        "tags":  [
+                                     "credential_access",
+                                     "process_injection",
+                                     "persistence",
+                                     "lateral_movement",
+                                     "discovery_network",
+                                     "discovery_account",
+                                     "initial_access",
+                                     "execution",
+                                     "defense_evasion",
+                                     "c2"
+                                 ],
+                        "text":  "Sysclinet0501 WMI Subscription persistence method activates, agent XVGHS45M checks in. upgrade process. When updated, the software reached out to malicious server and downloaded a binary named update.exe. The malicious binary contained a reverse TCP Meterpreter payload. It connected back to the server on port 8080. The software update was executed on two systems. Once a connection was established, system level access was obtained. A shell was used to find local information and a network ARP scan was used to identify potential targets. Built in Meterpreter modules were used to enumerate local software and any shares. The Meterpreter agent was migrated from the initial one to LSASS, and Mimikatz was used to collect clear text password and hashes. Persistence was established via an autorun registry entry. Timestomper was used to “black” the MAC times for files created by the persistence process. Added new admin user to attempt RDP connection. On one client, Meterpreter was used to migrate to the lwabeat process. Attacker Server DNS Names: notepadplus-sourceforge.net microsoft.com IP: 53.192.68.50 Meterpreter process on Sysclient0051 Research Projects Agency or the U.S. Government. PID 2712 cKfGW.exe Migrated to LSASS Meterpreter process on Sysclient0351 PID 1932 f.exe Migrated to lwabeats"
+                    },
+                    {
+                        "host":  "SysClient0351",
+                        "epoch":  1569420000,
+                        "date":  "09/25/19",
+                        "time":  "10:00:00",
+                        "tags":  [
+                                     "credential_access",
+                                     "process_injection",
+                                     "persistence",
+                                     "lateral_movement",
+                                     "discovery_network",
+                                     "discovery_account",
+                                     "initial_access",
+                                     "execution",
+                                     "defense_evasion",
+                                     "c2"
+                                 ],
+                        "text":  "Sysclinet0501 WMI Subscription persistence method activates, agent XVGHS45M checks in. upgrade process. When updated, the software reached out to malicious server and downloaded a binary named update.exe. The malicious binary contained a reverse TCP Meterpreter payload. It connected back to the server on port 8080. The software update was executed on two systems. Once a connection was established, system level access was obtained. A shell was used to find local information and a network ARP scan was used to identify potential targets. Built in Meterpreter modules were used to enumerate local software and any shares. The Meterpreter agent was migrated from the initial one to LSASS, and Mimikatz was used to collect clear text password and hashes. Persistence was established via an autorun registry entry. Timestomper was used to “black” the MAC times for files created by the persistence process. Added new admin user to attempt RDP connection. On one client, Meterpreter was used to migrate to the lwabeat process. Attacker Server DNS Names: notepadplus-sourceforge.net microsoft.com IP: 53.192.68.50 Meterpreter process on Sysclient0051 Research Projects Agency or the U.S. Government. PID 2712 cKfGW.exe Migrated to LSASS Meterpreter process on Sysclient0351 PID 1932 f.exe Migrated to lwabeats"
+                    },
+                    {
+                        "host":  "SysClient0051",
+                        "epoch":  1569421782,
+                        "date":  "09/25/19",
+                        "time":  "10:29:42",
+                        "tags":  [
+                                     "initial_access",
+                                     "execution"
+                                 ],
+                        "text":  "On Sysclient0051, updated notepad++, which downloaded malicious binary \"update.exe\" which is a Meterpreter payload."
+                    },
+                    {
+                        "host":  "SysClient0051",
+                        "epoch":  1569421868,
+                        "date":  "09/25/19",
+                        "time":  "10:31:08",
+                        "tags":  [
+                                     "execution",
+                                     "privilege_escalation"
+                                 ],
+                        "text":  "On Sysclient0051, obtained system via Meterpreter’s get system module. Used named pipe impersonation in memory."
+                    },
+                    {
+                        "host":  "SysClient0051",
+                        "epoch":  1569421931,
+                        "date":  "09/25/19",
+                        "time":  "10:32:11",
+                        "tags":  [
+                                     "execution"
+                                 ],
+                        "text":  "On Sysclient0051, used Meterpreter to get CMD shell. Ran commands to find out information about local system."
+                    },
+                    {
+                        "host":  "SysClient0051",
+                        "epoch":  1569422035,
+                        "date":  "09/25/19",
+                        "time":  "10:33:55",
+                        "tags":  [
+                                     "discovery_network"
+                                 ],
+                        "text":  "On Sysclient0051, used ARP scanner on 142.20.56.0/22"
+                    },
+                    {
+                        "host":  "SysClient0051",
+                        "epoch":  1569422188,
+                        "date":  "09/25/19",
+                        "time":  "10:36:28",
+                        "tags":  [
+                                     "execution",
+                                     "discovery_host"
+                                 ],
+                        "text":  "On Sysclient0051, used Meterpreter enum modules to discover all installed applications"
+                    },
+                    {
+                        "host":  "SysClient0051",
+                        "epoch":  1569422272,
+                        "date":  "09/25/19",
+                        "time":  "10:37:52",
+                        "tags":  [
+                                     "discovery_host",
+                                     "execution"
+                                 ],
+                        "text":  "On Sysclient0051 used Meterpreter enum_domain modules to identify domain controller"
+                    },
+                    {
+                        "host":  "SysClient0051",
+                        "epoch":  1569422315,
+                        "date":  "09/25/19",
+                        "time":  "10:38:35",
+                        "tags":  [
+                                     "execution",
+                                     "discovery_network"
+                                 ],
+                        "text":  "On Sysclient 0051, used Meterpreter enum_shares to identify any shares on host"
+                    },
+                    {
+                        "host":  "SysClient0051",
+                        "epoch":  1569422439,
+                        "date":  "09/25/19",
+                        "time":  "10:40:39",
+                        "tags":  [
+                                     "process_injection"
+                                 ],
+                        "text":  "On Sysclient 0051, migrated from process 2712 cKfGW.exe to LSASS 568"
+                    },
+                    {
+                        "host":  "SysClient0051",
+                        "epoch":  1569422696,
+                        "date":  "09/25/19",
+                        "time":  "10:44:56",
+                        "tags":  [
+                                     "credential_access"
+                                 ],
+                        "text":  "On Sysclient0051, ran Mimikatz to collect clear-text passwords and hashes"
+                    },
+                    {
+                        "host":  "SysClient0051",
+                        "epoch":  1569422923,
+                        "date":  "09/25/19",
+                        "time":  "10:48:43",
+                        "tags":  [
+                                     "persistence",
+                                     "execution"
+                                 ],
+                        "text":  "On Sysclient0051, established persistence via Meterpreter. Script written to C:\\Windows\\TEMP\\myHbYXTpViwX.vbx. Installed Autorun at HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\RTqWaEHv"
+                    },
+                    {
+                        "host":  "SysClient0051",
+                        "epoch":  1569423186,
+                        "date":  "09/25/19",
+                        "time":  "10:53:06",
+                        "tags":  [
+                                     "defense_evasion"
+                                 ],
+                        "text":  "On Sysclient0051, used timestomp to edit MAC times of created files in C:\\Windows\\TEMP"
+                    },
+                    {
+                        "host":  "SysClient0051",
+                        "epoch":  1569424061,
+                        "date":  "09/25/19",
+                        "time":  "11:07:41",
+                        "tags":  [
+                                     "lateral_movement"
+                                 ],
+                        "text":  "On Sysclient0051, used get_gui to add administrator \"admin\" to administrators and RDP group"
+                    },
+                    {
+                        "host":  "SysClient0351",
+                        "epoch":  1569425011,
+                        "date":  "09/25/19",
+                        "time":  "11:23:31",
+                        "tags":  [
+                                     "initial_access",
+                                     "c2"
+                                 ],
+                        "text":  "On Sysclient0351, conducted update to notepadd++, which downloaded malicious update.exe binary which made connection back to attacker server"
+                    },
+                    {
+                        "host":  "SysClient0351",
+                        "epoch":  1569425070,
+                        "date":  "09/25/19",
+                        "time":  "11:24:30",
+                        "tags":  [
+                                     "process_injection"
+                                 ],
+                        "text":  "On Sysclient0351, migrated from process 1932 to 1256 lwabeat."
+                    },
+                    {
+                        "host":  "SysClient0051",
+                        "epoch":  1569433325,
+                        "date":  "09/25/19",
+                        "time":  "13:42:05",
+                        "tags":  [
+                                     "lateral_movement",
+                                     "c2"
+                                 ],
+                        "text":  "On Sysclient0051, RDPed to machine from attacker server."
+                    },
+                    {
+                        "host":  "SysClient0051",
+                        "epoch":  1569435843,
+                        "date":  "09/25/19",
+                        "time":  "14:24:03",
+                        "tags":  [
+                                     "initial_access"
+                                 ],
+                        "text":  "Reran updated.exe on Sysclient0051"
+                    }
+                ]
+}
