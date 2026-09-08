@@ -6,15 +6,15 @@
 
 | | |
 |---|---|
-| 데이터 | LANL **5/5 완료·검증**, AIT **1/8 완료(의도된 범위)**, OpTC **41.3GB 취득·검증·매니페스트 완료(Phase 1,2,6)** |
+| 데이터 | LANL **5/5**, AIT **1/8(의도)**, OpTC **55.1GB**. Phase 1·2·6 완료, **Phase 4(Day 2, 102.6GB)는 0%** - 구글 드라이브 쿼터 |
 | 라벨 | 세 데이터셋 모두 확보. OpTC는 PDF→JSONL 구조화 완료(101건, 미분류 0) |
 | 결정 | **Q1~Q6 전부 확정**(ADR-0012~0018). 미결 없음 |
-| 모델 | **시간축 온톨로지 완료**(ADR-0017) - `scenarios/tacnet-01/`, 원인 분해 동작 |
+| 모델 | 시간축 온톨로지 완료(ADR-0017). LLM 4종 비교 완료, 기본 프롬프트 **briefing.ko v4** |
 | UI | **동작함**. `ui/` Vite + Cytoscape 정적 번들. 3뷰(의존/전송로/지리), 2D-3D 지형면, 편집, **교전(워게임) 턴** |
-| 다음 | **E1-b 는 OpTC 취득 대기(구글 드라이브 쿼터 차단)**, E3 진행 중, 서버 호스팅 |
+| 다음 | **E1-b 는 Phase 4 취득 대기**(파이프라인은 채점까지 확인 완료). E3 **완료**. 남은 것은 서버 호스팅 |
 | 도구 | Figma pro/Full 좌석. Node 24.20.0 **포터블 설치**, Python 3.12, Git 2.55 |
 
-## 2026-09-08 세션이 남긴 것 (읽고 시작할 것)
+## 2026-09-08 ~ 09 세션이 남긴 것 (읽고 시작할 것)
 
 ### OpTC 취득 - 막힌 것은 Phase 4 다 (코드 문제가 아니다)
 
@@ -115,6 +115,32 @@ Get-Content analysis\logs\optc-resume.log -Tail 20
 
 # E3 전체 표 한 장
 python scripts\summarise_e3.py
+
+# 취득이 얼마나 늘었나 (phase 4 가 0%% 를 벗어났는지가 E1-b 의 관문이다)
+python - <<'EOF'
+import json,os
+d=json.load(open('configs/manifests/optc.json',encoding='utf-8-sig'))
+root=r'F:\mc-cycop-dataaw\optc'; rows=[]
+def w(o):
+    if isinstance(o,dict):
+        if 'rel_path' in o and 'phase' in o: rows.append(o)
+        for v in o.values(): w(v)
+    elif isinstance(o,list):
+        for v in o: w(v)
+w(d)
+from collections import defaultdict
+agg=defaultdict(lambda:[0,0,0,0]); seen=set()
+for r in rows:
+    k=(r['rel_path'],r['phase'])
+    if k in seen: continue
+    seen.add(k)
+    p=os.path.join(root,r['rel_path'].replace('/',os.sep))
+    have=os.path.getsize(p) if os.path.exists(p) else 0
+    a=agg[r['phase']]; a[0]+=1; a[1]+=1 if have>=r.get('bytes',0)>0 else 0
+    a[2]+=r.get('bytes',0); a[3]+=have
+for ph in sorted(agg):
+    f,dn,wt,h=agg[ph]; print(ph,f,dn,round(wt/1e9,1),round(h/1e9,1),str(round(100*h/max(1,wt)))+'%')
+EOF
 
 # 창 크기 3종이 다 나왔나
 Get-ChildItem analysis\optc\ecar-windows-*.summary.json |
