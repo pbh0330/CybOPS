@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-08T15:47:43.837753+00:00",
+  "generated": "2026-09-08T15:53:21.151061+00:00",
   "generator": "scripts/run_e1b.py",
   "experiment": "E1-b",
   "identity_check": [
@@ -10,6 +10,10 @@
   "design": "docs/19-e1b-design.md",
   "features_file": "F:\\F\\other_class\\CybOPS\\analysis\\optc\\ecar-windows-300.csv",
   "window_sec": 300,
+  "window_source": "ecar-windows-300.summary.json",
+  "labelled_cells_expected": 113,
+  "labelled_cells_found": 60,
+  "label_coverage": 0.5309734513274337,
   "n_cells": 38139,
   "n_positives": 60,
   "feature_columns": [

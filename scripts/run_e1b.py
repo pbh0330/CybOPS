@@ -252,6 +252,14 @@ def main():
         "design": "docs/19-e1b-design.md",
         "features_file": os.path.abspath(args.features),
         "window_sec": win,
+        "window_source": src,
+        # Acquisition coverage, not model recall. eCAR ships per-host-range
+        # files and not all of them are downloaded, so some labelled cells have
+        # no telemetry at all. Reporting recall without this number invites the
+        # reader to blame the model for a missing file.
+        "labelled_cells_expected": expected,
+        "labelled_cells_found": found,
+        "label_coverage": (found / expected) if expected else None,
         "n_cells": int(len(df)),
         "n_positives": int(df.label.sum()),
         "feature_columns": feat,
