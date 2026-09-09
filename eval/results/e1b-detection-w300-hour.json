@@ -1,0 +1,398 @@
+{
+  "generated": "2026-09-09T00:10:24.532821+00:00",
+  "generator": "scripts/run_e1b.py",
+  "experiment": "E1-b",
+  "identity_check": [
+    "a_rename: 30.84 distinct values per host, 0.62 distinct values per host count -> kept",
+    "principals: 5.94 distinct values per host, 0.04 distinct values per host count -> kept"
+  ],
+  "tag": "w300-hour",
+  "design": "docs/19-e1b-design.md",
+  "features_file": "F:\\F\\other_class\\CybOPS\\analysis\\optc\\ecar-windows-300.csv",
+  "window_sec": 300,
+  "window_source": "ecar-windows-300.summary.json",
+  "labelled_cells_expected": 113,
+  "labelled_cells_found": 62,
+  "label_coverage": 0.5486725663716814,
+  "n_cells": 53296,
+  "n_positives": 62,
+  "feature_columns": [
+    "n",
+    "n_file",
+    "n_proc",
+    "n_flow",
+    "n_module",
+    "n_other",
+    "a_create",
+    "a_write",
+    "a_delete",
+    "a_read",
+    "a_rename",
+    "a_start",
+    "a_terminate",
+    "a_open",
+    "a_msg",
+    "images",
+    "new_images",
+    "new_image_share",
+    "dirs",
+    "dsts",
+    "new_dsts",
+    "new_dst_share",
+    "external_share",
+    "principals",
+    "system_share",
+    "pids",
+    "n_z",
+    "dsts_z",
+    "hour",
+    "dow"
+  ],
+  "excluded": {
+    "hosts_without_telemetry": {
+      "DC1": 10
+    },
+    "why": "no eCAR telemetry for this host; excluded from evaluation and reported (docs/19 section 3)"
+  },
+  "split_unit": "hour",
+  "protocol": {
+    "unit": "(host, window) cell - the only unit the ground truth exists at",
+    "split_caveat": "SMOKE TEST. Train and test are hours of the same attack day on the same hosts, so a host's behavioural signature crosses the cut and this is not a generalization result. The day-boundary split that E1-b actually asks for needs the phase 4 (24Sep19) downloads, which are at 0%.",
+    "sampling": "no negative subsampling; every cell is present, so precision@k is exact",
+    "tuning": "selected on the training days only; test scored once"
+  },
+  "splits": [
+    {
+      "cut_day": "2019-09-22 23",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 0,
+      "test_pos": 62
+    },
+    {
+      "cut_day": "2019-09-23 00",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 0,
+      "test_pos": 62
+    },
+    {
+      "cut_day": "2019-09-23 01",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 0,
+      "test_pos": 62
+    },
+    {
+      "cut_day": "2019-09-23 02",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 0,
+      "test_pos": 62
+    },
+    {
+      "cut_day": "2019-09-23 03",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 0,
+      "test_pos": 62
+    },
+    {
+      "cut_day": "2019-09-23 04",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 0,
+      "test_pos": 62
+    },
+    {
+      "cut_day": "2019-09-23 05",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 0,
+      "test_pos": 62
+    },
+    {
+      "cut_day": "2019-09-23 06",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 0,
+      "test_pos": 62
+    },
+    {
+      "cut_day": "2019-09-23 07",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 0,
+      "test_pos": 62
+    },
+    {
+      "cut_day": "2019-09-23 08",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 0,
+      "test_pos": 62
+    },
+    {
+      "cut_day": "2019-09-23 09",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 0,
+      "test_pos": 62
+    },
+    {
+      "cut_day": "2019-09-23 10",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 0,
+      "test_pos": 62
+    },
+    {
+      "cut_day": "2019-09-23 11",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 5,
+      "test_pos": 57
+    },
+    {
+      "cut_day": "2019-09-23 12",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 7,
+      "test_pos": 55
+    },
+    {
+      "cut_day": "2019-09-23 13",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 18,
+      "test_pos": 44
+    },
+    {
+      "cut_day": "2019-09-23 14",
+      "train_cells": 31995,
+      "test_cells": 21301,
+      "train_pos": 36,
+      "test_pos": 26,
+      "models": [
+        {
+          "model": "rule: cell event count",
+          "pr_auc": 0.0008844679301340144,
+          "roc_auc": 0.34867486215312304,
+          "positives": 26,
+          "negatives": 21275,
+          "precision@recall50": 0.0008773705878382938,
+          "alerts@recall50": 14817.0,
+          "precision@recall90": 0.0011351811559928105,
+          "alerts@recall90": 21142.0,
+          "precision@recall100": 0.0012228388674630796,
+          "alerts@recall100": 21262.0,
+          "precision@20": 0.0,
+          "precision@50": 0.0,
+          "precision@100": 0.0,
+          "precision@500": 0.0
+        },
+        {
+          "model": "rule: new destinations",
+          "pr_auc": 0.0021877815606653733,
+          "roc_auc": 0.6148730000903915,
+          "positives": 26,
+          "negatives": 21275,
+          "precision@recall50": 0.0052588996763754045,
+          "alerts@recall50": 2472.0,
+          "precision@recall90": 0.004527447651386531,
+          "alerts@recall90": 5301.0,
+          "precision@recall100": 0.004539898725336127,
+          "alerts@recall100": 5727.0,
+          "precision@20": 0.0,
+          "precision@50": 0.0,
+          "precision@100": 0.0,
+          "precision@500": 0.004
+        },
+        {
+          "model": "histgb",
+          "pr_auc": 0.0038413629919409227,
+          "roc_auc": 0.6826340052427009,
+          "positives": 26,
+          "negatives": 21275,
+          "precision@recall50": 0.0051751592356687895,
+          "alerts@recall50": 2512.0,
+          "precision@recall90": 0.001266490765171504,
+          "alerts@recall90": 18950.0,
+          "precision@recall100": 0.0012404580152671756,
+          "alerts@recall100": 20960.0,
+          "precision@20": 0.0,
+          "precision@50": 0.0,
+          "precision@100": 0.0,
+          "precision@500": 0.006
+        },
+        {
+          "model": "logreg",
+          "pr_auc": 0.0008454075758451897,
+          "roc_auc": 0.2965307782699087,
+          "positives": 26,
+          "negatives": 21275,
+          "precision@recall50": 0.0009418924793508188,
+          "alerts@recall50": 13802.0,
+          "precision@recall90": 0.001196470412283763,
+          "alerts@recall90": 20059.0,
+          "precision@recall100": 0.0012486193151803294,
+          "alerts@recall100": 20823.0,
+          "precision@20": 0.0,
+          "precision@50": 0.0,
+          "precision@100": 0.0,
+          "precision@500": 0.0
+        }
+      ],
+      "mttd": [
+        {
+          "budget": 50,
+          "hosts_with_positives": 23,
+          "hosts_caught": 0,
+          "hosts_missed": 23,
+          "median_cells_before_first_hit": null,
+          "caught_on_first_cell": 0
+        },
+        {
+          "budget": 100,
+          "hosts_with_positives": 23,
+          "hosts_caught": 0,
+          "hosts_missed": 23,
+          "median_cells_before_first_hit": null,
+          "caught_on_first_cell": 0
+        },
+        {
+          "budget": 200,
+          "hosts_with_positives": 23,
+          "hosts_caught": 0,
+          "hosts_missed": 23,
+          "median_cells_before_first_hit": null,
+          "caught_on_first_cell": 0
+        }
+      ],
+      "mttd_model": "histgb"
+    },
+    {
+      "cut_day": "2019-09-23 15",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 59,
+      "test_pos": 3
+    },
+    {
+      "cut_day": "2019-09-23 17",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 59,
+      "test_pos": 3
+    },
+    {
+      "cut_day": "2019-09-23 18",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 59,
+      "test_pos": 3
+    },
+    {
+      "cut_day": "2019-09-23 19",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 59,
+      "test_pos": 3
+    },
+    {
+      "cut_day": "2019-09-23 20",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 59,
+      "test_pos": 3
+    },
+    {
+      "cut_day": "2019-09-23 21",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 59,
+      "test_pos": 3
+    },
+    {
+      "cut_day": "2019-09-23 22",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 59,
+      "test_pos": 3
+    },
+    {
+      "cut_day": "2019-09-23 23",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 59,
+      "test_pos": 3
+    },
+    {
+      "cut_day": "2019-09-24 00",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 59,
+      "test_pos": 3
+    },
+    {
+      "cut_day": "2019-09-24 01",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 59,
+      "test_pos": 3
+    },
+    {
+      "cut_day": "2019-09-24 02",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 59,
+      "test_pos": 3
+    },
+    {
+      "cut_day": "2019-09-24 03",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 59,
+      "test_pos": 3
+    },
+    {
+      "cut_day": "2019-09-24 04",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 59,
+      "test_pos": 3
+    },
+    {
+      "cut_day": "2019-09-24 05",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 59,
+      "test_pos": 3
+    },
+    {
+      "cut_day": "2019-09-24 06",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 59,
+      "test_pos": 3
+    },
+    {
+      "cut_day": "2019-09-24 07",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 59,
+      "test_pos": 3
+    },
+    {
+      "cut_day": "2019-09-24 08",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 59,
+      "test_pos": 3
+    },
+    {
+      "cut_day": "2019-09-24 09",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 59,
+      "test_pos": 3
+    },
+    {
+      "cut_day": "2019-09-25 09",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 62,
+      "test_pos": 0
+    },
+    {
+      "cut_day": "2019-09-25 10",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 62,
+      "test_pos": 0
+    },
+    {
+      "cut_day": "2019-09-25 11",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 62,
+      "test_pos": 0
+    },
+    {
+      "cut_day": "2019-09-25 12",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 62,
+      "test_pos": 0
+    },
+    {
+      "cut_day": "2019-09-25 13",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 62,
+      "test_pos": 0
+    }
+  ]
+}
