@@ -169,3 +169,53 @@ python -m mccycop.data status                              # 데이터셋별 상
 ```
 
 `verify`가 실패하면 `purge`는 거부한다. 이 커플링이 정책의 실질적 집행 수단이다.
+
+## 다른 컴퓨터에서 받아 외장하드로 옮기기 (2026-09-09 추가)
+
+이 기계의 회선이 약 14 Mbps 다. 실측:
+
+| 받을 것 | 크기 | 여기서 걸리는 시간 |
+|---|---|---|
+| IEEE DataPort 통짜 `OpTC.tar.gz` | 308.8 GB | 약 104시간 |
+| OpTC 남은 파일 전부 | 190.0 GB | 약 64시간 |
+| Day 2(24Sep19) 양성 범위 | 51.6 GB | 약 17시간 |
+| **Day 3(25Sept) 양성 범위** | **6.1 GB** | **약 2시간** |
+
+**병목이 취득처가 아니라 회선이다.** 그래서 빠른 회선이 있는 기계에서 받아 외장하드로
+옮기는 것이 가장 빠르다.
+
+### 다른 기계에서
+
+`scripts/fetch-optc-portable.sh` 와 `analysis/optc/download-missing.tsv` 두 파일만
+USB 에 담아 가면 된다. bash 와 curl 만 있으면 되고 저장소도 PowerShell 도 필요 없다.
+
+```bash
+./fetch-optc-portable.sh -o /Volumes/USB/optc          # 전부
+./fetch-optc-portable.sh -o E:/optc -p 1               # 우선순위 1만 (Day 2 양성 범위)
+```
+
+TSV 의 `destination` 경로 그대로 트리를 만든다. **쿼터 페이지(2,009바이트 HTML)를
+받으면 지우고 넘어간다** - 그걸 남겨두면 다음 재개가 그 위에 이어붙어서 길이는 맞고
+내용은 틀린 파일이 된다(2026-09-06 사고).
+
+### 돌아와서
+
+외장하드를 그대로 써도 된다. 추출기가 경로를 인자로 받는다.
+
+```powershell
+.\scripts\Test-GzipIntegrity.ps1 -Path E:\optc -NoHash        # 먼저 검증한다
+.\scripts\Export-EcarWindows.ps1 -Root E:\optc\ecar -WindowSec 300 -NegSample 1 `
+    -OutCsv analysis\optc\ecar-windows-300.csv `
+    -OutJson analysis\optc\ecar-windows-300.summary.json
+```
+
+**크기가 맞아도 내용이 맞다는 뜻이 아니다.** 옮긴 뒤에 반드시 gzip 검증을 돌린다.
+포터블 스크립트가 하는 것은 크기 검사뿐이다.
+
+주의할 것 둘.
+
+- **파일 시스템**: NTFS 나 exFAT 으로 포맷한다. macOS 전용(APFS/HFS+)이면 Windows 가
+  못 읽는다.
+- **USB 3.0 이상**: 창 추출이 8.4억 레코드를 순차로 읽는다. 내장 디스크에서 창 하나에
+  150분 걸렸다. USB 2.0(약 30 MB/s)이면 이보다 한참 느려진다.
+
