@@ -1,0 +1,109 @@
+{
+    "generated":  "2026-09-09T16:53:09.7225122+09:00",
+    "generator":  "scripts/Test-BriefingCoverage.ps1",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m4\\gemma2_9b_instruct_q4_K_M-t105-containment.brief.json",
+    "replay":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
+    "scenario_id":  "tacnet-01",
+    "t":  105,
+    "model":  "gemma2:9b-instruct-q4_K_M",
+    "prompt_version":  "briefing.ko v4",
+    "demanded_slot":  "narration order items 2, 3 and 4",
+    "top_mission":  "M-C2",
+    "top_priority":  1,
+    "other_missions":  [
+                           "M-FIRE"
+                       ],
+    "slots":  [
+                  {
+                      "slot":  "2 top mission",
+                      "verdict":  "addressed",
+                      "pass":  true,
+                      "demanded":  [
+                                       "M-C2"
+                                   ],
+                      "named":  true,
+                      "named_which":  "M-C2",
+                      "refused":  false,
+                      "substituted_with":  null
+                  },
+                  {
+                      "slot":  "3 outages",
+                      "verdict":  "addressed",
+                      "pass":  true,
+                      "demanded":  [
+                                       "BN-SRV",
+                                       "BN-CP",
+                                       "SAT-TERM",
+                                       "FO-TAB"
+                                   ],
+                      "named":  true,
+                      "named_which":  "BN-SRV",
+                      "refused":  false,
+                      "substituted_with":  null
+                  },
+                  {
+                      "slot":  "4 containment cost",
+                      "verdict":  "addressed",
+                      "pass":  true,
+                      "demanded":  [
+                                       "TOC-SRV",
+                                       "BN-SRV",
+                                       "FDC-SRV",
+                                       "RELAY-1",
+                                       "SAT-TERM",
+                                       "CO2-VEH"
+                                   ],
+                      "named":  true,
+                      "named_which":  "BN-SRV",
+                      "refused":  false,
+                      "substituted_with":  null
+                  }
+              ],
+    "slots_failed":  [
+
+                     ],
+    "outage_subjects":  [
+                            "BN-SRV",
+                            "BN-CP",
+                            "SAT-TERM",
+                            "FO-TAB"
+                        ],
+    "cost_subjects":  [
+                          "TOC-SRV",
+                          "BN-SRV",
+                          "FDC-SRV",
+                          "RELAY-1",
+                          "SAT-TERM",
+                          "CO2-VEH"
+                      ],
+    "abstain_band":  "근거없음",
+    "slot_terms":  [
+                       null
+                   ],
+    "abstain_sentences":  0,
+    "named":  true,
+    "named_in":  null,
+    "refused":  false,
+    "substituted_with":  null,
+    "verdict":  "addressed",
+    "pass":  true,
+    "note":  "the top mission comes from the replay, not the pack. When the pack has no facts for it the pack cannot say which mission mattered, and that is the case this check exists for.",
+    "sentences":  [
+                      {
+                          "text":  "시나리오 tacnet-01, 시각 07:45 (t+105분), 활성 단계 기동 [F1]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "임무 M-C2의 저하도는 79.04%이며, 원인은 환경 단독 [F2]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "자산 BN-SRV과 BN-CP, SAT-TERM, FO-TAB은 기동으로 인해 비가용 [F4][F5][F6][F7]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "자산 BN-CP의 격리 비용은 150 [F5]{확신}.",
+                          "band":  "확신"
+                      }
+                  ]
+}

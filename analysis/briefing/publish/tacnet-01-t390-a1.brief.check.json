@@ -1,6 +1,6 @@
 {
     "check_version":  1,
-    "checked":  "2026-09-09T09:48:57.0230842+09:00",
+    "checked":  "2026-09-09T16:54:46.5164827+09:00",
     "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\publish\\tacnet-01-t390-a1.brief.json",
     "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\publish\\tacnet-01-t390.pack.json",
     "prompt_version":  "briefing.ko v4",
@@ -45,19 +45,19 @@
                           "no":  2,
                           "cited":  "F2",
                           "abstain":  false,
-                          "text":  "우선순위가 가장 높은 임무의 저하도는 100%이며, 그 원인은 공격 단독 100% [F2]{확신}."
+                          "text":  "우선순위가 가장 높은 임무의 저하도는 100%이며, 원인은 공격 단독 100% [F2]{확신}."
                       },
                       {
                           "no":  3,
                           "cited":  "F3",
                           "abstain":  false,
-                          "text":  "임무 M-C2의 저하를 일으킨 자산은 BN-SRV이며, 원인은 공격 단독 [F3]{확신}."
+                          "text":  "임무 M-C2의 저하를 만든 자산은 BN-SRV이며, 원인은 공격 단독 [F3]{확신}."
                       },
                       {
                           "no":  4,
                           "cited":  "F23",
                           "abstain":  false,
-                          "text":  "격리 비용 중 지휘관이 알아야 할 것은 FDC-SRV을 격리하면 임무 저하도가 M-FIRE +28.6%p 변한다 [F23]{확신}."
+                          "text":  "격리 비용은 FDC-SRV을 격리하면 임무 저하도가 M-FIRE +28.6%p 변한다 [F23]{확신}."
                       }
                   ]
 }

@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-09-09T07:09:24.6506350+09:00",
+    "generated":  "2026-09-09T16:53:12.2139604+09:00",
     "generator":  "scripts/Test-BriefingCoverage.ps1",
     "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m4\\qwen2_5_7b_instruct_q4_K_M-t120-mission-top.brief.json",
     "replay":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
@@ -7,20 +7,80 @@
     "t":  120,
     "model":  "qwen2.5:7b-instruct-q4_K_M",
     "prompt_version":  "briefing.ko v4",
-    "demanded_slot":  "narration order item 2: the highest priority mission",
+    "demanded_slot":  "narration order items 2, 3 and 4",
     "top_mission":  "M-C2",
     "top_priority":  1,
     "other_missions":  [
                            "M-FIRE"
                        ],
+    "slots":  [
+                  {
+                      "slot":  "2 top mission",
+                      "verdict":  "refused",
+                      "pass":  true,
+                      "demanded":  [
+                                       "M-C2"
+                                   ],
+                      "named":  false,
+                      "named_which":  null,
+                      "refused":  true,
+                      "substituted_with":  null
+                  },
+                  {
+                      "slot":  "3 outages",
+                      "verdict":  "addressed",
+                      "pass":  true,
+                      "demanded":  [
+                                       "BN-SRV",
+                                       "BN-CP",
+                                       "SAT-TERM"
+                                   ],
+                      "named":  true,
+                      "named_which":  "BN-SRV",
+                      "refused":  false,
+                      "substituted_with":  null
+                  },
+                  {
+                      "slot":  "4 containment cost",
+                      "verdict":  "addressed",
+                      "pass":  true,
+                      "demanded":  [
+                                       "TOC-SRV",
+                                       "BN-SRV",
+                                       "FDC-SRV",
+                                       "RELAY-1",
+                                       "SAT-TERM",
+                                       "CO2-VEH"
+                                   ],
+                      "named":  true,
+                      "named_which":  "BN-SRV",
+                      "refused":  false,
+                      "substituted_with":  null
+                  }
+              ],
+    "slots_failed":  [
+
+                     ],
+    "outage_subjects":  [
+                            "BN-SRV",
+                            "BN-CP",
+                            "SAT-TERM"
+                        ],
+    "cost_subjects":  [
+                          "TOC-SRV",
+                          "BN-SRV",
+                          "FDC-SRV",
+                          "RELAY-1",
+                          "SAT-TERM",
+                          "CO2-VEH"
+                      ],
     "abstain_band":  "근거없음",
     "slot_terms":  [
-                       "저하도",
-                       "임무"
+                       null
                    ],
     "abstain_sentences":  1,
     "named":  false,
-    "named_in":  "",
+    "named_in":  null,
     "refused":  true,
     "substituted_with":  null,
     "verdict":  "refused",

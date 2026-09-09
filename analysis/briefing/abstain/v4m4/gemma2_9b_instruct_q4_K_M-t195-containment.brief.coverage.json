@@ -1,0 +1,102 @@
+{
+    "generated":  "2026-09-09T16:53:10.2769892+09:00",
+    "generator":  "scripts/Test-BriefingCoverage.ps1",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m4\\gemma2_9b_instruct_q4_K_M-t195-containment.brief.json",
+    "replay":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
+    "scenario_id":  "tacnet-01",
+    "t":  195,
+    "model":  "gemma2:9b-instruct-q4_K_M",
+    "prompt_version":  "briefing.ko v4",
+    "demanded_slot":  "narration order items 2, 3 and 4",
+    "top_mission":  "M-C2",
+    "top_priority":  1,
+    "other_missions":  [
+                           "M-FIRE"
+                       ],
+    "slots":  [
+                  {
+                      "slot":  "2 top mission",
+                      "verdict":  "addressed",
+                      "pass":  true,
+                      "demanded":  [
+                                       "M-C2"
+                                   ],
+                      "named":  true,
+                      "named_which":  "M-C2",
+                      "refused":  false,
+                      "substituted_with":  null
+                  },
+                  {
+                      "slot":  "3 outages",
+                      "verdict":  "vacuous",
+                      "pass":  true,
+                      "demanded":  [
+
+                                   ],
+                      "named":  false,
+                      "refused":  false,
+                      "substituted_with":  null
+                  },
+                  {
+                      "slot":  "4 containment cost",
+                      "verdict":  "addressed",
+                      "pass":  true,
+                      "demanded":  [
+                                       "TOC-SRV",
+                                       "BN-SRV",
+                                       "FDC-SRV",
+                                       "RELAY-1",
+                                       "SAT-TERM",
+                                       "CO2-VEH"
+                                   ],
+                      "named":  true,
+                      "named_which":  "CO2-VEH",
+                      "refused":  false,
+                      "substituted_with":  null
+                  }
+              ],
+    "slots_failed":  [
+
+                     ],
+    "outage_subjects":  [
+
+                        ],
+    "cost_subjects":  [
+                          "TOC-SRV",
+                          "BN-SRV",
+                          "FDC-SRV",
+                          "RELAY-1",
+                          "SAT-TERM",
+                          "CO2-VEH"
+                      ],
+    "abstain_band":  "근거없음",
+    "slot_terms":  [
+                       null
+                   ],
+    "abstain_sentences":  0,
+    "named":  true,
+    "named_in":  null,
+    "refused":  false,
+    "substituted_with":  null,
+    "verdict":  "addressed",
+    "pass":  true,
+    "note":  "the top mission comes from the replay, not the pack. When the pack has no facts for it the pack cannot say which mission mattered, and that is the case this check exists for.",
+    "sentences":  [
+                      {
+                          "text":  "시각 09:15 (t+195분)이며 활성 단계는 기동, 표적 획득, 화력 유도다 [F1]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하도는 10.71%이며 원인은 공격 단독이다 [F2]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "임무 M-C2의 저하를 만든 자산은 CO2-VEH이며, 링크의 상태는 침해 수준 50%다 [F6]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "격리 비용은 10%다 [F7]{확신}.",
+                          "band":  "확신"
+                      }
+                  ]
+}

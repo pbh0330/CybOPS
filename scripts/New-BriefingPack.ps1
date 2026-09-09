@@ -69,8 +69,12 @@ if (-not $Out) {
 # decimal inside a note survives.
 function Flatten($s) {
   if (-not $s) { return '' }
-  $out = [regex]::Replace([string]$s, '\.\s+', ', ')
-  return $out.TrimEnd('.')
+  # $flat, not $out: the script parameter is $Out and PowerShell variable names
+  # are case-insensitive. A function-local assignment does not actually clobber
+  # it, but Test-CaseCollisions.ps1 cannot see scopes, and a gate that reports
+  # a benign hit is a gate people start ignoring.
+  $flat = [regex]::Replace([string]$s, '\.\s+', ', ')
+  return $flat.TrimEnd('.')
 }
 
 function Pct($v) { return [math]::Round(([double]$v) * 100, 2) }

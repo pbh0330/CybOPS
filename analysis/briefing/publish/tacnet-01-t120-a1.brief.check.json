@@ -1,6 +1,6 @@
 {
     "check_version":  1,
-    "checked":  "2026-09-09T09:48:45.1376290+09:00",
+    "checked":  "2026-09-09T16:54:34.3565786+09:00",
     "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\publish\\tacnet-01-t120-a1.brief.json",
     "pack":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\publish\\tacnet-01-t120.pack.json",
     "prompt_version":  "briefing.ko v4",
@@ -57,7 +57,7 @@
                           "no":  4,
                           "cited":  "F15",
                           "abstain":  false,
-                          "text":  "격리하면 임무 M-C2 저하도가 21.0%p 증가하고, M-FIRE 저하도가 40.0%p 증가한다 [F15]{확신}."
+                          "text":  "격리 비용은 TOC-SRV을 격리하면 임무 저하도가 M-C2 +21.0%p, M-FIRE +40.0%p 변한다 [F15]{확신}."
                       }
                   ]
 }

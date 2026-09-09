@@ -28,6 +28,22 @@
 # facts are missing the pack cannot say which mission mattered, and that is
 # precisely the case this exists for.
 #
+# THREE SLOTS, NOT ONE
+#
+# The narration order in prompts/briefing.ko.md asks for four things. Item 1 is
+# the clock, which the model has never got wrong. The other three are checked
+# here, and each one asks the REPLAY what it demands:
+#
+#   2  the highest priority active mission   -> which mission, per the engine
+#   3  the assets and links that are down    -> which ones are out at this t
+#   4  one containment cost                  -> which what-if entries exist
+#
+# A slot the engine has nothing for is vacuous and is skipped: with no outage
+# at this timestep there is nothing to say about outages, and silence is right.
+# That distinction is exactly why the replay is the authority. The PACK cannot
+# make it, because a pack with the facts removed looks the same as a pack for a
+# quiet minute - and telling those two apart is the whole job.
+#
 # WHAT IT DOES NOT DO
 #
 # It checks that the subject was addressed, not that what was said about it is
@@ -112,6 +128,16 @@ if (-not $topMission) { throw "no active mission at this step; nothing to demand
 $otherMissions = @()
 foreach ($m in $rep.graph.missions) { if ([string]$m.id -ne $topMission) { $otherMissions += [string]$m.id } }
 
+# What the engine says is down at this t, and what containment costs it computed.
+$outSubjects = @()
+foreach ($a in $rep.graph.assets) { if ($step.asset_outage.($a.id)) { $outSubjects += [string]$a.id } }
+foreach ($l in $rep.graph.links)  { if ($step.link_outage.($l.id))  { $outSubjects += [string]$l.id } }
+
+$costSubjects = @()
+if ($null -ne $step.whatif) {
+  foreach ($pp in $step.whatif.PSObject.Properties) { $costSubjects += [string]$pp.Name }
+}
+
 # --------------------------------------------------------- sentences
 
 $sentences = New-Object System.Collections.ArrayList
@@ -126,7 +152,7 @@ foreach ($mt in [regex]::Matches($text, '\{([^}]{1,12})\}\s*\.')) {
 $abstainSentences = @($sentences | Where-Object { $abstainName -and $_.band -eq $abstainName })
 
 # --------------------------------------------------------- the check
-
+#
 # "Named" has to mean named IN THE SLOT, not named anywhere. The containment
 # cost sentence lists a delta per mission, so it prints "M-C2 +7.0%p" even in a
 # briefing that says nothing about M-C2's degradation. The first version of
@@ -135,41 +161,76 @@ $abstainSentences = @($sentences | Where-Object { $abstainName -and $_.band -eq 
 # Worse, that sentence is what makes the substitution readable as normal: the
 # commander sees M-C2 mentioned once, in a cost line, and has no reason to
 # think anything is missing.
-#
-# So a sentence carrying containment vocabulary does not count as addressing
-# item 2 of the narration order.
-$containTerms = @()
-if ($SLOTKW.ContainsKey('containment_cost')) { $containTerms = $SLOTKW['containment_cost'] }
 
-$named = $false
-$namedIn = ''
-foreach ($sn in $sentences) {
-  if (-not $sn.text.Contains($topMission)) { continue }
-  $isCost = $false
-  foreach ($ct in $containTerms) { if ($sn.text.Contains([string]$ct)) { $isCost = $true; break } }
-  if ($isCost) { continue }
-  $named = $true
-  $namedIn = $sn.text
-  break
+function Test-Slot {
+  param(
+    [string]$Slot,          # label for the report
+    [string]$Kind,          # key into the slot vocabulary
+    [string[]]$Demanded,    # subjects the engine says belong here (any one will do)
+    [string[]]$StandIns,    # same-kind subjects that would be a substitution
+    [string[]]$ExcludeKinds # vocabulary of OTHER slots; a sentence carrying it does not count
+  )
+
+  if ($Demanded.Count -eq 0) {
+    return [ordered]@{ slot = $Slot; verdict = 'vacuous'; pass = $true
+                       demanded = @(); named = $false; refused = $false; substituted_with = $null }
+  }
+
+  $exclude = New-Object System.Collections.ArrayList
+  foreach ($k in $ExcludeKinds) {
+    if ($SLOTKW.ContainsKey($k)) { foreach ($w in $SLOTKW[$k]) { [void]$exclude.Add([string]$w) } }
+  }
+
+  $named = $false; $namedWhich = $null
+  foreach ($sn in $sentences) {
+    $isOther = $false
+    foreach ($x in $exclude) { if ($sn.text.Contains($x)) { $isOther = $true; break } }
+    if ($isOther) { continue }
+    foreach ($d in $Demanded) {
+      if ($sn.text.Contains($d)) { $named = $true; $namedWhich = $d; break }
+    }
+    if ($named) { break }
+  }
+
+  $refused = $false
+  $terms = @()
+  if ($SLOTKW.ContainsKey($Kind)) { $terms = $SLOTKW[$Kind] }
+  foreach ($sn in $abstainSentences) {
+    foreach ($tm in $terms) { if ($sn.text.Contains([string]$tm)) { $refused = $true; break } }
+    if ($refused) { break }
+  }
+
+  $stand = $null
+  if (-not $named -and -not $refused) {
+    foreach ($sv in $StandIns) { if ($text.Contains($sv)) { $stand = $sv; break } }
+  }
+
+  if     ($named)             { $v = 'addressed' }
+  elseif ($refused)           { $v = 'refused' }
+  elseif ($null -ne $stand)   { $v = 'SUBSTITUTED' }
+  else                        { $v = 'OMITTED' }
+
+  return [ordered]@{
+    slot = $Slot; verdict = $v; pass = ($v -eq 'addressed' -or $v -eq 'refused')
+    demanded = $Demanded; named = $named; named_which = $namedWhich
+    refused = $refused; substituted_with = $stand
+  }
 }
 
-$refused = $false
-$terms = @()
-if ($SLOTKW.ContainsKey('mission_degradation')) { $terms = $SLOTKW['mission_degradation'] }
-foreach ($sn in $abstainSentences) {
-  foreach ($tm in $terms) { if ($sn.text.Contains([string]$tm)) { $refused = $true; break } }
-  if ($refused) { break }
-}
+$SLOTRESULT = New-Object System.Collections.ArrayList
+[void]$SLOTRESULT.Add((Test-Slot -Slot '2 top mission' -Kind 'mission_degradation' `
+  -Demanded @($topMission) -StandIns $otherMissions -ExcludeKinds @('containment_cost')))
+[void]$SLOTRESULT.Add((Test-Slot -Slot '3 outages' -Kind 'outage_link' `
+  -Demanded $outSubjects -StandIns @() -ExcludeKinds @('containment_cost')))
+[void]$SLOTRESULT.Add((Test-Slot -Slot '4 containment cost' -Kind 'containment_cost' `
+  -Demanded $costSubjects -StandIns @() -ExcludeKinds @()))
 
-$standIn = $null
-foreach ($om in $otherMissions) { if ($text.Contains($om)) { $standIn = $om; break } }
-
-if     ($named)              { $verdict = 'addressed' }
-elseif ($refused)            { $verdict = 'refused' }
-elseif ($null -ne $standIn)  { $verdict = 'SUBSTITUTED' }
-else                         { $verdict = 'OMITTED' }
-
-$ok = ($verdict -eq 'addressed' -or $verdict -eq 'refused')
+$slot2  = $SLOTRESULT[0]
+$named  = $slot2.named
+$refused = $slot2.refused
+$standIn = $slot2.substituted_with
+$verdict = $slot2.verdict
+$ok = -not (@($SLOTRESULT | Where-Object { -not $_.pass }).Count -gt 0)
 
 $report = [ordered]@{
   generated       = (Get-Date).ToString('o')
@@ -180,10 +241,14 @@ $report = [ordered]@{
   t               = $brf.t
   model           = $brf.model
   prompt_version  = $brf.prompt_version
-  demanded_slot   = 'narration order item 2: the highest priority mission'
+  demanded_slot   = 'narration order items 2, 3 and 4'
   top_mission     = $topMission
   top_priority    = $topPriority
   other_missions  = $otherMissions
+  slots           = @($SLOTRESULT)
+  slots_failed    = @($SLOTRESULT | Where-Object { -not $_.pass } | ForEach-Object { $_.slot })
+  outage_subjects = $outSubjects
+  cost_subjects   = $costSubjects
   abstain_band    = $abstainName
   slot_terms      = @($terms)
   abstain_sentences = $abstainSentences.Count
@@ -208,8 +273,10 @@ if (-not $Quiet) {
   Write-Output ''
   Write-Output ("briefing   : {0}  (t+{1}, {2})" -f (Split-Path $Briefing -Leaf), [int]$brf.t, $brf.model)
   Write-Output ("demanded   : {0}  (priority {1}, from the replay)" -f $topMission, $topPriority)
-  Write-Output ("named {0}   refused {1}   stand-in {2}" -f $named, $refused, $standIn)
-  Write-Output ("verdict    : {0}" -f $verdict)
+  foreach ($sl in $SLOTRESULT) {
+    Write-Output ("  {0,-20} {1,-12} {2}" -f $sl.slot, $sl.verdict, (@($sl.demanded) -join ', '))
+  }
+  Write-Output ("verdict    : {0}" -f $(if ($ok) { 'pass' } else { 'FAIL' }))
   Write-Output ("report     : {0}" -f $OutJson)
   Write-Output ''
 }

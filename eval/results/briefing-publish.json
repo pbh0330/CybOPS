@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-09-09T09:48:57.1002513+09:00",
+    "generated":  "2026-09-09T16:54:46.5738708+09:00",
     "generator":  "scripts/Publish-Briefings.ps1",
     "adr":  "ADR-0022",
     "scenario":  "tacnet-01",
@@ -22,12 +22,17 @@
                           "citation_rate":  1,
                           "violations":  0,
                           "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=addressed",
+                                                 "4 containment cost=addressed"
+                                             ],
                           "tries":  [
                                         {
                                             "attempt":  1,
                                             "citation_rate":  1,
                                             "violations":  0,
-                                            "coverage":  "addressed",
+                                            "coverage":  "all slots",
                                             "accepted":  true
                                         }
                                     ]
@@ -40,12 +45,17 @@
                           "citation_rate":  1,
                           "violations":  0,
                           "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=addressed",
+                                                 "4 containment cost=addressed"
+                                             ],
                           "tries":  [
                                         {
                                             "attempt":  1,
                                             "citation_rate":  1,
                                             "violations":  0,
-                                            "coverage":  "addressed",
+                                            "coverage":  "all slots",
                                             "accepted":  true
                                         }
                                     ]
@@ -58,12 +68,17 @@
                           "citation_rate":  1,
                           "violations":  0,
                           "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=vacuous",
+                                                 "4 containment cost=addressed"
+                                             ],
                           "tries":  [
                                         {
                                             "attempt":  1,
                                             "citation_rate":  1,
                                             "violations":  0,
-                                            "coverage":  "addressed",
+                                            "coverage":  "all slots",
                                             "accepted":  true
                                         }
                                     ]

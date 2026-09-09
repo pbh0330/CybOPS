@@ -130,12 +130,14 @@ foreach ($t in $Times) {
       attempt         = $a
       citation_rate   = $cite.citation_rate
       violations      = $cite.violations
-      coverage        = $cov.verdict
+      coverage        = $(if ($cov.pass) { 'all slots' } else { 'FAIL: ' + (@($cov.slots_failed) -join ', ') })
       accepted        = $ok
     })
 
     Write-Output ("  t+{0,-4} attempt {1}  cite {2,6:P0}  viol {3}  coverage {4}  -> {5}" -f `
-      $t, $a, $cite.citation_rate, $cite.violations, $cov.verdict, $(if ($ok) { 'accept' } else { 'reject' }))
+      $t, $a, $cite.citation_rate, $cite.violations,
+      $(if ($cov.pass) { 'all slots' } else { 'FAIL ' + (@($cov.slots_failed) -join ',') }),
+      $(if ($ok) { 'accept' } else { 'reject' }))
 
     if ($ok) {
       $accepted = [ordered]@{
@@ -188,6 +190,7 @@ foreach ($t in $Times) {
     citation_rate    = $accepted.citation.citation_rate
     violations       = $accepted.citation.violations
     coverage_verdict = $accepted.coverage.verdict
+    coverage_slots   = @($accepted.coverage.slots | ForEach-Object { $_.slot + '=' + $_.verdict })
     top_mission      = $accepted.coverage.top_mission
     note             = ('attempt is a publishing detail, not a model score. The evaluation ' +
                         'scripts generate once and never retry (ADR-0022).')
@@ -209,6 +212,7 @@ foreach ($t in $Times) {
     citation_rate = $accepted.citation.citation_rate
     violations = $accepted.citation.violations
     coverage_verdict = $accepted.coverage.verdict
+    coverage_slots   = @($accepted.coverage.slots | ForEach-Object { $_.slot + '=' + $_.verdict })
     tries = @($tries)
   })
 }

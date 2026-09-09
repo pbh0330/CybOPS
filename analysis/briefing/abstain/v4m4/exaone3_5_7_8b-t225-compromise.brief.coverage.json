@@ -1,0 +1,107 @@
+{
+    "generated":  "2026-09-09T16:53:09.3967121+09:00",
+    "generator":  "scripts/Test-BriefingCoverage.ps1",
+    "briefing":  "F:\\F\\other_class\\CybOPS\\analysis\\briefing\\abstain\\v4m4\\exaone3_5_7_8b-t225-compromise.brief.json",
+    "replay":  "F:\\F\\other_class\\CybOPS\\ui\\public\\data\\tacnet-01.replay.json",
+    "scenario_id":  "tacnet-01",
+    "t":  225,
+    "model":  "exaone3.5:7.8b",
+    "prompt_version":  "briefing.ko v4",
+    "demanded_slot":  "narration order items 2, 3 and 4",
+    "top_mission":  "M-C2",
+    "top_priority":  1,
+    "other_missions":  [
+                           "M-FIRE"
+                       ],
+    "slots":  [
+                  {
+                      "slot":  "2 top mission",
+                      "verdict":  "addressed",
+                      "pass":  true,
+                      "demanded":  [
+                                       "M-C2"
+                                   ],
+                      "named":  true,
+                      "named_which":  "M-C2",
+                      "refused":  false,
+                      "substituted_with":  null
+                  },
+                  {
+                      "slot":  "3 outages",
+                      "verdict":  "addressed",
+                      "pass":  true,
+                      "demanded":  [
+                                       "L-VHF-CO2"
+                                   ],
+                      "named":  true,
+                      "named_which":  "L-VHF-CO2",
+                      "refused":  true,
+                      "substituted_with":  null
+                  },
+                  {
+                      "slot":  "4 containment cost",
+                      "verdict":  "addressed",
+                      "pass":  true,
+                      "demanded":  [
+                                       "TOC-SRV",
+                                       "BN-SRV",
+                                       "FDC-SRV",
+                                       "RELAY-1",
+                                       "SAT-TERM",
+                                       "CO2-VEH"
+                                   ],
+                      "named":  true,
+                      "named_which":  "TOC-SRV",
+                      "refused":  false,
+                      "substituted_with":  null
+                  }
+              ],
+    "slots_failed":  [
+
+                     ],
+    "outage_subjects":  [
+                            "L-VHF-CO2"
+                        ],
+    "cost_subjects":  [
+                          "TOC-SRV",
+                          "BN-SRV",
+                          "FDC-SRV",
+                          "RELAY-1",
+                          "SAT-TERM",
+                          "CO2-VEH"
+                      ],
+    "abstain_band":  "근거없음",
+    "slot_terms":  [
+                       null
+                   ],
+    "abstain_sentences":  1,
+    "named":  true,
+    "named_in":  null,
+    "refused":  false,
+    "substituted_with":  null,
+    "verdict":  "addressed",
+    "pass":  true,
+    "note":  "the top mission comes from the replay, not the pack. When the pack has no facts for it the pack cannot say which mission mattered, and that is the case this check exists for.",
+    "sentences":  [
+                      {
+                          "text":  "시나리오 tacnet-01은 현재 활성 단계인 기동, 표적 획득, 화력 유도 단계에 있으며 [F1]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하도는 21.43%로, 원인 분해 결과 환경 요인이 주요하게 작용한 것으로 분석됩니다 [F2]{확신}, {추정}.",
+                          "band":  "추정"
+                      },
+                      {
+                          "text":  "우선순위가 가장 높은 임무 M-C2의 저하를 만든 자산 중 링크 L-VHF-CO2는 기동 관련 단절으로 인해 미전개된 안테나 상태가 원인으로 확인됩니다 [F6]{확신}.",
+                          "band":  "확신"
+                      },
+                      {
+                          "text":  "단절 사실 외 다른 자산의 상태는 확인되지 않았습니다 [F0]{근거없음}.",
+                          "band":  "근거없음"
+                      },
+                      {
+                          "text":  "격리 비용 중 지휘관이 알아야 할 것은 TOC-SRV 격리 시 임무 M-C2의 저하도가 추가로 7.0% 증가한다는 점입니다 [F8]{확신}.",
+                          "band":  "확신"
+                      }
+                  ]
+}
