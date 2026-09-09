@@ -50,6 +50,29 @@ if (-not $Out) {
   $Out = Join-Path $dir ("{0}-t{1}.pack.json" -f $r.scenario_id, [int]$At)
 }
 
+# Free text that comes from the scenario (outage notes) must not carry a
+# sentence boundary into a fact.
+#
+# Test-BriefingCitations splits sentences on the period, so a fact whose text
+# reads "... note signal loss. jamming and weather cannot be told apart"
+# becomes two sentences when the model copies it, and the half without the
+# citation drags the citation rate to 83%. That is what stopped t+300 from
+# publishing three attempts in a row on 2026-09-09.
+#
+# The same defect was fixed once already in prompts/briefing-labels.ko.json,
+# where the templates themselves had internal periods. This is the other half:
+# the values interpolated INTO those templates. In a deployment those values
+# come from an operator or a feed and will contain periods, so the fix belongs
+# here rather than in the scenario file.
+#
+# Only a period followed by whitespace or at the very end is touched, so a
+# decimal inside a note survives.
+function Flatten($s) {
+  if (-not $s) { return '' }
+  $out = [regex]::Replace([string]$s, '\.\s+', ', ')
+  return $out.TrimEnd('.')
+}
+
 function Pct($v) { return [math]::Round(([double]$v) * 100, 2) }
 function Fmt($template) { return [string]::Format($template, $args) }
 
@@ -98,7 +121,7 @@ foreach ($a in $g.assets) {
   $c = $step.asset_outage.($a.id)
   if (-not $c) { continue }
   $note = ''
-  foreach ($o in @($a.outages)) { if ($step.t -ge $o.from -and $step.t -lt $o.to) { $note = [string]$o.note } }
+  foreach ($o in @($a.outages)) { if ($step.t -ge $o.from -and $step.t -lt $o.to) { $note = Flatten $o.note } }
   $cn = $LBL.cause_names.$c
   if (-not $cn) { $cn = $c }
   Add-Fact 'outage_asset' $a.id (Fmt $LBL.outage_asset $a.id $cn $note) 1.0
@@ -108,7 +131,7 @@ foreach ($l in $g.links) {
   $c = $step.link_outage.($l.id)
   if (-not $c) { continue }
   $note = ''
-  foreach ($o in @($l.outages)) { if ($step.t -ge $o.from -and $step.t -lt $o.to) { $note = [string]$o.note } }
+  foreach ($o in @($l.outages)) { if ($step.t -ge $o.from -and $step.t -lt $o.to) { $note = Flatten $o.note } }
   $cn = $LBL.cause_names.$c
   if (-not $cn) { $cn = $c }
   Add-Fact 'outage_link' $l.id (Fmt $LBL.outage_link $l.id $l.a $l.b $l.bearer $cn $note) 1.0

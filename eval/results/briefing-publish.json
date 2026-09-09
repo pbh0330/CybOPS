@@ -1,0 +1,72 @@
+{
+    "generated":  "2026-09-09T09:48:57.1002513+09:00",
+    "generator":  "scripts/Publish-Briefings.ps1",
+    "adr":  "ADR-0022",
+    "scenario":  "tacnet-01",
+    "model":  "gemma2:9b-instruct-q4_K_M",
+    "prompt":  "F:\\F\\other_class\\CybOPS\\prompts\\briefing.ko.md",
+    "temperature":  0.2,
+    "attempts_allowed":  3,
+    "min_citation_rate":  1,
+    "dry_run":  false,
+    "published":  3,
+    "dropped":  0,
+    "first_attempt_accepted":  3,
+    "note":  "Retries are a publishing tool. The evaluation scripts generate once. Do not read attempt counts here as a model score.",
+    "timesteps":  [
+                      {
+                          "t":  120,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "addressed",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  300,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "addressed",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  390,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "addressed",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      }
+                  ]
+}
