@@ -73,3 +73,7 @@ analysis/briefing/_v3-*.log
 
 # 콘솔 로그. 결과는 eval/results 의 JSON 에 있고 이것은 실행 흔적일 뿐이다.
 analysis/logs/
+
+# 호스팅용 산출물. Publish-Briefings.ps1 + Test-BundleConfig.ps1 로 다시 만들 수 있다.
+ui/dist-hosted/
+ui/mc-cycop-hosted.zip
