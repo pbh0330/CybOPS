@@ -23,9 +23,24 @@
 param(
   [string]$Bundle = "$PSScriptRoot\..\ui\dist",
   [ValidateSet('hosted', 'local')]
-  [string]$Posture = 'hosted',
+  [string]$Posture = '',
   [string]$OutJson = ''
 )
+
+# The default used to be -Bundle ui\dist with -Posture hosted, which is the one
+# pairing that cannot pass: ui\dist is the local build and carries
+# llm.endpoint = http://127.0.0.1:11434 on purpose. Running the gate with no
+# arguments therefore printed DO NOT DEPLOY about a bundle nobody was
+# deploying. A gate that fails when nothing is wrong stops being read.
+#
+# So infer the posture from the bundle when it is not given, and say which one
+# was chosen. ui\dist-hosted is built by Publish-Briefings for a public host;
+# anything else is local.
+if (-not $Posture) {
+  $leaf = Split-Path $Bundle -Leaf
+  if ($leaf -like '*hosted*') { $Posture = 'hosted' } else { $Posture = 'local' }
+  Write-Output ("  posture   : {0} (inferred from '{1}'; pass -Posture to override)" -f $Posture, $leaf)
+}
 
 $ErrorActionPreference = 'Stop'
 try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch { }
