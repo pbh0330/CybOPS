@@ -78,21 +78,33 @@ LLM 기반 국방 사이버 통합운영 관제 상황도. 지리 지도가 아�
 않았다.** 논문이나 제안서에 인용하기 전에 `docs/02-research-plan.md`의 "출처 검증 체크리스트"를
 소진해야 한다. 검증되지 않은 수치를 확정 사실처럼 서술하지 않는다.
 
-## 미확정 사항
+## 미확정 사항 - 없다 (2026-09-06 전부 확정)
 
-작업이 이 갈림길에 닿으면 진행하기 전에 확인한다. 상세는 `docs/99-open-questions.md`.
+Q1~Q6 이 전부 닫혔다. 상세는 `docs/99-open-questions.md`.
 
-- 대상 망: **국방망(행정/엔터프라이즈 유사)** vs **전술망(대역폭 제약, 전술 C2)** - 미정
-- 심볼 체계: MIL-STD-2525 준용 여부 - 미정
-- 산출물 성격: 학위논문 / 과제 제안서 / 프로토타입 데모 중 우선순위 - 미정
+| | 결정 | ADR |
+|---|---|---|
+| 대상 망 | **전술망**(대역폭 제약, 전술 C2) | 0012 |
+| 심볼 체계 | **MIL-STD-2525 준용** | 0013 |
+| 산출물 우선순위 | **데모 1순위**, 논문 2순위 | 0014 |
+| 전문가 평가 | **수행하지 않음** (순위 불일치도로 대체) | 0015 |
+| LLM 배치 | **로컬 GPU, 4비트 7~14B** | 0016 |
+| UI 스택 | **Cytoscape.js + 정적 번들** | 0018 |
+
+새 갈림길을 만나면 여기에 적지 말고 `docs/99-open-questions.md` 에 질문으로 올린 뒤
+결정되면 ADR 을 쓴다.
 
 ## 개발 환경
 
 - 플랫폼: Windows 11, PowerShell 5.1. `&&` 체이닝이 안 되므로 `;` 또는 `if ($?) { }`를 쓴다.
-- **Python / Node / Java / dotnet 전부 미설치.** `python.exe`는 Microsoft Store 스텁이라
-  실행하면 exit 9009. 현재 유일한 런타임은 PowerShell 5.1이다.
-- git 미설치. 첫 커밋 전에 git 설치 후 `git init` 필요.
-- 최종 구현 언어는 Python 예정. 현재 PowerShell 참조 구현은 포팅 대상이며, 데이터
+- **Python 3.12.10** - `%LOCALAPPDATA%\Programs\Python\Python312\python.exe`.
+  numpy 2.5, pandas 3.0, scikit-learn 1.9 설치됨. E1-a/E1-b 채점이 여기서 돈다.
+  **PATH 의 `python` 은 여전히 Microsoft Store 스텁(exit 9009)이므로 전체 경로로 부른다.**
+- **Node 24.20.0 포터블** (`%LOCALAPPDATA%\Programs\nodejs-portable\node-v24.20.0-win-x64`),
+  npm 11.19. User PATH 에 등록돼 있지만 Git Bash 세션에는 안 잡힐 수 있다.
+- **Git 2.55.0.windows.3** 설치됨. 저장소는 이미 `git init` 된 상태다.
+- Java / dotnet 은 미설치이고 필요 없다.
+- 최종 구현 언어는 Python 이다. PowerShell 참조 구현은 포팅 대상이며, 데이터
   아티팩트(JSON/JSONL)는 언어 독립이므로 그대로 유지된다.
 
 ### PowerShell 5.1 인코딩 규칙 (어기면 데이터가 조용히 오염된다)
@@ -106,10 +118,10 @@ BOM 없는 UTF-8 `.ps1`을 시스템 ANSI 코드페이지로 읽는다. 실제�
 3. 사람이 읽는 문자열은 가능하면 **JSON 데이터 파일**에 둔다(`-Encoding utf8`로 읽으므로 안전).
 4. 콘솔 한글 출력이 필요하면 `[Console]::OutputEncoding = [System.Text.Encoding]::UTF8`.
 
-### PowerShell 5.1 변수 이름 규칙 (이것도 다섯 번 사고가 났다)
+### PowerShell 5.1 변수 이름 규칙 (이것도 여섯 번 사고가 났다)
 
 **변수 이름은 대소문자를 구분하지 않는다. `$Tag` 와 `$tag` 는 같은 변수다.**
-이 저장소에서 다섯 번 났고, 셋은 오류 대신 **그럴듯한 숫자**를 냈다.
+이 저장소에서 여섯 번 났고, 셋은 오류 대신 **그럴듯한 숫자**를 냈다.
 
 | 충돌 | 파일 | 증상 |
 |---|---|---|
@@ -118,9 +130,11 @@ BOM 없는 UTF-8 `.ps1`을 시스템 ANSI 코드페이지로 읽는다. 실제�
 | `$BAND` / `$band` | `Test-GoldenBriefing.ps1` | 정확도 83% 모델의 ECE 가 0.8333 |
 | `$SlotTerms` / `$slotTerms` | `Test-Abstention.ps1` | `System.String` 에 `ContainsKey` 호출 |
 | `$Tag` / `$tag` | `Compare-BriefingModels.ps1` | 보고서가 엉뚱한 이름으로 저장 |
+| `$Slots` / `$slots` | `Test-BriefingCoverage.ps1` | 위 검사기가 잡았다 |
 
 **대문자로 쓰는 것은 방어가 아니다.** 이름이 대소문자로만 다르면 같은 변수다.
 네 번째와 다섯 번째는 이 문장을 방금 읽은 사람이 만들었다. 아는 것으로는 안 막힌다.
+여섯 번째는 검사기가 잡았다. **막은 것은 지식이 아니라 검사기다.**
 
 ```powershell
 .\scripts\Test-CaseCollisions.ps1     # exit 1 이면 이름을 고친다. CI에 넣는다.
