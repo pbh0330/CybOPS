@@ -128,6 +128,15 @@ def evaluate(name, y, score, w, ks=(20, 50, 100, 500)):
     return out
 
 
+def fnv1a31(s):
+    """The extractor's host_key. Unsalted, so a hostname reproduces it."""
+    h = 2166136261
+    for ch in s:
+        h ^= ord(ch)
+        h = (h * 16777619) & 0x7FFFFFFF
+    return h
+
+
 def main():
     ap = argparse.ArgumentParser()
     here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -238,6 +247,37 @@ def main():
     expected = len(lab["positive_cells"].get(str(win), []))
     found = int(df.label.sum())
     print(f"  window {win} s (from {src})   positives {found} of {expected} labelled cells")
+
+    # --labels does NOT label anything here. The label column was written by the
+    # extractor, or rewritten by relabel_ecar_windows.py, and this file only
+    # reads it. Passing a different label file therefore changes the header of
+    # the report and nothing else - which is how a "sensitivity run" against a
+    # second label set once produced numbers identical to the first, down to the
+    # positive counts, and looked like a finding.
+    #
+    # So check. host_key is an unsalted FNV-1a of the host string, so the label
+    # file can be turned into the same (host_key, bucket) keys the CSV carries.
+    wanted = set()
+    for cell in lab["positive_cells"].get(str(win), []):
+        h, b = cell.split("|")
+        wanted.add((fnv1a31(h), int(b)))
+    rows = set(zip(df.host_key.astype(int), df.bucket.astype(int)))
+    have = set(zip(df.host_key[df.label == 1].astype(int), df.bucket[df.label == 1].astype(int)))
+    #
+    # Both directions matter. A positive the label file does not contain is the
+    # obvious error. A cell the label file DOES contain, present as a row, and
+    # left at 0 is the quiet one: every count still looks plausible because the
+    # extra labels simply never arrive.
+    stray = have - wanted
+    missed = (wanted & rows) - have
+    if stray or missed:
+        sys.exit(
+            f"the label column of {os.path.basename(args.features)} does not come from "
+            f"{os.path.basename(args.labels)}: {len(stray)} positive cells are absent from "
+            f"that file and {len(missed)} of its cells are present as rows but labelled 0. "
+            f"Relabel first: python scripts/relabel_ecar_windows.py "
+            f"--features {args.features} --labels {args.labels}"
+        )
     if found < expected:
         # This is acquisition coverage, not model recall, and it has to travel
         # with the result or a low recall reads as a modelling failure.

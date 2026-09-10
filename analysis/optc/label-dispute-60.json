@@ -1,0 +1,498 @@
+{
+ "generated": "2026-09-10T07:34:16.508519+00:00",
+ "generator": "scripts/compare_label_disputes.py",
+ "question": "the cells at 60 s that our labels call positive and the Inria labels do not",
+ "window_sec": 60,
+ "counts": {
+  "ours": 141,
+  "inria": 8454,
+  "shared": 107,
+  "ours_only": 34
+ },
+ "rule": "our ground truth carries two kinds of line. An observed action has a real timestamp (11:23:29); a summary line has a rounded one (15:30:00). The rule separates the disputed cells exactly.",
+ "summary": {
+  "ours_only_from_summary_lines": 13,
+  "ours_only_from_observed_actions": 21,
+  "observed_ones_with_telemetry_on_disk": 17,
+  "telemetry_checked_against": "ecar-windows-60.csv"
+ },
+ "decision": "keep the Inria labels (ADR-0023). The summary-line cells cannot be placed in a window. The observed ones are real and process-lifetime labelling misses them, but they are a fraction of a percent of the label set and none has telemetry on disk, so a union would change no measurement while adding a second provenance to every future reading.",
+ "cells": [
+  {
+   "cell": "SysClient0201|26154366",
+   "host": "SysClient0201",
+   "window_start": "2019-09-23T14:06:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "14:06:01",
+     "text": "Killed agents Sysclient0201 LUAVR71T, Sysclient0402 NEK5H8GX, and Sysclient0660 DS29HY41"
+    }
+   ],
+   "time_granularity": "observed",
+   "verdict": "inria misses it: the action leaves no malicious process"
+  },
+  {
+   "cell": "SysClient0402|26154366",
+   "host": "SysClient0402",
+   "window_start": "2019-09-23T14:06:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "14:06:01",
+     "text": "Killed agents Sysclient0201 LUAVR71T, Sysclient0402 NEK5H8GX, and Sysclient0660 DS29HY41"
+    }
+   ],
+   "time_granularity": "observed",
+   "verdict": "inria misses it: the action leaves no malicious process"
+  },
+  {
+   "cell": "SysClient0660|26154366",
+   "host": "SysClient0660",
+   "window_start": "2019-09-23T14:06:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "14:06:01",
+     "text": "Killed agents Sysclient0201 LUAVR71T, Sysclient0402 NEK5H8GX, and Sysclient0660 DS29HY41"
+    }
+   ],
+   "time_granularity": "observed",
+   "verdict": "inria misses it: the action leaves no malicious process"
+  },
+  {
+   "cell": "SysClient0104|26154444",
+   "host": "SysClient0104",
+   "window_start": "2019-09-23T15:24:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:24:33",
+     "text": "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+    }
+   ],
+   "time_granularity": "observed",
+   "verdict": "inria misses it: the action leaves no malicious process"
+  },
+  {
+   "cell": "SysClient0170|26154444",
+   "host": "SysClient0170",
+   "window_start": "2019-09-23T15:24:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:24:33",
+     "text": "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+    }
+   ],
+   "time_granularity": "observed",
+   "verdict": "inria misses it: the action leaves no malicious process"
+  },
+  {
+   "cell": "SysClient0205|26154444",
+   "host": "SysClient0205",
+   "window_start": "2019-09-23T15:24:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:24:33",
+     "text": "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+    }
+   ],
+   "time_granularity": "observed",
+   "verdict": "inria misses it: the action leaves no malicious process"
+  },
+  {
+   "cell": "SysClient0255|26154444",
+   "host": "SysClient0255",
+   "window_start": "2019-09-23T15:24:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:24:33",
+     "text": "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+    }
+   ],
+   "time_granularity": "observed",
+   "verdict": "inria misses it: the action leaves no malicious process"
+  },
+  {
+   "cell": "SysClient0321|26154444",
+   "host": "SysClient0321",
+   "window_start": "2019-09-23T15:24:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:24:33",
+     "text": "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+    }
+   ],
+   "time_granularity": "observed",
+   "verdict": "inria misses it: the action leaves no malicious process"
+  },
+  {
+   "cell": "SysClient0355|26154444",
+   "host": "SysClient0355",
+   "window_start": "2019-09-23T15:24:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:24:33",
+     "text": "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+    }
+   ],
+   "time_granularity": "observed",
+   "verdict": "inria misses it: the action leaves no malicious process"
+  },
+  {
+   "cell": "SysClient0419|26154444",
+   "host": "SysClient0419",
+   "window_start": "2019-09-23T15:24:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:24:33",
+     "text": "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+    }
+   ],
+   "time_granularity": "observed",
+   "verdict": "inria misses it: the action leaves no malicious process"
+  },
+  {
+   "cell": "SysClient0462|26154444",
+   "host": "SysClient0462",
+   "window_start": "2019-09-23T15:24:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:24:33",
+     "text": "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+    }
+   ],
+   "time_granularity": "observed",
+   "verdict": "inria misses it: the action leaves no malicious process"
+  },
+  {
+   "cell": "SysClient0503|26154444",
+   "host": "SysClient0503",
+   "window_start": "2019-09-23T15:24:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:24:33",
+     "text": "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+    }
+   ],
+   "time_granularity": "observed",
+   "verdict": "inria misses it: the action leaves no malicious process"
+  },
+  {
+   "cell": "SysClient0559|26154444",
+   "host": "SysClient0559",
+   "window_start": "2019-09-23T15:24:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:24:33",
+     "text": "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+    }
+   ],
+   "time_granularity": "observed",
+   "verdict": "inria misses it: the action leaves no malicious process"
+  },
+  {
+   "cell": "SysClient0609|26154444",
+   "host": "SysClient0609",
+   "window_start": "2019-09-23T15:24:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:24:33",
+     "text": "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+    }
+   ],
+   "time_granularity": "observed",
+   "verdict": "inria misses it: the action leaves no malicious process"
+  },
+  {
+   "cell": "SysClient0771|26154444",
+   "host": "SysClient0771",
+   "window_start": "2019-09-23T15:24:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:24:33",
+     "text": "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+    }
+   ],
+   "time_granularity": "observed",
+   "verdict": "inria misses it: the action leaves no malicious process"
+  },
+  {
+   "cell": "SysClient0874|26154444",
+   "host": "SysClient0874",
+   "window_start": "2019-09-23T15:24:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:24:33",
+     "text": "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+    }
+   ],
+   "time_granularity": "observed",
+   "verdict": "inria misses it: the action leaves no malicious process"
+  },
+  {
+   "cell": "SysClient0955|26154444",
+   "host": "SysClient0955",
+   "window_start": "2019-09-23T15:24:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:24:33",
+     "text": "On DC1 agent XH32VTK5, killed agents on: SYSCLIENT0104, SYSCLIENT0170, SYSCLIENT0205, SYSCLIENT0255, SYSCLIENT0321, SYSCLIENT0355, SYSCLIENT0419, SYSCLIENT0462, SYSCLIENT0503, SYSCLIENT0559, SYSCLIENT0609, SYSCLIENT0771, SYSCLIENT0874, SYSCLIENT0955"
+    }
+   ],
+   "time_granularity": "observed",
+   "verdict": "inria misses it: the action leaves no malicious process"
+  },
+  {
+   "cell": "SysClient0010|26154450",
+   "host": "SysClient0010",
+   "window_start": "2019-09-23T15:30:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:30:00",
+     "text": "On Sysclient0201, removed registry persistence at HKCU:Software\\Microsoft\\Windows\\CurrentVersion\\Debug stagers. Once checked in, the agents were used to switch to a separate PowerShell Empire server, with configurations that were modified from default settings and were sent over https (port 443). Deathstar was used to automate enumerating the domain and obtaining an elevated shell on the domain controller. The DC agent was used to pivot back to original target to obtain an elevated agent. Persistence was established using WMI subscriptions to call back at 10:00 or within 5 minutes of boot. Ran modules to enumerate the local system looking for vulnerabilities or important files. Uploaded plink and created completed local port forwarding with SSH to the attacker server. Forwarded port 3389 to allow RDP into systemia through any network security devices. RDP’ed into target and used netcat to exfiltrate data. Used RDP to tunnel through two other hosts. On the final host, connected network share and exfiltrated a majority of files via netcat. Research Projects Agency or the U.S. Government. Cleaned up files and shut down RDP sessions. Used existing agent on DC to re-infect five workstations for overnight C2. Listener information: PowerShell launcher string -- \"powershell -NoProfile -Sta -WindowStyle 1 - EncodedCommand\" DefaultProfile -- \"/news/current.php/login/default.php/admin/process.jsp|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36\" DefaultDelay Between connections -- 30 seconds ServerVersion -- Apache IP: 202.6.172.98 Client  Agent  IP  PID Sysclient0501  4BW2MKUF  142.20.57.246  648 Sysclient0501  9HUGDCRL  142.20.57.246  5076 Sysclient0501  6H8SZPCW  142.20.57.246  1748 Sysclient0811  DS8V3RNH  142.20.59.44  3780 DC1.systemia.com VUBW3KYE  142.20.61.130  3880 Sysclient0010  6FEZ8L4N  142.20.56.11  3584 Sysclient0069  EMK3VW7F  142.20.56.70  4152 Sysclient0203  UXCSTKZ9  142.20.56.204  5388 Sysclient0358  PE54DBYX  142.20.57.103  2984 Sysclient0618  73FCWS1G  142.20.58.107  4060 Sysclient0851  5BUEZALX  142.20.59.84  4652"
+    }
+   ],
+   "time_granularity": "summary (time ends :00)",
+   "verdict": "ours is not defensible: the ground truth line is a summary with a rounded time, so the action cannot be placed in one window"
+  },
+  {
+   "cell": "SysClient0069|26154450",
+   "host": "SysClient0069",
+   "window_start": "2019-09-23T15:30:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:30:00",
+     "text": "On Sysclient0201, removed registry persistence at HKCU:Software\\Microsoft\\Windows\\CurrentVersion\\Debug stagers. Once checked in, the agents were used to switch to a separate PowerShell Empire server, with configurations that were modified from default settings and were sent over https (port 443). Deathstar was used to automate enumerating the domain and obtaining an elevated shell on the domain controller. The DC agent was used to pivot back to original target to obtain an elevated agent. Persistence was established using WMI subscriptions to call back at 10:00 or within 5 minutes of boot. Ran modules to enumerate the local system looking for vulnerabilities or important files. Uploaded plink and created completed local port forwarding with SSH to the attacker server. Forwarded port 3389 to allow RDP into systemia through any network security devices. RDP’ed into target and used netcat to exfiltrate data. Used RDP to tunnel through two other hosts. On the final host, connected network share and exfiltrated a majority of files via netcat. Research Projects Agency or the U.S. Government. Cleaned up files and shut down RDP sessions. Used existing agent on DC to re-infect five workstations for overnight C2. Listener information: PowerShell launcher string -- \"powershell -NoProfile -Sta -WindowStyle 1 - EncodedCommand\" DefaultProfile -- \"/news/current.php/login/default.php/admin/process.jsp|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36\" DefaultDelay Between connections -- 30 seconds ServerVersion -- Apache IP: 202.6.172.98 Client  Agent  IP  PID Sysclient0501  4BW2MKUF  142.20.57.246  648 Sysclient0501  9HUGDCRL  142.20.57.246  5076 Sysclient0501  6H8SZPCW  142.20.57.246  1748 Sysclient0811  DS8V3RNH  142.20.59.44  3780 DC1.systemia.com VUBW3KYE  142.20.61.130  3880 Sysclient0010  6FEZ8L4N  142.20.56.11  3584 Sysclient0069  EMK3VW7F  142.20.56.70  4152 Sysclient0203  UXCSTKZ9  142.20.56.204  5388 Sysclient0358  PE54DBYX  142.20.57.103  2984 Sysclient0618  73FCWS1G  142.20.58.107  4060 Sysclient0851  5BUEZALX  142.20.59.84  4652"
+    }
+   ],
+   "time_granularity": "summary (time ends :00)",
+   "verdict": "ours is not defensible: the ground truth line is a summary with a rounded time, so the action cannot be placed in one window"
+  },
+  {
+   "cell": "SysClient0201|26154450",
+   "host": "SysClient0201",
+   "window_start": "2019-09-23T15:30:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:30:00",
+     "text": "On Sysclient0201, removed registry persistence at HKCU:Software\\Microsoft\\Windows\\CurrentVersion\\Debug stagers. Once checked in, the agents were used to switch to a separate PowerShell Empire server, with configurations that were modified from default settings and were sent over https (port 443). Deathstar was used to automate enumerating the domain and obtaining an elevated shell on the domain controller. The DC agent was used to pivot back to original target to obtain an elevated agent. Persistence was established using WMI subscriptions to call back at 10:00 or within 5 minutes of boot. Ran modules to enumerate the local system looking for vulnerabilities or important files. Uploaded plink and created completed local port forwarding with SSH to the attacker server. Forwarded port 3389 to allow RDP into systemia through any network security devices. RDP’ed into target and used netcat to exfiltrate data. Used RDP to tunnel through two other hosts. On the final host, connected network share and exfiltrated a majority of files via netcat. Research Projects Agency or the U.S. Government. Cleaned up files and shut down RDP sessions. Used existing agent on DC to re-infect five workstations for overnight C2. Listener information: PowerShell launcher string -- \"powershell -NoProfile -Sta -WindowStyle 1 - EncodedCommand\" DefaultProfile -- \"/news/current.php/login/default.php/admin/process.jsp|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36\" DefaultDelay Between connections -- 30 seconds ServerVersion -- Apache IP: 202.6.172.98 Client  Agent  IP  PID Sysclient0501  4BW2MKUF  142.20.57.246  648 Sysclient0501  9HUGDCRL  142.20.57.246  5076 Sysclient0501  6H8SZPCW  142.20.57.246  1748 Sysclient0811  DS8V3RNH  142.20.59.44  3780 DC1.systemia.com VUBW3KYE  142.20.61.130  3880 Sysclient0010  6FEZ8L4N  142.20.56.11  3584 Sysclient0069  EMK3VW7F  142.20.56.70  4152 Sysclient0203  UXCSTKZ9  142.20.56.204  5388 Sysclient0358  PE54DBYX  142.20.57.103  2984 Sysclient0618  73FCWS1G  142.20.58.107  4060 Sysclient0851  5BUEZALX  142.20.59.84  4652"
+    }
+   ],
+   "time_granularity": "summary (time ends :00)",
+   "verdict": "ours is not defensible: the ground truth line is a summary with a rounded time, so the action cannot be placed in one window"
+  },
+  {
+   "cell": "SysClient0203|26154450",
+   "host": "SysClient0203",
+   "window_start": "2019-09-23T15:30:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:30:00",
+     "text": "On Sysclient0201, removed registry persistence at HKCU:Software\\Microsoft\\Windows\\CurrentVersion\\Debug stagers. Once checked in, the agents were used to switch to a separate PowerShell Empire server, with configurations that were modified from default settings and were sent over https (port 443). Deathstar was used to automate enumerating the domain and obtaining an elevated shell on the domain controller. The DC agent was used to pivot back to original target to obtain an elevated agent. Persistence was established using WMI subscriptions to call back at 10:00 or within 5 minutes of boot. Ran modules to enumerate the local system looking for vulnerabilities or important files. Uploaded plink and created completed local port forwarding with SSH to the attacker server. Forwarded port 3389 to allow RDP into systemia through any network security devices. RDP’ed into target and used netcat to exfiltrate data. Used RDP to tunnel through two other hosts. On the final host, connected network share and exfiltrated a majority of files via netcat. Research Projects Agency or the U.S. Government. Cleaned up files and shut down RDP sessions. Used existing agent on DC to re-infect five workstations for overnight C2. Listener information: PowerShell launcher string -- \"powershell -NoProfile -Sta -WindowStyle 1 - EncodedCommand\" DefaultProfile -- \"/news/current.php/login/default.php/admin/process.jsp|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36\" DefaultDelay Between connections -- 30 seconds ServerVersion -- Apache IP: 202.6.172.98 Client  Agent  IP  PID Sysclient0501  4BW2MKUF  142.20.57.246  648 Sysclient0501  9HUGDCRL  142.20.57.246  5076 Sysclient0501  6H8SZPCW  142.20.57.246  1748 Sysclient0811  DS8V3RNH  142.20.59.44  3780 DC1.systemia.com VUBW3KYE  142.20.61.130  3880 Sysclient0010  6FEZ8L4N  142.20.56.11  3584 Sysclient0069  EMK3VW7F  142.20.56.70  4152 Sysclient0203  UXCSTKZ9  142.20.56.204  5388 Sysclient0358  PE54DBYX  142.20.57.103  2984 Sysclient0618  73FCWS1G  142.20.58.107  4060 Sysclient0851  5BUEZALX  142.20.59.84  4652"
+    }
+   ],
+   "time_granularity": "summary (time ends :00)",
+   "verdict": "ours is not defensible: the ground truth line is a summary with a rounded time, so the action cannot be placed in one window"
+  },
+  {
+   "cell": "SysClient0358|26154450",
+   "host": "SysClient0358",
+   "window_start": "2019-09-23T15:30:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:30:00",
+     "text": "On Sysclient0201, removed registry persistence at HKCU:Software\\Microsoft\\Windows\\CurrentVersion\\Debug stagers. Once checked in, the agents were used to switch to a separate PowerShell Empire server, with configurations that were modified from default settings and were sent over https (port 443). Deathstar was used to automate enumerating the domain and obtaining an elevated shell on the domain controller. The DC agent was used to pivot back to original target to obtain an elevated agent. Persistence was established using WMI subscriptions to call back at 10:00 or within 5 minutes of boot. Ran modules to enumerate the local system looking for vulnerabilities or important files. Uploaded plink and created completed local port forwarding with SSH to the attacker server. Forwarded port 3389 to allow RDP into systemia through any network security devices. RDP’ed into target and used netcat to exfiltrate data. Used RDP to tunnel through two other hosts. On the final host, connected network share and exfiltrated a majority of files via netcat. Research Projects Agency or the U.S. Government. Cleaned up files and shut down RDP sessions. Used existing agent on DC to re-infect five workstations for overnight C2. Listener information: PowerShell launcher string -- \"powershell -NoProfile -Sta -WindowStyle 1 - EncodedCommand\" DefaultProfile -- \"/news/current.php/login/default.php/admin/process.jsp|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36\" DefaultDelay Between connections -- 30 seconds ServerVersion -- Apache IP: 202.6.172.98 Client  Agent  IP  PID Sysclient0501  4BW2MKUF  142.20.57.246  648 Sysclient0501  9HUGDCRL  142.20.57.246  5076 Sysclient0501  6H8SZPCW  142.20.57.246  1748 Sysclient0811  DS8V3RNH  142.20.59.44  3780 DC1.systemia.com VUBW3KYE  142.20.61.130  3880 Sysclient0010  6FEZ8L4N  142.20.56.11  3584 Sysclient0069  EMK3VW7F  142.20.56.70  4152 Sysclient0203  UXCSTKZ9  142.20.56.204  5388 Sysclient0358  PE54DBYX  142.20.57.103  2984 Sysclient0618  73FCWS1G  142.20.58.107  4060 Sysclient0851  5BUEZALX  142.20.59.84  4652"
+    }
+   ],
+   "time_granularity": "summary (time ends :00)",
+   "verdict": "ours is not defensible: the ground truth line is a summary with a rounded time, so the action cannot be placed in one window"
+  },
+  {
+   "cell": "SysClient0501|26154450",
+   "host": "SysClient0501",
+   "window_start": "2019-09-23T15:30:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:30:00",
+     "text": "On Sysclient0201, removed registry persistence at HKCU:Software\\Microsoft\\Windows\\CurrentVersion\\Debug stagers. Once checked in, the agents were used to switch to a separate PowerShell Empire server, with configurations that were modified from default settings and were sent over https (port 443). Deathstar was used to automate enumerating the domain and obtaining an elevated shell on the domain controller. The DC agent was used to pivot back to original target to obtain an elevated agent. Persistence was established using WMI subscriptions to call back at 10:00 or within 5 minutes of boot. Ran modules to enumerate the local system looking for vulnerabilities or important files. Uploaded plink and created completed local port forwarding with SSH to the attacker server. Forwarded port 3389 to allow RDP into systemia through any network security devices. RDP’ed into target and used netcat to exfiltrate data. Used RDP to tunnel through two other hosts. On the final host, connected network share and exfiltrated a majority of files via netcat. Research Projects Agency or the U.S. Government. Cleaned up files and shut down RDP sessions. Used existing agent on DC to re-infect five workstations for overnight C2. Listener information: PowerShell launcher string -- \"powershell -NoProfile -Sta -WindowStyle 1 - EncodedCommand\" DefaultProfile -- \"/news/current.php/login/default.php/admin/process.jsp|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36\" DefaultDelay Between connections -- 30 seconds ServerVersion -- Apache IP: 202.6.172.98 Client  Agent  IP  PID Sysclient0501  4BW2MKUF  142.20.57.246  648 Sysclient0501  9HUGDCRL  142.20.57.246  5076 Sysclient0501  6H8SZPCW  142.20.57.246  1748 Sysclient0811  DS8V3RNH  142.20.59.44  3780 DC1.systemia.com VUBW3KYE  142.20.61.130  3880 Sysclient0010  6FEZ8L4N  142.20.56.11  3584 Sysclient0069  EMK3VW7F  142.20.56.70  4152 Sysclient0203  UXCSTKZ9  142.20.56.204  5388 Sysclient0358  PE54DBYX  142.20.57.103  2984 Sysclient0618  73FCWS1G  142.20.58.107  4060 Sysclient0851  5BUEZALX  142.20.59.84  4652"
+    }
+   ],
+   "time_granularity": "summary (time ends :00)",
+   "verdict": "ours is not defensible: the ground truth line is a summary with a rounded time, so the action cannot be placed in one window"
+  },
+  {
+   "cell": "SysClient0618|26154450",
+   "host": "SysClient0618",
+   "window_start": "2019-09-23T15:30:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:30:00",
+     "text": "On Sysclient0201, removed registry persistence at HKCU:Software\\Microsoft\\Windows\\CurrentVersion\\Debug stagers. Once checked in, the agents were used to switch to a separate PowerShell Empire server, with configurations that were modified from default settings and were sent over https (port 443). Deathstar was used to automate enumerating the domain and obtaining an elevated shell on the domain controller. The DC agent was used to pivot back to original target to obtain an elevated agent. Persistence was established using WMI subscriptions to call back at 10:00 or within 5 minutes of boot. Ran modules to enumerate the local system looking for vulnerabilities or important files. Uploaded plink and created completed local port forwarding with SSH to the attacker server. Forwarded port 3389 to allow RDP into systemia through any network security devices. RDP’ed into target and used netcat to exfiltrate data. Used RDP to tunnel through two other hosts. On the final host, connected network share and exfiltrated a majority of files via netcat. Research Projects Agency or the U.S. Government. Cleaned up files and shut down RDP sessions. Used existing agent on DC to re-infect five workstations for overnight C2. Listener information: PowerShell launcher string -- \"powershell -NoProfile -Sta -WindowStyle 1 - EncodedCommand\" DefaultProfile -- \"/news/current.php/login/default.php/admin/process.jsp|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36\" DefaultDelay Between connections -- 30 seconds ServerVersion -- Apache IP: 202.6.172.98 Client  Agent  IP  PID Sysclient0501  4BW2MKUF  142.20.57.246  648 Sysclient0501  9HUGDCRL  142.20.57.246  5076 Sysclient0501  6H8SZPCW  142.20.57.246  1748 Sysclient0811  DS8V3RNH  142.20.59.44  3780 DC1.systemia.com VUBW3KYE  142.20.61.130  3880 Sysclient0010  6FEZ8L4N  142.20.56.11  3584 Sysclient0069  EMK3VW7F  142.20.56.70  4152 Sysclient0203  UXCSTKZ9  142.20.56.204  5388 Sysclient0358  PE54DBYX  142.20.57.103  2984 Sysclient0618  73FCWS1G  142.20.58.107  4060 Sysclient0851  5BUEZALX  142.20.59.84  4652"
+    }
+   ],
+   "time_granularity": "summary (time ends :00)",
+   "verdict": "ours is not defensible: the ground truth line is a summary with a rounded time, so the action cannot be placed in one window"
+  },
+  {
+   "cell": "SysClient0811|26154450",
+   "host": "SysClient0811",
+   "window_start": "2019-09-23T15:30:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:30:00",
+     "text": "On Sysclient0201, removed registry persistence at HKCU:Software\\Microsoft\\Windows\\CurrentVersion\\Debug stagers. Once checked in, the agents were used to switch to a separate PowerShell Empire server, with configurations that were modified from default settings and were sent over https (port 443). Deathstar was used to automate enumerating the domain and obtaining an elevated shell on the domain controller. The DC agent was used to pivot back to original target to obtain an elevated agent. Persistence was established using WMI subscriptions to call back at 10:00 or within 5 minutes of boot. Ran modules to enumerate the local system looking for vulnerabilities or important files. Uploaded plink and created completed local port forwarding with SSH to the attacker server. Forwarded port 3389 to allow RDP into systemia through any network security devices. RDP’ed into target and used netcat to exfiltrate data. Used RDP to tunnel through two other hosts. On the final host, connected network share and exfiltrated a majority of files via netcat. Research Projects Agency or the U.S. Government. Cleaned up files and shut down RDP sessions. Used existing agent on DC to re-infect five workstations for overnight C2. Listener information: PowerShell launcher string -- \"powershell -NoProfile -Sta -WindowStyle 1 - EncodedCommand\" DefaultProfile -- \"/news/current.php/login/default.php/admin/process.jsp|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36\" DefaultDelay Between connections -- 30 seconds ServerVersion -- Apache IP: 202.6.172.98 Client  Agent  IP  PID Sysclient0501  4BW2MKUF  142.20.57.246  648 Sysclient0501  9HUGDCRL  142.20.57.246  5076 Sysclient0501  6H8SZPCW  142.20.57.246  1748 Sysclient0811  DS8V3RNH  142.20.59.44  3780 DC1.systemia.com VUBW3KYE  142.20.61.130  3880 Sysclient0010  6FEZ8L4N  142.20.56.11  3584 Sysclient0069  EMK3VW7F  142.20.56.70  4152 Sysclient0203  UXCSTKZ9  142.20.56.204  5388 Sysclient0358  PE54DBYX  142.20.57.103  2984 Sysclient0618  73FCWS1G  142.20.58.107  4060 Sysclient0851  5BUEZALX  142.20.59.84  4652"
+    }
+   ],
+   "time_granularity": "summary (time ends :00)",
+   "verdict": "ours is not defensible: the ground truth line is a summary with a rounded time, so the action cannot be placed in one window"
+  },
+  {
+   "cell": "SysClient0851|26154450",
+   "host": "SysClient0851",
+   "window_start": "2019-09-23T15:30:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/23/19",
+     "time": "15:30:00",
+     "text": "On Sysclient0201, removed registry persistence at HKCU:Software\\Microsoft\\Windows\\CurrentVersion\\Debug stagers. Once checked in, the agents were used to switch to a separate PowerShell Empire server, with configurations that were modified from default settings and were sent over https (port 443). Deathstar was used to automate enumerating the domain and obtaining an elevated shell on the domain controller. The DC agent was used to pivot back to original target to obtain an elevated agent. Persistence was established using WMI subscriptions to call back at 10:00 or within 5 minutes of boot. Ran modules to enumerate the local system looking for vulnerabilities or important files. Uploaded plink and created completed local port forwarding with SSH to the attacker server. Forwarded port 3389 to allow RDP into systemia through any network security devices. RDP’ed into target and used netcat to exfiltrate data. Used RDP to tunnel through two other hosts. On the final host, connected network share and exfiltrated a majority of files via netcat. Research Projects Agency or the U.S. Government. Cleaned up files and shut down RDP sessions. Used existing agent on DC to re-infect five workstations for overnight C2. Listener information: PowerShell launcher string -- \"powershell -NoProfile -Sta -WindowStyle 1 - EncodedCommand\" DefaultProfile -- \"/news/current.php/login/default.php/admin/process.jsp|Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.167 Safari/537.36\" DefaultDelay Between connections -- 30 seconds ServerVersion -- Apache IP: 202.6.172.98 Client  Agent  IP  PID Sysclient0501  4BW2MKUF  142.20.57.246  648 Sysclient0501  9HUGDCRL  142.20.57.246  5076 Sysclient0501  6H8SZPCW  142.20.57.246  1748 Sysclient0811  DS8V3RNH  142.20.59.44  3780 DC1.systemia.com VUBW3KYE  142.20.61.130  3880 Sysclient0010  6FEZ8L4N  142.20.56.11  3584 Sysclient0069  EMK3VW7F  142.20.56.70  4152 Sysclient0203  UXCSTKZ9  142.20.56.204  5388 Sysclient0358  PE54DBYX  142.20.57.103  2984 Sysclient0618  73FCWS1G  142.20.58.107  4060 Sysclient0851  5BUEZALX  142.20.59.84  4652"
+    }
+   ],
+   "time_granularity": "summary (time ends :00)",
+   "verdict": "ours is not defensible: the ground truth line is a summary with a rounded time, so the action cannot be placed in one window"
+  },
+  {
+   "cell": "SysClient0811|26155588",
+   "host": "SysClient0811",
+   "window_start": "2019-09-24T10:28:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/24/19",
+     "time": "10:28:56",
+     "text": "Sent email with malicious word document to bantonio@systemia.com rsantilli@systemia.com on Sysclient0811 from sgerard@ameblo.jp"
+    }
+   ],
+   "time_granularity": "observed",
+   "verdict": "inria misses it: the action leaves no malicious process"
+  },
+  {
+   "cell": "SysClient0974|26155786",
+   "host": "SysClient0974",
+   "window_start": "2019-09-24T13:46:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/24/19",
+     "time": "13:46:58",
+     "text": "On Sysclient0501 via RDP session, RDPed to Sysclient0974 Research Projects Agency or the U.S. Government."
+    }
+   ],
+   "time_granularity": "observed",
+   "verdict": "inria misses it: the action leaves no malicious process"
+  },
+  {
+   "cell": "SysClient0005|26155794",
+   "host": "SysClient0005",
+   "window_start": "2019-09-24T13:54:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/24/19",
+     "time": "13:54:43",
+     "text": "On Sysclient0974 via RDP session, RDPed to Sysclient0005"
+    }
+   ],
+   "time_granularity": "observed",
+   "verdict": "inria misses it: the action leaves no malicious process"
+  },
+  {
+   "cell": "SysClient0974|26155887",
+   "host": "SysClient0974",
+   "window_start": "2019-09-24T15:27:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/24/19",
+     "time": "15:27:32",
+     "text": "On Sysclient0974 closed RDP session."
+    }
+   ],
+   "time_granularity": "observed",
+   "verdict": "inria misses it: the action leaves no malicious process"
+  },
+  {
+   "cell": "SysClient0069|26156940",
+   "host": "SysClient0069",
+   "window_start": "2019-09-25T09:00:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/25/19",
+     "time": "09:00:00",
+     "text": "Agents ran overnight on:  DC1.systemia.com VUBW3KYE, Sysclient0010 6FEZ8L4N, Sysclient0069 EMK3VW7F, Sysclient0203 UXCSTKZ9, Sysclient0358 PE54DBYX, Sysclient0618 73FCWS1G, Sysclient0851 5BUEZALX"
+    }
+   ],
+   "time_granularity": "summary (time ends :00)",
+   "verdict": "ours is not defensible: the ground truth line is a summary with a rounded time, so the action cannot be placed in one window"
+  },
+  {
+   "cell": "SysClient0358|26156940",
+   "host": "SysClient0358",
+   "window_start": "2019-09-25T09:00:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/25/19",
+     "time": "09:00:00",
+     "text": "Agents ran overnight on:  DC1.systemia.com VUBW3KYE, Sysclient0010 6FEZ8L4N, Sysclient0069 EMK3VW7F, Sysclient0203 UXCSTKZ9, Sysclient0358 PE54DBYX, Sysclient0618 73FCWS1G, Sysclient0851 5BUEZALX"
+    }
+   ],
+   "time_granularity": "summary (time ends :00)",
+   "verdict": "ours is not defensible: the ground truth line is a summary with a rounded time, so the action cannot be placed in one window"
+  },
+  {
+   "cell": "SysClient0051|26157000",
+   "host": "SysClient0051",
+   "window_start": "2019-09-25T10:00:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/25/19",
+     "time": "10:00:00",
+     "text": "Sysclinet0501 WMI Subscription persistence method activates, agent XVGHS45M checks in. upgrade process. When updated, the software reached out to malicious server and downloaded a binary named update.exe. The malicious binary contained a reverse TCP Meterpreter payload. It connected back to the server on port 8080. The software update was executed on two systems. Once a connection was established, system level access was obtained. A shell was used to find local information and a network ARP scan was used to identify potential targets. Built in Meterpreter modules were used to enumerate local software and any shares. The Meterpreter agent was migrated from the initial one to LSASS, and Mimikatz was used to collect clear text password and hashes. Persistence was established via an autorun registry entry. Timestomper was used to “black” the MAC times for files created by the persistence process. Added new admin user to attempt RDP connection. On one client, Meterpreter was used to migrate to the lwabeat process. Attacker Server DNS Names: notepadplus-sourceforge.net microsoft.com IP: 53.192.68.50 Meterpreter process on Sysclient0051 Research Projects Agency or the U.S. Government. PID 2712 cKfGW.exe Migrated to LSASS Meterpreter process on Sysclient0351 PID 1932 f.exe Migrated to lwabeats"
+    }
+   ],
+   "time_granularity": "summary (time ends :00)",
+   "verdict": "ours is not defensible: the ground truth line is a summary with a rounded time, so the action cannot be placed in one window"
+  },
+  {
+   "cell": "SysClient0351|26157000",
+   "host": "SysClient0351",
+   "window_start": "2019-09-25T10:00:00-04:00",
+   "our_actions": [
+    {
+     "date": "09/25/19",
+     "time": "10:00:00",
+     "text": "Sysclinet0501 WMI Subscription persistence method activates, agent XVGHS45M checks in. upgrade process. When updated, the software reached out to malicious server and downloaded a binary named update.exe. The malicious binary contained a reverse TCP Meterpreter payload. It connected back to the server on port 8080. The software update was executed on two systems. Once a connection was established, system level access was obtained. A shell was used to find local information and a network ARP scan was used to identify potential targets. Built in Meterpreter modules were used to enumerate local software and any shares. The Meterpreter agent was migrated from the initial one to LSASS, and Mimikatz was used to collect clear text password and hashes. Persistence was established via an autorun registry entry. Timestomper was used to “black” the MAC times for files created by the persistence process. Added new admin user to attempt RDP connection. On one client, Meterpreter was used to migrate to the lwabeat process. Attacker Server DNS Names: notepadplus-sourceforge.net microsoft.com IP: 53.192.68.50 Meterpreter process on Sysclient0051 Research Projects Agency or the U.S. Government. PID 2712 cKfGW.exe Migrated to LSASS Meterpreter process on Sysclient0351 PID 1932 f.exe Migrated to lwabeats"
+    }
+   ],
+   "time_granularity": "summary (time ends :00)",
+   "verdict": "ours is not defensible: the ground truth line is a summary with a rounded time, so the action cannot be placed in one window"
+  }
+ ]
+}
