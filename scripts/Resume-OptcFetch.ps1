@@ -23,15 +23,45 @@
 # Usage:
 #   .\scripts\Resume-OptcFetch.ps1                       # 6 passes, 90 min apart
 #   .\scripts\Resume-OptcFetch.ps1 -Passes 12 -Minutes 45
+#   .\scripts\Resume-OptcFetch.ps1 -Passes 26 -Minutes 55 -Phase '3,4,5'
 #
 # Run it in the background and read F:\mc-cycop-data\raw\optc\_acquire.log.
 
 param(
   [int]$Passes  = 6,
   [int]$Minutes = 90,
-  [int[]]$Phase = @(3, 4, 5),
+  [string[]]$Phase = @('3', '4', '5'),
   [string]$LogPath = ''
 )
+
+# -Phase is a STRING array on purpose. Twice now a launcher has passed 3,4,5
+# through a shell that ate the commas, and PowerShell bound the single token
+# "345" to an [int[]] parameter without complaining. fetch-optc then found no
+# planned files for phase 345, and the loop slept 55 minutes and tried again,
+# 26 times, downloading nothing all night. The failure was loud in the log and
+# silent in the outcome, which is the worst combination for an unattended job.
+#
+# So parse it here, and refuse anything that is not a real phase.
+$phaseList = @()
+foreach ($p in $Phase) {
+  foreach ($tok in ($p -split '[,;\s]+')) {
+    if ($tok) { $phaseList += $tok }
+  }
+}
+$Phase = @()
+foreach ($tok in $phaseList) {
+  $n = 0
+  if (-not [int]::TryParse($tok, [ref]$n)) {
+    throw "bad -Phase value '$tok'. Pass them as -Phase 3,4,5 or -Phase @(3,4,5)."
+  }
+  if ($n -lt 1 -or $n -gt 6) {
+    throw ("bad -Phase value '$tok'. Phases are 1..6. If this looks like your " +
+           "phases run together, the comma was eaten before PowerShell saw it: " +
+           "quote it as -Phase '3,4,5'.")
+  }
+  $Phase += $n
+}
+if ($Phase.Count -eq 0) { throw 'no phases given' }
 
 $ErrorActionPreference = 'Continue'
 try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch { }
@@ -82,7 +112,14 @@ for ($i = 1; $i -le $Passes; $i++) {
       # when its file is complete.
       & (Join-Path $PSScriptRoot 'fetch-optc.ps1') -Phase $Phase -SmallestFirst -Confirm *>&1 | Out-Null
     } catch {
-      Write-Line ("pass {0}/{1}: fetch threw: {2}" -f $i, $Passes, $_.Exception.Message)
+      $msg = $_.Exception.Message
+      Write-Line ("pass {0}/{1}: fetch threw: {2}" -f $i, $Passes, $msg)
+      # Nothing to retry: this one is about the arguments, not the network, and
+      # it will fail identically for every remaining pass.
+      if ($msg -like '*No planned files*') {
+        Write-Line 'aborting the loop: the phase list matches no planned files'
+        break
+      }
     }
     $after = Get-RawBytes
     Write-Line ("pass {0}/{1}: done, {2:N1} GB -> {3:N1} GB (+{4:N2} GB)" -f `
