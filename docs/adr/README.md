@@ -36,3 +36,5 @@
 | [0019](0019-adversary-simulation.md) | 적대 행위자 시뮬레이션 - 모델은 합법수만 고른다 | 채택 |
 | [0020](0020-hard-and-soft-requirements.md) | hard 요구는 100% 전파한다 | 채택 |
 | [0021](0021-hosting-posture-and-model-endpoint.md) | 호스팅 배치와 모델 엔드포인트는 런타임 설정 | 채택 |
+| [0022](0022-verification-is-part-of-publishing.md) | 검증을 통과하지 못한 브리핑은 발행하지 않는다 | 채택 |
+| [0023](0023-optc-labels-are-process-intervals.md) | OpTC 라벨은 구간이다 - Inria 수정판으로 교체 | 채택 |

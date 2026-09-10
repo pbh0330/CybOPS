@@ -78,6 +78,24 @@ AIT는 라벨이 줄 번호 단위라 정규화기가 원본 줄 번호를 보�
   30/500 = 6%가 아니라 18/20 번들 = 90%를 받게 되고, 실측 총량은 **232.1GB / 1,001개 파일**이다.
   상세와 단계별 분할은 `09-optc-acquisition.md`.
 
+### OpTC 수정 라벨 - Inria PIRAT (2026-09-10 도입)
+
+OpTC 의 오류를 고치고 악성 프로세스를 라벨한 판. **E1-b 는 이제 이것을 쓴다.**
+교체 근거는 `19-e1b-design.md` 12절에 있다 - 우리 라벨은 행동이 일어난 **시점**이고
+평가 단위는 (호스트, 창) **구간**이라 맞춘 창이 오탐으로 집계됐다.
+
+- 출처: Inria PIRAT, *A New Hope for DARPA OpTC*, CSET 2025.
+- 데이터 DOI: **10.57745/UXCWOC** (Recherche Data Gouv). **로그인 불필요.**
+- 코드: `gitlab.inria.fr/fmajorcz/a_new_hope_for_darpa_optc`
+- **라이선스: CC BY 4.0. 재배포 가능(출처 표기 조건).** OpTC 본체(퍼블릭
+  도메인)보다 조건이 하나 더 붙으므로, 논문에 실을 때 **인용과 변경 사실을
+  명시한다**(우리는 호스트명 정규화와 DC1 제외, 개방 구간 클램을 가했다).
+- 보관 위치: `analysis/optc/inria/ground_truth_[corrected_]sc{1,2,3}_updated.csv`.
+  95 KB 이고 재배포 가능해서 **예외적으로 저장소에 넣는다**(`.gitignore` 예외).
+  라벨 없이는 E1-b 결과를 재현할 수 없고, 크기도 라이선스도 문제가 안 된다.
+- 변환 스크립트: `scripts/optc_labels_inria.py` → `analysis/optc/window-labels-inria.json`.
+  우리 예전 라벨(`window-labels.json`)은 비교용으로 남겨 둔다.
+
 ### LANL 데이터셋
 
 실제 국립연구소 운영망 기반이라 정상 트래픽의 결이 인공적이지 않다는 점이 강점.

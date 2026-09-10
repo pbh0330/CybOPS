@@ -81,3 +81,10 @@ ui/mc-cycop-hosted.zip
 # 발행 경로의 중간 산출물. 시도별 브리핑과 검사 보고서는 재생성된다.
 # 발행된 것은 ui/public/data 와 eval/results/briefing-publish.json 에 남는다.
 analysis/briefing/publish/
+
+# 재라벨 전 원본 특징 CSV 백업. relabel_ecar_windows.py 가 남긴다.
+analysis/**/*.csv.bak
+
+# 예외: Inria 수정판 그라운드트루스는 95KB, CC BY 4.0(재배포 가능)이고
+# 이것 없이는 E1-b 라벨을 재생성할 수 없다. docs/01-datasets.md 참고.
+!analysis/optc/inria/*.csv
