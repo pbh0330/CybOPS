@@ -47,7 +47,19 @@ param(
   [string]$Prompt   = '',
   [string]$Endpoint = 'http://127.0.0.1:11434',
   [double]$Temperature = 0.2,
-  [int]$Attempts    = 3,
+  # Five, measured rather than guessed.
+  #
+  # ADR-0022 shipped with a cap of 3 and admitted it had no basis. Running the
+  # publish path over all 28 timesteps of tacnet-01 with a cap of 8 gave:
+  #
+  #   1 attempt   25 of 28   89%
+  #   2 attempts   2 of 28   96%
+  #   4 attempts   1 of 28  100%
+  #
+  # So 3 would have dropped one timestep that a fourth try would have saved.
+  # The observed maximum is 4; 5 leaves one spare. Raising it further buys
+  # nothing measurable and hides a model that cannot satisfy the checks.
+  [int]$Attempts    = 5,
 
   # Stricter than the evaluation threshold on purpose.
   #

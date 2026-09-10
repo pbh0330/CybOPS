@@ -1,0 +1,7 @@
+drwxr-xr-x root/root         0 2021-05-08 00:32 OpTC/
+drwxr-xr-x root/root         0 2020-10-01 14:35 OpTC/24Sep19/
+-rw-r--r-- root/root 12345845270 2020-09-29 15:08 OpTC/24Sep19/Sys652.dat
+-rw-r--r-- root/root  9082437946 2020-10-01 14:35 OpTC/24Sep19/Sys124.dat
+-rw-r--r-- root/root  7060317648 2020-09-30 09:17 OpTC/24Sep19/Sys158.dat
+-rw-r--r-- root/root  7194589021 2020-09-30 20:39 OpTC/24Sep19/Sys461.dat
+-rw-r--r-- root/root  6971275038 2020-10-01 08:37 OpTC/24Sep19/Sys813.dat

@@ -1,0 +1,697 @@
+{
+    "generated":  "2026-09-10T00:06:06.2182917+09:00",
+    "generator":  "scripts/Publish-Briefings.ps1",
+    "adr":  "ADR-0022",
+    "scenario":  "tacnet-01",
+    "model":  "gemma2:9b-instruct-q4_K_M",
+    "prompt":  "F:\\F\\other_class\\CybOPS\\prompts\\briefing.ko.md",
+    "temperature":  0.2,
+    "attempts_allowed":  8,
+    "min_citation_rate":  1,
+    "dry_run":  true,
+    "published":  28,
+    "dropped":  0,
+    "first_attempt_accepted":  25,
+    "note":  "Retries are a publishing tool. The evaluation scripts generate once. Do not read attempt counts here as a model score.",
+    "timesteps":  [
+                      {
+                          "t":  0,
+                          "published":  true,
+                          "attempt":  2,
+                          "attempts":  2,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=addressed",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "FAIL: 3 outages",
+                                            "accepted":  false
+                                        },
+                                        {
+                                            "attempt":  2,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  15,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=addressed",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  30,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=addressed",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  45,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=addressed",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  60,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=addressed",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  75,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=addressed",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  90,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=addressed",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  105,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=addressed",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  120,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=addressed",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  135,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=vacuous",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  150,
+                          "published":  true,
+                          "attempt":  4,
+                          "attempts":  4,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=addressed",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "FAIL: 2 top mission",
+                                            "accepted":  false
+                                        },
+                                        {
+                                            "attempt":  2,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "FAIL: 2 top mission",
+                                            "accepted":  false
+                                        },
+                                        {
+                                            "attempt":  3,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "FAIL: 2 top mission",
+                                            "accepted":  false
+                                        },
+                                        {
+                                            "attempt":  4,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  165,
+                          "published":  true,
+                          "attempt":  2,
+                          "attempts":  2,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=addressed",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "FAIL: 2 top mission",
+                                            "accepted":  false
+                                        },
+                                        {
+                                            "attempt":  2,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  180,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=addressed",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  195,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=vacuous",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  210,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=addressed",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  225,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=addressed",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  240,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=vacuous",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  255,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=addressed",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  270,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=addressed",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  285,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=vacuous",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  300,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=addressed",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  315,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=addressed",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  330,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=addressed",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  345,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=vacuous",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  360,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=vacuous",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  375,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=vacuous",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  390,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=vacuous",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      },
+                      {
+                          "t":  405,
+                          "published":  true,
+                          "attempt":  1,
+                          "attempts":  1,
+                          "citation_rate":  1,
+                          "violations":  0,
+                          "coverage_verdict":  "addressed",
+                          "coverage_slots":  [
+                                                 "2 top mission=addressed",
+                                                 "3 outages=vacuous",
+                                                 "4 containment cost=addressed"
+                                             ],
+                          "tries":  [
+                                        {
+                                            "attempt":  1,
+                                            "citation_rate":  1,
+                                            "violations":  0,
+                                            "coverage":  "all slots",
+                                            "accepted":  true
+                                        }
+                                    ]
+                      }
+                  ]
+}
