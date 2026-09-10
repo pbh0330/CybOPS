@@ -1,0 +1,74 @@
+﻿{
+    "generated":  "2026-09-10T10:28:53.0435727Z",
+    "generator":  "scripts/Invoke-Gates.ps1",
+    "tiers":  [
+                  "offline",
+                  "data"
+              ],
+    "gates":  [
+                  {
+                      "name":  "case collisions",
+                      "tier":  "offline",
+                      "status":  "pass",
+                      "exit":  0,
+                      "seconds":  0.3
+                  },
+                  {
+                      "name":  "ps1 encoding (bom)",
+                      "tier":  "offline",
+                      "status":  "pass",
+                      "exit":  0,
+                      "seconds":  0.2
+                  },
+                  {
+                      "name":  "ontology",
+                      "tier":  "offline",
+                      "status":  "pass",
+                      "exit":  0,
+                      "seconds":  0.2
+                  },
+                  {
+                      "name":  "ocsf conformance",
+                      "tier":  "offline",
+                      "status":  "pass",
+                      "exit":  0,
+                      "seconds":  1.6
+                  },
+                  {
+                      "name":  "geo invariance",
+                      "tier":  "offline",
+                      "status":  "pass",
+                      "exit":  0,
+                      "seconds":  11.7
+                  },
+                  {
+                      "name":  "bundle: local",
+                      "tier":  "offline",
+                      "status":  "pass",
+                      "exit":  0,
+                      "seconds":  0.1
+                  },
+                  {
+                      "name":  "bundle: hosted",
+                      "tier":  "offline",
+                      "status":  "pass",
+                      "exit":  0,
+                      "seconds":  0
+                  },
+                  {
+                      "name":  "optc manifest",
+                      "tier":  "data",
+                      "status":  "pass",
+                      "exit":  0,
+                      "seconds":  0.4
+                  },
+                  {
+                      "name":  "briefing citations",
+                      "tier":  "model",
+                      "status":  "skipped",
+                      "exit":  null,
+                      "seconds":  0
+                  }
+              ],
+    "passed":  true
+}
