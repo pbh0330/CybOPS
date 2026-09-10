@@ -43,7 +43,11 @@
 
 param(
   [string]$Root      = 'F:\mc-cycop-data\raw\optc\ecar',
-  [string]$Labels    = "$PSScriptRoot\..\analysis\optc\window-labels.json",
+  # ADR-0023: the labels are the Inria corrected process intervals now, not our
+  # own point labels. window-labels.json is kept for comparison only, and
+  # defaulting to it would quietly spend 150 minutes re-extracting against a
+  # superseded set - the summary sidecar would even look right.
+  [string]$Labels    = "$PSScriptRoot\..\analysis\optc\window-labels-inria.json",
   [string]$OutCsv    = "$PSScriptRoot\..\analysis\optc\ecar-windows-300.csv",
   [string]$OutJson   = "$PSScriptRoot\..\analysis\optc\ecar-windows-300.summary.json",
   [int]   $WindowSec = 300,
