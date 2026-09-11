@@ -108,8 +108,8 @@
                              "files":  26,
                              "bytes":  28302193766,
                              "gb":  26.36,
-                             "status":  "partial 25/26 files, 25.8/26.4 GB",
-                             "files_acquired":  25
+                             "status":  "complete",
+                             "files_acquired":  26
                          },
                    "4":  {
                              "label":  "ecar/evaluation/24Sep19 (Day 2, custom PowerShell Empire)",
@@ -16469,11 +16469,20 @@
                                 "sha256":  "3AF202A8EE3C4E07630B892AEB12A63675EFC05DE0A46B32935FC5AB60994909",
                                 "phase":  4,
                                 "acquired_at":  "2026-09-11T12:13:05"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/25Sept/AIA-501-525/AIA-501-525.ecar-2019-11-17T15-04-02.073.json.gz",
+                                "drive_id":  "1Rf_WIio1L7Gk51-wg-IuCcvEV5v-rFtJ",
+                                "bytes":  616507978,
+                                "sha256":  "15635F6788914A79F5709DEC160A0C218EE0E4363E3AF54E6E49F3929B42A79B",
+                                "phase":  3,
+                                "acquired_at":  "2026-09-09T00:43:45",
+                                "adopted":  "no line in _acquired.jsonl; recorded from disk by Write-OptcManifestLog.ps1"
                             }
                         ],
-    "status":  "acquiring - complete: 1,2,6; outstanding: 3 25/26, 4 31/42, 5 31/32",
+    "status":  "acquiring - complete: 1,2,3,6; outstanding: 4 31/42, 5 31/32",
     "acquired_summary":  {
-                             "files":  988,
+                             "files":  989,
                              "bytes":  195542371144,
                              "gb":  182.11,
                              "phases":  [
@@ -16490,14 +16499,14 @@
                                                "method":  "scripts/Test-GzipIntegrity.ps1 (full decompression, CRC32 + ISIZE)",
                                                "log":  "F:\\mc-cycop-data\\raw\\optc\\_gzipcheck-all.log",
                                                "ran":  true,
-                                               "files_ok":  954,
+                                               "files_ok":  988,
                                                "files_bad":  0,
-                                               "note":  "960 of 988 files verified; 28 acquired since the last integrity run and NOT yet checked. Re-run Test-GzipIntegrity.ps1 before treating this manifest as verified.",
+                                               "note":  "all gzip members decompressed",
                                                "files_empty":  6,
                                                "empty_note":  "valid gzip members that decompress to zero bytes (empty capture windows), counted so the file count is not mistaken for a data count",
-                                               "files_unverified":  28
+                                               "files_unverified":  0
                                            },
-                             "reconciled_at":  "2026-09-11T14:58:20.4153009+09:00",
+                             "reconciled_at":  "2026-09-11T18:16:52.7811598+09:00",
                              "reconciled_by":  "scripts/Write-OptcManifestLog.ps1"
                          }
 }

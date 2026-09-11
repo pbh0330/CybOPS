@@ -50,8 +50,6 @@
 
 # Exit 0 = manifest agrees with disk, 1 = it does not.
 
-
-
 param(
 
   [string]$Manifest = "$PSScriptRoot\..\configs\manifests\optc.json",
@@ -64,19 +62,13 @@ param(
 
 )
 
-
-
 $ErrorActionPreference = 'Stop'
 
 try { [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 } catch { }
 
-
-
 if (-not (Test-Path $Manifest)) { throw "manifest not found: $Manifest" }
 
 if (-not (Test-Path $Root))     { throw "data root not found: $Root" }
-
-
 
 $acqPath = Join-Path $Root '_acquired.jsonl'
 
@@ -84,11 +76,7 @@ if (-not (Test-Path $acqPath)) { throw "no _acquired.jsonl under $Root - nothing
 
 if (-not $GzipLog) { $GzipLog = Join-Path $Root '_gzipcheck.log' }
 
-
-
 # ---------------------------------------------------------------- read
-
-
 
 $raw = New-Object System.Collections.ArrayList
 
@@ -99,8 +87,6 @@ foreach ($line in [IO.File]::ReadLines((Resolve-Path $acqPath))) {
   [void]$raw.Add(($line | ConvertFrom-Json))
 
 }
-
-
 
 # _acquired.jsonl is append-only, so a re-fetch of a file leaves both records.
 
@@ -124,8 +110,6 @@ $rows = @($byPath.Values)
 
 $dupes = $raw.Count - $rows.Count
 
-
-
 Write-Output ''
 
 Write-Output "optc manifest log   root=$Root"
@@ -136,8 +120,6 @@ Write-Output ("  _acquired.jsonl        {0,6} line(s)" -f $raw.Count)
 
 Write-Output ("  distinct rel_path      {0,6}   (superseded by re-fetch: {1})" -f $rows.Count, $dupes)
 
-
-
 # ---------------------------------------------------------------- reconcile
 
 #
@@ -145,8 +127,6 @@ Write-Output ("  distinct rel_path      {0,6}   (superseded by re-fetch: {1})" -
 # Trusting the log alone would let a file that was deleted after download stay
 
 # in the manifest as if it were present. Compare against the filesystem.
-
-
 
 $onDisk = @{}
 
@@ -157,8 +137,6 @@ foreach ($f in (Get-ChildItem -LiteralPath $Root -File -Recurse)) {
   $onDisk[$rel] = $f.Length
 
 }
-
-
 
 $missing = New-Object System.Collections.ArrayList
 
@@ -182,8 +160,6 @@ foreach ($r in $rows) {
 
 }
 
-
-
 Write-Output ("  present on disk        {0,6}" -f ($rows.Count - $missing.Count))
 
 Write-Output ("  missing from disk      {0,6}" -f $missing.Count)
@@ -192,19 +168,13 @@ Write-Output ("  size mismatch          {0,6}" -f $sizeMismatch.Count)
 
 Write-Output ("  bytes accounted for    {0,6:N2} GB" -f ($bytes / 1GB))
 
-
-
 foreach ($m in ($missing | Select-Object -First 5))      { Write-Output "    MISSING  $m" }
 
 foreach ($m in ($sizeMismatch | Select-Object -First 5)) { Write-Output "    SIZE     $m" }
 
-
-
 $noHash = @($rows | Where-Object { -not $_.sha256 })
 
 Write-Output ("  records without sha256 {0,6}" -f $noHash.Count)
-
-
 
 # ---------------------------------------------------------------- integrity
 
@@ -213,8 +183,6 @@ Write-Output ("  records without sha256 {0,6}" -f $noHash.Count)
 # Read the gzip check result rather than restating it. A manifest that claims
 
 # verification nobody ran is worse than one that claims nothing.
-
-
 
 $integrity = [ordered]@{
 
@@ -284,17 +252,74 @@ if (Test-Path $GzipLog) {
 
 }
 
+$man = Get-Content $Manifest -Raw -Encoding utf8 | ConvertFrom-Json
+if ($null -eq $man -or $null -eq $man.planned_files) {
+  throw 'manifest has no planned_files; nothing can be reconciled against it'
+}
 
+# The other direction. It runs here for two reasons: $man has to be loaded
+# (the first version sat 170 lines above the assignment, so $man.planned_files
+# was $null and the loop ran zero times without a word), and -Check has to see
+# the same $rows the write path will use, or the two disagree by exactly the
+# number of adopted files and the gate fails on a manifest that is correct.
+#
+# Originally noted as: runs AFTER the manifest is loaded. The
+# first version of this sat next to the size-mismatch report, 170 lines above
+# the line that assigns $man, so $man.planned_files was $null and the loop ran
+# zero times without a word. It reported nothing and adopted nothing, which
+# reads exactly like "there were no orphans".
+#
+# A file can sit on disk at exactly its planned size with
+# no line in _acquired.jsonl: fetch-optc writes that line when it finishes a
+# download, so a file completed by a pass that was killed, or one already
+# present when a pass started, never gets recorded.
+#
+# It happened to ecar/evaluation/25Sept/AIA-501-525/...T15-04-02.073.json.gz.
+# The file is whole and gzip-verified, but the manifest did not know it existed,
+# which is the one thing the manifest is for: after the raw data is deleted
+# (ADR-0010) an unrecorded file cannot be re-fetched or checked against.
+#
+# So adopt them. The Drive id and planned byte count come from planned_files,
+# the hash is computed here, and the record says plainly where it came from.
+$orphans = New-Object System.Collections.ArrayList
+foreach ($pf in $man.planned_files) {
+  $rel = [string]$pf.rel_path
+  if ($byPath.Contains($rel)) { continue }
+  if (-not $onDisk.ContainsKey($rel)) { continue }
+  if ($onDisk[$rel] -ne [long]$pf.bytes) { continue }   # partial: leave it to fetch
+  [void]$orphans.Add($pf)
+}
+if ($orphans.Count -gt 0) {
+  Write-Output ("  on disk, not in log    {0,6}   (recording from disk: hashing {1})" -f `
+    $orphans.Count, $orphans.Count)
+  foreach ($pf in $orphans) {
+    $full = Join-Path $Root ([string]$pf.rel_path).Replace('/', '\')
+    $sha = (Get-FileHash -LiteralPath $full -Algorithm SHA256).Hash
+    $rec = [pscustomobject]@{
+      rel_path    = [string]$pf.rel_path
+      drive_id    = $pf.drive_id
+      bytes       = [long]$pf.bytes
+      sha256      = $sha
+      phase       = $pf.phase
+      acquired_at = (Get-Item -LiteralPath $full).LastWriteTime.ToString('s')
+      adopted     = 'no line in _acquired.jsonl; recorded from disk by Write-OptcManifestLog.ps1'
+    }
+    $byPath[[string]$pf.rel_path] = $rec
+    if ($Check) {
+      Write-Output ("    WOULD RECORD  {0}" -f $pf.rel_path)
+    } else {
+      Write-Output ("    ADOPTED  {0}" -f $pf.rel_path)
+    }
+  }
+  $rows = @($byPath.Values)
+}
 
 $stale = ($missing.Count -gt 0) -or ($sizeMismatch.Count -gt 0)
-
-
 
 if ($Check) {
 
   Write-Output ''
 
-  $man = Get-Content $Manifest -Raw -Encoding utf8 | ConvertFrom-Json
 
   $logged = @($man.acquisition_log).Count
 
@@ -320,8 +345,6 @@ if ($Check) {
 
 }
 
-
-
 if ($stale) {
 
   Write-Output ''
@@ -332,19 +355,15 @@ if ($stale) {
 
 }
 
-
-
 # ---------------------------------------------------------------- write
 
 
-
-$man = Get-Content $Manifest -Raw -Encoding utf8 | ConvertFrom-Json
 
 
 
 $log = @($rows | ForEach-Object {
 
-  [ordered]@{
+  $rec = [ordered]@{
 
     rel_path    = $_.rel_path
 
@@ -358,11 +377,18 @@ $log = @($rows | ForEach-Object {
 
     acquired_at = $_.acquired_at
 
+    # A record recovered from disk is a weaker claim than one fetch-optc wrote
+    # at download time: acquired_at is a file timestamp, not the moment the
+    # bytes arrived. Carry that through instead of losing it here, which is
+    # exactly where it was being dropped.
+
   }
 
+  if ($_.PSObject.Properties['adopted']) { $rec.adopted = $_.adopted }
+
+  $rec
+
 })
-
-
 
 $man | Add-Member -NotePropertyName acquisition_log -NotePropertyValue $log -Force
 
@@ -445,13 +471,9 @@ $man | Add-Member -NotePropertyName acquired_summary -NotePropertyValue ([ordere
 
 }) -Force
 
-
-
 $json = $man | ConvertTo-Json -Depth 12
 
 [IO.File]::WriteAllText((Resolve-Path $Manifest), $json, (New-Object Text.UTF8Encoding($false)))
-
-
 
 Write-Output ''
 
