@@ -31,9 +31,12 @@ param(
     # to check 28 new ones costs hours for nothing. Point this at the log of an
     # earlier run and only the files it does not name are read.
     #
-    # Matching is by file NAME, which is safe here because the eCAR bundle names
-    # carry their host range and timestamp and are unique across the tree. If
-    # that ever stops being true this has to become a path match.
+    # Matching is on the FULL PATH the earlier run logged. It used to match on
+    # file name, and that was wrong: AIA-301-325.ecar-last.json.gz exists under
+    # four day-folders and ecar-bro ships 80 files called ecarbro.json.gz, so a
+    # name match marked unread files as verified. A skip that is wrong is worse
+    # than no skip at all, because the manifest then claims an integrity check
+    # that never happened.
     [string] $SkipLog = ''
 )
 
@@ -42,7 +45,11 @@ function Test-OneFile {
 
     $item = Get-Item -LiteralPath $File
     Write-Host ''
-    Write-Host ('=== ' + $item.Name + ' ===')
+    # The full path, not the name. Names repeat across the tree
+    # (AIA-301-325.ecar-last.json.gz exists under four day-folders, and
+    # ecar-bro ships 80 files called ecarbro.json.gz), so a log keyed by name
+    # cannot say which file was read. -SkipLog depends on this being exact.
+    Write-Host ('=== ' + $item.FullName + ' ===')
     Write-Host ('  compressed   : {0:N0} B ({1:N2} GB)' -f $item.Length, ($item.Length / 1GB))
 
     $sw = [System.Diagnostics.Stopwatch]::StartNew()
@@ -150,10 +157,16 @@ if ($SkipLog) {
     if (-not (Test-Path -LiteralPath $SkipLog)) { throw ('SkipLog not found: ' + $SkipLog) }
     $seen = @{}
     foreach ($line in [IO.File]::ReadLines((Resolve-Path $SkipLog))) {
-        if ($line -match '^===\s+(\S+\.gz)\s+===$') { $seen[$Matches[1]] = $true }
+        if ($line -match '^===\s+(.+\.gz)\s+===$') { $seen[$Matches[1].Trim()] = $true }
     }
     $before = $targets.Count
-    $targets = @($targets | Where-Object { -not $seen.ContainsKey($_.Name) })
+    $targets = @($targets | Where-Object { -not $seen.ContainsKey($_.FullName) })
+    if ($targets.Count -eq $before -and $seen.Count -gt 0) {
+        # Every target survived the filter. Either none were checked before, or
+        # the log predates full-path headers and matches nothing. Say so, because
+        # silently re-reading 180 GB looks like the tool is stuck.
+        Write-Output 'skip log matched nothing (a log written before full-path headers will not match; everything is re-checked)'
+    }
     Write-Output ("skip log: {0} file(s) already verified, {1} of {2} left to check" -f `
         $seen.Count, $targets.Count, $before)
     if ($targets.Count -eq 0) {
