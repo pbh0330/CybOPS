@@ -88,3 +88,6 @@ analysis/**/*.csv.bak
 # 예외: Inria 수정판 그라운드트루스는 95KB, CC BY 4.0(재배포 가능)이고
 # 이것 없이는 E1-b 라벨을 재생성할 수 없다. docs/01-datasets.md 참고.
 !analysis/optc/inria/*.csv
+
+# 이전 추출의 사이드카. 수치는 docs/19 13절 표와 git 이력에 있다.
+analysis/**/*.v1.summary.json

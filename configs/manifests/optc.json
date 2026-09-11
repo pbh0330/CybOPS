@@ -108,24 +108,24 @@
                              "files":  26,
                              "bytes":  28302193766,
                              "gb":  26.36,
-                             "status":  "partial 20/26 files, 18.4/26.4 GB",
-                             "files_acquired":  20
+                             "status":  "partial 25/26 files, 25.8/26.4 GB",
+                             "files_acquired":  25
                          },
                    "4":  {
                              "label":  "ecar/evaluation/24Sep19 (Day 2, custom PowerShell Empire)",
                              "files":  42,
                              "bytes":  102589712712,
                              "gb":  95.54,
-                             "status":  "partial 21/42 files, 22.9/95.5 GB",
-                             "files_acquired":  21
+                             "status":  "partial 31/42 files, 50.1/95.5 GB",
+                             "files_acquired":  31
                          },
                    "5":  {
                              "label":  "ecar/evaluation/23Sep-Night + 23Sep-night (Day 1 remainder)",
                              "files":  32,
                              "bytes":  73977894612,
                              "gb":  68.9,
-                             "status":  "partial 14/32 files, 12.6/68.9 GB",
-                             "files_acquired":  14
+                             "status":  "partial 31/32 files, 65/68.9 GB",
+                             "files_acquired":  31
                          },
                    "6":  {
                              "label":  "bro/2019-09-23..25 (network sensor for the three red-team days)",
@@ -16213,13 +16213,269 @@
                                 "sha256":  "6AFD2056353F825EFE9C083A887781068FE09DD134715DC34700353F21EFD0B0",
                                 "phase":  3,
                                 "acquired_at":  "2026-09-10T19:27:14"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/24Sep19/AIA-151-175/AIA-151-175.ecar-2019-12-08T20-05-31.427.json.gz",
+                                "drive_id":  "1Txy7ofWgfftEjtAUn_N8HBZYwCaLtnsH",
+                                "bytes":  1539068103,
+                                "sha256":  "C31212766AB1EC7452E8F4A4D2EB683408195C7354EE434ACCA1FB89202834D0",
+                                "phase":  4,
+                                "acquired_at":  "2026-09-10T19:44:23"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/25Sept/AIA-651-675/AIA-651-675.ecar-last.json.gz",
+                                "drive_id":  "1e5qsBlZ0Rsf4lPTNAXgcS5d4dU3POENF",
+                                "bytes":  1541684599,
+                                "sha256":  "59761F03AED41E990B4E095B4A2D5D59C1177D556D784B90D9BAC4E14C258C3C",
+                                "phase":  3,
+                                "acquired_at":  "2026-09-10T20:00:57"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/24Sep19/AIA-551-575/AIA-551-575.ecar-2019-11-17T03-46-32.865.json.gz",
+                                "drive_id":  "1An9FMOtSbqs6Hyali4MlK-kdIqmKoX89",
+                                "bytes":  1559936679,
+                                "sha256":  "74D7C508925D6140750D0F56F8473216510F60371EC06A74DD573835A8AAFE66",
+                                "phase":  4,
+                                "acquired_at":  "2026-09-10T20:17:29"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/25Sept/AIA-401-425/AIA-401-425.ecar-last.json.gz",
+                                "drive_id":  "1OIFt-Tfz2sEQ3JGiBnUnGzu--EVX-lsN",
+                                "bytes":  1587965963,
+                                "sha256":  "B349AA604DB17E4200D2210B11E2BFE1C10B6B16F5D5964979708599E174FF00",
+                                "phase":  3,
+                                "acquired_at":  "2026-09-10T20:33:43"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/25Sept/AIA-851-875/AIA-851-875.ecar-last.json.gz",
+                                "drive_id":  "1nPPVicgr_z5qafAaKoKjQWhuMclibD1U",
+                                "bytes":  1594238011,
+                                "sha256":  "B27FB93F9468EF93C3D18D6B65618245AE37910648243C793A3F11180BAF284F",
+                                "phase":  3,
+                                "acquired_at":  "2026-09-10T20:50:30"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/25Sept/AIA-451-475/AIA-451-475.ecar-last.json.gz",
+                                "drive_id":  "1XR6uf9vyZ7Zp59OEkGIvu9gOuX2KIyTW",
+                                "bytes":  1608430280,
+                                "sha256":  "2A071D49754D65D8E335DB9798CD2EB9117F9074301BE3557548FD6E04ED25A4",
+                                "phase":  3,
+                                "acquired_at":  "2026-09-10T21:08:50"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/25Sept/AIA-351-375/AIA-351-375.ecar-last.json.gz",
+                                "drive_id":  "1-yxi3k1Duc5Uuu_gbu1vjtdEU3FoDSIA",
+                                "bytes":  1610345177,
+                                "sha256":  "D52C3FC3439DE53123FE199374F08A7D7B2AF8E9358727BF88B2A5325A32CC75",
+                                "phase":  3,
+                                "acquired_at":  "2026-09-10T21:25:52"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/23Sep-night/AIA-201-225/AIA-201-225.ecar-last.json.gz",
+                                "drive_id":  "13FCHZU0QgEv-ZNCaIMfzIaqyjfyzseOY",
+                                "bytes":  1665931293,
+                                "sha256":  "2E2B77ED2FE760E07403D2798719D68750B6A570E38B3264ED17A1B55A8B37C9",
+                                "phase":  5,
+                                "acquired_at":  "2026-09-10T21:42:41"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/24Sep19/AIA-501-525/AIA-501-525.ecar-2019-11-17T04-01-58.625.json.gz",
+                                "drive_id":  "1VfyGr8wfSe8LBIHBWuYBlU8c2CyEgO5C",
+                                "bytes":  1800808230,
+                                "sha256":  "6DFDC4830B5C9CEBC1E3A2830629C50FA019722591B7775F5A51794E2634AAF7",
+                                "phase":  4,
+                                "acquired_at":  "2026-09-10T22:00:53"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/24Sep19/AIA-1-25/AIA-1-25.ecar-last.json.gz",
+                                "drive_id":  "1o9pmOxtqvUbx9xRCNX0lXUz6tnf5GO6U",
+                                "bytes":  2176757635,
+                                "sha256":  "8CF562A1E6740B54114E726C01C1FC2BFCDA7077665EC7975C5464A32032BED9",
+                                "phase":  4,
+                                "acquired_at":  "2026-09-10T22:22:52"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/23Sep-night/AIA-201-225/AIA-201-225.ecar-2019-12-08T14-19-51.427.json.gz",
+                                "drive_id":  "1vELTybEJ_dl-ULinFowEy7pod6dyofhj",
+                                "bytes":  2420461400,
+                                "sha256":  "59660976C9A00559498FDE6FA99DF300B76648E21A20E91F025C66DFA76B38A1",
+                                "phase":  5,
+                                "acquired_at":  "2026-09-10T22:47:17"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/23Sep-night/AIA-501-525/AIA-501-525.ecar-last.json.gz",
+                                "drive_id":  "1LapnEjF0W47nCrYlFFefqmn6Vua_IiiG",
+                                "bytes":  2830131737,
+                                "sha256":  "E1663C9F0EAE10ABFE4CBAE8C37602D1218FDC3A8FB5C9C8AC9CE8E307780FBA",
+                                "phase":  5,
+                                "acquired_at":  "2026-09-10T23:17:05"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/24Sep19/AIA-201-225/AIA-201-225.ecar-last.json.gz",
+                                "drive_id":  "19gBCf2oVVIacwxUk8QlLoS7EdAXSjQQS",
+                                "bytes":  2853184627,
+                                "sha256":  "17E773EA52DE34D8F8F65BD92A93F8B4E7880E8B5D4C299149091D17675579BA",
+                                "phase":  4,
+                                "acquired_at":  "2026-09-10T23:49:52"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/24Sep19/AIA-201-225/AIA-201-225.ecar-2019-12-08T17-41-18.327.json.gz",
+                                "drive_id":  "1J_hgoG4SxMtOkMqvjWgTasVvq4rhzDTZ",
+                                "bytes":  2903353175,
+                                "sha256":  "1AE7F55E69A5ABF8EC3EE5717DA85B0A8E1CBCC4FB913D8A31A60667D9417E95",
+                                "phase":  4,
+                                "acquired_at":  "2026-09-11T00:25:41"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/23Sep-night/AIA-1-25/AIA-1-25.ecar-2019-12-07T01-05-16.619.json.gz",
+                                "drive_id":  "1wMNyg5i6Iqer-uOQmM8kyafG-iRGGZ3q",
+                                "bytes":  2986608034,
+                                "sha256":  "99AEA9147C216E8404FB143D5B48D4076AC061BD82FA36F49D86E50468F8E02C",
+                                "phase":  5,
+                                "acquired_at":  "2026-09-11T00:55:49"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/23Sep-night/AIA-551-575/AIA-551-575.ecar-last.json.gz",
+                                "drive_id":  "1gtTY9PugUXK7DKTSWYJ-8kTzTpmPb9im",
+                                "bytes":  3069314000,
+                                "sha256":  "6C44B534E4621BD3E3F42D0FD77825936BE2658F142FC1C0C58DE403FFED545B",
+                                "phase":  5,
+                                "acquired_at":  "2026-09-11T01:27:49"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/23Sep-night/AIA-151-175/AIA-151-175.ecar-last.json.gz",
+                                "drive_id":  "1YbONUgVz-cjUNQZTY_PaPKbO5xPeRZEY",
+                                "bytes":  3105085435,
+                                "sha256":  "06ABE75C7BDCEC2378767B0E6F9467CFCFA37E52F3632AAE4476E2141DAA6126",
+                                "phase":  5,
+                                "acquired_at":  "2026-09-11T01:59:07"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/23Sep-night/AIA-951-975/AIA-951-975.ecar-last.json.gz",
+                                "drive_id":  "1APe6CgvHJ4sjZFefD2VWOWLLPdxoBzmW",
+                                "bytes":  3149717101,
+                                "sha256":  "F0C165E6EA10E6C66670C7AFF5BBEB9442F559646C224B1490709B5332325D83",
+                                "phase":  5,
+                                "acquired_at":  "2026-09-11T02:30:47"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/23Sep-night/AIA-751-775/AIA-751-775.ecar-last.json.gz",
+                                "drive_id":  "1QqvJpdWY2at35abfJmhV1qAouZWurCS5",
+                                "bytes":  3184208043,
+                                "sha256":  "2ECCFA16733E7201406686B1D4F7B6BDC437ED4E7EDAB1C1BD36CB1A9F4C6EB0",
+                                "phase":  5,
+                                "acquired_at":  "2026-09-11T03:02:54"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/23Sep-night/AIA-801-825/AIA-801-825.ecar-last.json.gz",
+                                "drive_id":  "1U2GOy5JEwIwubdgnPEI_e2e_qiEUlvFH",
+                                "bytes":  3342446806,
+                                "sha256":  "E5F69D4AEBDCA808D6B6AE2E7E957725729D6CEBECDF3DF7C76FD3F222425B1B",
+                                "phase":  5,
+                                "acquired_at":  "2026-09-11T03:36:32"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/23Sep-night/AIA-851-875/AIA-851-875.ecar-last.json.gz",
+                                "drive_id":  "18yK92RdN9PJBbqnM5DUXe8MCjV486k8S",
+                                "bytes":  3524230744,
+                                "sha256":  "80A4817E70A4E5540ACA7A8FB6FBA5B7A4FAFA838EDB852BF74E3B743BB51384",
+                                "phase":  5,
+                                "acquired_at":  "2026-09-11T04:12:50"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/23Sep-night/AIA-651-675/AIA-651-675.ecar-last.json.gz",
+                                "drive_id":  "1bAykJxHm6r0PDHnp7Ay0Yamvvl87O7tM",
+                                "bytes":  3560745194,
+                                "sha256":  "AE415B92C2DF59484C12679E0B5A63C028B4ED1705751B3A92B262EBAC9F47CA",
+                                "phase":  5,
+                                "acquired_at":  "2026-09-11T04:48:51"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/24Sep19/AIA-1-25/AIA-1-25.ecar-2019-12-07T04-59-48.561.json.gz",
+                                "drive_id":  "1aXNHMtiLJeW6FBQW8dOXOxNxCpNKiiKY",
+                                "bytes":  3723960073,
+                                "sha256":  "B5F718DFAEAE32104A5B7F7006DB968187C309B3D83B9F8A7AC26C45D60853C1",
+                                "phase":  4,
+                                "acquired_at":  "2026-09-11T05:26:19"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/23Sep-night/AIA-451-475/AIA-451-475.ecar-2019-12-08T04-15-07.354.json.gz",
+                                "drive_id":  "1GDRpQKYDOLnYsubSg3Xnb3FJVB5XTh1y",
+                                "bytes":  3759322594,
+                                "sha256":  "4C027ED773C758A0189B66AE1EAD5134B6CDF82BACC5F577DA26AC345C825ABA",
+                                "phase":  5,
+                                "acquired_at":  "2026-09-11T06:06:43"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/23Sep-night/AIA-401-425/AIA-401-425.ecar-2019-12-08T04-06-31.326.json.gz",
+                                "drive_id":  "1maGOjnZaoJ2Fq4gI6Ofd3gmJjsKHkV6x",
+                                "bytes":  3786817245,
+                                "sha256":  "9EC467168AF27B7623682920C60569654079FB8100F1F4BAA1420ECE83B6FD13",
+                                "phase":  5,
+                                "acquired_at":  "2026-09-11T06:45:12"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/23Sep-night/AIA-351-375/AIA-351-375.ecar-last.json.gz",
+                                "drive_id":  "1rbIQq5KbUgEJpVF9GkFVBu_ukCt8d-qh",
+                                "bytes":  3953929588,
+                                "sha256":  "D001BEBDAEA89BC554A4EB5EF0E8BD914038296DEB2EEBFDE30B57F189A51E88",
+                                "phase":  5,
+                                "acquired_at":  "2026-09-11T07:26:41"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/23Sep-night/AIA-101-125/AIA-101-125.ecar-last.json.gz",
+                                "drive_id":  "1kx40yEHKsYSJMhCUBixD6jzzSYbs_CWT",
+                                "bytes":  3968566748,
+                                "sha256":  "09BB9CD5BA439CAC0D680916B5935A9139F77FF26F238FB96A5DC003484848AB",
+                                "phase":  5,
+                                "acquired_at":  "2026-09-11T08:06:36"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/23Sep-night/AIA-251-275/AIA-251-275.ecar-last.json.gz",
+                                "drive_id":  "1moNib5xhwOkKO_Nrr6swrZmeqKO10hmD",
+                                "bytes":  3969335800,
+                                "sha256":  "7CB3623831BB39BFD86B5EFB19EE5CA58FE091D627D1991A17E8EA6B35B67527",
+                                "phase":  5,
+                                "acquired_at":  "2026-09-11T08:47:18"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/23Sep-night/AIA-301-325/AIA-301-325.ecar-last.json.gz",
+                                "drive_id":  "1zeqfkGBHuhHSNHTwKhUhekZcVZPuOx0E",
+                                "bytes":  3986345701,
+                                "sha256":  "B33BB88CC79FAABCA739B22D6618D9D2600D70B35A397E3563B347F0FD403088",
+                                "phase":  5,
+                                "acquired_at":  "2026-09-11T09:37:36"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/24Sep19/AIA-551-575/AIA-551-575.ecar-last.json.gz",
+                                "drive_id":  "1HexircXniX9kCfJrEmbmTJjqhgSqsqO7",
+                                "bytes":  4141585721,
+                                "sha256":  "CD2154BC6E32293F0F08B449E446B52423B9577B18E53CE1643286814618B24E",
+                                "phase":  4,
+                                "acquired_at":  "2026-09-11T10:40:40"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/24Sep19/AIA-951-975/AIA-951-975.ecar-last.json.gz",
+                                "drive_id":  "1GCOU0IPqQsutrK_XHfw9Ohi-yME2pOzG",
+                                "bytes":  4210735847,
+                                "sha256":  "AEB9FD55D9A7E14D798C336A2ED04219ECEF045151F666B4296B7EA00A0F7E5E",
+                                "phase":  4,
+                                "acquired_at":  "2026-09-11T11:27:00"
+                            },
+                            {
+                                "rel_path":  "ecar/evaluation/24Sep19/AIA-401-425/AIA-401-425.ecar-2019-12-08T07-35-11.579.json.gz",
+                                "drive_id":  "1B9V0Kv_wy3tUmzbJT8jgMcTut9ya5j-g",
+                                "bytes":  4249179111,
+                                "sha256":  "3AF202A8EE3C4E07630B892AEB12A63675EFC05DE0A46B32935FC5AB60994909",
+                                "phase":  4,
+                                "acquired_at":  "2026-09-11T12:13:05"
                             }
                         ],
-    "status":  "acquiring - complete: 1,2,6; outstanding: 3 20/26, 4 21/42, 5 14/32",
+    "status":  "acquiring - complete: 1,2,6; outstanding: 3 25/26, 4 31/42, 5 31/32",
     "acquired_summary":  {
-                             "files":  956,
-                             "bytes":  102177940450,
-                             "gb":  95.16,
+                             "files":  988,
+                             "bytes":  195542371144,
+                             "gb":  182.11,
                              "phases":  [
                                             1,
                                             2,
@@ -16229,18 +16485,19 @@
                                             6
                                         ],
                              "first_acquired":  "2026-09-06T23:45:19",
-                             "last_acquired":  "2026-09-10T19:27:14",
+                             "last_acquired":  "2026-09-11T12:13:05",
                              "integrity":  {
                                                "method":  "scripts/Test-GzipIntegrity.ps1 (full decompression, CRC32 + ISIZE)",
                                                "log":  "F:\\mc-cycop-data\\raw\\optc\\_gzipcheck-all.log",
                                                "ran":  true,
                                                "files_ok":  954,
                                                "files_bad":  0,
-                                               "note":  "all gzip members decompressed",
+                                               "note":  "960 of 988 files verified; 28 acquired since the last integrity run and NOT yet checked. Re-run Test-GzipIntegrity.ps1 before treating this manifest as verified.",
                                                "files_empty":  6,
-                                               "empty_note":  "valid gzip members that decompress to zero bytes (empty capture windows), counted so the file count is not mistaken for a data count"
+                                               "empty_note":  "valid gzip members that decompress to zero bytes (empty capture windows), counted so the file count is not mistaken for a data count",
+                                               "files_unverified":  28
                                            },
-                             "reconciled_at":  "2026-09-10T19:28:21.6075807+09:00",
+                             "reconciled_at":  "2026-09-11T14:58:20.4153009+09:00",
                              "reconciled_by":  "scripts/Write-OptcManifestLog.ps1"
                          }
 }

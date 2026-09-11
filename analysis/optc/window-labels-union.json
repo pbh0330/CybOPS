@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-10T07:35:05.456998+00:00",
+ "generated": "2026-09-11T05:54:48.152454+00:00",
  "generator": "scripts/compare_label_disputes.py --emit-union",
  "experiment": "E1-b",
  "design": "docs/19-e1b-design.md",

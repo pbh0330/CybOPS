@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-10T07:34:16.508519+00:00",
+ "generated": "2026-09-11T05:54:48.147101+00:00",
  "generator": "scripts/compare_label_disputes.py",
  "question": "the cells at 60 s that our labels call positive and the Inria labels do not",
  "window_sec": 60,
@@ -13,7 +13,7 @@
  "summary": {
   "ours_only_from_summary_lines": 13,
   "ours_only_from_observed_actions": 21,
-  "observed_ones_with_telemetry_on_disk": 17,
+  "observed_ones_with_telemetry_on_disk": 19,
   "telemetry_checked_against": "ecar-windows-60.csv"
  },
  "decision": "keep the Inria labels (ADR-0023). The summary-line cells cannot be placed in a window. The observed ones are real and process-lifetime labelling misses them, but they are a fraction of a percent of the label set and none has telemetry on disk, so a union would change no measurement while adding a second provenance to every future reading.",

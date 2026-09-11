@@ -24,7 +24,17 @@ param(
     [switch] $NoHash,
 
     # LANL cyber1 capture ends at this second. 0 disables the check.
-    [long] $ExpectedLastTimestamp = 5011199
+    [long] $ExpectedLastTimestamp = 5011199,
+
+    # Skip files a previous run already passed. Acquisition is incremental: the
+    # OpTC tree grows by a handful of files a day, and re-decompressing 180 GB
+    # to check 28 new ones costs hours for nothing. Point this at the log of an
+    # earlier run and only the files it does not name are read.
+    #
+    # Matching is by file NAME, which is safe here because the eCAR bundle names
+    # carry their host range and timestamp and are unique across the tree. If
+    # that ever stops being true this has to become a path match.
+    [string] $SkipLog = ''
 )
 
 function Test-OneFile {
@@ -134,6 +144,22 @@ if ((Get-Item -LiteralPath $Path).PSIsContainer) {
     $targets = @(Get-ChildItem -LiteralPath $Path -Filter *.gz -File -Recurse | Sort-Object Length)
 } else {
     $targets = @(Get-Item -LiteralPath $Path)
+}
+
+if ($SkipLog) {
+    if (-not (Test-Path -LiteralPath $SkipLog)) { throw ('SkipLog not found: ' + $SkipLog) }
+    $seen = @{}
+    foreach ($line in [IO.File]::ReadLines((Resolve-Path $SkipLog))) {
+        if ($line -match '^===\s+(\S+\.gz)\s+===$') { $seen[$Matches[1]] = $true }
+    }
+    $before = $targets.Count
+    $targets = @($targets | Where-Object { -not $seen.ContainsKey($_.Name) })
+    Write-Output ("skip log: {0} file(s) already verified, {1} of {2} left to check" -f `
+        $seen.Count, $targets.Count, $before)
+    if ($targets.Count -eq 0) {
+        Write-Output 'nothing new to verify.'
+        exit 0
+    }
 }
 
 if ($targets.Count -eq 0) {

@@ -1,10 +1,10 @@
 {
-  "generated": "2026-09-10T06:11:58.029073+00:00",
+  "generated": "2026-09-11T05:54:17.817111+00:00",
   "generator": "scripts/run_e1b.py",
   "experiment": "E1-b",
   "identity_check": [
-    "a_rename: 22.87 distinct values per host, 1.17 distinct values per host count -> kept",
-    "principals: 5.57 distinct values per host, 0.04 distinct values per host count -> kept"
+    "a_rename: 36.32 distinct values per host, 1.33 distinct values per host count -> kept",
+    "principals: 7.00 distinct values per host, 0.04 distinct values per host count -> kept"
   ],
   "tag": "w900-inria",
   "design": "docs/19-e1b-design.md",
@@ -12,10 +12,10 @@
   "window_sec": 900,
   "window_source": "ecar-windows-900.summary.json",
   "labelled_cells_expected": 597,
-  "labelled_cells_found": 89,
-  "label_coverage": 0.1490787269681742,
-  "n_cells": 18413,
-  "n_positives": 89,
+  "labelled_cells_found": 393,
+  "label_coverage": 0.6582914572864321,
+  "n_cells": 62491,
+  "n_positives": 393,
   "feature_columns": [
     "n",
     "n_file",
@@ -67,19 +67,215 @@
       "cut_day": "2019-09-22",
       "skipped": "fewer than 20 positives on one side",
       "train_pos": 0,
-      "test_pos": 89
+      "test_pos": 393
     },
     {
       "cut_day": "2019-09-23",
-      "skipped": "fewer than 20 positives on one side",
+      "train_cells": 23060,
+      "test_cells": 39431,
       "train_pos": 75,
-      "test_pos": 14
+      "test_pos": 318,
+      "models": [
+        {
+          "model": "rule: cell event count",
+          "pr_auc": 0.012246945295674556,
+          "roc_auc": 0.5549247969960285,
+          "positives": 318,
+          "negatives": 39113,
+          "precision@recall50": 0.0102939272303509,
+          "alerts@recall50": 15446.0,
+          "precision@recall90": 0.008039440880696939,
+          "alerts@recall90": 35699.0,
+          "precision@recall100": 0.0081421548545678,
+          "alerts@recall100": 39056.0,
+          "precision@20": 0.05,
+          "precision@50": 0.04,
+          "precision@100": 0.02,
+          "precision@500": 0.008
+        },
+        {
+          "model": "rule: new destinations",
+          "pr_auc": 0.012052419783172692,
+          "roc_auc": 0.49629102389512597,
+          "positives": 318,
+          "negatives": 39113,
+          "precision@recall50": 0.007415698894641108,
+          "alerts@recall50": 21441.0,
+          "precision@recall90": 0.008114679936665913,
+          "alerts@recall90": 35368.0,
+          "precision@recall100": 0.008789872298081708,
+          "alerts@recall100": 36178.0,
+          "precision@20": 0.1,
+          "precision@50": 0.04,
+          "precision@100": 0.02,
+          "precision@500": 0.018
+        },
+        {
+          "model": "histgb",
+          "pr_auc": 0.06641568044747044,
+          "roc_auc": 0.6401850178655073,
+          "positives": 318,
+          "negatives": 39113,
+          "precision@recall50": 0.015282583621683967,
+          "alerts@recall50": 10404.0,
+          "precision@recall90": 0.008464328899637243,
+          "alerts@recall90": 33907.0,
+          "precision@recall100": 0.008074549932712083,
+          "alerts@recall100": 39383.0,
+          "precision@20": 0.7,
+          "precision@50": 0.32,
+          "precision@100": 0.17,
+          "precision@500": 0.044
+        },
+        {
+          "model": "logreg",
+          "pr_auc": 0.08120074537439421,
+          "roc_auc": 0.7612318090769739,
+          "positives": 318,
+          "negatives": 39113,
+          "precision@recall50": 0.02410917361637604,
+          "alerts@recall50": 6595.0,
+          "precision@recall90": 0.01256292405340337,
+          "alerts@recall90": 22845.0,
+          "precision@recall100": 0.008064720651264234,
+          "alerts@recall100": 39431.0,
+          "precision@20": 0.65,
+          "precision@50": 0.38,
+          "precision@100": 0.2,
+          "precision@500": 0.068
+        }
+      ],
+      "mttd": [
+        {
+          "budget": 50,
+          "hosts_with_positives": 10,
+          "hosts_caught": 5,
+          "hosts_missed": 5,
+          "median_cells_before_first_hit": 2.0,
+          "caught_on_first_cell": 2
+        },
+        {
+          "budget": 100,
+          "hosts_with_positives": 10,
+          "hosts_caught": 5,
+          "hosts_missed": 5,
+          "median_cells_before_first_hit": 2.0,
+          "caught_on_first_cell": 2
+        },
+        {
+          "budget": 200,
+          "hosts_with_positives": 10,
+          "hosts_caught": 6,
+          "hosts_missed": 4,
+          "median_cells_before_first_hit": 0.0,
+          "caught_on_first_cell": 4
+        }
+      ],
+      "mttd_model": "logreg"
     },
     {
       "cut_day": "2019-09-24",
-      "skipped": "fewer than 20 positives on one side",
-      "train_pos": 75,
-      "test_pos": 14
+      "train_cells": 45785,
+      "test_cells": 16706,
+      "train_pos": 223,
+      "test_pos": 170,
+      "models": [
+        {
+          "model": "rule: cell event count",
+          "pr_auc": 0.01673232916734021,
+          "roc_auc": 0.5266370699223085,
+          "positives": 170,
+          "negatives": 16536,
+          "precision@recall50": 0.01083216515865936,
+          "alerts@recall50": 7847.0,
+          "precision@recall90": 0.010241649374121427,
+          "alerts@recall90": 14939.0,
+          "precision@recall100": 0.01029678982434888,
+          "alerts@recall100": 16510.0,
+          "precision@20": 0.05,
+          "precision@50": 0.02,
+          "precision@100": 0.01,
+          "precision@500": 0.006
+        },
+        {
+          "model": "rule: new destinations",
+          "pr_auc": 0.010206970484621483,
+          "roc_auc": 0.4703209041236233,
+          "positives": 170,
+          "negatives": 16536,
+          "precision@recall50": 0.011830201809324982,
+          "alerts@recall50": 7185.0,
+          "precision@recall90": 0.011792816402034839,
+          "alerts@recall90": 12974.0,
+          "precision@recall100": 0.012636586634951312,
+          "alerts@recall100": 13453.0,
+          "precision@20": 0.0,
+          "precision@50": 0.02,
+          "precision@100": 0.02,
+          "precision@500": 0.004
+        },
+        {
+          "model": "histgb",
+          "pr_auc": 0.0975417151652706,
+          "roc_auc": 0.9028643387688893,
+          "positives": 170,
+          "negatives": 16536,
+          "precision@recall50": 0.09340659340659341,
+          "alerts@recall50": 910.0,
+          "precision@recall90": 0.043122886133032695,
+          "alerts@recall90": 3548.0,
+          "precision@recall100": 0.011603303528769367,
+          "alerts@recall100": 14651.0,
+          "precision@20": 0.2,
+          "precision@50": 0.18,
+          "precision@100": 0.12,
+          "precision@500": 0.09
+        },
+        {
+          "model": "logreg",
+          "pr_auc": 0.03869213091508718,
+          "roc_auc": 0.6762404308602976,
+          "positives": 170,
+          "negatives": 16536,
+          "precision@recall50": 0.01992966002344666,
+          "alerts@recall50": 4265.0,
+          "precision@recall90": 0.013625434143734972,
+          "alerts@recall90": 11229.0,
+          "precision@recall100": 0.010225563909774436,
+          "alerts@recall100": 16625.0,
+          "precision@20": 0.2,
+          "precision@50": 0.12,
+          "precision@100": 0.07,
+          "precision@500": 0.02
+        }
+      ],
+      "mttd": [
+        {
+          "budget": 50,
+          "hosts_with_positives": 7,
+          "hosts_caught": 2,
+          "hosts_missed": 5,
+          "median_cells_before_first_hit": 20.0,
+          "caught_on_first_cell": 0
+        },
+        {
+          "budget": 100,
+          "hosts_with_positives": 7,
+          "hosts_caught": 2,
+          "hosts_missed": 5,
+          "median_cells_before_first_hit": 20.0,
+          "caught_on_first_cell": 0
+        },
+        {
+          "budget": 200,
+          "hosts_with_positives": 7,
+          "hosts_caught": 4,
+          "hosts_missed": 3,
+          "median_cells_before_first_hit": 7.5,
+          "caught_on_first_cell": 1
+        }
+      ],
+      "mttd_model": "histgb"
     }
   ]
 }

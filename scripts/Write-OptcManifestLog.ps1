@@ -258,9 +258,25 @@ if (Test-Path $GzipLog) {
 
   $integrity.empty_note = 'valid gzip members that decompress to zero bytes (empty capture windows), counted so the file count is not mistaken for a data count'
 
-  $integrity.note = if ($bad -eq 0 -and $ok -gt 0) { 'all gzip members decompressed' } else { 'see log' }
+  # "all gzip members decompressed" was written whenever bad was 0, regardless of
+  # how many files the log actually covered. With 988 acquired and 954 checked it
+  # said all, and the 34 unchecked ones were the newest arrivals - exactly the
+  # ones most likely to be a half-written file or a Drive error page. A count of
+  # what was verified is only meaningful next to the count of what exists.
+  $unverified = $rows.Count - ($ok + $empty)
+  if ($unverified -lt 0) { $unverified = 0 }
+  $integrity.files_unverified = $unverified
+  if ($bad -gt 0) {
+    $integrity.note = 'FAILURES PRESENT - see log'
+  } elseif ($unverified -gt 0) {
+    $integrity.note = ('{0} of {1} files verified; {2} acquired since the last integrity run and NOT yet checked. Re-run Test-GzipIntegrity.ps1 before treating this manifest as verified.' -f ($ok + $empty), $rows.Count, $unverified)
+  } elseif ($ok -gt 0) {
+    $integrity.note = 'all gzip members decompressed'
+  } else {
+    $integrity.note = 'see log'
+  }
 
-  Write-Output ("  gzip verified          {0,6} ok, {1} bad, {2} empty" -f $ok, $bad, $empty)
+  Write-Output ("  gzip verified          {0,6} ok, {1} bad, {2} empty, {3} unverified" -f $ok, $bad, $empty, $unverified)
 
 } else {
 
