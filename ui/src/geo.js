@@ -20,6 +20,7 @@
 // header there and geo.safety.basemap_policy.
 
 import { terrainModel, surfaceAt, terrainSvg } from './terrain.js'
+import { typeKo } from './labels.js'
 
 // Position of an asset at time t, from the segment table. Outside every
 // segment the position is undefined, and undefined is drawn as absent rather
@@ -542,8 +543,9 @@ export function renderGeo({
     out.push(`<g class="geo-node${sel}" data-asset="${esc(a.id)}" transform="translate(${P.x.toFixed(1)},${P.y.toFixed(1)})">
       <circle r="15" fill="#0d131c" stroke="${ring}" stroke-width="${cause || hit ? 2.2 : 1.2}" ${cause ? 'stroke-dasharray="3 3"' : ''} />
       ${icon ? `<image href="${icon}" x="-9" y="-9" width="18" height="18" />` : ''}
-      <text class="geo-label" y="27">${esc(a.id)}</text>
-      <title>${esc(a.id)} ${esc(a.type)} (${Math.round(p.x)}, ${Math.round(p.y)}, ${Math.round(p.z ?? 0)} m)${p.note ? ' / ' + esc(p.note) : ''}</title>
+      <text class="geo-label" y="27">${esc(a.site || a.id)}</text>
+      <text class="geo-label geo-label-id" y="38">${esc(a.id)}</text>
+      <title>${esc(a.site || '')} ${esc(typeKo(a.type))} · ${esc(a.id)} (${Math.round(p.x)}, ${Math.round(p.y)}, ${Math.round(p.z ?? 0)} m)${p.note ? ' / ' + esc(p.note) : ''}</title>
     </g>`)
   }
 

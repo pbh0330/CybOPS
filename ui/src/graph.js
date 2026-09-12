@@ -6,29 +6,37 @@
 
 import { symbolDataUri, isVerified, unitSymbolDataUri } from './symbols.js'
 import { serviceIconDataUri } from './icons.js'
+import { assetName } from './labels.js'
 
 // Node shape used to carry the device class. It does not need to any more: the
 // device icon says what the machine is, and a canvas of triangles, hexagons and
 // barrels next to icons was two competing systems for one message. Every asset
 // is a rounded box now, and the icon inside it does the identifying.
 
+// Cause colours. These are the only saturated colours on the screen
+// (ADR-0024); they match docs/design/tokens.md one for one.
 export const CAUSE_COLOR = {
-  attack: '#e5484d',
-  mobility: '#6ea8c7',
-  terrain: '#8f9f6e',
-  maintenance: '#8a8f98',
-  unknown: '#d8a13a',
+  attack: '#ff4d5e',
+  mobility: '#35c8ff',
+  terrain: '#a7c261',
+  maintenance: '#7f8794',
+  unknown: '#ffb020',
+  env: '#7d93ab',
+  inter: '#c07dff',
+  ok: '#2fd18b',
 }
 
-// degradation -> colour. Not a red ramp: red is reserved for adversary effect,
-// so the neutral ramp goes green -> amber -> slate-red and the CAUSE is what
-// decides the border.
+// degradation -> colour. ACHROMATIC BY RULE (ADR-0024): brighter is worse and
+// there is no hue at all.
+//
+// The previous ramp went green -> amber -> slate-red, and its top step
+// (#8f2f39) was a red. That put a second meaning on the one colour reserved
+// for adversary effect, so a badly degraded node and an attacked node looked
+// alike. Hue belongs to the border, which carries the cause.
 export function degColor(v) {
-  if (v <= 0.001) return '#12463a'
-  if (v < 0.25) return '#2c5c3f'
-  if (v < 0.5) return '#6b6330'
-  if (v < 0.75) return '#8f4f2c'
-  return '#8f2f39'
+  const d = Math.max(0, Math.min(1, Number(v) || 0))
+  const l = (0.19 + d * 0.36) * 255
+  return `rgb(${Math.round(l)}, ${Math.round(l * 1.02)}, ${Math.round(l * 1.09)})`
 }
 
 export function buildElements(g) {
@@ -69,13 +77,20 @@ export function buildElements(g) {
     })
   }
   const echelonOf = {}
-  for (const u of g.units || []) echelonOf[u.id] = u.echelon
+  const unitNameOf = {}
+  for (const u of g.units || []) {
+    echelonOf[u.id] = u.echelon
+    unitNameOf[u.id] = u.name || u.id
+  }
   for (const a of g.assets || []) {
     const uri = symbolDataUri(a.type, { size: 44 })
     const unitUri = a.unit ? unitSymbolDataUri(echelonOf[a.unit], { size: 20 }) : null
+    const name = assetName(g, a.id)
     els.push({
       data: {
-        id: a.id, kind: 'asset', label: a.id, assetType: a.type,
+        // meaning first, id second: "CO2-VEH" alone told the operator nothing
+        id: a.id, kind: 'asset', label: name.twoLine, assetType: a.type,
+        assetTypeKo: name.typeKo, siteName: name.site, unitName: unitNameOf[a.unit] || '',
         unit: a.unit || '', unitEchelon: echelonOf[a.unit] || '',
         site: a.site || '', mobility: a.mobility || 'static',
         transit: a.transit === false ? false : true,
@@ -126,19 +141,20 @@ export function stylesheet() {
       selector: 'node',
       style: {
         'label': 'data(label)',
-        'color': '#c8d3e0',
-        'font-family': 'Pretendard, "Segoe UI", "Malgun Gothic", sans-serif',
+        'color': '#c2c6cb',
+        'font-family': '"IBM Plex Sans KR", Pretendard, "Segoe UI", "Malgun Gothic", sans-serif',
         'font-size': 10,
         'text-valign': 'bottom',
         'text-margin-y': 6,
         'text-wrap': 'wrap',
-        'text-max-width': 110,
-        'text-outline-color': '#0a0d12',
+        'text-max-width': 132,
+        'line-height': 1.25,
+        'text-outline-color': '#1e2125',
         'text-outline-width': 2.5,
         'text-outline-opacity': 0.85,
         'border-width': 1.5,
-        'border-color': '#2a3441',
-        'background-color': '#1b2432',
+        'border-color': '#4a515a',
+        'background-color': '#31353b',
         'transition-property': 'background-color, border-color, border-width',
         'transition-duration': '180ms',
       },
@@ -149,11 +165,11 @@ export function stylesheet() {
         'shape': 'round-rectangle',
         'width': 132, 'height': 46,
         'font-size': 12.5, 'font-weight': 'bold',
-        'color': '#eef4fb',
+        'color': '#f2f3f4',
         'text-valign': 'center',
         'text-margin-y': 0,
-        'background-color': '#22304a',
-        'border-color': '#3d5a7d',
+        'background-color': '#353a41',
+        'border-color': '#4a515a',
         'border-width': 1.5,
       },
     },
@@ -162,7 +178,7 @@ export function stylesheet() {
       style: {
         'shape': 'round-rectangle', 'width': 112, 'height': 34,
         'text-valign': 'center', 'text-margin-y': 0, 'font-size': 10,
-        'text-max-width': 100, 'color': '#dbe4ef',
+        'text-max-width': 100, 'color': '#c2c6cb',
       },
     },
     {
@@ -202,7 +218,7 @@ export function stylesheet() {
     },
     // the first endpoint picked with the link tool, so it is obvious what the
     // next click will connect to
-    { selector: 'node.link-src', style: { 'border-color': '#35e0ff', 'border-width': 3 } },
+    { selector: 'node.link-src', style: { 'border-color': '#f2f3f4', 'border-width': 3 } },
     { selector: 'node:selected', style: { 'border-color': '#4da3ff', 'border-width': 3 } },
 
     {

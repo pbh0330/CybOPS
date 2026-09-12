@@ -1,3 +1,5 @@
+// SUPERSEDED 2026-09-10 (ADR-0024). 이 파일은 더 이상 로드되지 않는다.
+// React 이식본은 src/App.jsx 와 src/ui/ 아래에 있다. 참조용으로만 남긴다.
 // MC-CyCOP situation display - viewer only.
 //
 // Every number on this screen was produced by the deterministic engine and

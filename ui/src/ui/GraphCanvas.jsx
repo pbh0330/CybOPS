@@ -1,0 +1,257 @@
+import { useCallback, useEffect, useRef, useState } from 'react'
+import cytoscape from 'cytoscape'
+import dagre from 'cytoscape-dagre'
+import { buildElements, stylesheet, LAYOUTS, CAUSE_COLOR, degColor } from '../graph.js'
+import { deviceIconDataUri } from '../icons.js'
+import { num, linkageOf } from '../derive.js'
+
+cytoscape.use(dagre)
+
+// The four dependency layers, top to bottom. Their on-screen extents are NOT
+// fixed percentages: they are measured from where the nodes actually are and
+// recomputed on every pan, zoom and layout.
+//
+// The first version used fixed bands. They sat still while the graph panned
+// out from under them, so after any pan the label "임무" was pointing at
+// whatever happened to be in the top fifth of the screen. A band that can be
+// wrong about its own contents is worse than no band.
+const LAYERS = [
+  ['mission', '임무'],
+  ['task', '작업'],
+  ['service', '서비스'],
+  ['asset', '자산'],
+]
+
+const LEGEND = [
+  ['공격', 'attack'], ['기동', 'mobility'], ['지형', 'terrain'],
+  ['정비', 'maintenance'], ['미상', 'unknown'], ['정상', 'ok'],
+]
+
+// One picture per node: the device icon. State rides on colour, not on extra
+// glyphs, so a node never has to be decoded.
+function paintSymbol(n, state) {
+  const d = n.data()
+  const color = state === 'attack' ? '#ffb4ba' : state === 'outage' ? '#93a6ba' : '#e6f0fb'
+  const dev = deviceIconDataUri(d.assetType, { size: 44, color })
+  if (!dev) return
+  n.style({
+    'background-image': dev,
+    'background-fit': 'contain',
+    'background-width': '64%',
+    'background-height': '64%',
+    'background-position-x': '50%',
+    'background-position-y': '50%',
+    'background-image-opacity': 1,
+  })
+}
+
+export default function GraphCanvas({ graph, step, view, labels, hidden, cyRef, onSelect, onTap }) {
+  const boxRef = useRef(null)
+  const flowRef = useRef({ raf: null, offset: 0, view })
+  const [bands, setBands] = useState([])
+  // Effects run in declaration order, so this one fires before the instance
+  // below exists. cyReady is the signal that it now does.
+  const [cyReady, setCyReady] = useState(0)
+
+  flowRef.current.view = view
+
+  // Measure where each layer currently sits on screen. Boundaries are placed
+  // midway between the bottom of one layer and the top of the next, so the
+  // bands tile the canvas without overlapping whatever the layout produced.
+  const measureBands = useCallback(() => {
+    const cy = cyRef.current
+    const box = boxRef.current
+    if (!cy || !box || view !== 'dependency') { setBands([]); return }
+    const H = box.clientHeight || 0
+
+    // Cluster the nodes by the row the layout actually put them in, then name
+    // each row after what is in it. Grouping by KIND instead was wrong: dagre
+    // ranks by dependency depth, so an asset that hosts a task sits directly
+    // under the tasks while an asset under a service sits far below. The real
+    // order in tacnet-01 is 임무 → 작업 → 자산 → 서비스 → 자산, and a band
+    // labelled from a presumed ordering pointed at the wrong nodes.
+    const rows = []
+    for (const n of cy.nodes().not('.hidden')) {
+      const bb = n.renderedBoundingBox({ includeLabels: false })
+      rows.push({ kind: n.data('kind'), y1: bb.y1, y2: bb.y2, mid: (bb.y1 + bb.y2) / 2 })
+    }
+    if (!rows.length) { setBands([]); return }
+    rows.sort((a, b) => a.mid - b.mid)
+
+    const gap = 26 * (cy.zoom() || 1)
+    const clusters = []
+    for (const r of rows) {
+      const last = clusters[clusters.length - 1]
+      if (last && r.y1 - last.y2 < gap) {
+        last.y1 = Math.min(last.y1, r.y1)
+        last.y2 = Math.max(last.y2, r.y2)
+        last.kinds.add(r.kind)
+      } else {
+        clusters.push({ y1: r.y1, y2: r.y2, kinds: new Set([r.kind]) })
+      }
+    }
+
+    // Label a row only for the kinds appearing there for the FIRST time going
+    // down. Assets show up in three separate rows, and writing "자산" three
+    // times is noise, not orientation. Rows that introduce nothing new keep
+    // their stripe and stay unlabelled.
+    const seen = new Set()
+    const out = clusters.map((c, i) => {
+      const top = i === 0 ? 0 : (clusters[i - 1].y2 + c.y1) / 2
+      const bottom = i === clusters.length - 1 ? H : (c.y2 + clusters[i + 1].y1) / 2
+      const fresh = LAYERS.filter(([k]) => c.kinds.has(k) && !seen.has(k))
+      for (const [k] of fresh) seen.add(k)
+      return {
+        key: `band-${i}`,
+        name: fresh.map(([, n]) => n).join('·'),
+        top,
+        height: Math.max(0, bottom - top),
+        // keep the label on screen even when its band has been panned off it
+        labelTop: Math.min(Math.max(top + 8, 6), Math.max(6, H - 22)),
+      }
+    })
+    setBands(out)
+  }, [view, cyRef])
+
+  useEffect(() => {
+    const cy = cyRef.current
+    if (!cy) return
+    cy.on('pan zoom resize layoutstop', measureBands)
+    measureBands()
+    return () => cy.off('pan zoom resize layoutstop', measureBands)
+  }, [measureBands, graph, view, step, hidden, cyReady])
+
+  // --- build ------------------------------------------------------------
+  useEffect(() => {
+    if (!graph || !boxRef.current) return
+    const cy = cytoscape({
+      container: boxRef.current,
+      elements: buildElements(graph),
+      style: stylesheet(),
+      wheelSensitivity: 0.2,
+    })
+    cyRef.current = cy
+    cy.on('tap', 'node', (evt) => {
+      if (onTap && onTap(evt.target)) return
+      onSelect(evt.target.id())
+    })
+    cy.on('tap', 'edge', (evt) => { if (onTap) onTap(evt.target) })
+    cy.on('tap', (evt) => { if (evt.target === cy) onSelect(null) })
+    if (import.meta.env && import.meta.env.DEV) window.__cy = cy
+    setCyReady((v) => v + 1)
+    return () => { cy.destroy(); cyRef.current = null }
+  }, [graph])
+
+  // --- view visibility and layout ---------------------------------------
+  useEffect(() => {
+    const cy = cyRef.current
+    if (!cy || view === 'geo') return
+    const transport = cy.edges('.transport')
+    const structural = cy.edges().not('.transport')
+    const nonAssets = cy.nodes('[kind != "asset"]')
+    if (view === 'transport') {
+      transport.removeClass('hidden')
+      structural.addClass('hidden')
+      nonAssets.addClass('hidden')
+    } else {
+      transport.addClass('hidden')
+      structural.removeClass('hidden')
+      nonAssets.removeClass('hidden')
+    }
+    cy.elements().not('.hidden').layout(LAYOUTS[view] || LAYOUTS.dependency).run()
+  }, [view, graph])
+
+  useEffect(() => {
+    const cy = cyRef.current
+    if (!cy) return
+    cy.nodes().style('text-opacity', labels ? 1 : 0)
+  }, [labels, graph])
+
+  // --- paint ------------------------------------------------------------
+  useEffect(() => {
+    const cy = cyRef.current
+    if (!cy || !step || !graph) return
+    const assetOut = step.asset_outage || {}
+    const linkOut = step.link_outage || {}
+    const activePhases = new Set(step.active_phases || [])
+    const temporal = !!graph.timeline
+
+    cy.batch(() => {
+      for (const n of cy.nodes()) {
+        const d = n.data()
+        let v = 0
+        if (d.kind === 'asset') v = num(step.asset?.[d.id])
+        else if (d.kind === 'service') v = num(step.service?.[d.id])
+        else if (d.kind === 'task') v = num(step.task?.[d.id])
+        else if (d.kind === 'mission') v = num(step.mission?.[d.id])
+
+        const cause = d.kind === 'asset' ? assetOut[d.id] : null
+        const hit = d.kind === 'asset' && num(step.compromise?.[d.id]) > 0
+
+        if (d.kind === 'asset' && d.assetType) {
+          paintSymbol(n, hit ? 'attack' : cause ? 'outage' : 'ok')
+        }
+
+        // degradation is a luminance ramp, cause is the border: red stays
+        // exclusive to attack (ADR-0012, ADR-0024)
+        n.style('background-color', degColor(v))
+        n.style('border-color', cause ? (CAUSE_COLOR[cause] || '#4a515a') : (hit ? CAUSE_COLOR.attack : '#4a515a'))
+        n.style('border-width', cause || hit ? 2.5 : 1.5)
+        n.style('border-style', cause ? 'dashed' : 'solid')
+
+        const inactive = temporal && d.kind === 'task' && d.phase && !activePhases.has(d.phase)
+        n.toggleClass('dim', inactive)
+        if (d.kind === 'asset') n.toggleClass('orphan', !linkageOf(graph, d.id).linked)
+      }
+      for (const e of cy.edges('.transport')) {
+        const cause = linkOut[e.id()]
+        e.toggleClass('cut', !!cause)
+        e.style('line-color', cause ? (CAUSE_COLOR[cause] || '#8a8f98') : '#2fd18b')
+        e.style('label', cause ? `${e.data('bearer')} · ${cause}` : e.data('bearer'))
+      }
+    })
+  }, [step, graph])
+
+  // Dashes crawling along a link mean traffic is moving on it. A cut link
+  // stops moving, so the eye finds the break before it finds the label.
+  useEffect(() => {
+    const tick = () => {
+      flowRef.current.raf = requestAnimationFrame(tick)
+      const cy = cyRef.current
+      if (!cy || flowRef.current.view !== 'transport') return
+      flowRef.current.offset = (flowRef.current.offset - 0.6) % 26
+      const live = cy.edges('.transport').not('.cut').not('.hidden')
+      if (live.length) live.style('line-dash-offset', flowRef.current.offset)
+    }
+    flowRef.current.raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(flowRef.current.raf)
+  }, [])
+
+  return (
+    <>
+      <div id="cy" ref={boxRef} hidden={hidden} />
+      {!hidden && view === 'dependency' && bands.length > 0 && (
+        <div className="bands" aria-hidden="true">
+          {bands.map((b, i) => (
+            <div key={b.key} className={`band${i % 2 ? " alt" : ""}`} style={{ top: `${b.top}px`, height: `${b.height}px` }} />
+          ))}
+          {bands.map((b) => (
+            b.name ? <span key={`l-${b.key}`} className="band-label" style={{ top: `${b.labelTop}px` }}>{b.name}</span> : null
+          ))}
+        </div>
+      )}
+      {!hidden && (
+        <div className="legend-bar">
+          <b>테두리 = 원인</b>
+          <span className="lg-rule" />
+          {LEGEND.map(([label, key]) => (
+            <span className="legend-item" key={key}>
+              <span className="legend-sw" style={{ color: CAUSE_COLOR[key] || 'var(--ok)' }} />
+              {label}
+            </span>
+          ))}
+        </div>
+      )}
+    </>
+  )
+}

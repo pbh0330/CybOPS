@@ -1,0 +1,215 @@
+/* Rules kept from the pre-React stylesheet. These style HTML produced
+   imperatively by editor.js, wargame.js and geo.js, which were not ported
+   to React (ADR-0024). Legacy variable names are aliased in style.css. */
+
+/* ---- palette (edit mode, editor.js) ---- */
+/* palette (edit mode) */
+.palette {
+  border-right: 1px solid var(--line); background: var(--bg-2);
+  overflow-y: auto; padding: 14px 12px; scrollbar-width: thin;
+}
+.palette-head h2 {
+  margin: 0 0 6px; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--fg-dim); font-weight: 600;
+}
+.palette-head p { margin: 0 0 14px; font-size: 11px; color: var(--fg-dim); line-height: 1.55; }
+.palette-group { margin-bottom: 14px; }
+.palette-group-name {
+  font-size: 10.5px; color: var(--fg-2); margin-bottom: 6px; letter-spacing: .04em;
+}
+.palette-items { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.palette-item {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 8px 4px 6px; border-radius: 6px; background: var(--bg-3);
+  border: 1px solid var(--line-soft); cursor: pointer;
+}
+.palette-item:hover { border-color: var(--accent); background: var(--bg-4); }
+.palette-item img { width: 26px; height: 26px; object-fit: contain; }
+.palette-blank {
+  width: 26px; height: 26px; border: 1px dashed var(--line); border-radius: 4px; display: block;
+}
+.palette-label { font-size: 10.5px; color: var(--fg-2); text-align: center; line-height: 1.3; }
+.palette-note {
+  font-size: 10.5px; color: var(--fg-dim); line-height: 1.6;
+  border-top: 1px dashed var(--line); padding-top: 10px;
+}
+
+/* ---- briefing citations ---- */
+button.danger { border-color: rgba(255,77,94,.35); color: #ffc2c7; }
+button.danger:hover { border-color: rgba(255,77,94,.6); background: rgba(255,77,94,.1); }
+button:disabled { opacity: .38; cursor: default; }
+button:disabled:hover { border-color: var(--line); background: var(--bg-3); }
+button.is-armed { border-color: rgba(255,77,94,.7); background: rgba(255,77,94,.16); color: #ffd7da; }
+
+/* briefing panel: the only text on this screen written by a model */
+.brief-s {
+  margin: 0 0 9px; font-size: 12.5px; line-height: 1.7; color: var(--fg);
+  padding-left: 10px; border-left: 2px solid var(--line);
+}
+.cite-chip {
+  font-size: 10px; padding: 1px 6px; margin-left: 3px; border-radius: 4px;
+  background: rgba(53,224,255,.1); border: 1px solid rgba(53,224,255,.3);
+  color: #bdeaff; vertical-align: 1px;
+}
+.cite-chip:hover { background: rgba(53,224,255,.2); }
+.cite-chip.is-bad { background: rgba(255,77,94,.12); border-color: rgba(255,77,94,.4); color: #ffc2c7; }
+.unverified {
+  font-size: 10px; margin-left: 5px; padding: 1px 6px; border-radius: 4px;
+  background: rgba(255,176,32,.14); border: 1px solid rgba(255,176,32,.35); color: var(--unknown);
+}
+.brief-meta {
+  display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px;
+  font-size: 10.5px; color: var(--fg-dim);
+}
+.cite-chip-ex {
+  font-size: 10px; padding: 1px 6px; border-radius: 4px;
+  background: rgba(53,224,255,.1); border: 1px solid rgba(53,224,255,.3); color: #bdeaff;
+}
+
+
+/* ---------------------------------------------------------------- geo view */
+
+.geo-pane { flex: 1; min-height: 0; position: relative; background:
+  radial-gradient(900px 520px at 40% 20%, rgba(53,224,255,.05) 0%, rgba(5,7,11,0) 70%),
+  linear-gradient(180deg, #070b11 0%, var(--bg) 100%); }
+.geo-pane[hidden] { display: none; }
+.geo-svg { width: 100%; height: 100%; display: block; }
+.geo-grid { fill: none; stroke: rgba(255,255,255,.11); stroke-width: 1; }
+
+/* Relief surface. The facet fill is set per element (hypsometric tint times
+   hillshade); the stroke matches the fill so adjacent facets do not show a
+   hairline seam where the rasteriser rounds. */
+.geo-cell { stroke-width: .6; shape-rendering: crispEdges; }
+.geo-contour { fill: none; stroke: rgba(214,196,158,.22); stroke-width: .8; }
+.geo-contour.is-index { stroke: rgba(232,214,176,.46); stroke-width: 1.4; }
+.geo-contour-label {
+  fill: rgba(232,214,176,.72); font-size: 8.5px; text-anchor: middle;
+  paint-order: stroke; stroke: rgba(5,7,11,.85); stroke-width: 2.4px;
+}
+.geo-chk { font-size: 10.5px; color: var(--fg-dim); }
+.geo-tick { fill: var(--fg-dim); font-size: 9px; }
+.terr-ridge { fill: none; stroke: rgba(198,216,150,.5); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 7 4; }
+.terr-valley { fill: none; stroke: rgba(96,206,255,.45); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 7 4; }
+.terr-label {
+  fill: #b9c6d4; font-size: 10px; text-anchor: middle;
+  paint-order: stroke; stroke: rgba(5,7,11,.8); stroke-width: 3px;
+}
+.geo-link { fill: none; stroke-width: 2; opacity: .85; stroke-linecap: round; stroke-linejoin: round; }
+.geo-link.is-cut { stroke-dasharray: 3 8; stroke-width: 3; }
+/* the span of a line-of-sight path that runs below the surface: it is inside
+   the hill. A drawing, not a finding - the cause on an outage is authored. */
+.geo-link.is-masked { stroke-dasharray: 1 5; stroke-width: 1.4; opacity: .38; }
+.geo-node { cursor: pointer; }
+.geo-node .geo-label { fill: #c8d3e0; font-size: 9px; text-anchor: middle; }
+.geo-node.is-selected circle { stroke: var(--accent); stroke-width: 3; }
+.geo-missing {
+  position: absolute; left: 14px; top: 12px; font-size: 11px; color: var(--unknown);
+  background: rgba(9,13,20,.92); border: 1px solid rgba(255,176,32,.3);
+  border-radius: 6px; padding: 7px 10px; max-width: 60%;
+}
+.geo-missing span { display: block; color: var(--fg-dim); margin-top: 3px; }
+.geo-foot {
+  position: absolute; left: 14px; bottom: 12px; display: flex; gap: 14px; flex-wrap: wrap;
+  font-size: 10.5px; color: var(--fg-dim);
+  background: rgba(9,13,20,.9); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px;
+}
+.geo-warn { color: var(--unknown); }
+.geo-empty { padding: 24px; color: var(--fg-dim); }
+.geo-svg text { user-select: none; }
+
+.geo-canvas { position: absolute; inset: 0; }
+.geo-controls {
+  position: absolute; right: 14px; top: 12px; z-index: 2;
+  display: flex; align-items: center; gap: 14px;
+  background: rgba(9,13,20,.92); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 7px 12px; box-shadow: var(--shadow);
+}
+.dim-switch { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.dim-btn { border: none; border-radius: 0; background: transparent; padding: 3px 12px; color: var(--fg-dim); font-size: 11.5px; }
+.dim-btn.is-on { background: rgba(53,224,255,.14); color: #bdeaff; }
+.dim-btn + .dim-btn { border-left: 1px solid var(--line); }
+.geo-slider { display: flex; align-items: center; gap: 7px; font-size: 10.5px; color: var(--fg-dim); }
+.geo-slider[hidden] { display: none; }
+.geo-slider input { width: 82px; accent-color: var(--accent); }
+.geo-canvas { cursor: default; }
+body .geo-canvas:active { cursor: grabbing; }
+.geo-drop { stroke: rgba(255,255,255,.14); stroke-width: 1; }
+.geo-shadow { fill: rgba(0,0,0,.45); }
+
+.geo-mask-note b { display: block; font-weight: 400; color: var(--fg-dim); opacity: .8; }
+
+/* SATCOM: two uplinks meeting at a relay above the scene. Thin and dashed
+   because the altitude is schematic - a GEO arc is 35,786 km against a 24 km
+   area of operations, so nothing here is to scale. */
+.geo-satlink { fill: none; stroke-width: 1.3; stroke-dasharray: 5 4; opacity: .7; }
+.geo-satlink.is-cut { stroke-dasharray: 2 6; stroke-width: 2; }
+.geo-sat .geo-sat-label { fill: #9fb2c6; font-size: 9px; text-anchor: middle; }
+
+/* ---------------------------------------------------------------- wargame */
+
+.wg-head { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+.wg-turn { font-weight: 700; color: var(--fg); }
+.wg-foot-count { font-size: 11px; color: var(--fg-dim); }
+.wg-reset { margin-left: auto; padding: 3px 9px; font-size: 11px; }
+.wg-controls { display: flex; align-items: flex-end; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.wg-pick { display: flex; flex-direction: column; gap: 3px; font-size: 10.5px; color: var(--fg-dim); }
+.wg-pick select, .wg-pick input { padding: 4px 7px; font-size: 11.5px; }
+.wg-pick input { width: 92px; background: var(--bg-3); border: 1px solid var(--line); border-radius: 6px; }
+.wg-go { margin-left: auto; padding: 6px 14px; border-color: rgba(255,77,94,.45); color: #ffc2c7; background: rgba(255,77,94,.1); }
+.wg-go:hover:not(:disabled) { background: rgba(255,77,94,.18); border-color: rgba(255,77,94,.7); }
+
+.wg-result {
+  border: 1px solid var(--line); border-left-width: 3px; border-radius: 6px;
+  padding: 8px 10px; margin-bottom: 10px; background: var(--bg-3); font-size: 12px;
+}
+.wg-result.is-hit { border-left-color: var(--attack); }
+.wg-result.is-miss { border-left-color: var(--maintenance); }
+.wg-result.is-bad { border-left-color: var(--unknown); color: var(--unknown); }
+.wg-result.is-bad span { display: block; color: var(--fg-dim); margin-top: 3px; font-size: 11px; }
+.wg-result-top { display: flex; align-items: center; gap: 8px; }
+.wg-target { color: var(--fg-2); font-family: ui-monospace, "Cascadia Mono", monospace; font-size: 11px; }
+.wg-verdict { margin-left: auto; font-size: 11px; color: var(--fg-dim); }
+.wg-result.is-hit .wg-verdict { color: var(--attack); }
+.wg-roll { color: var(--fg-dim); font-size: 10.5px; margin-top: 4px; }
+.wg-why { color: var(--fg-2); font-size: 11px; margin-top: 5px; line-height: 1.5; }
+
+.wg-sub {
+  font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fg-dim); margin: 12px 0 6px;
+}
+.wg-move {
+  position: relative; display: flex; align-items: center; gap: 8px;
+  padding: 4px 8px; border-radius: 5px; margin-bottom: 3px;
+  background: var(--bg-3); overflow: hidden; font-size: 11.5px;
+}
+.wg-move-bar { position: absolute; inset: 0 auto 0 0; background: rgba(255,77,94,.14); }
+.wg-move-label { position: relative; color: var(--fg-2); }
+.wg-move-label b { color: var(--fg); font-weight: 600; font-family: ui-monospace, "Cascadia Mono", monospace; }
+.wg-move-gain { position: relative; margin-left: auto; color: var(--fg); font-variant-numeric: tabular-nums; }
+
+.wg-def-row { display: flex; gap: 6px; }
+.wg-def-row select { flex: 1; min-width: 0; font-size: 11.5px; padding: 4px 7px; }
+
+.wg-log { margin-top: 10px; border-top: 1px dashed var(--line); padding-top: 8px; }
+.wg-log-row { display: flex; align-items: center; gap: 8px; font-size: 11px; padding: 2px 0; }
+.wg-log-turn { color: var(--fg-dim); font-variant-numeric: tabular-nums; min-width: 22px; }
+.wg-log-what { color: var(--fg-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wg-log-tag { margin-left: auto; font-size: 10px; color: var(--fg-dim); }
+.wg-log-row.is-hit .wg-log-tag { color: var(--attack); }
+.wg-log-row.is-def .wg-log-tag { color: var(--mobility); }
+
+.wg-llm-note {
+  border: 1px solid rgba(255,176,32,.3); border-left: 3px solid var(--unknown);
+  border-radius: 6px; padding: 7px 10px; margin-bottom: 10px;
+  font-size: 11.5px; color: var(--unknown); background: rgba(255,176,32,.06);
+}
+.wg-llm-note span { display: block; color: var(--fg-dim); margin-top: 3px; font-size: 11px; line-height: 1.5; }
+
+/* Facility layout (defnet-01). Assets indoors, so the map draws buildings
+   rather than terrain: what matters is which block a redundant pair sits in. */
+.fac-wall { fill: rgba(44,58,76,.55); stroke: rgba(120,150,185,.35); stroke-width: .8; }
+.fac-roof { fill: rgba(58,76,98,.5); stroke: rgba(140,175,210,.5); stroke-width: 1.2; }
+.fac-label {
+  fill: #a9bdd2; font-size: 10px; text-anchor: middle;
+  paint-order: stroke; stroke: rgba(5,7,11,.8); stroke-width: 3px;
+}
