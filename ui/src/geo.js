@@ -50,6 +50,14 @@ export function positionAt(asset, t) {
   return null
 }
 
+// Estimated, not measured: renderGeo builds a string, not a DOM. A CJK glyph
+// is about one em wide, Latin about 0.58 em.
+function textW(s, px) {
+  let w = 0
+  for (const ch of String(s)) w += ch.charCodeAt(0) > 0x2e7f ? px : px * 0.58
+  return w
+}
+
 function esc(s) {
   return String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
 }
@@ -125,7 +133,9 @@ function centroid(pts) {
 // from, so they stay drawn on top of it: the reader can see which lines were
 // written down and which shape was interpolated between them. In 3D they are
 // lifted to their stated elevation.
-function drawTerrain(out, geo, project, is3d, bounds) {
+// `obstacles` collects the screen boxes of the place names drawn here, so the
+// unit labels placed later can stay off them.
+function drawTerrain(out, geo, project, is3d, bounds, obstacles) {
   for (const f of (geo.terrain && geo.terrain.features) || []) {
     const raw = f.polyline || f.outline || f.polygon || []
     const elev = f.crest_elev_m ?? f.floor_elev_m ?? f.elev_m ?? 0
@@ -154,6 +164,10 @@ function drawTerrain(out, geo, project, is3d, bounds) {
       })
     }
     out.push(`<text class="terr-label" x="${c.x.toFixed(1)}" y="${(c.y - 8).toFixed(1)}">${esc(f.name || '')}</text>`)
+    if (obstacles) {
+      const w = textW(f.name || '', 10)
+      obstacles.push({ x0: c.x - w / 2, y0: c.y - 18, x1: c.x + w / 2, y1: c.y - 5 })
+    }
   }
 }
 
@@ -170,7 +184,7 @@ function drawTerrain(out, geo, project, is3d, bounds) {
 // no roofs, no interior: at this abstraction the scenario knows a building and
 // a floor number and nothing finer, and drawing detail the data does not have
 // is how a diagram starts lying.
-function drawFacility(out, geo, project, is3d) {
+function drawFacility(out, geo, project, is3d, obstacles) {
   const b = geo.facility && geo.facility.buildings
   if (!b || !b.length) return
   const parts = []
@@ -194,6 +208,10 @@ function drawFacility(out, geo, project, is3d) {
     }
     const roofPts = roof.map((q) => `${q.x.toFixed(1)},${q.y.toFixed(1)}`).join(' ')
     const c = centroid(roof)
+    if (obstacles) {
+      const w = textW(f.name || f.id, 10)
+      obstacles.push({ x0: c.x - w / 2, y0: c.y - 10, x1: c.x + w / 2, y1: c.y + 3 })
+    }
     parts.push({
       y: c.y + 1e5, // roof and label always over this building's own walls
       svg: `<polygon class="fac-roof" points="${roofPts}"><title>${esc(f.name || f.id)} · ${f.floors || 1}층</title></polygon>` +
@@ -207,6 +225,7 @@ function drawFacility(out, geo, project, is3d) {
 export function renderGeo({
   graph, step, width, height, causeColor, iconFor, selected,
   mode = '2d', az = 35, pitch = 55, zScale = 8, terrain = true,
+  expanded = null,
 }) {
   const geo = graph.geo
   if (!geo || !geo.frame) return '<div class="geo-empty">이 시나리오에는 좌표가 없다.</div>'
@@ -254,9 +273,22 @@ export function renderGeo({
     if (!cluster.has(key)) cluster.set(key, [])
     cluster.get(key).push(a.id)
   }
-  const ringOffset = {}
-  for (const ids of cluster.values()) {
+  // A cluster is drawn folded - one marker, a count badge - until the reader
+  // opens it. The ring alone was not enough: three two-line labels on a ring
+  // 60 px across still land on each other, and a TOC with a server, a
+  // workstation and a gateway is one place on the map until you ask about it.
+  // A cluster holding the selected asset is always open, because the rail
+  // can select something the map has folded away.
+  const isOpen = new Set(expanded || [])
+  const folded = {} // asset id -> cluster key, for clusters drawn as one marker
+  for (const [key, ids] of cluster) {
     if (ids.length < 2) continue
+    if (isOpen.has(key) || (selected && ids.includes(selected))) continue
+    for (const id of ids) folded[id] = key
+  }
+  const ringOffset = {}
+  for (const [key, ids] of cluster) {
+    if (ids.length < 2 || folded[ids[0]] === key) continue
     const r = ringR * (1 + ids.length * 0.08)
     ids.forEach((id, i) => {
       const ang = (i / ids.length) * Math.PI * 2 - Math.PI / 2
@@ -392,8 +424,9 @@ export function renderGeo({
     if (!is3d) out.push(`<text class="geo-tick" x="${(pts[0].x - 14).toFixed(1)}" y="${(pts[0].y + 3).toFixed(1)}">${tickOf(y)}</text>`)
   }
 
-  drawTerrain(out, geo, project, is3d, model ? model.bounds : null)
-  drawFacility(out, geo, project, is3d)
+  const nameBoxes = []
+  drawTerrain(out, geo, project, is3d, model ? model.bounds : null, nameBoxes)
+  drawFacility(out, geo, project, is3d, nameBoxes)
 
   // Transport links.
   //
@@ -505,10 +538,17 @@ export function renderGeo({
 
   // paint far-to-near so nearer nodes overlap farther ones
   const drawList = []
+  const foldedDrawn = new Set()
   for (const a of graph.assets || []) {
     const p = posOf[a.id]
     const q = drawPos[a.id]
     if (!p || !q) continue
+    // one marker per folded cluster, at the first member's position (all
+    // members share it: no ring offset is applied to a folded cluster)
+    if (folded[a.id]) {
+      if (foldedDrawn.has(folded[a.id])) continue
+      foldedDrawn.add(folded[a.id])
+    }
     // A unit stands on the ground. ui/tools/ground-assets.mjs makes that true
     // in the scenario file, and this clamp keeps it true between waypoints:
     // z is interpolated linearly along a leg, so a vehicle crossing a convex
@@ -526,13 +566,91 @@ export function renderGeo({
   const assetOut = step.asset_outage || {}
   const missing = (graph.assets || []).filter((a) => !posOf[a.id]).map((a) => a.id)
 
+  // What each marker is, before anything is drawn: the label placement below
+  // needs every marker's box and every label's size first.
+  const compromise = step.compromise || {}
+  const assetById = {}
+  for (const a of graph.assets || []) assetById[a.id] = a
+  const R = 15
   for (const d of drawList) {
-    const { a, p, P, ground } = d
-    const cause = assetOut[a.id]
-    const hit = Number((step.compromise || {})[a.id] || 0) > 0
+    const { a } = d
+    const key = folded[a.id]
+    const members = key ? cluster.get(key).map((id) => assetById[id]).filter(Boolean) : [a]
+    d.members = members
+    // a folded cluster shows its worst member: an attacked host inside a TOC
+    // must not disappear behind a quiet badge
+    d.hit = members.some((m) => Number(compromise[m.id] || 0) > 0)
+    d.cause = members.map((m) => assetOut[m.id]).find(Boolean) || null
+    if (key) {
+      const sites = [...new Set(members.map((m) => m.site).filter(Boolean))]
+      d.lines = [
+        sites.length === 1 ? sites[0] : (sites[0] ? `${sites[0]} 외 ${sites.length - 1}` : `${members.length}개 자산`),
+        members.length <= 3 ? members.map((m) => m.id).join(' · ') : `${members.length}개`,
+      ]
+    } else {
+      d.lines = [a.site || a.id, a.id]
+    }
+  }
+
+  // Label placement. A label is tried below, right, left, then above its
+  // marker and takes the first slot that hits no marker and no label already
+  // placed; when every slot collides it takes the least bad one and stays
+  // attached, because a label that is hidden is a unit that is not on the
+  // map. The selected and the damaged are placed first, so it is the quiet
+  // ones that give way. Place names count as obstacles too, at a lower
+  // weight: a unit label may sit on a ridge name if the alternative is
+  // sitting on another unit.
+  const LINE = 11
+  const PAD = 3
+  const boxes = drawList.map((d) => ({ x0: d.P.x - R - 1, y0: d.P.y - R - 1, x1: d.P.x + R + 1, y1: d.P.y + R + 1 }))
+  const overlap = (a, b) => Math.max(0, Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0)) * Math.max(0, Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0))
+  const order = drawList.map((d, i) => i).sort((i, j) => {
+    const pi = (drawList[i].members.some((m) => m.id === selected) ? 2 : 0) + (drawList[i].hit || drawList[i].cause ? 1 : 0)
+    const pj = (drawList[j].members.some((m) => m.id === selected) ? 2 : 0) + (drawList[j].hit || drawList[j].cause ? 1 : 0)
+    return pj - pi || drawList[j].P.y - drawList[i].P.y
+  })
+  const placed = []
+  for (const i of order) {
+    const d = drawList[i]
+    const w = Math.max(textW(d.lines[0], 9), textW(d.lines[1], 9)) + PAD * 2
+    const h = LINE * 2 + PAD
+    const gap = R + 5
+    // {x, y} is the label box's top-left relative to the marker centre
+    // four cardinal slots first, then the diagonals: on an opened ring of
+    // four markers 60 px across the cardinal slots all point at a neighbour
+    const dg = R + 1
+    const slots = [
+      { name: 'below', x: -w / 2, y: gap, anchor: 'middle', tx: 0 },
+      { name: 'right', x: gap, y: -h / 2, anchor: 'start', tx: gap + PAD },
+      { name: 'left', x: -gap - w, y: -h / 2, anchor: 'end', tx: -gap - PAD },
+      { name: 'above', x: -w / 2, y: -gap - h, anchor: 'middle', tx: 0 },
+      { name: 'below-right', x: dg, y: dg, anchor: 'start', tx: dg + PAD },
+      { name: 'below-left', x: -dg - w, y: dg, anchor: 'end', tx: -dg - PAD },
+      { name: 'above-right', x: dg, y: -dg - h, anchor: 'start', tx: dg + PAD },
+      { name: 'above-left', x: -dg - w, y: -dg - h, anchor: 'end', tx: -dg - PAD },
+    ]
+    let best = null
+    for (const s of slots) {
+      const box = { x0: d.P.x + s.x, y0: d.P.y + s.y, x1: d.P.x + s.x + w, y1: d.P.y + s.y + h }
+      let cost = 0
+      for (let k = 0; k < boxes.length; k++) if (k !== i) cost += overlap(box, boxes[k])
+      for (const b of placed) cost += overlap(box, b)
+      for (const b of nameBoxes) cost += overlap(box, b) * 0.5
+      // off the drawing counts as a collision with the edge
+      if (box.x0 < 0 || box.y0 < 0 || box.x1 > width || box.y1 > height) cost += w * h
+      if (!best || cost < best.cost) best = { s, box, cost }
+      if (cost === 0) break
+    }
+    placed.push(best.box)
+    d.label = { ...best.s, w, h }
+  }
+
+  for (const d of drawList) {
+    const { a, p, P, ground, hit, cause, members, label } = d
+    const key = folded[a.id]
     const ring = cause ? (causeColor[cause] || '#8a8f98') : (hit ? causeColor.attack : '#3a4657')
     const icon = iconFor(a.type, hit ? 'attack' : cause ? 'outage' : 'ok')
-    const sel = selected === a.id ? ' is-selected' : ''
+    const sel = members.some((m) => m.id === selected) ? ' is-selected' : ''
 
     // the drop line is what makes elevation readable at all
     if (is3d && Math.abs(P.y - ground.y) > 2) {
@@ -540,12 +658,22 @@ export function renderGeo({
       out.push(`<ellipse class="geo-shadow" cx="${ground.x.toFixed(1)}" cy="${ground.y.toFixed(1)}" rx="7" ry="3" />`)
     }
 
-    out.push(`<g class="geo-node${sel}" data-asset="${esc(a.id)}" transform="translate(${P.x.toFixed(1)},${P.y.toFixed(1)})">
-      <circle r="15" fill="#0d131c" stroke="${ring}" stroke-width="${cause || hit ? 2.2 : 1.2}" ${cause ? 'stroke-dasharray="3 3"' : ''} />
+    const title = key
+      ? `<title>${esc(d.lines[0])} · ${members.length}개 자산, 눌러서 펼침\n${members.map((m) => `${esc(m.site || '')} ${esc(typeKo(m.type))} · ${esc(m.id)}`).join('\n')}</title>`
+      : `<title>${esc(a.site || '')} ${esc(typeKo(a.type))} · ${esc(a.id)} (${Math.round(p.x)}, ${Math.round(p.y)}, ${Math.round(p.z ?? 0)} m)${p.note ? ' / ' + esc(p.note) : ''}</title>`
+    const badge = key
+      ? `<g class="geo-badge" transform="translate(${R - 3},${-R + 3})"><circle r="7.5" /><text y="3">${members.length}</text></g>`
+      : ''
+    // y of the first baseline inside the label box
+    const ty = label.y + PAD + 8
+    out.push(`<g class="geo-node${sel}${key ? ' is-folded' : ''}" data-asset="${esc(a.id)}"${key ? ` data-cluster="${esc(key)}"` : ''} transform="translate(${P.x.toFixed(1)},${P.y.toFixed(1)})">
+      <circle r="${R}" fill="#0d131c" stroke="${ring}" stroke-width="${cause || hit ? 2.2 : 1.2}" ${cause ? 'stroke-dasharray="3 3"' : ''} />
       ${icon ? `<image href="${icon}" x="-9" y="-9" width="18" height="18" />` : ''}
-      <text class="geo-label" y="27">${esc(a.site || a.id)}</text>
-      <text class="geo-label geo-label-id" y="38">${esc(a.id)}</text>
-      <title>${esc(a.site || '')} ${esc(typeKo(a.type))} · ${esc(a.id)} (${Math.round(p.x)}, ${Math.round(p.y)}, ${Math.round(p.z ?? 0)} m)${p.note ? ' / ' + esc(p.note) : ''}</title>
+      ${badge}
+      <rect class="geo-chip" x="${label.x.toFixed(1)}" y="${label.y.toFixed(1)}" width="${label.w.toFixed(1)}" height="${label.h}" rx="2" />
+      <text class="geo-label" x="${label.tx.toFixed(1)}" y="${ty.toFixed(1)}" text-anchor="${label.anchor}">${esc(d.lines[0])}</text>
+      <text class="geo-label geo-label-id" x="${label.tx.toFixed(1)}" y="${(ty + LINE).toFixed(1)}" text-anchor="${label.anchor}">${esc(d.lines[1])}</text>
+      ${title}
     </g>`)
   }
 

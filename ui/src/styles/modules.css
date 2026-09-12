@@ -100,7 +100,13 @@ button.is-armed { border-color: rgba(255,77,94,.7); background: rgba(255,77,94,.
    the hill. A drawing, not a finding - the cause on an outage is authored. */
 .geo-link.is-masked { stroke-dasharray: 1 5; stroke-width: 1.4; opacity: .38; }
 .geo-node { cursor: pointer; }
-.geo-node .geo-label { fill: #c8d3e0; font-size: 9px; text-anchor: middle; }
+.geo-node .geo-label { fill: #c8d3e0; font-size: 9px; }
+/* the label sits on a translucent plate so it reads over contour lines; the
+   anchor is a presentation attribute set per label by geo.js, which is why
+   no text-anchor is set here (a stylesheet rule would win over it) */
+.geo-node .geo-chip { fill: rgba(13,19,28,.72); stroke: none; }
+.geo-node.is-folded .geo-badge circle { fill: #e6f0fb; stroke: #0d131c; stroke-width: 1.2; }
+.geo-node.is-folded .geo-badge text { fill: #0d131c; font-size: 9px; font-weight: 600; text-anchor: middle; }
 .geo-node.is-selected circle { stroke: var(--accent); stroke-width: 3; }
 .geo-missing {
   position: absolute; left: 14px; top: 12px; font-size: 11px; color: var(--unknown);

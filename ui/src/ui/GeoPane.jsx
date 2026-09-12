@@ -35,6 +35,12 @@ function Slider({ label, value, min, max, unit, onChange }) {
 export default function GeoPane({ graph, step, cam, onCam, selected, onSelect, hidden }) {
   const boxRef = useRef(null)
   const [viewT, setViewT] = useState({ zoom: 1, x: 0, y: 0 })
+  // clusters the reader has opened; geo.js folds every other co-located
+  // group into one marker with a count badge
+  const [expanded, setExpanded] = useState([])
+  // cluster keys are grid cells of the scene, so a key from one scenario can
+  // name an unrelated cluster in the next; a new graph starts folded
+  useEffect(() => { setExpanded([]) }, [graph])
   const drag = useRef(null)
   const camRef = useRef(cam)
   camRef.current = cam
@@ -54,6 +60,7 @@ export default function GeoPane({ graph, step, cam, onCam, selected, onSelect, h
         color: state === 'attack' ? '#ffb4ba' : state === 'outage' ? '#93a6ba' : '#e6f0fb',
       }),
       selected,
+      expanded,
       ...cam,
     })
     const handlers = []
@@ -62,13 +69,19 @@ export default function GeoPane({ graph, step, cam, onCam, selected, onSelect, h
         // a click that ended a drag is not a selection
         if (drag.current && drag.current.moved) return
         e.stopPropagation()
+        // a folded cluster opens on click; its members become selectable
+        if (g.dataset.cluster) {
+          const key = g.dataset.cluster
+          setExpanded((xs) => (xs.includes(key) ? xs : [...xs, key]))
+          return
+        }
         onSelect(g.dataset.asset)
       }
       g.addEventListener('click', fn)
       handlers.push([g, fn])
     }
     return () => { for (const [g, fn] of handlers) g.removeEventListener('click', fn) }
-  }, [graph, step, cam, selected, hidden])
+  }, [graph, step, cam, selected, hidden, expanded])
 
   // Zoom and pan are a view transform on the finished drawing, not camera
   // parameters. Keeping them out of renderGeo means zooming costs one style
@@ -146,6 +159,7 @@ export default function GeoPane({ graph, step, cam, onCam, selected, onSelect, h
 
   const resetView = () => {
     setViewT({ zoom: 1, x: 0, y: 0 })
+    setExpanded([])
     onCam({ ...cam, az: 35, pitch: 55 })
   }
 
@@ -185,6 +199,9 @@ export default function GeoPane({ graph, step, cam, onCam, selected, onSelect, h
         <span className="tb-rule" />
         <span className="geo-hint">끌어서 회전{is3d ? '·고도각' : ''} · Ctrl+끌기 확대</span>
         {zoomed && <b className="geo-zoom">×{viewT.zoom.toFixed(1)}</b>}
+        {expanded.length > 0 && (
+          <button type="button" className="geo-reset" onClick={() => setExpanded([])}>군집 접기</button>
+        )}
         <button type="button" className="geo-reset" onClick={resetView}>원래대로</button>
       </div>
       <div
