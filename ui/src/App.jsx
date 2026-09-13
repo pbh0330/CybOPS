@@ -351,6 +351,7 @@ export default function App() {
           when={when} tab={tab} onTab={setTab}
           requests={requests} onRequest={onRequest}
           selectedData={selectedData} onToast={setToast} mode={mode}
+          editor={editorRef}
           wargameSlot={mode === 'wargame' ? (
             <Mount
               deps={[graph, mode]}

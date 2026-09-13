@@ -36,7 +36,7 @@ export default function BoardToolbar({
               >{label}</button>
             ))}
           </div>
-          {editState ? <span className="rail-caption" style={{ margin: 0 }}>{editState}</span> : null}
+          {editState ? <span className="rail-caption tb-state" title={editState}>{editState}</span> : null}
         </>
       )}
 

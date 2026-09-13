@@ -198,7 +198,92 @@ function Brief({ scenarioId, step, edited, onToast }) {
   )
 }
 
-function Inspect({ graph, step, data }) {
+// Wiring a box into the transport graph does not make it matter to a mission.
+// It can matter by carrying traffic (links do that through reachability), but
+// to provide a service or host work it has to be said. This block says what
+// the asset is attached to, and in edit mode lets someone attach it. The
+// edits go through editor.js like every other edit, so they land in the same
+// undo history and the same local engine recompute (ADR-0003: the number
+// moves because the graph changed, not because anyone typed a number).
+function nameOf(list, id) {
+  const x = (list || []).find((i) => i.id === id)
+  return x ? x.name || id : id
+}
+
+function Linkage({ graph, assetId, mode, editor }) {
+  const link = linkageOf(graph, assetId)
+  const asset = (graph.assets || []).find((a) => a.id === assetId)
+  const ed = editor && editor.current
+  const editing = mode === 'edit' && ed
+  const rows = [
+    ['서비스 제공', link.provides.map((id) => nameOf(graph.services, id))],
+    ['작업 수행', link.hosts.map((id) => nameOf(graph.tasks, id))],
+    ['피의존', link.dependedOn],
+    ['게스트', link.hostedOn],
+  ].filter(([, v]) => v.length)
+
+  return (
+    <div className="linkage">
+      <div className="lk-head">임무 연결</div>
+      {rows.length === 0 && !editing && <div className="lk-row">없음</div>}
+      {rows.map(([k, v]) => (
+        <div className="lk-row" key={k}><span className="lk-k">{k}</span> {v.join(', ')}</div>
+      ))}
+      {!link.linked && (
+        <p className="rail-caption lk-warn">
+          임무 계층에 연결되어 있지 않다. 중계로는 쓰일 수 있으나 이 자산만으로 임무 수치가 움직이지 않는다.
+        </p>
+      )}
+      {editing && (
+        <>
+          <div className="lk-group">
+            <div className="lk-sub">이 자산이 제공하는 서비스</div>
+            {(graph.services || []).map((svc) => (
+              <label className="chk lk-chk" key={svc.id}>
+                <input
+                  type="checkbox"
+                  checked={link.provides.includes(svc.id)}
+                  onChange={(e) => {
+                    const next = link.provides.filter((id) => id !== svc.id)
+                    if (e.target.checked) next.push(svc.id)
+                    ed.setProvidedBy(assetId, next)
+                  }}
+                />
+                {svc.name || svc.id} <span className="ref">{svc.id}</span>
+              </label>
+            ))}
+          </div>
+          <div className="lk-group">
+            <div className="lk-sub">이 자산에서 수행하는 작업</div>
+            {(graph.tasks || []).map((t) => (
+              <label className="chk lk-chk" key={t.id}>
+                <input
+                  type="checkbox"
+                  checked={t.performed_at === assetId}
+                  onChange={(e) => ed.setPerformedAt(t.id, e.target.checked ? assetId : null)}
+                />
+                {t.name || t.id} <span className="ref">{t.id}</span>
+                {t.performed_at && t.performed_at !== assetId && (
+                  <span className="ref">지금: {t.performed_at}</span>
+                )}
+              </label>
+            ))}
+          </div>
+          <label className="chk lk-chk">
+            <input
+              type="checkbox"
+              checked={!!(asset && asset.transit)}
+              onChange={(e) => ed.setTransit(assetId, e.target.checked)}
+            />
+            남의 트래픽을 중계한다
+          </label>
+        </>
+      )}
+    </div>
+  )
+}
+
+function Inspect({ graph, step, data, mode, editor }) {
   if (!data) return <div className="inspect-empty">노드를 클릭하면 기여 경로가 나온다.</div>
   const rows = []
   const add = (k, v) => rows.push([k, v])
@@ -229,7 +314,6 @@ function Inspect({ graph, step, data }) {
       add('환경 단독', pct(num(step.mission_env[data.id])))
     }
   }
-  const link = data.kind === 'asset' ? linkageOf(graph, data.id) : null
   return (
     <div className="inspect">
       <div className="rail-head" style={{ marginBottom: 10 }}>
@@ -237,11 +321,7 @@ function Inspect({ graph, step, data }) {
         <span className="when">{data.id}</span>
       </div>
       <dl>{rows.map(([k, v]) => <div key={k} style={{ display: 'contents' }}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
-      {link && !link.linked && (
-        <p className="rail-caption" style={{ marginTop: 12 }}>
-          임무 계층에 연결되어 있지 않다. 중계로는 쓰일 수 있으나 이 자산만으로 임무 수치가 움직이지 않는다.
-        </p>
-      )}
+      {data.kind === 'asset' && <Linkage graph={graph} assetId={data.id} mode={mode} editor={editor} />}
     </div>
   )
 }
@@ -255,7 +335,7 @@ const TABS = [
 
 export default function Rail({
   graph, step, scenarioId, edited, when, tab, onTab,
-  requests, onRequest, selectedData, onToast, mode, wargameSlot,
+  requests, onRequest, selectedData, onToast, mode, wargameSlot, editor,
 }) {
   const cuts = cutRows(graph, step).length
   const acts = actionRows(graph, step).length
@@ -289,7 +369,7 @@ export default function Rail({
             {tab === 'cuts' && <Cuts graph={graph} step={step} />}
             {tab === 'actions' && <Actions graph={graph} step={step} requests={requests} onRequest={onRequest} />}
             {tab === 'brief' && <Brief scenarioId={scenarioId} step={step} edited={edited} onToast={onToast} />}
-            {tab === 'inspect' && <Inspect graph={graph} step={step} data={selectedData} />}
+            {tab === 'inspect' && <Inspect graph={graph} step={step} data={selectedData} mode={mode} editor={editor} />}
           </div>
         </>
       )}
