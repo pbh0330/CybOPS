@@ -150,6 +150,11 @@ def main():
                          "result. Use it when a day boundary has no positives on one side.")
     ap.add_argument("--window", type=int, default=0,
                     help="window seconds. 0 = read it from <features>.summary.json")
+    ap.add_argument("--exclude", default="",
+                    help="comma-separated feature columns to leave out. The list is written "
+                         "into the report. docs/19 section 16: hour and dow encode the "
+                         "exercise schedule, not the attack, and a day cut cannot be "
+                         "learned across - drop them with --exclude hour,dow")
     args = ap.parse_args()
     out_path = args.out or os.path.join(here, "eval", "results", f"e1b-detection-{args.tag}.json")
 
@@ -162,7 +167,13 @@ def main():
     if df.label.sum() == 0:
         sys.exit("no positive cells - check the label file and the window size match")
 
-    feat = [c for c in df.columns if c not in ("bucket", "label", "w", "host_key", "day")]
+    excluded = [c.strip() for c in args.exclude.split(",") if c.strip()]
+    missing = [c for c in excluded if c not in df.columns]
+    if missing:
+        sys.exit(f"--exclude names columns the CSV does not have: {missing}")
+    feat = [c for c in df.columns if c not in ("bucket", "label", "w", "host_key", "day") and c not in excluded]
+    if excluded:
+        print(f"  excluded by --exclude: {excluded}")
 
     # The name tripwire from E1-a: a column named anything like an identity is
     # suspect. The name is the alarm, not the verdict. "a_rename" contains
@@ -332,6 +343,7 @@ def main():
         "n_cells": int(len(df)),
         "n_positives": int(df.label.sum()),
         "feature_columns": feat,
+        "excluded_by_flag": excluded,
         "excluded": {
             "hosts_without_telemetry": lab.get("dropped_hosts", {}),
             "why": lab.get("dropped_reason"),

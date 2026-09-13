@@ -1,0 +1,488 @@
+{
+  "generator": "scripts/run_e1b_ablation.py",
+  "features_file": "analysis\\optc\\ecar-windows-900.v3b.csv",
+  "window_sec": 900,
+  "model": "histgb, same hyperparameters as run_e1b.py",
+  "groups": {
+    "volume": [
+      "n",
+      "n_file",
+      "n_proc",
+      "n_flow",
+      "n_module",
+      "n_other"
+    ],
+    "actions": [
+      "a_create",
+      "a_write",
+      "a_delete",
+      "a_read",
+      "a_rename",
+      "a_start",
+      "a_terminate",
+      "a_open",
+      "a_msg"
+    ],
+    "images": [
+      "images",
+      "new_images",
+      "new_image_share"
+    ],
+    "dirs": [
+      "dirs"
+    ],
+    "network": [
+      "dsts",
+      "new_dsts",
+      "new_dst_share",
+      "external_share"
+    ],
+    "principals": [
+      "principals",
+      "system_share"
+    ],
+    "pids": [
+      "pids"
+    ],
+    "selfnorm": [
+      "n_z",
+      "dsts_z"
+    ],
+    "time": [
+      "hour",
+      "dow"
+    ]
+  },
+  "splits": [
+    {
+      "cut_day": "2019-09-23",
+      "train_pos": 75,
+      "test_pos": 522,
+      "rows": [
+        {
+          "variant": "all",
+          "n_features": 30,
+          "pr_auc": 0.04977978015085836,
+          "roc_auc": 0.6549442766876078,
+          "precision@100": 0.19,
+          "hosts_caught@100": 6,
+          "hosts_with_positives": 12,
+          "median_cells_before_first_hit@100": 0.0
+        },
+        {
+          "variant": "drop volume",
+          "n_features": 24,
+          "pr_auc": 0.0311022203864793,
+          "roc_auc": 0.5949968255330007,
+          "precision@100": 0.13,
+          "hosts_caught@100": 8,
+          "hosts_with_positives": 12,
+          "median_cells_before_first_hit@100": 0.0,
+          "delta_pr_auc": -0.018677559764379063,
+          "delta_hosts": 2
+        },
+        {
+          "variant": "drop actions",
+          "n_features": 21,
+          "pr_auc": 0.026823021071787266,
+          "roc_auc": 0.6507694895813971,
+          "precision@100": 0.07,
+          "hosts_caught@100": 2,
+          "hosts_with_positives": 12,
+          "median_cells_before_first_hit@100": 3.5,
+          "delta_pr_auc": -0.022956759079071097,
+          "delta_hosts": -4
+        },
+        {
+          "variant": "drop images",
+          "n_features": 27,
+          "pr_auc": 0.050361289356512504,
+          "roc_auc": 0.6710254487176717,
+          "precision@100": 0.18,
+          "hosts_caught@100": 6,
+          "hosts_with_positives": 12,
+          "median_cells_before_first_hit@100": 0.0,
+          "delta_pr_auc": 0.0005815092056541404,
+          "delta_hosts": 0
+        },
+        {
+          "variant": "drop dirs",
+          "n_features": 29,
+          "pr_auc": 0.0508722983247213,
+          "roc_auc": 0.6715809804425565,
+          "precision@100": 0.19,
+          "hosts_caught@100": 6,
+          "hosts_with_positives": 12,
+          "median_cells_before_first_hit@100": 0.0,
+          "delta_pr_auc": 0.0010925181738629386,
+          "delta_hosts": 0
+        },
+        {
+          "variant": "drop network",
+          "n_features": 26,
+          "pr_auc": 0.04617328765171271,
+          "roc_auc": 0.686584174860815,
+          "precision@100": 0.16,
+          "hosts_caught@100": 4,
+          "hosts_with_positives": 12,
+          "median_cells_before_first_hit@100": 1.5,
+          "delta_pr_auc": -0.0036064924991456512,
+          "delta_hosts": -2
+        },
+        {
+          "variant": "drop principals",
+          "n_features": 28,
+          "pr_auc": 0.05464295928703625,
+          "roc_auc": 0.7260877093926205,
+          "precision@100": 0.22,
+          "hosts_caught@100": 8,
+          "hosts_with_positives": 12,
+          "median_cells_before_first_hit@100": 0.0,
+          "delta_pr_auc": 0.004863179136177884,
+          "delta_hosts": 2
+        },
+        {
+          "variant": "drop pids",
+          "n_features": 29,
+          "pr_auc": 0.05178192649738169,
+          "roc_auc": 0.6892508546066405,
+          "precision@100": 0.18,
+          "hosts_caught@100": 5,
+          "hosts_with_positives": 12,
+          "median_cells_before_first_hit@100": 0.0,
+          "delta_pr_auc": 0.002002146346523327,
+          "delta_hosts": -1
+        },
+        {
+          "variant": "drop selfnorm",
+          "n_features": 28,
+          "pr_auc": 0.0472149484680705,
+          "roc_auc": 0.6807640323578387,
+          "precision@100": 0.15,
+          "hosts_caught@100": 4,
+          "hosts_with_positives": 12,
+          "median_cells_before_first_hit@100": 1.0,
+          "delta_pr_auc": -0.0025648316827878645,
+          "delta_hosts": -2
+        },
+        {
+          "variant": "drop time",
+          "n_features": 28,
+          "pr_auc": 0.0543449898945736,
+          "roc_auc": 0.7779123933563638,
+          "precision@100": 0.18,
+          "hosts_caught@100": 6,
+          "hosts_with_positives": 12,
+          "median_cells_before_first_hit@100": 2.5,
+          "delta_pr_auc": 0.004565209743715236,
+          "delta_hosts": 0
+        },
+        {
+          "variant": "only volume",
+          "n_features": 6,
+          "pr_auc": 0.022513983493933687,
+          "roc_auc": 0.6841186703106533,
+          "precision@100": 0.04,
+          "hosts_caught@100": 1,
+          "hosts_with_positives": 12,
+          "median_cells_before_first_hit@100": 1.0
+        },
+        {
+          "variant": "only actions",
+          "n_features": 9,
+          "pr_auc": 0.02745179827675363,
+          "roc_auc": 0.6019759560726479,
+          "precision@100": 0.11,
+          "hosts_caught@100": 2,
+          "hosts_with_positives": 12,
+          "median_cells_before_first_hit@100": 0.5
+        },
+        {
+          "variant": "only images",
+          "n_features": 3,
+          "pr_auc": 0.008700929876390661,
+          "roc_auc": 0.5615404206412622,
+          "precision@100": 0.01,
+          "hosts_caught@100": 1,
+          "hosts_with_positives": 12,
+          "median_cells_before_first_hit@100": 3.0
+        },
+        {
+          "variant": "only dirs",
+          "n_features": 1,
+          "pr_auc": 0.008752817961490942,
+          "roc_auc": 0.5456731842996448,
+          "precision@100": 0.01,
+          "hosts_caught@100": 1,
+          "hosts_with_positives": 12,
+          "median_cells_before_first_hit@100": 38.0
+        },
+        {
+          "variant": "only network",
+          "n_features": 4,
+          "pr_auc": 0.015141224903570909,
+          "roc_auc": 0.6314655795890639,
+          "precision@100": 0.03,
+          "hosts_caught@100": 3,
+          "hosts_with_positives": 12,
+          "median_cells_before_first_hit@100": 17.0
+        },
+        {
+          "variant": "only principals",
+          "n_features": 2,
+          "pr_auc": 0.01528251774972255,
+          "roc_auc": 0.7097381097977642,
+          "precision@100": 0.01,
+          "hosts_caught@100": 1,
+          "hosts_with_positives": 12,
+          "median_cells_before_first_hit@100": 0.0
+        },
+        {
+          "variant": "only pids",
+          "n_features": 1,
+          "pr_auc": 0.010179645654218656,
+          "roc_auc": 0.5397130781722475,
+          "precision@100": 0.05,
+          "hosts_caught@100": 3,
+          "hosts_with_positives": 12,
+          "median_cells_before_first_hit@100": 2.0
+        },
+        {
+          "variant": "only selfnorm",
+          "n_features": 2,
+          "pr_auc": 0.009263915641000845,
+          "roc_auc": 0.5703522405873562,
+          "precision@100": 0.0,
+          "hosts_caught@100": 0,
+          "hosts_with_positives": 12,
+          "median_cells_before_first_hit@100": null
+        },
+        {
+          "variant": "only time",
+          "n_features": 2,
+          "pr_auc": 0.006627695494995819,
+          "roc_auc": 0.40182517443219545,
+          "precision@100": 0.0,
+          "hosts_caught@100": 0,
+          "hosts_with_positives": 12,
+          "median_cells_before_first_hit@100": null
+        }
+      ]
+    },
+    {
+      "cut_day": "2019-09-24",
+      "train_pos": 359,
+      "test_pos": 238,
+      "rows": [
+        {
+          "variant": "all",
+          "n_features": 30,
+          "pr_auc": 0.20981877653707998,
+          "roc_auc": 0.9457935435979259,
+          "precision@100": 0.35,
+          "hosts_caught@100": 7,
+          "hosts_with_positives": 7,
+          "median_cells_before_first_hit@100": 5.0
+        },
+        {
+          "variant": "drop volume",
+          "n_features": 24,
+          "pr_auc": 0.08509631496180997,
+          "roc_auc": 0.9086664111063603,
+          "precision@100": 0.06,
+          "hosts_caught@100": 4,
+          "hosts_with_positives": 7,
+          "median_cells_before_first_hit@100": 2.5,
+          "delta_pr_auc": -0.12472246157527,
+          "delta_hosts": -3
+        },
+        {
+          "variant": "drop actions",
+          "n_features": 21,
+          "pr_auc": 0.10241492855255693,
+          "roc_auc": 0.9380791373685793,
+          "precision@100": 0.17,
+          "hosts_caught@100": 5,
+          "hosts_with_positives": 7,
+          "median_cells_before_first_hit@100": 11.0,
+          "delta_pr_auc": -0.10740384798452304,
+          "delta_hosts": -2
+        },
+        {
+          "variant": "drop images",
+          "n_features": 27,
+          "pr_auc": 0.15106871113322218,
+          "roc_auc": 0.937717752445398,
+          "precision@100": 0.28,
+          "hosts_caught@100": 6,
+          "hosts_with_positives": 7,
+          "median_cells_before_first_hit@100": 6.5,
+          "delta_pr_auc": -0.0587500654038578,
+          "delta_hosts": -1
+        },
+        {
+          "variant": "drop dirs",
+          "n_features": 29,
+          "pr_auc": 0.18610626825684765,
+          "roc_auc": 0.9445883128596622,
+          "precision@100": 0.29,
+          "hosts_caught@100": 6,
+          "hosts_with_positives": 7,
+          "median_cells_before_first_hit@100": 4.0,
+          "delta_pr_auc": -0.02371250828023233,
+          "delta_hosts": -1
+        },
+        {
+          "variant": "drop network",
+          "n_features": 26,
+          "pr_auc": 0.10302123016440287,
+          "roc_auc": 0.9349669000257056,
+          "precision@100": 0.1,
+          "hosts_caught@100": 3,
+          "hosts_with_positives": 7,
+          "median_cells_before_first_hit@100": 12.0,
+          "delta_pr_auc": -0.1067975463726771,
+          "delta_hosts": -4
+        },
+        {
+          "variant": "drop principals",
+          "n_features": 28,
+          "pr_auc": 0.15398768886986527,
+          "roc_auc": 0.9416800857195422,
+          "precision@100": 0.27,
+          "hosts_caught@100": 6,
+          "hosts_with_positives": 7,
+          "median_cells_before_first_hit@100": 6.5,
+          "delta_pr_auc": -0.0558310876672147,
+          "delta_hosts": -1
+        },
+        {
+          "variant": "drop pids",
+          "n_features": 29,
+          "pr_auc": 0.1793433215698254,
+          "roc_auc": 0.9416669444496084,
+          "precision@100": 0.29,
+          "hosts_caught@100": 5,
+          "hosts_with_positives": 7,
+          "median_cells_before_first_hit@100": 3.0,
+          "delta_pr_auc": -0.030475454967254567,
+          "delta_hosts": -2
+        },
+        {
+          "variant": "drop selfnorm",
+          "n_features": 28,
+          "pr_auc": 0.17945366034511975,
+          "roc_auc": 0.9388199363962535,
+          "precision@100": 0.3,
+          "hosts_caught@100": 6,
+          "hosts_with_positives": 7,
+          "median_cells_before_first_hit@100": 3.0,
+          "delta_pr_auc": -0.030365116191960223,
+          "delta_hosts": -1
+        },
+        {
+          "variant": "drop time",
+          "n_features": 28,
+          "pr_auc": 0.5717814639062594,
+          "roc_auc": 0.9425630348256473,
+          "precision@100": 0.63,
+          "hosts_caught@100": 5,
+          "hosts_with_positives": 7,
+          "median_cells_before_first_hit@100": 1.0,
+          "delta_pr_auc": 0.3619626873691794,
+          "delta_hosts": -2
+        },
+        {
+          "variant": "only volume",
+          "n_features": 6,
+          "pr_auc": 0.22784518310072815,
+          "roc_auc": 0.936473017767638,
+          "precision@100": 0.45,
+          "hosts_caught@100": 6,
+          "hosts_with_positives": 7,
+          "median_cells_before_first_hit@100": 1.0
+        },
+        {
+          "variant": "only actions",
+          "n_features": 9,
+          "pr_auc": 0.36417135719494015,
+          "roc_auc": 0.9053520065437114,
+          "precision@100": 0.62,
+          "hosts_caught@100": 5,
+          "hosts_with_positives": 7,
+          "median_cells_before_first_hit@100": 1.0
+        },
+        {
+          "variant": "only images",
+          "n_features": 3,
+          "pr_auc": 0.012196964510476352,
+          "roc_auc": 0.596892987113222,
+          "precision@100": 0.01,
+          "hosts_caught@100": 1,
+          "hosts_with_positives": 7,
+          "median_cells_before_first_hit@100": 14.0
+        },
+        {
+          "variant": "only dirs",
+          "n_features": 1,
+          "pr_auc": 0.009659199022082416,
+          "roc_auc": 0.5466679348526351,
+          "precision@100": 0.01,
+          "hosts_caught@100": 1,
+          "hosts_with_positives": 7,
+          "median_cells_before_first_hit@100": 8.0
+        },
+        {
+          "variant": "only network",
+          "n_features": 4,
+          "pr_auc": 0.019438456669294613,
+          "roc_auc": 0.638274605745876,
+          "precision@100": 0.08,
+          "hosts_caught@100": 2,
+          "hosts_with_positives": 7,
+          "median_cells_before_first_hit@100": 1.0
+        },
+        {
+          "variant": "only principals",
+          "n_features": 2,
+          "pr_auc": 0.04084414401860348,
+          "roc_auc": 0.826225375343516,
+          "precision@100": 0.1,
+          "hosts_caught@100": 3,
+          "hosts_with_positives": 7,
+          "median_cells_before_first_hit@100": 3.0
+        },
+        {
+          "variant": "only pids",
+          "n_features": 1,
+          "pr_auc": 0.01106681641281232,
+          "roc_auc": 0.5598440612037018,
+          "precision@100": 0.02,
+          "hosts_caught@100": 2,
+          "hosts_with_positives": 7,
+          "median_cells_before_first_hit@100": 37.0
+        },
+        {
+          "variant": "only selfnorm",
+          "n_features": 2,
+          "pr_auc": 0.020286399461222623,
+          "roc_auc": 0.6837145530269473,
+          "precision@100": 0.02,
+          "hosts_caught@100": 1,
+          "hosts_with_positives": 7,
+          "median_cells_before_first_hit@100": 39.0
+        },
+        {
+          "variant": "only time",
+          "n_features": 2,
+          "pr_auc": 0.008488840646495265,
+          "roc_auc": 0.4498368879934306,
+          "precision@100": 0.0,
+          "hosts_caught@100": 0,
+          "hosts_with_positives": 7,
+          "median_cells_before_first_hit@100": null
+        }
+      ]
+    }
+  ]
+}

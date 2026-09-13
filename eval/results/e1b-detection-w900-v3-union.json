@@ -1,0 +1,283 @@
+{
+  "generated": "2026-09-13T07:30:09.070039+00:00",
+  "generator": "scripts/run_e1b.py",
+  "experiment": "E1-b",
+  "identity_check": [
+    "a_rename: 41.36 distinct values per host, 1.33 distinct values per host count -> kept",
+    "principals: 7.01 distinct values per host, 0.04 distinct values per host count -> kept"
+  ],
+  "tag": "w900-v3-union",
+  "design": "docs/19-e1b-design.md",
+  "features_file": "F:\\F\\other_class\\CybOPS\\analysis\\optc\\ecar-windows-900.v3-union.csv",
+  "window_sec": 900,
+  "window_source": "--window",
+  "labelled_cells_expected": 598,
+  "labelled_cells_found": 598,
+  "label_coverage": 1.0,
+  "n_cells": 96705,
+  "n_positives": 598,
+  "feature_columns": [
+    "n",
+    "n_file",
+    "n_proc",
+    "n_flow",
+    "n_module",
+    "n_other",
+    "a_create",
+    "a_write",
+    "a_delete",
+    "a_read",
+    "a_rename",
+    "a_start",
+    "a_terminate",
+    "a_open",
+    "a_msg",
+    "images",
+    "new_images",
+    "new_image_share",
+    "dirs",
+    "dsts",
+    "new_dsts",
+    "new_dst_share",
+    "external_share",
+    "principals",
+    "system_share",
+    "pids",
+    "n_z",
+    "dsts_z"
+  ],
+  "excluded_by_flag": [
+    "hour",
+    "dow"
+  ],
+  "excluded": {
+    "hosts_without_telemetry": {
+      "DC1": 1,
+      "DC1.systemia.com": 1
+    },
+    "why": "no eCAR telemetry for this host; a full scan found 450 hosts and none of them DC1 (docs/19 section 3). Same exclusion as the previous label set."
+  },
+  "split_unit": "day",
+  "protocol": {
+    "unit": "(host, window) cell - the only unit the ground truth exists at",
+    "split_caveat": "day boundary. OpTC runs a different scenario each day, so this asks whether a model generalizes to an unseen attack pattern.",
+    "sampling": "no negative subsampling; every cell is present, so precision@k is exact",
+    "tuning": "selected on the training days only; test scored once"
+  },
+  "splits": [
+    {
+      "cut_day": "2019-09-22",
+      "skipped": "fewer than 20 positives on one side",
+      "train_pos": 0,
+      "test_pos": 598
+    },
+    {
+      "cut_day": "2019-09-23",
+      "train_cells": 27049,
+      "test_cells": 69656,
+      "train_pos": 75,
+      "test_pos": 523,
+      "models": [
+        {
+          "model": "rule: cell event count",
+          "pr_auc": 0.010299137234742912,
+          "roc_auc": 0.5411266321001398,
+          "positives": 523,
+          "negatives": 69133,
+          "precision@recall50": 0.009018932874354561,
+          "alerts@recall50": 29050.0,
+          "precision@recall90": 0.007456070919740383,
+          "alerts@recall90": 63170.0,
+          "precision@recall100": 0.007530055431574401,
+          "alerts@recall100": 69455.0,
+          "precision@20": 0.05,
+          "precision@50": 0.04,
+          "precision@100": 0.02,
+          "precision@500": 0.008
+        },
+        {
+          "model": "rule: new destinations",
+          "pr_auc": 0.010126157141981718,
+          "roc_auc": 0.4975861226174758,
+          "positives": 523,
+          "negatives": 69133,
+          "precision@recall50": 0.006032418493276847,
+          "alerts@recall50": 43432.0,
+          "precision@recall90": 0.007938782045879755,
+          "alerts@recall90": 59329.0,
+          "precision@recall100": 0.007871645520085489,
+          "alerts@recall100": 66441.0,
+          "precision@20": 0.05,
+          "precision@50": 0.04,
+          "precision@100": 0.02,
+          "precision@500": 0.026
+        },
+        {
+          "model": "histgb",
+          "pr_auc": 0.05437255031297418,
+          "roc_auc": 0.7782548665651507,
+          "positives": 523,
+          "negatives": 69133,
+          "precision@recall50": 0.02576457862130003,
+          "alerts@recall50": 10169.0,
+          "precision@recall90": 0.012428096469470684,
+          "alerts@recall90": 37898.0,
+          "precision@recall100": 0.007571151451981817,
+          "alerts@recall100": 69078.0,
+          "precision@20": 0.75,
+          "precision@50": 0.34,
+          "precision@100": 0.18,
+          "precision@500": 0.062
+        },
+        {
+          "model": "logreg",
+          "pr_auc": 0.05985131994151205,
+          "roc_auc": 0.7293040800702301,
+          "positives": 523,
+          "negatives": 69133,
+          "precision@recall50": 0.022254310710948782,
+          "alerts@recall50": 11773.0,
+          "precision@recall90": 0.01101574011273008,
+          "alerts@recall90": 42757.0,
+          "precision@recall100": 0.007508326633742965,
+          "alerts@recall100": 69656.0,
+          "precision@20": 0.7,
+          "precision@50": 0.4,
+          "precision@100": 0.22,
+          "precision@500": 0.058
+        }
+      ],
+      "mttd": [
+        {
+          "budget": 50,
+          "hosts_with_positives": 12,
+          "hosts_caught": 6,
+          "hosts_missed": 6,
+          "median_cells_before_first_hit": 1.5,
+          "caught_on_first_cell": 3
+        },
+        {
+          "budget": 100,
+          "hosts_with_positives": 12,
+          "hosts_caught": 6,
+          "hosts_missed": 6,
+          "median_cells_before_first_hit": 1.5,
+          "caught_on_first_cell": 3
+        },
+        {
+          "budget": 200,
+          "hosts_with_positives": 12,
+          "hosts_caught": 6,
+          "hosts_missed": 6,
+          "median_cells_before_first_hit": 0.5,
+          "caught_on_first_cell": 3
+        }
+      ],
+      "mttd_model": "logreg"
+    },
+    {
+      "cut_day": "2019-09-24",
+      "train_cells": 70249,
+      "test_cells": 26456,
+      "train_pos": 360,
+      "test_pos": 238,
+      "models": [
+        {
+          "model": "rule: cell event count",
+          "pr_auc": 0.01411315959440346,
+          "roc_auc": 0.5323905861070495,
+          "positives": 238,
+          "negatives": 26218,
+          "precision@recall50": 0.009434710219614683,
+          "alerts@recall50": 12613.0,
+          "precision@recall90": 0.009096293789135217,
+          "alerts@recall90": 23636.0,
+          "precision@recall100": 0.009045990117825921,
+          "alerts@recall100": 26310.0,
+          "precision@20": 0.05,
+          "precision@50": 0.02,
+          "precision@100": 0.01,
+          "precision@500": 0.006
+        },
+        {
+          "model": "rule: new destinations",
+          "pr_auc": 0.008993147062674102,
+          "roc_auc": 0.4830047321392514,
+          "positives": 238,
+          "negatives": 26218,
+          "precision@recall50": 0.010812284208613484,
+          "alerts@recall50": 11006.0,
+          "precision@recall90": 0.009507384805872468,
+          "alerts@recall90": 22614.0,
+          "precision@recall100": 0.010240523213286864,
+          "alerts@recall100": 23241.0,
+          "precision@20": 0.0,
+          "precision@50": 0.0,
+          "precision@100": 0.01,
+          "precision@500": 0.004
+        },
+        {
+          "model": "histgb",
+          "pr_auc": 0.549827280694326,
+          "roc_auc": 0.9455036343624337,
+          "positives": 238,
+          "negatives": 26218,
+          "precision@recall50": 0.672316384180791,
+          "alerts@recall50": 177.0,
+          "precision@recall90": 0.10018639328984157,
+          "alerts@recall90": 2146.0,
+          "precision@recall100": 0.009350200361436316,
+          "alerts@recall100": 25454.0,
+          "precision@20": 0.55,
+          "precision@50": 0.6,
+          "precision@100": 0.59,
+          "precision@500": 0.402
+        },
+        {
+          "model": "logreg",
+          "pr_auc": 0.09791892625292693,
+          "roc_auc": 0.8758622756448678,
+          "positives": 238,
+          "negatives": 26218,
+          "precision@recall50": 0.11840796019900497,
+          "alerts@recall50": 1005.0,
+          "precision@recall90": 0.016922471467926012,
+          "alerts@recall90": 12705.0,
+          "precision@recall100": 0.009002534326890342,
+          "alerts@recall100": 26437.0,
+          "precision@20": 0.35,
+          "precision@50": 0.14,
+          "precision@100": 0.07,
+          "precision@500": 0.02
+        }
+      ],
+      "mttd": [
+        {
+          "budget": 50,
+          "hosts_with_positives": 7,
+          "hosts_caught": 4,
+          "hosts_missed": 3,
+          "median_cells_before_first_hit": 2.5,
+          "caught_on_first_cell": 1
+        },
+        {
+          "budget": 100,
+          "hosts_with_positives": 7,
+          "hosts_caught": 4,
+          "hosts_missed": 3,
+          "median_cells_before_first_hit": 1.0,
+          "caught_on_first_cell": 1
+        },
+        {
+          "budget": 200,
+          "hosts_with_positives": 7,
+          "hosts_caught": 5,
+          "hosts_missed": 2,
+          "median_cells_before_first_hit": 0.0,
+          "caught_on_first_cell": 4
+        }
+      ],
+      "mttd_model": "histgb"
+    }
+  ]
+}
