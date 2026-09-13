@@ -11,7 +11,7 @@
 | 결정 | **Q1~Q6 전부 확정**(ADR-0012~0018). 미결 없음 |
 | 모델 | 시간축 온톨로지 완료(ADR-0017). LLM 4종 비교 완료, 기본 프롬프트 **briefing.ko v4** |
 | UI | **React 전환 완료**(ADR-0024). `ui/` Vite+React+Cytoscape 정적 번들. 무채색 크롬, 저하도=휘도. 3뷰·3모드 동작 |
-| 다음 | **그래프 파생물 순회 중**(`Export-EcarGraph.ps1`, 09-13 16:40 시작, ~12h). 끝나면 자립성 확인 -> 원본 삭제 게이트(사람). 시각 특징 제외 확정(docs/19 16절). E3 **완료**. UI 잔여 1건(편집 인스펙터 임무 연결) |
+| 다음 | **그래프 파생물 순회 중**(`Export-EcarGraph.ps1`, 09-13 16:40 시작, ~12h). 끝나면 자립성 확인 -> 원본 삭제 게이트(사람). 시각 특징 제외 확정(docs/19 16절). E3 **완료**. UI 미이식 잔여 **0건** |
 | 도구 | Figma pro/Full 좌석. Node 24.20.0 **포터블 설치**, Python 3.12, Git 2.55 |
 
 ## 2026-09-11 ~ 12 - OpTC 취득이 끝났고, 300초 창은 커버리지 99.8% 로 다시 채점했다
@@ -57,6 +57,19 @@ P@rec50 = 0.67, 호스트@100 5/7. 합집합 민감도는 세 번째도 아무�
 `analysis/logs/optc-extract-graph-300.log`, 100k rec/s 이면 약 11시간). 스모크 테스트에서
 흐름의 99.6% 가 멀티캐스트라 양 끝 유니캐스트만 남긴다. **원본 삭제는 이것이 끝나고
 세 파일이 자립하는지 확인한 뒤, 사람이 한다.**
+
+**순회가 끝나면(내일 새벽) 할 일, 순서대로:**
+
+```powershell
+$py = "$env:LOCALAPPDATA\Programs\Python\Python312\python.exe"
+Get-Content analysis\logs\optc-extract-graph-300.log -Tail 12   # elapsed 와 report 줄이 있어야 끝난 것
+& $py scripts\check_ecar_graph.py                                # VERIFY 게이트. FAIL 이면 지우지 않는다
+```
+
+PASS 면 `docs/05` 절차대로 사람이 확인하고 `F:\mc-cycop-data\raw\optc\ecar` 를 지운다.
+매니페스트(`configs/manifests/optc.json`)는 남는다. bro 는 별도 판단(7.7 GB, E1-b 에 안 씀).
+
+UI: 편집 인스펙터 임무 연결 컨트롤 이식 완료(09-13). 09-10 미이식 목록은 비었다.
 
 채점 명령(기록용, 지금은 `--exclude hour,dow` 를 붙인다):
 
