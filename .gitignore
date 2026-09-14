@@ -91,3 +91,6 @@ analysis/**/*.csv.bak
 
 # 이전 추출의 사이드카. 수치는 docs/19 13절 표와 git 이력에 있다.
 analysis/**/*.v1.summary.json
+
+# 피어 IP 를 host_key 로 바꾸는 표(88 KB). 이것 없이는 흐름 엣지를 셀에 조인할 수 없다. docs/19 17절.
+!analysis/optc/ecar-host-ip.csv

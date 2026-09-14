@@ -1,0 +1,29 @@
+﻿{
+    "generated":  "2026-09-14T02:24:45.7585536+09:00",
+    "generator":  "scripts/Export-EcarGraph.ps1",
+    "code_version":  "32a1658",
+    "experiment":  "E1-b step 3 input (graph derivatives)",
+    "design":  "docs/19-e1b-design.md section 15.5",
+    "bucket_sec":  300,
+    "bundles":  125,
+    "records_read":  4038963311,
+    "malformed":  0,
+    "vanished_files":  0,
+    "hosts":  450,
+    "flows_seen":  3157932002,
+    "flows_kept":  62872368,
+    "flows_dropped":  3095059634,
+    "process_creates":  4778294,
+    "edge_rows":  2912985,
+    "tree_rows":  1762023,
+    "host_ip_rows":  1347,
+    "time_min":  1569208918,
+    "time_max":  1569436701,
+    "elapsed_sec":  36339.9,
+    "outputs":  [
+                    "F:\\F\\other_class\\CybOPS\\analysis\\optc\\ecar-flow-edges-300.csv",
+                    "F:\\F\\other_class\\CybOPS\\analysis\\optc\\ecar-proc-tree-300.csv",
+                    "F:\\F\\other_class\\CybOPS\\analysis\\optc\\ecar-host-ip.csv"
+                ],
+    "not_written":  "command lines, file paths, principals, pids, actor/object ids. hostname appears only in ecar-host-ip.csv, which is the IP-to-host join table."
+}
