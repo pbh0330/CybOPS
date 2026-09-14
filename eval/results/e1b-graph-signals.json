@@ -1,0 +1,142 @@
+{
+  "generated": "2026-09-14T13:01:58+09:00",
+  "generator": "scripts/measure_graph_signals.py",
+  "design": "docs/19-e1b-design.md section 17",
+  "inputs": [
+    "ecar-windows-300.v3.csv",
+    "ecar-flow-edges-300.csv",
+    "ecar-host-ip.csv",
+    "ecar-proc-tree-300.csv"
+  ],
+  "window_sec": 300,
+  "base_rate": 0.00594,
+  "positives": 1714,
+  "flow_signals": [
+    {
+      "condition": "outbound flow to another client",
+      "cells": 4636,
+      "attack_cells": 71,
+      "p_attack": 0.0153,
+      "lift": 2.6,
+      "positives_covered": 71,
+      "positives_total": 1714
+    },
+    {
+      "condition": "inbound flow from another client",
+      "cells": 4461,
+      "attack_cells": 69,
+      "p_attack": 0.0155,
+      "lift": 2.6,
+      "positives_covered": 69,
+      "positives_total": 1714
+    },
+    {
+      "condition": "client-to-client RDP (3389)",
+      "cells": 61,
+      "attack_cells": 58,
+      "p_attack": 0.9508,
+      "lift": 160.1,
+      "positives_covered": 58,
+      "positives_total": 1714
+    },
+    {
+      "condition": "client-to-client SMB (445)",
+      "cells": 2,
+      "attack_cells": 1,
+      "p_attack": 0.5,
+      "lift": 84.2,
+      "positives_covered": 1,
+      "positives_total": 1714
+    },
+    {
+      "condition": "client-to-client RPC (135)",
+      "cells": 457,
+      "attack_cells": 8,
+      "p_attack": 0.0175,
+      "lift": 2.9,
+      "positives_covered": 8,
+      "positives_total": 1714
+    },
+    {
+      "condition": "client-to-client NetBIOS (139)",
+      "cells": 3702,
+      "attack_cells": 0,
+      "p_attack": 0.0,
+      "lift": 0.0,
+      "positives_covered": 0,
+      "positives_total": 1714
+    }
+  ],
+  "process_pairs": [
+    {
+      "pair": "\\windows\\system32\\wbem\\wmiprvse.exe -> powershell.exe",
+      "cells": 24,
+      "attack_cells": 24,
+      "p_attack": 1.0
+    },
+    {
+      "pair": "\\windows\\system32\\svchost.exe -> \\windows\\system32\\audiodg.exe",
+      "cells": 8,
+      "attack_cells": 8,
+      "p_attack": 1.0
+    },
+    {
+      "pair": "\\windows\\system32\\svchost.exe -> rundll32.exe",
+      "cells": 14,
+      "attack_cells": 12,
+      "p_attack": 0.857
+    },
+    {
+      "pair": "\\program files (x86)\\google\\chrome\\application\\chrome.exe -> \\program files (x86)\\google\\chrome\\application\\chrome.exe",
+      "cells": 6,
+      "attack_cells": 5,
+      "p_attack": 0.833
+    },
+    {
+      "pair": "\\windows\\system32\\svchost.exe -> consent.exe",
+      "cells": 14,
+      "attack_cells": 11,
+      "p_attack": 0.786
+    },
+    {
+      "pair": "\\windows\\system32\\svchost.exe -> \\windows\\system32\\tstheme.exe",
+      "cells": 7,
+      "attack_cells": 5,
+      "p_attack": 0.714
+    },
+    {
+      "pair": "\\windows\\explorer.exe -> \\windows\\system32\\cmd.exe",
+      "cells": 12,
+      "attack_cells": 8,
+      "p_attack": 0.667
+    },
+    {
+      "pair": "\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe -> \\windows\\system32\\conhost.exe",
+      "cells": 55,
+      "attack_cells": 5,
+      "p_attack": 0.091
+    },
+    {
+      "pair": "netstat.exe -> \\windows\\system32\\conhost.exe",
+      "cells": 67,
+      "attack_cells": 5,
+      "p_attack": 0.075
+    },
+    {
+      "pair": "cmd.exe -> mstsc.exe",
+      "cells": 151,
+      "attack_cells": 8,
+      "p_attack": 0.053
+    }
+  ],
+  "novel_pair_signal": {
+    "condition": "a parent->child pair never seen before in the capture",
+    "cells": 1629,
+    "attack_cells": 52,
+    "p_attack": 0.0319,
+    "lift": 5.4,
+    "positives_covered": 52,
+    "positives_total": 1714
+  },
+  "caveat": "measured on the labelled OpTC cells, not on a held-out day. These are descriptions of the red team's tradecraft in this capture, not detection performance claims."
+}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { CAUSE_COLOR } from '../graph.js'
 import { num, pct, missionRows, cutRows, actionRows, linkageOf } from '../derive.js'
+import detection from '../detection.json'
 
 // The rail. Six stacked panels became one fixed block plus tabs (ADR-0024):
 // mission state is always visible because it is the answer to "how bad is it",
@@ -67,9 +68,56 @@ function MissionState({ graph, step, when }) {
   )
 }
 
+// What a compromise mark is worth. In an authored scenario the compromise is
+// an authored value (ADR-0012); on real telemetry it would come from the
+// detection tier, and this card says what that tier measured on real data
+// (E1-b, docs/19 sections 16-17) so the reader can weigh the mark. Every
+// number comes from eval/results via tools/pull-detection.mjs, with the file
+// and the date it was pulled - nothing here is typed in. It is evidence in the
+// ADR-0009 sense: a claim with its source attached, or no claim.
+function DetectionEvidence() {
+  const d = detection
+  const fmt = (x, n = 2) => Number(x).toFixed(n)
+  return (
+    <details className="evidence" open>
+      <summary>침해 표기의 근거: 탐지 계층 실측</summary>
+      <p className="rail-caption">
+        이 시나리오의 침해는 저작값이다. 실데이터에서 침해 표기를 만드는 탐지 계층이 어디까지 되는지:
+      </p>
+      <div className="ev-src">{d.dataset} · {d.window_sec}초 창 · 학습 {d.train_days} → 못 본 날 {d.test_day} 채점 1회</div>
+      <dl>
+        <div style={{ display: 'contents' }}>
+          <dt>경보 {d.budget}건 예산</dt>
+          <dd><b>호스트 {d.hosts_caught}/{d.hosts_with_positives}</b> 잡음 · 첫 적중까지 중앙값 {d.median_cells_before_first_hit}셀</dd>
+        </div>
+        <div style={{ display: 'contents' }}>
+          <dt>재현율 50%</dt>
+          <dd>정밀도 <b>{fmt(d.precision_at_recall50)}</b> (기저율 {fmt(100 * d.base_rate, 1)}%)</dd>
+        </div>
+        <div style={{ display: 'contents' }}>
+          <dt>PR-AUC</dt>
+          <dd>{fmt(d.pr_auc, 3)} · 규칙 베이스라인 {fmt(d.rules_pr_auc_max, 3)}</dd>
+        </div>
+      </dl>
+      <div className="ev-sub">측면이동 신호 (라벨 셀 대조, 성능 주장 아님)</div>
+      {d.signals.map((sg) => (
+        <div className="ev-row" key={sg.name}>
+          <span>{sg.name}</span>
+          <b>{sg.attack_cells}/{sg.cells}</b>
+          <em className="ref">{sg.technique}</em>
+        </div>
+      ))}
+      <div className="ev-foot">
+        {d.sources.detection.replace('eval/results/', '')} · {d.pulled}
+      </div>
+    </details>
+  )
+}
+
 function Cuts({ graph, step }) {
   const rows = cutRows(graph, step)
   if (!rows.length) return <div className="none">현재 단절·침해 없음</div>
+  const anyAttack = rows.some((r) => r.cause === 'attack')
   return (
     <>
       <p className="rail-caption">원인이 미상인 단절을 공격으로 표기하지 않는다 (ADR-0012)</p>
@@ -80,6 +128,7 @@ function Cuts({ graph, step }) {
           <span className="note">{r.note}</span>
         </div>
       ))}
+      {anyAttack && <DetectionEvidence />}
     </>
   )
 }

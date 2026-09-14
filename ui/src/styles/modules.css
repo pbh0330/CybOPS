@@ -229,3 +229,17 @@ body .geo-canvas:active { cursor: grabbing; }
 .linkage .lk-group { margin-top: 10px; }
 .linkage .lk-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
 .linkage .lk-chk { display: flex; margin: 3px 0; }
+
+/* detection-tier evidence card under the cut list; folded by default, achromatic */
+.evidence { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 12px; }
+.evidence summary { cursor: pointer; color: var(--text-secondary); font-weight: 600; font-size: 11px; letter-spacing: .02em; }
+.evidence summary::marker { color: var(--text-muted); }
+.evidence .rail-caption { margin-top: 8px; }
+.evidence .ev-src { color: var(--text-muted); font-size: 11px; margin: 4px 0 8px; }
+.evidence dl { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; margin: 0; }
+.evidence dt { color: var(--text-muted); }
+.evidence dd { margin: 0; color: var(--text-primary); }
+.evidence .ev-sub { margin-top: 10px; color: var(--text-muted); font-size: 11px; }
+.evidence .ev-row { display: flex; align-items: baseline; gap: 8px; margin: 3px 0; color: var(--text-primary); }
+.evidence .ev-row b { margin-left: auto; }
+.evidence .ev-foot { margin-top: 8px; color: var(--text-muted); font-size: 10px; }

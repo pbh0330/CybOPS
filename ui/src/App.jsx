@@ -33,9 +33,14 @@ export default function App() {
   const [payload, setPayload] = useState(null)
   const [graph, setGraph] = useState(null)
   const [idx, setIdx] = useState(0)
-  const [view, setView] = useState('dependency')
+  // Deep link: ?scenario=tacnet-01&t=300&view=geo&tab=cuts. Read once at
+  // start so a demo step or a screenshot can be reached without clicking.
+  // Anything unknown is ignored and the defaults stand.
+  const link = useRef(new URLSearchParams(window.location.search))
+  const pick = (key, allowed, dflt) => (allowed.includes(link.current.get(key)) ? link.current.get(key) : dflt)
+  const [view, setView] = useState(pick('view', ['dependency', 'transport', 'geo'], 'dependency'))
   const [mode, setMode] = useState('observe')
-  const [tab, setTab] = useState('actions')
+  const [tab, setTab] = useState(pick('tab', ['cuts', 'actions', 'brief', 'inspect'], 'actions'))
   const [labels, setLabels] = useState(true)
   const [playing, setPlaying] = useState(false)
   const [selectedData, setSelectedData] = useState(null)
@@ -71,10 +76,13 @@ export default function App() {
         const list = available.length ? available : SCENARIOS
         if (!alive) return
         setScenarios(list)
-        setScenarioId(list[0])
+        const wanted = link.current.get('scenario')
+        setScenarioId(list.includes(wanted) ? wanted : list[0])
         let seen = false
         try { seen = localStorage.getItem('mccycop:onboard:seen') === '1' } catch { /* ignore */ }
-        if (!seen) setOnboard(true)
+        // a deep link is someone who already knows the screen; do not cover it
+        const deep = ['scenario', 't', 'view', 'tab'].some((k) => link.current.has(k))
+        if (!seen && !deep) setOnboard(true)
       } catch (e) {
         if (alive) setError(e.message)
       }
@@ -112,7 +120,19 @@ export default function App() {
         setPayload(p)
         setGraph(g)
         setEdited(wasEdited)
-        setIdx(0)
+        // ?t=<minutes> lands on the nearest step, first load only
+        let start = 0
+        const tq = link.current.get('t')
+        if (tq !== null && p.steps && p.steps.length) {
+          const t = Number(tq)
+          let best = Infinity
+          p.steps.forEach((st, i) => {
+            const d = Math.abs(Number(st.t) - t)
+            if (d < best) { best = d; start = i }
+          })
+          link.current.delete('t')
+        }
+        setIdx(start)
         setSelectedData(null)
         setHistVer((v) => v + 1)
       } catch (e) {

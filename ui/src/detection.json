@@ -1,0 +1,37 @@
+{
+  "pulled": "2026-09-14",
+  "sources": {
+    "detection": "eval/results/e1b-detection-w900-v3-notime.json",
+    "signals": "eval/results/e1b-graph-signals.json"
+  },
+  "dataset": "DARPA OpTC (실데이터), Inria 수정 라벨",
+  "window_sec": 900,
+  "train_days": "2019-09-23, 24",
+  "test_day": "2019-09-25",
+  "test_positives": 238,
+  "test_cells": 26456,
+  "base_rate": 0.008996068944662837,
+  "model": "histgb, 28 특징 (시각 제외)",
+  "pr_auc": 0.5717814639062594,
+  "precision_at_recall50": 0.6685393258426966,
+  "rules_pr_auc_max": 0.01411315959440346,
+  "budget": 100,
+  "hosts_caught": 5,
+  "hosts_with_positives": 7,
+  "median_cells_before_first_hit": 1,
+  "signals": [
+    {
+      "name": "클라이언트 간 RDP(3389) 흐름",
+      "cells": 61,
+      "attack_cells": 58,
+      "technique": "T1021.001"
+    },
+    {
+      "name": "wmiprvse.exe → powershell.exe",
+      "cells": 24,
+      "attack_cells": 24,
+      "technique": "T1047"
+    }
+  ],
+  "signals_caveat": "measured on the labelled OpTC cells, not on a held-out day. These are descriptions of the red team's tradecraft in this capture, not detection performance claims."
+}
