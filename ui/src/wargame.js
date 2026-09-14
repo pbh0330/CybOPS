@@ -27,6 +27,7 @@
 
 import { legalMoves, scoreMoves, playTurn, greedyChooser, randomChooser, footholds } from './attack.js'
 import { config, probeLlm } from './config.js'
+import { techniqueLine } from './labels.js'
 
 function esc(s) {
   return String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
@@ -245,7 +246,7 @@ export function createWargame({ mountEl, getGraph, getT, getMethod, onChange }) 
           <span class="wg-verdict">${last.success ? '성공' : '실패'}</span>
         </div>
         <div class="wg-roll">판정 ${last.roll} ${last.success ? '&lt;' : '&ge;'} ${m.p}
-          · 예상 이득 ${pct(m.gain)} · ${esc(m.technique)}</div>
+          · 예상 이득 ${pct(m.gain)} · ${esc(techniqueLine(m.technique))}</div>
         ${last.rationale ? `<div class="wg-why">${esc(last.rationale)}</div>` : ''}
       </div>`
     }

@@ -1,0 +1,117 @@
+{
+  "_note": "MITRE ATT&CK 기법·전술의 한국어 풀이. 화면에 기법 id 만 찍으면 무슨 뜻인지 알 수 없어서 둔다. id 와 영문명은 ATT&CK Enterprise v15 의 것이고, name_ko 는 공식 번역이 아니라 이 프로젝트의 표기다. 한국어 문자열은 스크립트가 아니라 이 데이터 파일에 둔다(CLAUDE.md 인코딩 규칙). 두 시나리오와 교전 모드, 탐지 근거 카드가 쓰는 기법만 있다 - 새 기법을 시나리오에 넣으면 여기에 추가한다.",
+  "source": "https://attack.mitre.org/ (Enterprise)",
+  "tactics": {
+    "reconnaissance": "정찰",
+    "resource-development": "자원 준비",
+    "initial-access": "초기 침투",
+    "execution": "실행",
+    "persistence": "지속",
+    "privilege-escalation": "권한 상승",
+    "defense-evasion": "방어 회피",
+    "credential-access": "자격증명 접근",
+    "discovery": "탐색",
+    "lateral-movement": "측면 이동",
+    "collection": "수집",
+    "command-and-control": "명령·제어",
+    "exfiltration": "유출",
+    "impact": "영향"
+  },
+  "techniques": {
+    "T1566.001": {
+      "name": "Spearphishing Attachment",
+      "name_ko": "첨부파일 스피어피싱",
+      "meaning": "특정인을 노린 메일의 첨부파일을 열게 해서 첫 발판을 얻는다. 여기서는 Outlook 이 스크립트 실행기(wscript)를 띄운 것이 그 흔적이다."
+    },
+    "T1059.001": {
+      "name": "Command and Scripting Interpreter: PowerShell",
+      "name_ko": "PowerShell 실행",
+      "meaning": "PowerShell 로 명령을 실행한다. 인코딩된(-enc) 명령줄은 내용을 숨기려는 전형적인 신호다."
+    },
+    "T1071.001": {
+      "name": "Application Layer Protocol: Web Protocols",
+      "name_ko": "웹 프로토콜 C2 통신",
+      "meaning": "HTTP/HTTPS 처럼 평범해 보이는 웹 통신에 명령·제어 채널을 숨긴다. 일정 간격의 작은 외부 접속(비콘)이 특징이다."
+    },
+    "T1003": {
+      "name": "OS Credential Dumping",
+      "name_ko": "운영체제 자격증명 덤프",
+      "meaning": "메모리나 시스템 파일에서 계정 비밀번호·해시를 긁어낸다. 다음 단계(측면 이동)의 열쇠를 만드는 행위다."
+    },
+    "T1003.001": {
+      "name": "OS Credential Dumping: LSASS Memory",
+      "name_ko": "LSASS 메모리 덤프",
+      "meaning": "로그온 정보를 쥐고 있는 lsass.exe 의 메모리를 읽어 로컬에 남은 계정 자격증명을 빼낸다."
+    },
+    "T1003.003": {
+      "name": "OS Credential Dumping: NTDS",
+      "name_ko": "도메인 DB(NTDS) 덤프",
+      "meaning": "도메인 컨트롤러의 계정 데이터베이스(ntds.dit)를 통째로 복사한다. 성공하면 도메인의 모든 계정이 넘어간다."
+    },
+    "T1046": {
+      "name": "Network Service Discovery",
+      "name_ko": "네트워크 서비스 탐색",
+      "meaning": "내부망에서 어떤 호스트가 어떤 서비스(SMB, RDP 등)를 열어 두었는지 훑는다. 다음에 어디로 갈지 고르는 정찰이다."
+    },
+    "T1021": {
+      "name": "Remote Services",
+      "name_ko": "원격 서비스 접속",
+      "meaning": "탈취한 계정으로 다른 호스트의 원격 서비스에 정상 로그온해서 옮겨 간다. 도구가 아니라 정상 기능을 쓰므로 인증 로그로만 보인다."
+    },
+    "T1021.001": {
+      "name": "Remote Services: Remote Desktop Protocol",
+      "name_ko": "원격 데스크톱(RDP) 접속",
+      "meaning": "RDP 로 다른 호스트에 로그온해 옮겨 간다. 클라이언트끼리 RDP 를 주고받는 일은 평시에 거의 없어서, 있으면 강한 신호다."
+    },
+    "T1021.002": {
+      "name": "Remote Services: SMB/Windows Admin Shares",
+      "name_ko": "SMB 관리 공유 접속",
+      "meaning": "관리자 권한 계정으로 다른 호스트의 숨은 공유(ADMIN$, C$)에 붙어 파일을 놓고 실행한다. 도메인 컨트롤러로 넘어갈 때 흔히 쓴다."
+    },
+    "T1021.004": {
+      "name": "Remote Services: SSH",
+      "name_ko": "SSH 접속",
+      "meaning": "SSH 로 다른 호스트에 로그온해 옮겨 간다. 서버·장비 사이의 신뢰 경로를 그대로 탄다."
+    },
+    "T1047": {
+      "name": "Windows Management Instrumentation",
+      "name_ko": "WMI 원격 실행",
+      "meaning": "WMI 로 다른 호스트에서 명령을 실행한다. 대상 호스트에서는 wmiprvse.exe 가 powershell.exe 를 띄우는 모양으로 나타난다."
+    },
+    "T1078": {
+      "name": "Valid Accounts",
+      "name_ko": "유효 계정 악용",
+      "meaning": "훔치거나 노획한 정상 계정으로 들어온다. 로그인 자체는 성공이고 정상이라서, 누가 어디서 썼는지로만 구분된다."
+    },
+    "T1078.002": {
+      "name": "Valid Accounts: Domain Accounts",
+      "name_ko": "도메인 계정 악용",
+      "meaning": "도메인 계정(서비스 계정 포함)을 정당한 사용자처럼 써서 권한을 얻거나 탐지를 피한다."
+    },
+    "T1005": {
+      "name": "Data from Local System",
+      "name_ko": "로컬 데이터 수집",
+      "meaning": "장악한 호스트 안의 파일·DB 에서 가져갈 데이터를 모아 둔다. 대량 테이블 내보내기가 그 모양이다."
+    },
+    "T1048.003": {
+      "name": "Exfiltration Over Alternative Protocol: Unencrypted Non-C2 Protocol",
+      "name_ko": "별도 채널 유출",
+      "meaning": "모아 둔 데이터를 C2 채널이 아닌 다른 프로토콜로 외부에 보낸다. 평소와 다른 크기의 외부 전송으로 드러난다."
+    },
+    "T1070.001": {
+      "name": "Indicator Removal: Clear Windows Event Logs",
+      "name_ko": "이벤트 로그 삭제",
+      "meaning": "보안 이벤트 로그를 지워 흔적을 없앤다. 로그가 비는 것 자체가 흔적이다."
+    },
+    "T1486": {
+      "name": "Data Encrypted for Impact",
+      "name_ko": "데이터 암호화(무력화)",
+      "meaning": "가용성을 노려 데이터를 암호화한다. 여기서는 C2 메시징 서버를 쓸 수 없게 만드는 마지막 단계다."
+    },
+    "T1499": {
+      "name": "Endpoint Denial of Service",
+      "name_ko": "엔드포인트 서비스 거부",
+      "meaning": "호스트나 서비스를 과부하·고장 내서 쓰지 못하게 한다. 교전 모드의 공격자가 고를 수 있는 수 가운데 하나다."
+    }
+  }
+}

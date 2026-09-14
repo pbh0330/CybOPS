@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react' 
 import { CAUSE_COLOR } from '../graph.js'
 import { clockOf } from '../derive.js'
+import { techniqueLine } from '../labels.js'
 
 // The strip under the graph is the argument this project is making, drawn as
 // one picture: phases on top, cause-coloured outage bands in the middle,
@@ -164,7 +165,7 @@ export default function Timeline({ graph, payload, idx, step, playing, onPlay, o
             return (
               <g key={i}>
                 <path d={`M${px} ${atkY} l4 4 l-4 4 l-4 -4 z`} fill={CAUSE_COLOR.attack}>
-                  <title>{`${st.label || ''}${st.note ? '\n' + st.note : ''}`}</title>
+                  <title>{[st.label || '', ...(Array.isArray(st.gt) ? st.gt : (st.gt ? [st.gt] : [])).map((g) => techniqueLine(g.technique)), st.note || ''].filter(Boolean).join('\n')}</title>
                 </path>
                 {chainOnly && room > 62 && (
                   <text x={px + 7} y={atkY + 7} fill="#99a0a7" fontSize="9">{st.label}</text>

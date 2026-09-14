@@ -10,6 +10,8 @@
 
 // Same wording as the edit palette (editor.js PALETTE) - one vocabulary for
 // the whole product, not two.
+import ATTACK from '../../configs/attack-techniques.ko.json'
+
 export const TYPE_KO = {
   'c2-server': 'C2 서버',
   'c2-terminal': 'C2 단말',
@@ -71,4 +73,27 @@ export function linkName(graph, link) {
   const a = assetName(graph, link.a)
   const b = assetName(graph, link.b)
   return `${a.ko} ↔ ${b.ko}`
+}
+
+// MITRE ATT&CK ids, read out. A technique id on screen is a cross-reference
+// key like an asset id: it has to be there, and it must not be the only thing
+// there. The table is data (configs/attack-techniques.ko.json), not code, so
+// a scenario author adds a technique by adding a row.
+
+export function techniqueKo(id) {
+  const t = ATTACK.techniques[id]
+  return t ? t.name_ko : ''
+}
+export function techniqueMeaning(id) {
+  const t = ATTACK.techniques[id]
+  return t ? t.meaning : ''
+}
+export function tacticKo(id) {
+  return ATTACK.tactics[id] || id || ''
+}
+// "T1021.002 SMB 관리 공유 접속" - id first so it can be matched against the
+// data, name second so it can be read
+export function techniqueLine(id) {
+  const ko = techniqueKo(id)
+  return ko ? `${id} ${ko}` : id
 }

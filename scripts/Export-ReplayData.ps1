@@ -68,25 +68,34 @@ if ($Timeline -and (Test-Path $Timeline)) {
 # one code path draws both. Nothing is invented: the note is the chain's own
 # observable and technique id at that offset.
 if ($tl -and ($null -eq $tl.steps) -and ($null -ne $tl.states)) {
+  # gt is structured, not a sentence: the UI has the Korean names for the
+  # technique ids (configs/attack-techniques.ko.json) and renders them itself.
+  # msg_ko is the authored Korean reading of the observable; msg is the raw
+  # log wording and stays as the fallback.
   $chainAt = @{}
   foreach ($c in (AsArrayLocal $tl.chain)) {
     $key = [string]([int]$c.off)
-    $bits = @()
-    if ($c.gt -and $c.gt.technique) { $bits += [string]$c.gt.technique }
-    if ($c.gt -and $c.gt.tactic)    { $bits += [string]$c.gt.tactic }
-    $line = ($bits -join ' ')
-    if ($c.msg) { $line = $line + ': ' + [string]$c.msg }
-    if ($c.host) { $line = $line + ' [' + [string]$c.host + ']' }
-    if ($chainAt.ContainsKey($key)) { $chainAt[$key] = $chainAt[$key] + ' / ' + $line } else { $chainAt[$key] = $line }
+    $obs = $(if ($c.msg_ko) { [string]$c.msg_ko } else { [string]$c.msg })
+    $entry = [pscustomobject]@{
+      technique = $(if ($c.gt) { [string]$c.gt.technique } else { '' })
+      tactic    = $(if ($c.gt) { [string]$c.gt.tactic } else { '' })
+      msg       = $obs
+      host      = [string]$c.host
+    }
+    if (-not $chainAt.ContainsKey($key)) { $chainAt[$key] = @() }
+    $chainAt[$key] += $entry
   }
   $norm = @()
   foreach ($st in (AsArrayLocal $tl.states)) {
     $key = [string]([int]$st.off)
+    $gtList = @()
+    if ($chainAt.ContainsKey($key)) { $gtList = @($chainAt[$key]) }
     $norm += [pscustomobject]@{
       t     = [math]::Round(([double]$st.off) / 60.0, 2)
       label = [string]$st.label
       state = $st.state
-      note  = $(if ($chainAt.ContainsKey($key)) { $chainAt[$key] } else { '' })
+      note  = ''
+      gt    = $gtList
     }
   }
   $tl = [pscustomobject]@{
@@ -101,16 +110,19 @@ if ($tl -and ($null -eq $tl.steps) -and ($null -ne $tl.states)) {
 }
 
 function Get-StateAt($tl, $t) {
-  $state = @{}; $label = ''; $note = ''
-  if ($null -eq $tl) { return @{ state = $state; label = $label; note = $note } }
+  $state = @{}; $label = ''; $note = ''; $gtList = @()
+  if ($null -eq $tl) { return @{ state = $state; label = $label; note = $note; gt = $gtList } }
   foreach ($s in $tl.steps) {
     if ([double]$s.t -gt $t) { continue }
     $state = @{}
     foreach ($p in $s.state.PSObject.Properties) { $state[$p.Name] = [double]$p.Value }
     $label = [string]$s.label
     $note  = [string]$s.note
+    # tacnet steps carry one gt object; chain steps carry a list. Always a list.
+    $gtList = @()
+    if ($null -ne $s.gt) { $gtList = @($s.gt) }
   }
-  return @{ state = $state; label = $label; note = $note }
+  return @{ state = $state; label = $label; note = $note; gt = $gtList }
 }
 
 # time grid
@@ -193,6 +205,7 @@ foreach ($t in $times) {
     time_iso   = $iso
     label      = $st.label
     note       = $st.note
+    gt         = @($st.gt)
     compromise = $st.state
     asset      = $json.asset
     service    = $json.service

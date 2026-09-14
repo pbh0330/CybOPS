@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { CAUSE_COLOR } from '../graph.js'
 import { num, pct, missionRows, cutRows, actionRows, linkageOf } from '../derive.js'
 import detection from '../detection.json'
+import { techniqueKo, techniqueMeaning, tacticKo } from '../labels.js'
 
 // The rail. Six stacked panels became one fixed block plus tabs (ADR-0024):
 // mission state is always visible because it is the answer to "how bad is it",
@@ -104,7 +105,7 @@ function DetectionEvidence() {
         <div className="ev-row" key={sg.name}>
           <span>{sg.name}</span>
           <b>{sg.attack_cells}/{sg.cells}</b>
-          <em className="ref">{sg.technique}</em>
+          <em className="ref" title={techniqueMeaning(sg.technique)}>{sg.technique} {techniqueKo(sg.technique)}</em>
         </div>
       ))}
       <div className="ev-foot">
@@ -121,10 +122,22 @@ function Cuts({ graph, step }) {
   return (
     <>
       {step?.label && (
-        // the attack input's own words for this step: stage, and the observable
-        // plus ATT&CK id it was authored with (attack-timeline / attack-chain)
+        // the attack input's own words for this step: stage, the observable it
+        // was authored with, and the ATT&CK technique read out in Korean - an
+        // id alone says nothing to the person at the screen
         <div className="step-note">
           <b>{step.label}</b>
+          {(step.gt || []).map((g, i) => (
+            <div className="gt" key={i}>
+              <div className="gt-head">
+                <em className="ref">{g.technique}</em>
+                <b>{techniqueKo(g.technique) || g.technique}</b>
+                {g.tactic && <span className="gt-tactic">{tacticKo(g.tactic)}</span>}
+              </div>
+              {g.msg && <div className="gt-obs">{g.msg}{g.host ? ` · ${g.host}` : ''}</div>}
+              {techniqueMeaning(g.technique) && <div className="gt-why">{techniqueMeaning(g.technique)}</div>}
+            </div>
+          ))}
           {step.note && <span>{step.note}</span>}
         </div>
       )}

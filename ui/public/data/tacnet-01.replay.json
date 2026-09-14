@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-09-14T13:31:50.0272917+09:00",
+    "generated":  "2026-09-14T13:41:30.9198441+09:00",
     "generator":  "scripts/Export-ReplayData.ps1",
     "contract":  1,
     "note":  "Precomputed by the deterministic engine. The UI displays these numbers and never recomputes them (ADR-0003).",
@@ -1566,6 +1566,9 @@
                       "time_iso":  "2026-09-10T06:00:00.0000000+09:00",
                       "label":  "정상",
                       "note":  "집결·준비 단계. 침해 없음",
+                      "gt":  [
+
+                             ],
                       "compromise":  {
 
                                      },
@@ -1717,6 +1720,9 @@
                       "time_iso":  "2026-09-10T06:15:00.0000000+09:00",
                       "label":  "정상",
                       "note":  "집결·준비 단계. 침해 없음",
+                      "gt":  [
+
+                             ],
                       "compromise":  {
 
                                      },
@@ -1868,6 +1874,9 @@
                       "time_iso":  "2026-09-10T06:30:00.0000000+09:00",
                       "label":  "정상",
                       "note":  "집결·준비 단계. 침해 없음",
+                      "gt":  [
+
+                             ],
                       "compromise":  {
 
                                      },
@@ -2019,6 +2028,9 @@
                       "time_iso":  "2026-09-10T06:45:00.0000000+09:00",
                       "label":  "정상",
                       "note":  "집결·준비 단계. 침해 없음",
+                      "gt":  [
+
+                             ],
                       "compromise":  {
 
                                      },
@@ -2170,6 +2182,9 @@
                       "time_iso":  "2026-09-10T07:00:00.0000000+09:00",
                       "label":  "정상",
                       "note":  "집결·준비 단계. 침해 없음",
+                      "gt":  [
+
+                             ],
                       "compromise":  {
 
                                      },
@@ -2321,6 +2336,9 @@
                       "time_iso":  "2026-09-10T07:15:00.0000000+09:00",
                       "label":  "정상",
                       "note":  "집결·준비 단계. 침해 없음",
+                      "gt":  [
+
+                             ],
                       "compromise":  {
 
                                      },
@@ -2472,6 +2490,9 @@
                       "time_iso":  "2026-09-10T07:30:00.0000000+09:00",
                       "label":  "정상",
                       "note":  "집결·준비 단계. 침해 없음",
+                      "gt":  [
+
+                             ],
                       "compromise":  {
 
                                      },
@@ -2623,6 +2644,9 @@
                       "time_iso":  "2026-09-10T07:45:00.0000000+09:00",
                       "label":  "정상",
                       "note":  "집결·준비 단계. 침해 없음",
+                      "gt":  [
+
+                             ],
                       "compromise":  {
 
                                      },
@@ -2774,6 +2798,9 @@
                       "time_iso":  "2026-09-10T08:00:00.0000000+09:00",
                       "label":  "정상",
                       "note":  "집결·준비 단계. 침해 없음",
+                      "gt":  [
+
+                             ],
                       "compromise":  {
 
                                      },
@@ -2926,6 +2953,9 @@
                       "time_iso":  "2026-09-10T08:15:00.0000000+09:00",
                       "label":  "정상",
                       "note":  "집결·준비 단계. 침해 없음",
+                      "gt":  [
+
+                             ],
                       "compromise":  {
 
                                      },
@@ -3078,6 +3108,12 @@
                       "time_iso":  "2026-09-10T08:30:00.0000000+09:00",
                       "label":  "노획 단말 비인가 접속",
                       "note":  "2중대 지휘차 단말에서 비인가 계정 사용",
+                      "gt":  [
+                                 {
+                                     "technique":  "T1078",
+                                     "tactic":  "initial-access"
+                                 }
+                             ],
                       "compromise":  {
                                          "CO2-VEH":  0.5
                                      },
@@ -3230,6 +3266,12 @@
                       "time_iso":  "2026-09-10T08:45:00.0000000+09:00",
                       "label":  "노획 단말 비인가 접속",
                       "note":  "2중대 지휘차 단말에서 비인가 계정 사용",
+                      "gt":  [
+                                 {
+                                     "technique":  "T1078",
+                                     "tactic":  "initial-access"
+                                 }
+                             ],
                       "compromise":  {
                                          "CO2-VEH":  0.5
                                      },
@@ -3382,6 +3424,12 @@
                       "time_iso":  "2026-09-10T09:00:00.0000000+09:00",
                       "label":  "노획 단말 비인가 접속",
                       "note":  "2중대 지휘차 단말에서 비인가 계정 사용",
+                      "gt":  [
+                                 {
+                                     "technique":  "T1078",
+                                     "tactic":  "initial-access"
+                                 }
+                             ],
                       "compromise":  {
                                          "CO2-VEH":  0.5
                                      },
@@ -3535,6 +3583,12 @@
                       "time_iso":  "2026-09-10T09:15:00.0000000+09:00",
                       "label":  "노획 단말 비인가 접속",
                       "note":  "2중대 지휘차 단말에서 비인가 계정 사용",
+                      "gt":  [
+                                 {
+                                     "technique":  "T1078",
+                                     "tactic":  "initial-access"
+                                 }
+                             ],
                       "compromise":  {
                                          "CO2-VEH":  0.5
                                      },
@@ -3688,6 +3742,12 @@
                       "time_iso":  "2026-09-10T09:30:00.0000000+09:00",
                       "label":  "자격증명 탈취",
                       "note":  "같은 시각 L-VHF-CO2 가 기동으로 단절된다(cause=mobility). 두 사건이 겹치는 구간이며 상황도는 이를 구분해야 한다",
+                      "gt":  [
+                                 {
+                                     "technique":  "T1003",
+                                     "tactic":  "credential-access"
+                                 }
+                             ],
                       "compromise":  {
                                          "CO2-VEH":  0.8
                                      },
@@ -3841,6 +3901,12 @@
                       "time_iso":  "2026-09-10T09:45:00.0000000+09:00",
                       "label":  "자격증명 탈취",
                       "note":  "같은 시각 L-VHF-CO2 가 기동으로 단절된다(cause=mobility). 두 사건이 겹치는 구간이며 상황도는 이를 구분해야 한다",
+                      "gt":  [
+                                 {
+                                     "technique":  "T1003",
+                                     "tactic":  "credential-access"
+                                 }
+                             ],
                       "compromise":  {
                                          "CO2-VEH":  0.8
                                      },
@@ -3994,6 +4060,12 @@
                       "time_iso":  "2026-09-10T10:00:00.0000000+09:00",
                       "label":  "자격증명 탈취",
                       "note":  "같은 시각 L-VHF-CO2 가 기동으로 단절된다(cause=mobility). 두 사건이 겹치는 구간이며 상황도는 이를 구분해야 한다",
+                      "gt":  [
+                                 {
+                                     "technique":  "T1003",
+                                     "tactic":  "credential-access"
+                                 }
+                             ],
                       "compromise":  {
                                          "CO2-VEH":  0.8
                                      },
@@ -4147,6 +4219,12 @@
                       "time_iso":  "2026-09-10T10:15:00.0000000+09:00",
                       "label":  "자격증명 탈취",
                       "note":  "같은 시각 L-VHF-CO2 가 기동으로 단절된다(cause=mobility). 두 사건이 겹치는 구간이며 상황도는 이를 구분해야 한다",
+                      "gt":  [
+                                 {
+                                     "technique":  "T1003",
+                                     "tactic":  "credential-access"
+                                 }
+                             ],
                       "compromise":  {
                                          "CO2-VEH":  0.8
                                      },
@@ -4300,6 +4378,12 @@
                       "time_iso":  "2026-09-10T10:30:00.0000000+09:00",
                       "label":  "대대 지휘소 서버 침해",
                       "note":  "중계망을 타고 BN-SRV 로 측면이동",
+                      "gt":  [
+                                 {
+                                     "technique":  "T1021",
+                                     "tactic":  "lateral-movement"
+                                 }
+                             ],
                       "compromise":  {
                                          "CO2-VEH":  0.8,
                                          "BN-SRV":  0.7
@@ -4454,6 +4538,12 @@
                       "time_iso":  "2026-09-10T10:45:00.0000000+09:00",
                       "label":  "대대 지휘소 서버 침해",
                       "note":  "중계망을 타고 BN-SRV 로 측면이동",
+                      "gt":  [
+                                 {
+                                     "technique":  "T1021",
+                                     "tactic":  "lateral-movement"
+                                 }
+                             ],
                       "compromise":  {
                                          "CO2-VEH":  0.8,
                                          "BN-SRV":  0.7
@@ -4608,6 +4698,12 @@
                       "time_iso":  "2026-09-10T11:00:00.0000000+09:00",
                       "label":  "BN-SRV 장악",
                       "note":  "같은 시각 위성 링크가 cause=unknown 으로 단절된다(300~345). 재밍인지 기상인지 알 수 없다 - 공격으로 단정하지 않는다",
+                      "gt":  [
+                                 {
+                                     "technique":  "T1078.002",
+                                     "tactic":  "privilege-escalation"
+                                 }
+                             ],
                       "compromise":  {
                                          "CO2-VEH":  0.8,
                                          "BN-SRV":  1
@@ -4761,6 +4857,12 @@
                       "time_iso":  "2026-09-10T11:15:00.0000000+09:00",
                       "label":  "BN-SRV 장악",
                       "note":  "같은 시각 위성 링크가 cause=unknown 으로 단절된다(300~345). 재밍인지 기상인지 알 수 없다 - 공격으로 단정하지 않는다",
+                      "gt":  [
+                                 {
+                                     "technique":  "T1078.002",
+                                     "tactic":  "privilege-escalation"
+                                 }
+                             ],
                       "compromise":  {
                                          "CO2-VEH":  0.8,
                                          "BN-SRV":  1
@@ -4914,6 +5016,12 @@
                       "time_iso":  "2026-09-10T11:30:00.0000000+09:00",
                       "label":  "BN-SRV 장악",
                       "note":  "같은 시각 위성 링크가 cause=unknown 으로 단절된다(300~345). 재밍인지 기상인지 알 수 없다 - 공격으로 단정하지 않는다",
+                      "gt":  [
+                                 {
+                                     "technique":  "T1078.002",
+                                     "tactic":  "privilege-escalation"
+                                 }
+                             ],
                       "compromise":  {
                                          "CO2-VEH":  0.8,
                                          "BN-SRV":  1
@@ -5067,6 +5175,12 @@
                       "time_iso":  "2026-09-10T11:45:00.0000000+09:00",
                       "label":  "여단 TOC 침투",
                       "note":  "위성 링크 복구와 동시에 신뢰 경로를 타고 여단으로 확산",
+                      "gt":  [
+                                 {
+                                     "technique":  "T1021.004",
+                                     "tactic":  "lateral-movement"
+                                 }
+                             ],
                       "compromise":  {
                                          "CO2-VEH":  0.8,
                                          "BN-SRV":  1,
@@ -5221,6 +5335,12 @@
                       "time_iso":  "2026-09-10T12:00:00.0000000+09:00",
                       "label":  "여단 TOC 침투",
                       "note":  "위성 링크 복구와 동시에 신뢰 경로를 타고 여단으로 확산",
+                      "gt":  [
+                                 {
+                                     "technique":  "T1021.004",
+                                     "tactic":  "lateral-movement"
+                                 }
+                             ],
                       "compromise":  {
                                          "CO2-VEH":  0.8,
                                          "BN-SRV":  1,
@@ -5375,6 +5495,12 @@
                       "time_iso":  "2026-09-10T12:15:00.0000000+09:00",
                       "label":  "여단 TOC 침투",
                       "note":  "위성 링크 복구와 동시에 신뢰 경로를 타고 여단으로 확산",
+                      "gt":  [
+                                 {
+                                     "technique":  "T1021.004",
+                                     "tactic":  "lateral-movement"
+                                 }
+                             ],
                       "compromise":  {
                                          "CO2-VEH":  0.8,
                                          "BN-SRV":  1,
@@ -5529,6 +5655,12 @@
                       "time_iso":  "2026-09-10T12:30:00.0000000+09:00",
                       "label":  "TOC-SRV 장악",
                       "note":  "C2 메시징 이중화가 양쪽 다 침해되어 무력화된다",
+                      "gt":  [
+                                 {
+                                     "technique":  "T1486",
+                                     "tactic":  "impact"
+                                 }
+                             ],
                       "compromise":  {
                                          "CO2-VEH":  0.8,
                                          "BN-SRV":  1,
@@ -5683,6 +5815,12 @@
                       "time_iso":  "2026-09-10T12:45:00.0000000+09:00",
                       "label":  "TOC-SRV 장악",
                       "note":  "C2 메시징 이중화가 양쪽 다 침해되어 무력화된다",
+                      "gt":  [
+                                 {
+                                     "technique":  "T1486",
+                                     "tactic":  "impact"
+                                 }
+                             ],
                       "compromise":  {
                                          "CO2-VEH":  0.8,
                                          "BN-SRV":  1,
