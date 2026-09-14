@@ -3,7 +3,8 @@ import cytoscape from 'cytoscape'
 import dagre from 'cytoscape-dagre'
 import { buildElements, stylesheet, LAYOUTS, CAUSE_COLOR, degColor } from '../graph.js'
 import { deviceIconDataUri } from '../icons.js'
-import { num, linkageOf } from '../derive.js'
+import { num, linkageOf, attackHops } from '../derive.js'
+import { techniqueKo } from '../labels.js'
 
 cytoscape.use(dagre)
 
@@ -45,10 +46,11 @@ function paintSymbol(n, state) {
   })
 }
 
-export default function GraphCanvas({ graph, step, view, labels, hidden, cyRef, onSelect, onTap }) {
+export default function GraphCanvas({ graph, step, steps, idx, view, labels, hidden, cyRef, onSelect, onTap, selected }) {
   const boxRef = useRef(null)
   const flowRef = useRef({ raf: null, offset: 0, view })
   const [bands, setBands] = useState([])
+  const [hopCount, setHopCount] = useState(0)
   // Effects run in declaration order, so this one fires before the instance
   // below exists. cyReady is the signal that it now does.
   const [cyReady, setCyReady] = useState(0)
@@ -147,7 +149,8 @@ export default function GraphCanvas({ graph, step, view, labels, hidden, cyRef, 
     const cy = cyRef.current
     if (!cy || view === 'geo') return
     const transport = cy.edges('.transport')
-    const structural = cy.edges().not('.transport')
+    // attack hops go between assets and belong in both views
+    const structural = cy.edges().not('.transport').not('.attack-hop')
     const nonAssets = cy.nodes('[kind != "asset"]')
     if (view === 'transport') {
       transport.removeClass('hidden')
@@ -158,8 +161,52 @@ export default function GraphCanvas({ graph, step, view, labels, hidden, cyRef, 
       structural.removeClass('hidden')
       nonAssets.removeClass('hidden')
     }
-    cy.elements().not('.hidden').layout(LAYOUTS[view] || LAYOUTS.dependency).run()
+    // attack hops are drawn over the layout, never fed to it: an extra
+    // asset-to-asset edge would change what dagre thinks the ranks are
+    cy.elements().not('.hidden').not('.attack-hop').layout(LAYOUTS[view] || LAYOUTS.dependency).run()
   }, [view, graph])
+
+  // --- attack path --------------------------------------------------------
+  useEffect(() => {
+    const cy = cyRef.current
+    if (!cy) return
+    cy.edges('.attack-hop').remove()
+    const { hops } = attackHops(steps || [], idx || 0)
+    const els = []
+    for (const h of hops) {
+      if (!cy.$id(h.from).length || !cy.$id(h.to).length) continue
+      const ko = techniqueKo(h.technique)
+      els.push({
+        group: 'edges',
+        classes: 'attack-hop',
+        data: {
+          id: `hop:${h.from}->${h.to}`, source: h.from, target: h.to,
+          label: `${ko || h.technique || ''} +${h.t}분`,
+        },
+      })
+    }
+    if (els.length) cy.add(els)
+    setHopCount(els.length)
+  }, [steps, idx, graph, cyReady])
+
+  // --- contribution path ---------------------------------------------------
+  // Structural edges point downward (mission -> task -> service -> asset), so
+  // predecessors are what the selected node holds up and successors are what
+  // it stands on. Transport links are left out: they are a different picture.
+  useEffect(() => {
+    const cy = cyRef.current
+    if (!cy) return
+    cy.elements().removeClass('faded path')
+    if (!selected || view === 'transport') return
+    const n = cy.$id(selected)
+    if (!n.length) return
+    const structural = cy.edges().not('.transport').not('.attack-hop')
+    const up = n.predecessors().filter((e) => e.isNode() || structural.contains(e))
+    const down = n.successors().filter((e) => e.isNode() || structural.contains(e))
+    const keep = n.union(up).union(down)
+    cy.elements().not(keep).not('.attack-hop').addClass('faded')
+    keep.edges().addClass('path')
+  }, [selected, view, graph, cyReady])
 
   useEffect(() => {
     const cy = cyRef.current
@@ -250,6 +297,20 @@ export default function GraphCanvas({ graph, step, view, labels, hidden, cyRef, 
               {label}
             </span>
           ))}
+          {hopCount > 0 && (
+            <>
+              <span className="lg-rule" />
+              <span className="legend-item legend-hop" title="저작된 침해 순서를 화살표로 그린 것. 엔진이 추론한 경로가 아니다.">
+                <span className="legend-arrow" />공격 경로 {hopCount}구간 · 저작 순서
+              </span>
+            </>
+          )}
+          {selected && view !== 'transport' && (
+            <>
+              <span className="lg-rule" />
+              <span className="legend-item">선택 노드의 기여 경로만 밝게</span>
+            </>
+          )}
         </div>
       )}
     </>

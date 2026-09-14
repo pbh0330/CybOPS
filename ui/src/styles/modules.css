@@ -258,3 +258,7 @@ body .geo-canvas:active { cursor: grabbing; }
 .step-note .gt-tactic { font-size: 10px; color: var(--text-muted); border: 1px solid var(--line); border-radius: 3px; padding: 0 5px; }
 .step-note .gt-obs { margin-top: 3px; color: var(--text-secondary); font-size: 11px; }
 .step-note .gt-why { margin-top: 3px; color: var(--text-muted); font-size: 11px; line-height: 1.45; }
+
+/* legend: the attack-path arrow swatch */
+.legend-arrow { display: inline-block; width: 18px; height: 0; border-top: 2px dashed var(--attack); position: relative; margin-right: 6px; vertical-align: middle; }
+.legend-arrow::after { content: ''; position: absolute; right: -1px; top: -5px; border: 4px solid transparent; border-left: 6px solid var(--attack); }

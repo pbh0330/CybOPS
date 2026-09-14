@@ -136,3 +136,31 @@ export function clockOf(s) {
   if (s && Number(s.t) >= 0) return { time: `+${s.t}분`, off: '' }
   return { time: '스냅샷', off: '' }
 }
+
+// The attack path so far, as the authored compromise order says it. Each
+// asset is listed at the step where its compromise first rises above zero,
+// and a hop is drawn from the previously compromised asset to it, labelled
+// with that step's technique. This is a reading of the attack INPUT (the
+// timeline the scenario author wrote), not a detection and not an inference:
+// the engine never reasons about which host reached which. It exists so the
+// picture shows the campaign as a route, not as a set of red borders.
+export function attackHops(steps, idx) {
+  const seen = new Set()
+  const order = []
+  for (let i = 0; i <= idx && i < (steps || []).length; i++) {
+    const st = steps[i]
+    const gts = Array.isArray(st.gt) ? st.gt : (st.gt ? [st.gt] : [])
+    const fresh = Object.entries(st.compromise || {})
+      .filter(([id, v]) => num(v) > 0 && !seen.has(id))
+      .map(([id]) => id)
+    for (const id of fresh) {
+      seen.add(id)
+      order.push({ id, t: st.t, label: st.label, technique: gts.length ? gts[gts.length - 1].technique : null })
+    }
+  }
+  const hops = []
+  for (let i = 1; i < order.length; i++) {
+    hops.push({ from: order[i - 1].id, to: order[i].id, t: order[i].t, label: order[i].label, technique: order[i].technique })
+  }
+  return { order, hops }
+}

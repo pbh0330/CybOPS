@@ -262,6 +262,37 @@ export function stylesheet() {
     // a cut reads as broken, not as busy: short stubs with a wide gap, and no
     // flow animation. Traffic that is not moving must not look like traffic.
     { selector: 'edge.cut', style: { 'line-dash-pattern': [2, 10], 'width': 3, 'line-opacity': 0.95 } },
+    // the campaign as a route: red is attack's colour and nothing else's
+    // (ADR-0012), so a red arrow between two assets can only mean one thing
+    {
+      selector: 'edge.attack-hop',
+      style: {
+        'curve-style': 'unbundled-bezier',
+        'control-point-distances': [-40],
+        'control-point-weights': [0.5],
+        'line-color': CAUSE_COLOR.attack,
+        'target-arrow-color': CAUSE_COLOR.attack,
+        'target-arrow-shape': 'triangle',
+        'arrow-scale': 1.1,
+        'width': 2,
+        'line-style': 'dashed',
+        'line-dash-pattern': [6, 4],
+        'label': 'data(label)',
+        'font-size': 9,
+        'color': '#ffb4ba',
+        'text-background-color': '#1c1e22',
+        'text-background-opacity': 0.85,
+        'text-background-padding': 2,
+        'text-rotation': 'autorotate',
+        'z-index': 9,
+      },
+    },
+    // contribution path of the selected node: what it rests on and what
+    // rests on it. Everything else steps back instead of disappearing, so
+    // the path is read in its context.
+    { selector: 'node.faded', style: { 'opacity': 0.16 } },
+    { selector: 'edge.faded', style: { 'opacity': 0.08 } },
+    { selector: 'edge.path', style: { 'width': 2, 'line-color': '#9aa5b1', 'target-arrow-color': '#9aa5b1', 'opacity': 1 } },
     { selector: '.hidden', style: { 'display': 'none' } },
   ]
 }

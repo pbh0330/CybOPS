@@ -81,7 +81,7 @@ export default function App() {
         let seen = false
         try { seen = localStorage.getItem('mccycop:onboard:seen') === '1' } catch { /* ignore */ }
         // a deep link is someone who already knows the screen; do not cover it
-        const deep = ['scenario', 't', 'view', 'tab'].some((k) => link.current.has(k))
+        const deep = ['scenario', 't', 'view', 'tab', 'select'].some((k) => link.current.has(k))
         if (!seen && !deep) setOnboard(true)
       } catch (e) {
         if (alive) setError(e.message)
@@ -258,6 +258,15 @@ export default function App() {
     setTab('inspect')
   }, [])
 
+  // ?select=<node id>: select once the graph (and the cytoscape instance,
+  // built in the child's effect, which runs before this one) exists
+  useEffect(() => {
+    const id = link.current.get('select')
+    if (!id || !graph) return
+    link.current.delete('select')
+    onSelect(id)
+  }, [graph, onSelect])
+
   const onTap = useCallback((target) => {
     if (editorRef.current && mode === 'edit') return editorRef.current.handleTap(target)
     return false
@@ -356,8 +365,9 @@ export default function App() {
           />
           <div className="canvas-wrap">
             <GraphCanvas
-              graph={graph} step={step} view={view} labels={labels}
+              graph={graph} step={step} steps={payload?.steps} idx={idx} view={view} labels={labels}
               hidden={isGeo} cyRef={cyRef} onSelect={onSelect} onTap={onTap}
+              selected={selectedData?.id || null}
             />
             <GeoPane
               graph={graph} step={step} cam={geoCam} onCam={setGeoCam}
