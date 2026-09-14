@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-09-07T17:42:41.1696173+09:00",
+    "generated":  "2026-09-14T13:31:20.0668428+09:00",
     "generator":  "scripts/Export-ReplayData.ps1",
     "contract":  1,
     "note":  "Precomputed by the deterministic engine. The UI displays these numbers and never recomputes them (ADR-0003).",
@@ -970,15 +970,117 @@
                                 "links[] 추가로 엔진의 도달성 판정이 켜졌다(hasLinks=true). 정적 위상에서 모든 작업 단말이 모든 서비스 제공 자산에 도달하므로 기존 산출값은 그대로다. 실측 확인: DC01 단독 0.0%, DC01+DC02 M-C2 80.5%, ESX01 격리 첫 행 70.1%. 전송로 도입 전과 동일하다."
                             ]
               },
-    "attack":  null,
+    "attack":  {
+                   "campaign_id":  "CAMP-01",
+                   "scenario_id":  "defnet-01",
+                   "name":  "피싱 기점 도메인 장악 및 군수DB 유출",
+                   "victim_entry":  "WKS003",
+                   "note":  "가상 시나리오. ATT\u0026CK 기법 ID는 실제 기법 체계를 따른다. 한글 문자열은 반드시 이 데이터 파일에 두고 스크립트 소스에는 넣지 않는다 - PowerShell 5.1이 BOM 없는 UTF-8 소스를 잘못 읽어 문자열이 깨진다.",
+                   "source":  "attack-chain.json (states.off seconds -\u003e t minutes)",
+                   "steps":  [
+                                 {
+                                     "t":  0,
+                                     "label":  "초기 침해",
+                                     "state":  {
+                                                   "WKS003":  0.3
+                                               },
+                                     "note":  "T1566.001 initial-access: outlook.exe spawned wscript.exe [WKS003]"
+                                 },
+                                 {
+                                     "t":  3,
+                                     "label":  "실행 확인",
+                                     "state":  {
+                                                   "WKS003":  0.6
+                                               },
+                                     "note":  "T1059.001 execution: encoded powershell launched [WKS003]"
+                                 },
+                                 {
+                                     "t":  7,
+                                     "label":  "C2 수립",
+                                     "state":  {
+                                                   "WKS003":  0.9
+                                               },
+                                     "note":  "T1071.001 command-and-control: beacon to external host [WKS003]"
+                                 },
+                                 {
+                                     "t":  15,
+                                     "label":  "자격증명 탈취",
+                                     "state":  {
+                                                   "WKS003":  1.0
+                                               },
+                                     "note":  "T1003.001 credential-access: lsass memory access [WKS003]"
+                                 },
+                                 {
+                                     "t":  30,
+                                     "label":  "DC01 측면이동",
+                                     "state":  {
+                                                   "WKS003":  1.0,
+                                                   "DC01":  0.7
+                                               },
+                                     "note":  "T1021.002 lateral-movement: remote logon from workstation [DC01]"
+                                 },
+                                 {
+                                     "t":  40,
+                                     "label":  "도메인 자격증명 탈취",
+                                     "state":  {
+                                                   "WKS003":  1.0,
+                                                   "DC01":  1.0
+                                               },
+                                     "note":  "T1003.003 credential-access: ntdsutil invoked [DC01]"
+                                 },
+                                 {
+                                     "t":  55,
+                                     "label":  "DC02 측면이동",
+                                     "state":  {
+                                                   "WKS003":  1.0,
+                                                   "DC01":  1.0,
+                                                   "DC02":  0.7
+                                               },
+                                     "note":  "T1021.002 lateral-movement: remote logon from DC01 [DC02]"
+                                 },
+                                 {
+                                     "t":  70,
+                                     "label":  "DB01 접근",
+                                     "state":  {
+                                                   "WKS003":  1.0,
+                                                   "DC01":  1.0,
+                                                   "DC02":  1.0,
+                                                   "DB01":  0.6
+                                               },
+                                     "note":  "T1078.002 defense-evasion: service account logon to database [DB01]"
+                                 },
+                                 {
+                                     "t":  80,
+                                     "label":  "데이터 수집",
+                                     "state":  {
+                                                   "WKS003":  1.0,
+                                                   "DC01":  1.0,
+                                                   "DC02":  1.0,
+                                                   "DB01":  1.0
+                                               },
+                                     "note":  "T1005 collection: bulk table export [DB01]"
+                                 },
+                                 {
+                                     "t":  90,
+                                     "label":  "유출",
+                                     "state":  {
+                                                   "WKS003":  1.0,
+                                                   "DC01":  1.0,
+                                                   "DC02":  1.0,
+                                                   "DB01":  1.0
+                                               },
+                                     "note":  "T1048.003 exfiltration: large outbound transfer [DB01]"
+                                 }
+                             ]
+               },
     "steps":  [
                   {
-                      "t":  -1,
+                      "t":  0,
                       "time_iso":  null,
-                      "label":  "",
-                      "note":  "",
+                      "label":  "초기 침해",
+                      "note":  "T1566.001 initial-access: outlook.exe spawned wscript.exe [WKS003]",
                       "compromise":  {
-
+                                         "WKS003":  0.3
                                      },
                       "asset":  {
                                     "DC02":  0,
@@ -994,7 +1096,7 @@
                                     "WKS005":  0,
                                     "ESX01":  0,
                                     "DC01":  0,
-                                    "WKS003":  0,
+                                    "WKS003":  0.3,
                                     "WKS001":  0,
                                     "WEB01":  0
                                 },
@@ -1064,6 +1166,983 @@
                                                     "delta":  {
                                                                   "M-C2":  1,
                                                                   "M-LOG":  0.217993
+                                                              }
+                                                },
+                                     "WKS003":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0,
+                                                                    "M-LOG":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              }
+                                                }
+                                 }
+                  },
+                  {
+                      "t":  3,
+                      "time_iso":  null,
+                      "label":  "실행 확인",
+                      "note":  "T1059.001 execution: encoded powershell launched [WKS003]",
+                      "compromise":  {
+                                         "WKS003":  0.6
+                                     },
+                      "asset":  {
+                                    "DC02":  0,
+                                    "SW01":  0,
+                                    "FS01":  0,
+                                    "FW01":  0,
+                                    "DB02":  0,
+                                    "WKS004":  0,
+                                    "ESX02":  0,
+                                    "DB01":  0,
+                                    "MAIL01":  0,
+                                    "WKS002":  0,
+                                    "WKS005":  0,
+                                    "ESX01":  0,
+                                    "DC01":  0,
+                                    "WKS003":  0.6,
+                                    "WKS001":  0,
+                                    "WEB01":  0
+                                },
+                      "service":  {
+                                      "S-DIR":  0,
+                                      "S-WEB":  0,
+                                      "S-MSG":  0,
+                                      "S-DB":  0,
+                                      "S-FILE":  0
+                                  },
+                      "task":  {
+                                   "T-REQ":  0,
+                                   "T-SITREP":  0,
+                                   "T-ORDER":  0,
+                                   "T-ISSUE":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0,
+                                      "M-LOG":  0
+                                  },
+                      "whatif":  {
+                                     "DC01":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DC02":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DB01":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DB02":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "MAIL01":  {
+                                                    "mission":  {
+                                                                    "M-C2":  1,
+                                                                    "M-LOG":  0.21799307958477507
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  1,
+                                                                  "M-LOG":  0.217993
+                                                              }
+                                                },
+                                     "WKS003":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0,
+                                                                    "M-LOG":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              }
+                                                }
+                                 }
+                  },
+                  {
+                      "t":  7,
+                      "time_iso":  null,
+                      "label":  "C2 수립",
+                      "note":  "T1071.001 command-and-control: beacon to external host [WKS003]",
+                      "compromise":  {
+                                         "WKS003":  0.9
+                                     },
+                      "asset":  {
+                                    "DC02":  0,
+                                    "SW01":  0,
+                                    "FS01":  0,
+                                    "FW01":  0,
+                                    "DB02":  0,
+                                    "WKS004":  0,
+                                    "ESX02":  0,
+                                    "DB01":  0,
+                                    "MAIL01":  0,
+                                    "WKS002":  0,
+                                    "WKS005":  0,
+                                    "ESX01":  0,
+                                    "DC01":  0,
+                                    "WKS003":  0.9,
+                                    "WKS001":  0,
+                                    "WEB01":  0
+                                },
+                      "service":  {
+                                      "S-DIR":  0,
+                                      "S-WEB":  0,
+                                      "S-MSG":  0,
+                                      "S-DB":  0,
+                                      "S-FILE":  0
+                                  },
+                      "task":  {
+                                   "T-REQ":  0,
+                                   "T-SITREP":  0,
+                                   "T-ORDER":  0,
+                                   "T-ISSUE":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0,
+                                      "M-LOG":  0
+                                  },
+                      "whatif":  {
+                                     "DC01":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DC02":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DB01":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DB02":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "MAIL01":  {
+                                                    "mission":  {
+                                                                    "M-C2":  1,
+                                                                    "M-LOG":  0.21799307958477507
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  1,
+                                                                  "M-LOG":  0.217993
+                                                              }
+                                                },
+                                     "WKS003":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0,
+                                                                    "M-LOG":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              }
+                                                }
+                                 }
+                  },
+                  {
+                      "t":  15,
+                      "time_iso":  null,
+                      "label":  "자격증명 탈취",
+                      "note":  "T1003.001 credential-access: lsass memory access [WKS003]",
+                      "compromise":  {
+                                         "WKS003":  1
+                                     },
+                      "asset":  {
+                                    "DC02":  0,
+                                    "SW01":  0,
+                                    "FS01":  0,
+                                    "FW01":  0,
+                                    "DB02":  0,
+                                    "WKS004":  0,
+                                    "ESX02":  0,
+                                    "DB01":  0,
+                                    "MAIL01":  0,
+                                    "WKS002":  0,
+                                    "WKS005":  0,
+                                    "ESX01":  0,
+                                    "DC01":  0,
+                                    "WKS003":  1,
+                                    "WKS001":  0,
+                                    "WEB01":  0
+                                },
+                      "service":  {
+                                      "S-DIR":  0,
+                                      "S-WEB":  0,
+                                      "S-MSG":  0,
+                                      "S-DB":  0,
+                                      "S-FILE":  0
+                                  },
+                      "task":  {
+                                   "T-REQ":  0,
+                                   "T-SITREP":  0,
+                                   "T-ORDER":  0,
+                                   "T-ISSUE":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0,
+                                      "M-LOG":  0
+                                  },
+                      "whatif":  {
+                                     "DC01":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DC02":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DB01":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DB02":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "MAIL01":  {
+                                                    "mission":  {
+                                                                    "M-C2":  1,
+                                                                    "M-LOG":  0.21799307958477507
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  1,
+                                                                  "M-LOG":  0.217993
+                                                              }
+                                                },
+                                     "WKS003":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0,
+                                                                    "M-LOG":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              }
+                                                }
+                                 }
+                  },
+                  {
+                      "t":  30,
+                      "time_iso":  null,
+                      "label":  "DC01 측면이동",
+                      "note":  "T1021.002 lateral-movement: remote logon from workstation [DC01]",
+                      "compromise":  {
+                                         "WKS003":  1,
+                                         "DC01":  0.7
+                                     },
+                      "asset":  {
+                                    "DC02":  0,
+                                    "SW01":  0,
+                                    "FS01":  0,
+                                    "FW01":  0,
+                                    "DB02":  0,
+                                    "WKS004":  0,
+                                    "ESX02":  0,
+                                    "DB01":  0,
+                                    "MAIL01":  0,
+                                    "WKS002":  0,
+                                    "WKS005":  0,
+                                    "ESX01":  0,
+                                    "DC01":  0.7,
+                                    "WKS003":  1,
+                                    "WKS001":  0,
+                                    "WEB01":  0
+                                },
+                      "service":  {
+                                      "S-DIR":  0,
+                                      "S-WEB":  0,
+                                      "S-MSG":  0,
+                                      "S-DB":  0,
+                                      "S-FILE":  0
+                                  },
+                      "task":  {
+                                   "T-REQ":  0,
+                                   "T-SITREP":  0,
+                                   "T-ORDER":  0,
+                                   "T-ISSUE":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0,
+                                      "M-LOG":  0
+                                  },
+                      "whatif":  {
+                                     "DC01":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DC02":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0.5908,
+                                                                  "M-LOG":  0.31978373702422136
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0.5908,
+                                                                "M-LOG":  0.319784
+                                                            }
+                                              },
+                                     "DB01":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DB02":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "MAIL01":  {
+                                                    "mission":  {
+                                                                    "M-C2":  1,
+                                                                    "M-LOG":  0.21799307958477507
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  1,
+                                                                  "M-LOG":  0.217993
+                                                              }
+                                                },
+                                     "WKS003":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0,
+                                                                    "M-LOG":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              }
+                                                }
+                                 }
+                  },
+                  {
+                      "t":  40,
+                      "time_iso":  null,
+                      "label":  "도메인 자격증명 탈취",
+                      "note":  "T1003.003 credential-access: ntdsutil invoked [DC01]",
+                      "compromise":  {
+                                         "WKS003":  1,
+                                         "DC01":  1
+                                     },
+                      "asset":  {
+                                    "DC02":  0,
+                                    "SW01":  0,
+                                    "FS01":  0,
+                                    "FW01":  0,
+                                    "DB02":  0,
+                                    "WKS004":  0,
+                                    "ESX02":  0,
+                                    "DB01":  0,
+                                    "MAIL01":  0,
+                                    "WKS002":  0,
+                                    "WKS005":  0,
+                                    "ESX01":  0,
+                                    "DC01":  1,
+                                    "WKS003":  1,
+                                    "WKS001":  0,
+                                    "WEB01":  0
+                                },
+                      "service":  {
+                                      "S-DIR":  0,
+                                      "S-WEB":  0,
+                                      "S-MSG":  0,
+                                      "S-DB":  0,
+                                      "S-FILE":  0
+                                  },
+                      "task":  {
+                                   "T-REQ":  0,
+                                   "T-SITREP":  0,
+                                   "T-ORDER":  0,
+                                   "T-ISSUE":  0
+                               },
+                      "mission":  {
+                                      "M-C2":  0,
+                                      "M-LOG":  0
+                                  },
+                      "whatif":  {
+                                     "DC01":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DC02":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0.844,
+                                                                  "M-LOG":  0.50224913494809686
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0.844,
+                                                                "M-LOG":  0.502249
+                                                            }
+                                              },
+                                     "DB01":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DB02":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "MAIL01":  {
+                                                    "mission":  {
+                                                                    "M-C2":  1,
+                                                                    "M-LOG":  0.21799307958477507
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  1,
+                                                                  "M-LOG":  0.217993
+                                                              }
+                                                },
+                                     "WKS003":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0,
+                                                                    "M-LOG":  0
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              }
+                                                }
+                                 }
+                  },
+                  {
+                      "t":  55,
+                      "time_iso":  null,
+                      "label":  "DC02 측면이동",
+                      "note":  "T1021.002 lateral-movement: remote logon from DC01 [DC02]",
+                      "compromise":  {
+                                         "DC01":  1,
+                                         "DC02":  0.7,
+                                         "WKS003":  1
+                                     },
+                      "asset":  {
+                                    "DC02":  0.7,
+                                    "SW01":  0,
+                                    "FS01":  0.63,
+                                    "FW01":  0,
+                                    "DB02":  0.35,
+                                    "WKS004":  0,
+                                    "ESX02":  0,
+                                    "DB01":  0.35,
+                                    "MAIL01":  0.55999999999999994,
+                                    "WKS002":  0,
+                                    "WKS005":  0,
+                                    "ESX01":  0,
+                                    "DC01":  1,
+                                    "WKS003":  1,
+                                    "WKS001":  0,
+                                    "WEB01":  0.085749999999999979
+                                },
+                      "service":  {
+                                      "S-DIR":  0.7,
+                                      "S-WEB":  0.085749999999999979,
+                                      "S-MSG":  0.55999999999999994,
+                                      "S-DB":  0.12249999999999998,
+                                      "S-FILE":  0.63
+                                  },
+                      "task":  {
+                                   "T-REQ":  0.3390625,
+                                   "T-SITREP":  0.55999999999999994,
+                                   "T-ORDER":  0.6216,
+                                   "T-ISSUE":  0.30264705882352938
+                               },
+                      "mission":  {
+                                      "M-C2":  0.5908,
+                                      "M-LOG":  0.31978373702422136
+                                  },
+                      "whatif":  {
+                                     "DC01":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0.5908,
+                                                                  "M-LOG":  0.31978373702422136
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DC02":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0.844,
+                                                                  "M-LOG":  0.50224913494809686
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0.2532,
+                                                                "M-LOG":  0.182465
+                                                            }
+                                              },
+                                     "DB01":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0.5908,
+                                                                  "M-LOG":  0.45754325259515566
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0.13776
+                                                            }
+                                              },
+                                     "DB02":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0.5908,
+                                                                  "M-LOG":  0.45754325259515566
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0.13776
+                                                            }
+                                              },
+                                     "MAIL01":  {
+                                                    "mission":  {
+                                                                    "M-C2":  1,
+                                                                    "M-LOG":  0.41570069204152243
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0.4092,
+                                                                  "M-LOG":  0.095917
+                                                              }
+                                                },
+                                     "WKS003":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0.5908,
+                                                                    "M-LOG":  0.31978373702422136
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              }
+                                                }
+                                 }
+                  },
+                  {
+                      "t":  70,
+                      "time_iso":  null,
+                      "label":  "DB01 접근",
+                      "note":  "T1078.002 defense-evasion: service account logon to database [DB01]",
+                      "compromise":  {
+                                         "DC01":  1,
+                                         "DB01":  0.6,
+                                         "DC02":  1,
+                                         "WKS003":  1
+                                     },
+                      "asset":  {
+                                    "DC02":  1,
+                                    "SW01":  0,
+                                    "FS01":  0.9,
+                                    "FW01":  0,
+                                    "DB02":  0.5,
+                                    "WKS004":  0,
+                                    "ESX02":  0,
+                                    "DB01":  0.6,
+                                    "MAIL01":  0.8,
+                                    "WKS002":  0,
+                                    "WKS005":  0,
+                                    "ESX01":  0,
+                                    "DC01":  1,
+                                    "WKS003":  1,
+                                    "WKS001":  0,
+                                    "WEB01":  0.21
+                                },
+                      "service":  {
+                                      "S-DIR":  1,
+                                      "S-WEB":  0.21,
+                                      "S-MSG":  0.8,
+                                      "S-DB":  0.3,
+                                      "S-FILE":  0.9
+                                  },
+                      "task":  {
+                                   "T-REQ":  0.56249999999999989,
+                                   "T-SITREP":  0.8,
+                                   "T-ORDER":  0.8879999999999999,
+                                   "T-ISSUE":  0.50588235294117645
+                               },
+                      "mission":  {
+                                      "M-C2":  0.844,
+                                      "M-LOG":  0.53252595155709337
+                                  },
+                      "whatif":  {
+                                     "DC01":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0.844,
+                                                                  "M-LOG":  0.53252595155709337
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DC02":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0.844,
+                                                                  "M-LOG":  0.53252595155709337
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DB01":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0.844,
+                                                                  "M-LOG":  0.65363321799307961
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0.121107
+                                                            }
+                                              },
+                                     "DB02":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0.844,
+                                                                  "M-LOG":  0.71418685121107262
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0.181661
+                                                            }
+                                              },
+                                     "MAIL01":  {
+                                                    "mission":  {
+                                                                    "M-C2":  1,
+                                                                    "M-LOG":  0.57612456747404839
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0.156,
+                                                                  "M-LOG":  0.043599
+                                                              }
+                                                },
+                                     "WKS003":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0.844,
+                                                                    "M-LOG":  0.53252595155709337
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              }
+                                                }
+                                 }
+                  },
+                  {
+                      "t":  80,
+                      "time_iso":  null,
+                      "label":  "데이터 수집",
+                      "note":  "T1005 collection: bulk table export [DB01]",
+                      "compromise":  {
+                                         "DC01":  1,
+                                         "DB01":  1,
+                                         "DC02":  1,
+                                         "WKS003":  1
+                                     },
+                      "asset":  {
+                                    "DC02":  1,
+                                    "SW01":  0,
+                                    "FS01":  0.9,
+                                    "FW01":  0,
+                                    "DB02":  0.5,
+                                    "WKS004":  0,
+                                    "ESX02":  0,
+                                    "DB01":  1,
+                                    "MAIL01":  0.8,
+                                    "WKS002":  0,
+                                    "WKS005":  0,
+                                    "ESX01":  0,
+                                    "DC01":  1,
+                                    "WKS003":  1,
+                                    "WKS001":  0,
+                                    "WEB01":  0.35
+                                },
+                      "service":  {
+                                      "S-DIR":  1,
+                                      "S-WEB":  0.35,
+                                      "S-MSG":  0.8,
+                                      "S-DB":  0.5,
+                                      "S-FILE":  0.9
+                                  },
+                      "task":  {
+                                   "T-REQ":  0.6875,
+                                   "T-SITREP":  0.8,
+                                   "T-ORDER":  0.8879999999999999,
+                                   "T-ISSUE":  0.62352941176470589
+                               },
+                      "mission":  {
+                                      "M-C2":  0.844,
+                                      "M-LOG":  0.65363321799307961
+                                  },
+                      "whatif":  {
+                                     "DC01":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0.844,
+                                                                  "M-LOG":  0.65363321799307961
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DC02":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0.844,
+                                                                  "M-LOG":  0.65363321799307961
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DB01":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0.844,
+                                                                  "M-LOG":  0.65363321799307961
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DB02":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0.86445454545454536,
+                                                                  "M-LOG":  1
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0.020455,
+                                                                "M-LOG":  0.346367
+                                                            }
+                                              },
+                                     "MAIL01":  {
+                                                    "mission":  {
+                                                                    "M-C2":  1,
+                                                                    "M-LOG":  0.69723183391003463
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0.156,
+                                                                  "M-LOG":  0.043599
+                                                              }
+                                                },
+                                     "WKS003":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0.844,
+                                                                    "M-LOG":  0.65363321799307961
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
+                                                              }
+                                                }
+                                 }
+                  },
+                  {
+                      "t":  90,
+                      "time_iso":  null,
+                      "label":  "유출",
+                      "note":  "T1048.003 exfiltration: large outbound transfer [DB01]",
+                      "compromise":  {
+                                         "DC01":  1,
+                                         "DB01":  1,
+                                         "DC02":  1,
+                                         "WKS003":  1
+                                     },
+                      "asset":  {
+                                    "DC02":  1,
+                                    "SW01":  0,
+                                    "FS01":  0.9,
+                                    "FW01":  0,
+                                    "DB02":  0.5,
+                                    "WKS004":  0,
+                                    "ESX02":  0,
+                                    "DB01":  1,
+                                    "MAIL01":  0.8,
+                                    "WKS002":  0,
+                                    "WKS005":  0,
+                                    "ESX01":  0,
+                                    "DC01":  1,
+                                    "WKS003":  1,
+                                    "WKS001":  0,
+                                    "WEB01":  0.35
+                                },
+                      "service":  {
+                                      "S-DIR":  1,
+                                      "S-WEB":  0.35,
+                                      "S-MSG":  0.8,
+                                      "S-DB":  0.5,
+                                      "S-FILE":  0.9
+                                  },
+                      "task":  {
+                                   "T-REQ":  0.6875,
+                                   "T-SITREP":  0.8,
+                                   "T-ORDER":  0.8879999999999999,
+                                   "T-ISSUE":  0.62352941176470589
+                               },
+                      "mission":  {
+                                      "M-C2":  0.844,
+                                      "M-LOG":  0.65363321799307961
+                                  },
+                      "whatif":  {
+                                     "DC01":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0.844,
+                                                                  "M-LOG":  0.65363321799307961
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DC02":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0.844,
+                                                                  "M-LOG":  0.65363321799307961
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DB01":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0.844,
+                                                                  "M-LOG":  0.65363321799307961
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0,
+                                                                "M-LOG":  0
+                                                            }
+                                              },
+                                     "DB02":  {
+                                                  "mission":  {
+                                                                  "M-C2":  0.86445454545454536,
+                                                                  "M-LOG":  1
+                                                              },
+                                                  "delta":  {
+                                                                "M-C2":  0.020455,
+                                                                "M-LOG":  0.346367
+                                                            }
+                                              },
+                                     "MAIL01":  {
+                                                    "mission":  {
+                                                                    "M-C2":  1,
+                                                                    "M-LOG":  0.69723183391003463
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0.156,
+                                                                  "M-LOG":  0.043599
+                                                              }
+                                                },
+                                     "WKS003":  {
+                                                    "mission":  {
+                                                                    "M-C2":  0.844,
+                                                                    "M-LOG":  0.65363321799307961
+                                                                },
+                                                    "delta":  {
+                                                                  "M-C2":  0,
+                                                                  "M-LOG":  0
                                                               }
                                                 }
                                  }

@@ -19,7 +19,11 @@
 
 param(
   [string]$Scenario = "$PSScriptRoot\..\scenarios\tacnet-01\mission.json",
-  [string]$Timeline = "$PSScriptRoot\..\scenarios\tacnet-01\attack-timeline.json",
+  # '' = look next to the scenario file: attack-timeline.json (t in minutes,
+  # tacnet-01) or attack-chain.json (off in seconds, defnet-01). The old
+  # default pointed at tacnet's file whatever the scenario was, which is how
+  # defnet-01 shipped with its attack chain authored and never drawn.
+  [string]$Timeline = '',
   [string]$Out      = '',
   [ValidateSet('max','weighted','noisyor')]
   [string]$Method   = 'weighted',
@@ -35,6 +39,8 @@ if (-not (Test-Path $engine)) { throw "engine not found: $engine" }
 
 $temporal = ($null -ne $g.timeline)
 
+function AsArrayLocal($x) { if ($null -eq $x) { return @() } return @($x) }
+
 if (-not $Out) {
   $dir = Join-Path (Split-Path $PSScriptRoot -Parent) 'ui\public\data'
   $Out = Join-Path $dir ("{0}.replay.json" -f $g.scenario_id)
@@ -42,12 +48,57 @@ if (-not $Out) {
 $outDir = Split-Path $Out -Parent
 if ($outDir -and -not (Test-Path $outDir)) { New-Item -ItemType Directory -Force $outDir | Out-Null }
 
+if (-not $Timeline) {
+  $scenDir = Split-Path (Resolve-Path $Scenario).Path -Parent
+  foreach ($cand in @('attack-timeline.json', 'attack-chain.json')) {
+    $tp = Join-Path $scenDir $cand
+    if (Test-Path $tp) { $Timeline = $tp; break }
+  }
+}
 $tl = $null
 if ($Timeline -and (Test-Path $Timeline)) {
   $tl = Get-Content $Timeline -Raw -Encoding utf8 | ConvertFrom-Json
+  Write-Output ("attack input: {0}" -f $Timeline)
 }
 
-function AsArrayLocal($x) { if ($null -eq $x) { return @() } return @($x) }
+# attack-chain.json (defnet-01) carries the same information in another
+# shape: `states` keyed by `off` seconds, and `chain` with one observable per
+# offset and its ATT&CK ground truth. Normalise it to the `steps` shape the
+# rest of this script and the UI read (t in minutes, label, state, note), so
+# one code path draws both. Nothing is invented: the note is the chain's own
+# observable and technique id at that offset.
+if ($tl -and ($null -eq $tl.steps) -and ($null -ne $tl.states)) {
+  $chainAt = @{}
+  foreach ($c in (AsArrayLocal $tl.chain)) {
+    $key = [string]([int]$c.off)
+    $bits = @()
+    if ($c.gt -and $c.gt.technique) { $bits += [string]$c.gt.technique }
+    if ($c.gt -and $c.gt.tactic)    { $bits += [string]$c.gt.tactic }
+    $line = ($bits -join ' ')
+    if ($c.msg) { $line = $line + ': ' + [string]$c.msg }
+    if ($c.host) { $line = $line + ' [' + [string]$c.host + ']' }
+    if ($chainAt.ContainsKey($key)) { $chainAt[$key] = $chainAt[$key] + ' / ' + $line } else { $chainAt[$key] = $line }
+  }
+  $norm = @()
+  foreach ($st in (AsArrayLocal $tl.states)) {
+    $key = [string]([int]$st.off)
+    $norm += [pscustomobject]@{
+      t     = [math]::Round(([double]$st.off) / 60.0, 2)
+      label = [string]$st.label
+      state = $st.state
+      note  = $(if ($chainAt.ContainsKey($key)) { $chainAt[$key] } else { '' })
+    }
+  }
+  $tl = [pscustomobject]@{
+    campaign_id  = $tl.campaign_id
+    scenario_id  = $g.scenario_id
+    name         = $tl.name
+    victim_entry = $tl.victim_entry
+    note         = $tl.note
+    source       = 'attack-chain.json (states.off seconds -> t minutes)'
+    steps        = $norm
+  }
+}
 
 function Get-StateAt($tl, $t) {
   $state = @{}; $label = ''; $note = ''
@@ -71,6 +122,13 @@ if ($temporal) {
   }
   $horizon = [double]$g.timeline.horizon
   for ($t = 0; $t -lt $horizon; $t += $Step) { $times += $t }
+} elseif ($tl -and $tl.steps) {
+  # no phase/outage timeline, but an attack chain: one snapshot per chain
+  # state, in chain time. The engine runs without -At (phases have no windows,
+  # so every phase is active), which is exactly the single-snapshot semantics
+  # ADR-0017 keeps for these scenarios - just evaluated at each attack state.
+  foreach ($s in $tl.steps) { $times += [double]$s.t }
+  $times = @($times | Sort-Object -Unique)
 } else {
   $times = @(-1)   # single snapshot
 }

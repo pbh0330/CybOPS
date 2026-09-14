@@ -38,7 +38,15 @@ export default function Timeline({ graph, payload, idx, step, playing, onPlay, o
   useEffect(() => () => { if (roRef.current) roRef.current.disconnect() }, [])
 
   const tl = graph?.timeline
-  const horizon = Number(tl?.horizon || 0)
+  // A scenario without a phase/outage timeline can still have an attack
+  // chain with its own clock (defnet-01: chain offsets in minutes from the
+  // phishing mail). Then the ribbon is the chain: horizon from the last
+  // step, ticks as offsets, no phase lanes, no outage bands - only the red
+  // attack marks and the head. Nothing is drawn that the data does not have.
+  const steps = payload?.steps || []
+  const chainOnly = !tl && steps.length > 1
+  const lastT = steps.reduce((m, st) => Math.max(m, Number(st.t) || 0), 0)
+  const horizon = tl ? Number(tl.horizon || 0) : (chainOnly ? Math.max(15, Math.ceil(lastT / 15) * 15) : 0)
   const x = (t) => PAD_L + (horizon ? (t / horizon) : 0) * (w - PAD_L - PAD_R)
 
   const missions = useMemo(
@@ -47,18 +55,20 @@ export default function Timeline({ graph, payload, idx, step, playing, onPlay, o
   )
 
   const ticks = useMemo(() => {
-    if (!tl) return []
-    const every = horizon > 240 ? 60 : 30
+    if (!tl && !chainOnly) return []
+    const every = horizon > 240 ? 60 : (horizon > 60 ? 30 : 15)
     const out = []
     for (let t = 0; t <= horizon; t += every) {
-      const d = tl.t0_iso ? new Date(new Date(tl.t0_iso).getTime() + t * 60000) : null
+      const d = tl && tl.t0_iso ? new Date(new Date(tl.t0_iso).getTime() + t * 60000) : null
       out.push({
         t,
-        label: d ? `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}` : null,
+        label: d
+          ? `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+          : `+${t}분`,
       })
     }
     return out
-  }, [tl, horizon])
+  }, [tl, chainOnly, horizon])
 
   const bands = useMemo(() => {
     const out = []
@@ -67,11 +77,12 @@ export default function Timeline({ graph, payload, idx, step, playing, onPlay, o
     return out
   }, [graph])
 
-  if (!tl) return <footer className="timeline" />
+  if (!tl && !chainOnly) return <footer className="timeline" />
 
   let laneY = 4
   const phaseLanes = []
   for (const m of missions) {
+    if (chainOnly) break
     for (const ph of (graph.phases || []).filter((p) => p.mission === m.id && p.window)) {
       phaseLanes.push({ ph, y: laneY, active: (step?.active_phases || []).includes(ph.id) })
     }
@@ -144,13 +155,21 @@ export default function Timeline({ graph, payload, idx, step, playing, onPlay, o
             )
           })}
 
-          {(payload?.attack?.steps || []).map((st, i) => {
+          {(payload?.attack?.steps || []).map((st, i, all) => {
             if (!st.state || Object.keys(st.state).length === 0) return null
             const px = x(st.t)
+            // room to the next mark decides whether the stage name fits
+            const nx = i + 1 < all.length ? x(all[i + 1].t) : w - PAD_R
+            const room = nx - px
             return (
-              <path key={i} d={`M${px} ${atkY} l4 4 l-4 4 l-4 -4 z`} fill={CAUSE_COLOR.attack}>
-                <title>{st.label || ''}</title>
-              </path>
+              <g key={i}>
+                <path d={`M${px} ${atkY} l4 4 l-4 4 l-4 -4 z`} fill={CAUSE_COLOR.attack}>
+                  <title>{`${st.label || ''}${st.note ? '\n' + st.note : ''}`}</title>
+                </path>
+                {chainOnly && room > 62 && (
+                  <text x={px + 7} y={atkY + 7} fill="#99a0a7" fontSize="9">{st.label}</text>
+                )}
+              </g>
             )
           })}
 

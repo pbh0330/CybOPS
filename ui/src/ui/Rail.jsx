@@ -120,6 +120,14 @@ function Cuts({ graph, step }) {
   const anyAttack = rows.some((r) => r.cause === 'attack')
   return (
     <>
+      {step?.label && (
+        // the attack input's own words for this step: stage, and the observable
+        // plus ATT&CK id it was authored with (attack-timeline / attack-chain)
+        <div className="step-note">
+          <b>{step.label}</b>
+          {step.note && <span>{step.note}</span>}
+        </div>
+      )}
       <p className="rail-caption">원인이 미상인 단절을 공격으로 표기하지 않는다 (ADR-0012)</p>
       {rows.map((r, i) => (
         <div className="cut" key={`${r.id}-${i}`}>

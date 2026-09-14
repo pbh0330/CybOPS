@@ -132,5 +132,7 @@ export function clockOf(s) {
       off: `+${s.t}분`,
     }
   }
+  // chain time only (no t0): the offset is the clock
+  if (s && Number(s.t) >= 0) return { time: `+${s.t}분`, off: '' }
   return { time: '스냅샷', off: '' }
 }
