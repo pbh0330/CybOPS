@@ -318,7 +318,7 @@ function EventStream({ graph, payload, idx, onSeekIdx }) {
   useEffect(() => {
     const el = ref.current?.querySelector('.ev.is-now')
     if (el) el.scrollIntoView({ block: 'nearest' })
-  }, [idx])
+  }, [idx, rows])
   if (!rows.length) return null
   return (
     <div className="stream">
