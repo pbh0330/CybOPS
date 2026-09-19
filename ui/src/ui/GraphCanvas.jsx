@@ -240,11 +240,17 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
         }
 
         // degradation is a luminance ramp, cause is the border: red stays
-        // exclusive to attack (ADR-0012, ADR-0024)
+        // exclusive to attack (ADR-0012, ADR-0024). Selection is a bypass
+        // too (n.style() below), so it has to win here explicitly - the
+        // node:selected stylesheet rule alone never shows through a bypass.
+        const isSel = n.id() === selected
         n.style('background-color', degColor(v))
-        n.style('border-color', cause ? (CAUSE_COLOR[cause] || '#4a515a') : (hit ? CAUSE_COLOR.attack : '#4a515a'))
-        n.style('border-width', cause || hit ? 2.5 : 1.5)
+        n.style('border-color', isSel ? '#f2f3f4' : (cause ? (CAUSE_COLOR[cause] || '#4a515a') : (hit ? CAUSE_COLOR.attack : '#4a515a')))
+        n.style('border-width', isSel ? 3 : (cause || hit ? 2.5 : 1.5))
         n.style('border-style', cause ? 'dashed' : 'solid')
+        n.toggleClass('hit', hit)
+        n.toggleClass('out', !!cause && !hit)
+        n.data('outColor', cause ? (CAUSE_COLOR[cause] || CAUSE_COLOR.unknown) : '#000')
 
         const inactive = temporal && d.kind === 'task' && d.phase && !activePhases.has(d.phase)
         n.toggleClass('dim', inactive)
@@ -257,7 +263,7 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
         e.style('label', cause ? `${e.data('bearer')} · ${cause}` : e.data('bearer'))
       }
     })
-  }, [step, graph])
+  }, [step, graph, selected])
 
   // Dashes crawling along a link mean traffic is moving on it. A cut link
   // stops moving, so the eye finds the break before it finds the label.
@@ -265,10 +271,14 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
     const tick = () => {
       flowRef.current.raf = requestAnimationFrame(tick)
       const cy = cyRef.current
-      if (!cy || flowRef.current.view !== 'transport') return
+      if (!cy) return
       flowRef.current.offset = (flowRef.current.offset - 0.6) % 26
-      const live = cy.edges('.transport').not('.cut').not('.hidden')
-      if (live.length) live.style('line-dash-offset', flowRef.current.offset)
+      if (flowRef.current.view === 'transport') {
+        const live = cy.edges('.transport').not('.cut').not('.hidden')
+        if (live.length) live.style('line-dash-offset', flowRef.current.offset)
+      }
+      const hops = cy.edges('.attack-hop')
+      if (hops.length) hops.style('line-dash-offset', flowRef.current.offset)
     }
     flowRef.current.raf = requestAnimationFrame(tick)
     return () => cancelAnimationFrame(flowRef.current.raf)

@@ -163,8 +163,8 @@ export function stylesheet() {
       selector: 'node[kind="mission"]',
       style: {
         'shape': 'round-rectangle',
-        'width': 132, 'height': 46,
-        'font-size': 12.5, 'font-weight': 'bold',
+        'width': 148, 'height': 50,
+        'font-size': 13, 'font-weight': 'bold',
         'color': '#f2f3f4',
         'text-valign': 'center',
         'text-margin-y': 0,
@@ -176,14 +176,14 @@ export function stylesheet() {
     {
       selector: 'node[kind="task"]',
       style: {
-        'shape': 'round-rectangle', 'width': 112, 'height': 34,
+        'shape': 'round-rectangle', 'width': 120, 'height': 36,
         'text-valign': 'center', 'text-margin-y': 0, 'font-size': 10,
         'text-max-width': 100, 'color': '#c2c6cb',
       },
     },
     {
       selector: 'node[kind="service"]',
-      style: { 'shape': 'round-diamond', 'width': 60, 'height': 60 },
+      style: { 'shape': 'round-diamond', 'width': 68, 'height': 68 },
     },
     {
       // Each service kind gets its own icon. C2 messaging, voice and fire
@@ -201,7 +201,7 @@ export function stylesheet() {
     },
     {
       selector: 'node[kind="asset"]',
-      style: { 'shape': 'round-rectangle', 'width': 60, 'height': 60 },
+      style: { 'shape': 'round-rectangle', 'width': 68, 'height': 68 },
     },
     {
       // The device icon is painted per element (paintSymbol in main.js) so its
@@ -219,7 +219,11 @@ export function stylesheet() {
     // the first endpoint picked with the link tool, so it is obvious what the
     // next click will connect to
     { selector: 'node.link-src', style: { 'border-color': '#f2f3f4', 'border-width': 3 } },
-    { selector: 'node:selected', style: { 'border-color': '#4da3ff', 'border-width': 3 } },
+    { selector: 'node:selected', style: { 'border-color': '#f2f3f4', 'border-width': 3 } },
+    // glow lives under the node and takes the cause colour, so a lit node is
+    // read the same way as its border (ADR-0012: red only for attack)
+    { selector: 'node.hit', style: { 'underlay-color': CAUSE_COLOR.attack, 'underlay-opacity': 0.28, 'underlay-padding': 12, 'underlay-shape': 'ellipse' } },
+    { selector: 'node.out', style: { 'underlay-color': 'data(outColor)', 'underlay-opacity': 0.16, 'underlay-padding': 10, 'underlay-shape': 'ellipse' } },
 
     {
       selector: 'edge',
@@ -274,9 +278,9 @@ export function stylesheet() {
         'target-arrow-color': CAUSE_COLOR.attack,
         'target-arrow-shape': 'triangle',
         'arrow-scale': 1.1,
-        'width': 2,
+        'width': 2.5,
         'line-style': 'dashed',
-        'line-dash-pattern': [6, 4],
+        'line-dash-pattern': [8, 6],
         'label': 'data(label)',
         'font-size': 9,
         'color': '#ffb4ba',
@@ -301,17 +305,17 @@ export const LAYOUTS = {
   dependency: {
     name: 'dagre',
     rankDir: 'TB',
-    nodeSep: 38,
-    rankSep: 86,
+    nodeSep: 34,
+    rankSep: 96,
     animate: false,
     fit: true,
-    padding: 30,
+    padding: 16,
   },
   transport: {
     name: 'cose',
     animate: false,
     fit: true,
-    padding: 40,
+    padding: 24,
     nodeRepulsion: 12000,
     idealEdgeLength: 90,
   },

@@ -359,7 +359,7 @@ export default function App() {
           <BoardToolbar
             view={view} onView={setView} mode={mode}
             labels={labels} onLabels={setLabels}
-            onFit={() => cyRef.current && cyRef.current.fit(undefined, 40)}
+            onFit={() => cyRef.current && cyRef.current.fit(undefined, 16)}
             tool={tool}
             onTool={(t) => { setTool(t); editorRef.current?.setTool(t) }}
             canUndo={hist.current.past.length > 0}
