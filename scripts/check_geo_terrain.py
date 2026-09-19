@@ -13,7 +13,6 @@ Usage:
   python scripts/check_geo_terrain.py --sample 5700,9600 4120,2140
 """
 import argparse
-import io
 import json
 import math
 import os
@@ -34,11 +33,20 @@ def _tile(z, x, y):
         return _tiles[key]
     os.makedirs(CACHE, exist_ok=True)
     fn = os.path.join(CACHE, f"{z}_{x}_{y}.png")
-    if not os.path.exists(fn):
-        urllib.request.urlretrieve(TILE_URL.format(z=z, x=x, y=y), fn)
-    im = Image.open(fn).convert("RGB")
-    _tiles[key] = im
-    return im
+    try:
+        if not os.path.exists(fn):
+            urllib.request.urlretrieve(TILE_URL.format(z=z, x=x, y=y), fn)
+        im = Image.open(fn).convert("RGB")
+        _tiles[key] = im
+        return im
+    except Exception as e:
+        try:
+            os.remove(fn)
+        except Exception:
+            pass
+        print(f"[skip] tile {z}/{x}/{y}: {type(e).__name__}: {e}")
+        _tiles[key] = None
+        return None
 
 
 def elevation(lat, lon, z=ZOOM):
@@ -48,6 +56,8 @@ def elevation(lat, lon, z=ZOOM):
     yt = (1 - math.log(math.tan(lat_r) + 1 / math.cos(lat_r)) / math.pi) / 2 * n
     xi, yi = int(xt), int(yt)
     im = _tile(z, xi, yi)
+    if im is None:
+        return float('nan')
     px = min(255, int((xt - xi) * 256))
     py = min(255, int((yt - yi) * 256))
     r, g, b = im.getpixel((px, py))
@@ -92,61 +102,79 @@ def report(scenario_path):
 
     print(f"== asset z vs DEM  (anchor {gr.lat0}, {gr.lon0})")
     for a in m["assets"]:
-        g = a.get("geo") or {}
-        pts = [("at", g["at"])] if g.get("at") else []
-        for s in g.get("segments", []):
-            pts.append((f"{s['from']}-{s['to']} at", s["at"]))
-            if s.get("to_at"):
-                pts.append((f"{s['from']}-{s['to']} to", s["to_at"]))
-        for label, p in pts:
-            lat, lon = gr.to_ll(p["x"], p["y"])
-            dem = elevation(lat, lon)
-            flag = "" if abs(dem - p.get("z", 0)) <= 15 else "   <-- differs from DEM by >15 m"
-            print(f"  {a['id']:9s} {label:14s} x={p['x']:6.0f} y={p['y']:6.0f} z={p.get('z', 0):5.0f}  dem={dem:6.0f}{flag}")
+        try:
+            g = a.get("geo") or {}
+            pts = [("at", g["at"])] if g.get("at") else []
+            for s in g.get("segments", []):
+                pts.append((f"{s['from']}-{s['to']} at", s["at"]))
+                if s.get("to_at"):
+                    pts.append((f"{s['from']}-{s['to']} to", s["to_at"]))
+            for label, p in pts:
+                try:
+                    lat, lon = gr.to_ll(p["x"], p["y"])
+                    dem = elevation(lat, lon)
+                    dem_str = f"{dem:6.0f}" if not math.isnan(dem) else "   n/a"
+                    flag = "" if math.isnan(dem) or abs(dem - p.get("z", 0)) <= 15 else "   <-- differs from DEM by >15 m"
+                    print(f"  {a['id']:9s} {label:14s} x={p['x']:6.0f} y={p['y']:6.0f} z={p.get('z', 0):5.0f}  dem={dem_str}{flag}")
+                except Exception as e:
+                    print(f"  {a['id']:9s} {label:14s}: {type(e).__name__}: {e}")
+        except Exception as e:
+            print(f"[skip] {a['id']}: {type(e).__name__}: {e}")
 
     print("\n== terrain-caused link outages: elevation profile at the outage midpoint")
     for l in m.get("links", []):
-        for o in l.get("outages", []):
-            if o.get("cause") != "terrain":
-                continue
-            t = (o["from"] + o["to"]) / 2
-            pa, pb = position_at(assets[l["a"]], t), position_at(assets[l["b"]], t)
-            if not pa or not pb:
-                print(f"  {l['id']}: endpoint position undefined at t={t}")
-                continue
-            n = 40
-            ha, hb = pa["z"] + 2, pb["z"] + 2
-            blocked = 0
-            worst = 0.0
-            for i in range(1, n):
-                u = i / n
-                x, y = pa["x"] + (pb["x"] - pa["x"]) * u, pa["y"] + (pb["y"] - pa["y"]) * u
-                lat, lon = gr.to_ll(x, y)
-                ground = elevation(lat, lon)
-                los = ha + (hb - ha) * u
-                if ground > los:
-                    blocked += 1
-                    worst = max(worst, ground - los)
-            verdict = "shadowed" if blocked else "clear"
-            print(f"  {l['id']:10s} t={t:5.1f} {l['a']}({pa['z']:.0f} m) -> {l['b']}({pb['z']:.0f} m): "
-                  f"{verdict}, {blocked}/{n - 1} samples above LOS, max {worst:.0f} m   [authored: {o.get('note', '')}]")
+        try:
+            for o in l.get("outages", []):
+                if o.get("cause") != "terrain":
+                    continue
+                try:
+                    t = (o["from"] + o["to"]) / 2
+                    pa, pb = position_at(assets[l["a"]], t), position_at(assets[l["b"]], t)
+                    if not pa or not pb:
+                        print(f"  {l['id']}: endpoint position undefined at t={t}")
+                        continue
+                    n = 40
+                    ha, hb = pa["z"] + 2, pb["z"] + 2
+                    blocked = 0
+                    worst = 0.0
+                    for i in range(1, n):
+                        u = i / n
+                        x, y = pa["x"] + (pb["x"] - pa["x"]) * u, pa["y"] + (pb["y"] - pa["y"]) * u
+                        lat, lon = gr.to_ll(x, y)
+                        ground = elevation(lat, lon)
+                        los = ha + (hb - ha) * u
+                        if not math.isnan(ground) and ground > los:
+                            blocked += 1
+                            worst = max(worst, ground - los)
+                    verdict = "shadowed" if blocked else "clear"
+                    print(f"  {l['id']:10s} t={t:5.1f} {l['a']}({pa['z']:.0f} m) -> {l['b']}({pb['z']:.0f} m): "
+                          f"{verdict}, {blocked}/{n - 1} samples above LOS, max {worst:.0f} m   [authored: {o.get('note', '')}]")
+                except Exception as e:
+                    print(f"[skip] {l['id']}: {type(e).__name__}: {e}")
+        except Exception as e:
+            print(f"[skip] link {l.get('id', '?')}: {type(e).__name__}: {e}")
     print("\nreport only - causes are authored, this changes nothing (ADR-0003).")
 
 
 def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--scenario", default=os.path.join(os.path.dirname(__file__), "..", "scenarios", "tacnet-01", "mission.json"))
-    ap.add_argument("--sample", nargs="*", help='local-plane points "x,y"')
-    args = ap.parse_args()
-    if args.sample:
-        m = json.load(open(args.scenario, encoding="utf-8"))
-        gr = Georef(m["geo"]["georef"])
-        for s in args.sample:
-            x, y = (float(v) for v in s.split(","))
-            lat, lon = gr.to_ll(x, y)
-            print(f"x={x:.0f} y={y:.0f}  lat={lat:.5f} lon={lon:.5f}  z={elevation(lat, lon):.0f}")
-        return
-    report(args.scenario)
+    try:
+        ap = argparse.ArgumentParser()
+        ap.add_argument("--scenario", default=os.path.join(os.path.dirname(__file__), "..", "scenarios", "tacnet-01", "mission.json"))
+        ap.add_argument("--sample", nargs="*", help='local-plane points "x,y"')
+        args = ap.parse_args()
+        if args.sample:
+            m = json.load(open(args.scenario, encoding="utf-8"))
+            gr = Georef(m["geo"]["georef"])
+            for s in args.sample:
+                x, y = (float(v) for v in s.split(","))
+                lat, lon = gr.to_ll(x, y)
+                dem = elevation(lat, lon)
+                dem_str = f"{dem:.0f}" if not math.isnan(dem) else "n/a"
+                print(f"x={x:.0f} y={y:.0f}  lat={lat:.5f} lon={lon:.5f}  z={dem_str}")
+            return
+        report(args.scenario)
+    except Exception as e:
+        print(f"[error] {type(e).__name__}: {e}")
 
 
 if __name__ == "__main__":
