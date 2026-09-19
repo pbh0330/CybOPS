@@ -5,7 +5,7 @@
 // layer (ADR-0003). If a number looks wrong, the fix belongs in the engine.
 
 import { runStep, containmentCandidates } from './engine.js'
-import { assetName, linkName } from './labels.js'
+import { assetName, linkName, techniqueKo } from './labels.js'
 
 export function num(v) { return typeof v === 'number' ? v : Number(v || 0) }
 export function pct(v) { return `${(num(v) * 100).toFixed(1)}%` }
@@ -163,4 +163,93 @@ export function attackHops(steps, idx) {
     hops.push({ from: order[i - 1].id, to: order[i].id, t: order[i].t, label: order[i].label, technique: order[i].technique })
   }
   return { order, hops }
+}
+
+const CAUSE_KO_ROW = { attack: '공격', mobility: '기동', terrain: '지형', maintenance: '정비', unknown: '미상' }
+
+// Wall clock for an offset in minutes, or the offset itself when the
+// scenario has no t0 (defnet-01's chain clock).
+export function timeLabel(graph, t) {
+  const t0 = graph?.timeline?.t0_iso
+  if (!t0) return `+${t}분`
+  const d = new Date(new Date(t0).getTime() + Number(t) * 60000)
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
+// The replay read as a log. Every row is a change between two consecutive
+// exported steps (or a segment boundary in the authored track), so nothing
+// here is inferred: it is the same data the timeline ribbon draws, in prose.
+// Rows point at the last step at or before their t so a click lands on the
+// picture that already shows the change.
+export function eventRows(graph, payload) {
+  const steps = payload?.steps || []
+  if (!steps.length) return []
+  const rows = []
+  const stepAt = (t) => {
+    let idx = 0
+    steps.forEach((s, i) => { if (num(s.t) <= t) idx = i })
+    return idx
+  }
+  const push = (t, kind, cause, text, id) => rows.push({ t, time: timeLabel(graph, t), kind, cause, text, id, stepIdx: stepAt(t) })
+  const phaseName = (id) => (graph?.phases || []).find((p) => p.id === id)?.name || id
+
+  let prev = { compromise: {}, link_outage: {}, asset_outage: {}, active_phases: [] }
+  for (const s of steps) {
+    const t = num(s.t)
+    const gts = Array.isArray(s.gt) ? s.gt : (s.gt ? [s.gt] : [])
+    const tech = gts.length ? gts[gts.length - 1].technique : null
+    for (const [id, v] of Object.entries(s.compromise || {})) {
+      if (num(v) > 0 && !(num(prev.compromise?.[id]) > 0)) {
+        const ko = techniqueKo(tech)
+        push(t, 'attack', 'attack', `${assetName(graph, id).ko} 침해${ko ? ` · ${ko}` : ''}${s.label ? ` (${s.label})` : ''}`, id)
+      }
+    }
+    for (const l of graph?.links || []) {
+      const now = (s.link_outage || {})[l.id] || null
+      const was = (prev.link_outage || {})[l.id] || null
+      if (now && !was) push(t, 'outage', now, `${linkName(graph, l)} 단절 · ${CAUSE_KO_ROW[now] || now}`, l.id)
+      if (!now && was) push(t, 'restore', was, `${linkName(graph, l)} 복구`, l.id)
+    }
+    for (const a of graph?.assets || []) {
+      const now = (s.asset_outage || {})[a.id] || null
+      const was = (prev.asset_outage || {})[a.id] || null
+      if (now && !was) push(t, 'outage', now, `${assetName(graph, a.id).ko} 단절 · ${CAUSE_KO_ROW[now] || now}`, a.id)
+      if (!now && was) push(t, 'restore', was, `${assetName(graph, a.id).ko} 복구`, a.id)
+    }
+    const wasPh = new Set(prev.active_phases || [])
+    for (const ph of s.active_phases || []) {
+      if (!wasPh.has(ph)) push(t, 'phase', null, `${phaseName(ph)} 단계 시작`, ph)
+    }
+    prev = { ...prev, ...s, compromise: s.compromise || prev.compromise, link_outage: s.link_outage || {}, asset_outage: s.asset_outage || {}, active_phases: s.active_phases || prev.active_phases }
+  }
+  for (const a of graph?.assets || []) {
+    for (const seg of a.geo?.segments || []) {
+      if (seg.mode !== 'move') continue
+      const name = assetName(graph, a.id).ko
+      push(num(seg.from), 'move', null, `${name} 이동 시작${seg.note ? ` · ${seg.note}` : ''}`, a.id)
+      push(num(seg.to), 'move', null, `${name} 이동 완료`, a.id)
+    }
+  }
+  const order = { phase: 0, move: 1, outage: 2, restore: 3, attack: 4 }
+  rows.sort((a, b) => (a.t - b.t) || (order[a.kind] - order[b.kind]))
+  return rows
+}
+
+export const BAND_LABELS = ['정상', '주의', '경계', '심각']
+
+// Headline numbers for the top strip. The band is a fixed rule over the worst
+// active mission value - a threshold, not a judgement, and not a doctrinal
+// term (ADR-0003).
+export function kpiOf(graph, s) {
+  const missions = (graph?.missions || []).slice().sort((a, b) => (a.priority || 9) - (b.priority || 9))
+    .map((m) => ({ id: m.id, name: m.name, priority: m.priority, total: num(s?.mission?.[m.id]),
+      active: s?.mission_active ? s.mission_active[m.id] !== false : true }))
+  const assets = graph?.assets || []
+  const compromised = assets.filter((a) => num(s?.compromise?.[a.id]) > 0).length
+  const byCause = {}
+  for (const c of Object.values(s?.link_outage || {})) if (c) byCause[c] = (byCause[c] || 0) + 1
+  const cuts = Object.values(byCause).reduce((x, y) => x + y, 0)
+  const worst = Math.max(0, ...missions.filter((m) => m.active).map((m) => m.total))
+  const level = worst <= 0 ? 0 : worst < 0.3 ? 1 : worst < 0.7 ? 2 : 3
+  return { missions, compromised: { n: compromised, total: assets.length }, cuts: { n: cuts, byCause }, band: { level, label: BAND_LABELS[level] } }
 }

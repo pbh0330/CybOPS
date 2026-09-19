@@ -1,0 +1,76 @@
+import { describe, it, expect } from 'vitest'
+import { eventRows, kpiOf, timeLabel, BAND_LABELS } from '../derive.js'
+
+const graph = {
+  timeline: { t0_iso: '2026-09-10T06:00:00+09:00', horizon: 420, step: 15 },
+  units: [{ id: 'U-1BN', name: '1대대' }],
+  missions: [{ id: 'M-C2', name: '지휘통제', priority: 1 }, { id: 'M-FIRE', name: '화력지원', priority: 2 }],
+  phases: [{ id: 'PH-1', mission: 'M-C2', name: '집결·준비' }, { id: 'PH-2', mission: 'M-C2', name: '기동' }],
+  assets: [
+    { id: 'BN-SRV', type: 'c2-server', unit: 'U-1BN', site: '대대 지휘소',
+      geo: { kind: 'track', segments: [
+        { from: 0, to: 95, mode: 'hold', at: { x: 0, y: 0, z: 0 } },
+        { from: 95, to: 125, mode: 'move', at: { x: 0, y: 0, z: 0 }, to_at: { x: 1, y: 1, z: 1 } },
+        { from: 125, to: 420, mode: 'hold', at: { x: 1, y: 1, z: 1 } } ] } },
+    { id: 'CO2-VEH', type: 'c2-terminal', unit: 'U-1BN', site: '2중대 지휘차', geo: { kind: 'fixed', at: { x: 0, y: 0, z: 0 } } },
+  ],
+  links: [{ id: 'L-SAT-TOC', a: 'BN-SRV', b: 'CO2-VEH', bearer: 'satcom' }],
+}
+
+const steps = [
+  { t: 0, active_phases: ['PH-1'], compromise: {}, link_outage: { 'L-SAT-TOC': null }, asset_outage: {} },
+  { t: 90, active_phases: ['PH-2'], compromise: {}, link_outage: { 'L-SAT-TOC': null }, asset_outage: {} },
+  { t: 300, label: 'BN-SRV 장악', gt: [{ technique: 'T1078.002' }], compromise: { 'BN-SRV': 1 },
+    link_outage: { 'L-SAT-TOC': 'unknown' }, asset_outage: {} },
+  { t: 345, active_phases: ['PH-2'], compromise: { 'BN-SRV': 1 }, link_outage: { 'L-SAT-TOC': null }, asset_outage: {} },
+]
+const payload = { steps }
+
+describe('timeLabel', () => {
+  it('formats wall clock from t0', () => expect(timeLabel(graph, 300)).toBe('11:00'))
+  it('falls back to offset without t0', () => expect(timeLabel({}, 300)).toBe('+300분'))
+})
+
+describe('eventRows', () => {
+  const rows = eventRows(graph, payload)
+  it('is sorted by t', () => {
+    const ts = rows.map((r) => r.t)
+    expect(ts).toEqual([...ts].sort((a, b) => a - b))
+  })
+  it('emits a phase change, an attack, an outage, a restore and two moves', () => {
+    const kinds = rows.map((r) => r.kind)
+    expect(kinds.filter((k) => k === 'phase').length).toBe(2)    // PH-1 at t=0, PH-2 at t=90
+    expect(kinds.filter((k) => k === 'attack').length).toBe(1)
+    expect(kinds.filter((k) => k === 'outage').length).toBe(1)
+    expect(kinds.filter((k) => k === 'restore').length).toBe(1)
+    expect(kinds.filter((k) => k === 'move').length).toBe(2)     // start 95, arrive 125
+  })
+  it('names things in Korean and carries the cause', () => {
+    const out = rows.find((r) => r.kind === 'outage')
+    expect(out.cause).toBe('unknown')
+    expect(out.text).toContain('단절')
+    const atk = rows.find((r) => r.kind === 'attack')
+    expect(atk.cause).toBe('attack')
+    expect(atk.text).toContain('대대 지휘소')
+  })
+  it('points each row at the last step at or before its t', () => {
+    const move = rows.find((r) => r.kind === 'move' && r.t === 95)
+    expect(move.stepIdx).toBe(1)                                  // t=90 is the last step <= 95
+    expect(rows.find((r) => r.kind === 'restore').stepIdx).toBe(3)
+  })
+})
+
+describe('kpiOf', () => {
+  it('counts compromised assets and cut links by cause, and bands the worst mission', () => {
+    const k = kpiOf(graph, { ...steps[2], mission: { 'M-C2': 0.72, 'M-FIRE': 0 }, mission_active: { 'M-C2': true, 'M-FIRE': true } })
+    expect(k.compromised).toEqual({ n: 1, total: 2 })
+    expect(k.cuts).toEqual({ n: 1, byCause: { unknown: 1 } })
+    expect(k.band).toEqual({ level: 3, label: '심각' })
+    expect(k.missions[0]).toMatchObject({ id: 'M-C2', total: 0.72, active: true })
+  })
+  it('bands 0 / <0.3 / <0.7 / >=0.7', () => {
+    const at = (v) => kpiOf(graph, { mission: { 'M-C2': v }, compromise: {}, link_outage: {} }).band.level
+    expect([at(0), at(0.1), at(0.5), at(0.7)]).toEqual([0, 1, 2, 3])
+    expect(BAND_LABELS).toEqual(['정상', '주의', '경계', '심각'])
+  })
+})
