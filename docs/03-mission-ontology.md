@@ -172,7 +172,7 @@ MGRS는 WGS84 datum 기반이라 위경도에서 무손실로 파생되지만, �
 |---|---|
 | `geo.frame` | 정본 평면 정의: `id`, `kind: "local-plane"`, `unit`, `axes`, `extent` |
 | `geo.georef` | 평면 -> WGS84 앵커와 변환식, 근사 오차, `mgrs` 표시 정책 |
-| `geo.safety` | 가상 좌표임을 보증하는 논거와 **배경지도 정책** |
+| `geo.safety` | 가상 시나리오임을 보증하는 논거(ADR-0025: 훈련장 위의 가상 시나리오)와 배경지도 정책 |
 | `geo.terrain` | 능선·계곡 등 도식. **서술 전용. 엔진이 읽지 않는다** |
 | `geo.position_rule` | 시점 t의 좌표를 뽑는 결정론 규칙(8.4)을 데이터로 중복 기재 |
 

@@ -51,6 +51,7 @@ $gates = @(
   @{ name = 'ontology';           tier = 'offline'; script = 'Test-Ontology.ps1';         args = @{} },
   @{ name = 'ocsf conformance';   tier = 'offline'; script = 'Test-OcsfConformance.ps1';  args = @{} },
   @{ name = 'geo invariance';     tier = 'offline'; script = 'Test-GeoInvariance.ps1';    args = @{} },
+  @{ name = 'ui unit tests';      tier = 'offline'; script = 'Test-UiUnit.ps1';         args = @{} },
   @{ name = 'bundle: local';      tier = 'offline'; script = 'Test-BundleConfig.ps1';
      args = @{ Bundle = (Join-Path $root 'ui\dist') } },
   @{ name = 'bundle: hosted';     tier = 'offline'; script = 'Test-BundleConfig.ps1';

@@ -1,4 +1,4 @@
-# 현재 상태 - 2026-09-14
+# 현재 상태 - 2026-09-19
 
 작업 시작 전 이 파일부터 읽는다.
 
@@ -10,9 +10,43 @@
 | 라벨 | LANL/AIT 확보. **OpTC 는 Inria 수정판으로 교체**(프로세스 구간, 300초 양성 113→1,717) |
 | 결정 | **Q1~Q6 전부 확정**(ADR-0012~0018). 미결 없음 |
 | 모델 | 시간축 온톨로지 완료(ADR-0017). LLM 4종 비교 완료, 기본 프롬프트 **briefing.ko v4** |
-| UI | **React 전환 완료**(ADR-0024). `ui/` Vite+React+Cytoscape 정적 번들. 무채색 크롬, 저하도=휘도. 3뷰·3모드 동작 |
+| UI | **2차 개편 완료(09-19, ADR-0025)**: tacnet-01 은 인제 실지형 위 MapLibre, KPI 띠·이벤트 스트림·배속, 저채도 바탕. `Test-UiUnit.ps1` 이 이제 오프라인 게이트다(vitest 22개) |
 | 다음 | 그래프 특징 실험 1회 채점(RDP 엣지 x160, 전역 첫 등장 프로세스 쌍 x5.4; docs/19 17절) → 논문. 출처 검증 체크리스트 21개(docs/02 8절) 미착수. E3 **완료**. UI 미이식 **0건**. defnet-01 공격 체인이 이제 화면에 나온다(09-14) |
 | 도구 | Figma pro/Full 좌석. Node 24.20.0 **포터블 설치**, Python 3.12, Git 2.55 |
+
+## 2026-09-19 - UI 2차 개편
+
+D4D 쇼케이스 49개(`https://d4d.tech/api/showcase`, 그중 깃허브 33개)를 조사했다. C2·COP
+계열 20개와 우리 화면(09-14 시점)을 나란히 놓아 보니 격차가 뚜렷했다 - 쇼케이스 다수는
+위성영상·3D 지구본이나 벡터 다크맵을 바탕으로 쓰는데 우리는 손으로 그린 등고선+격자였고,
+상단 KPI 띠·흐르는 이벤트 로그·큰 재생 컨트롤·상시 노출 AI 패널이 없었으며 캔버스도 화면의
+1/4만 채웠다. 데모가 1순위(ADR-0014)라 이 격차를 좁히기로 하고, 확정 결정을 조용히 깨는
+대신 ADR-0025 를 새로 써서 무엇을 깨는지 적었다(배경지도 정책 폐기, 온라인 위성/벡터 타일
+허용, 워터마크로 상쇄).
+
+**바꾼 것.** tacnet-01 지리 뷰 엔진을 MapLibre GL JS 로 교체(`MapPane`, `georef.js`,
+`mapLayers.js`)하고 좌표를 강원 인제 KCTC 일대 실지형(DEM) 위로 재저작했다. defnet-01 의
+영내 배치도(`GeoPane`)는 손대지 않았다 - 분기는 `graph.geo.georef` 유무 한 필드다. UI
+셸 밀도를 올려 KPI 띠(임무 저하도 최댓값 기준 정상/주의/경계/심각), replay 차분 기반
+이벤트 스트림, 재생 배속 1×/4×/16×, 상시 노출 브리핑 카드를 넣었다. 바탕은 흑연에서
+저채도 네이비-블랙으로 낮췄다(채도 규칙 - 크롬 무채색, 원인색 8종, 빨강은 공격 전용 - 은
+그대로). 상세는 `docs/superpowers/specs/2026-09-19-ui-real-terrain-console-design.md` 와
+`docs/design/decisions.md` "2026-09-19" 절.
+
+엔진은 여전히 geo 를 읽지 않는다(ADR-0002/0001). tacnet-01 track 자산 6개(BN-SRV, BN-CP,
+SAT-TERM, CO1-VEH, CO2-VEH, FO-TAB)의 `geo.source` 를 나머지 7개 고정 자산과 맞춰
+`asset-register` → `authored-on-dem`(`accuracy_m` 30)으로 통일했다 - 이번 재저작이 전부
+저작 좌표이지 자산대장 실측이 아니기 때문이다. `Export-ReplayData.ps1` 재실행 후
+`steps[*].mission/asset/service/task/whatif` 를 재저작 전(`git show HEAD:...`)과 비교해
+diff 0 을 확인했다(`generated` 타임스탬프와 6개 자산의 `source`/`accuracy_m` 필드만 변경).
+
+**검증.** `Test-Ontology`(defnet-01, tacnet-01 둘 다) ERRORS 0, `Test-GeoInvariance` PASS,
+`Test-CaseCollisions` exit 0, `Add-Bom -Check` exit 0. `npm test`(vitest) 22개 전부
+PASS(georef 8, derive 8, mapLayers 6), `vite build` 성공. `Test-UiUnit.ps1` 을 새로 만들어
+`Invoke-Gates.ps1` 의 오프라인 게이트에 넣었다 - 8개 게이트 전부 pass, data/model 티어 2개
+skip. 스크린샷 5장(`docs/design/screens/2026-09-19-*.png`)으로 의존/전송로/지리(위성 3D,
+다크 2D)/defnet 회귀를 확인 - 워터마크는 모든 바탕·차원에서 보이고, defnet-01 지리는 개편
+전과 같은 영내 배치도다.
 
 ## 2026-09-11 ~ 12 - OpTC 취득이 끝났고, 300초 창은 커버리지 99.8% 로 다시 채점했다
 
