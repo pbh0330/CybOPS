@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { CAUSE_COLOR } from '../graph.js'
-import { num, pct, missionRows, cutRows, actionRows, linkageOf } from '../derive.js'
+import { num, pct, missionRows, cutRows, actionRows, linkageOf, eventRows } from '../derive.js'
 import detection from '../detection.json'
 import { techniqueKo, techniqueMeaning, tacticKo } from '../labels.js'
 
@@ -268,6 +268,78 @@ function Brief({ scenarioId, step, edited, onToast }) {
   )
 }
 
+// The briefing is one sentence away at all times: the first sentence, the
+// citation count, and a badge when a sentence has no citation (ADR-0009).
+// Opening it shows the full Brief with its chips.
+function BriefCard({ scenarioId, step, edited, onToast }) {
+  const [data, setData] = useState(null)
+  const [open, setOpen] = useState(false)
+  const t = step && step.t !== undefined && step.t !== null ? Number(step.t) : null
+  useEffect(() => {
+    let alive = true
+    if (t === null || edited) { setData(null); return }
+    loadBrief(scenarioId, t).then((d) => { if (alive) setData(d) })
+    return () => { alive = false }
+  }, [scenarioId, t, edited])
+  const text = data?.brief?.text ? String(data.brief.text) : ''
+  const sentences = text.split(/(?<=[.!?])\s+/).filter((x) => x.trim())
+  const cited = sentences.filter((x) => /\[F\d+\]/.test(x)).length
+  const unverified = sentences.length - cited
+  return (
+    <div className="brief-card">
+      <div className="brief-card-head">
+        <span>브리핑 <em className="ref">LLM · 인용 필수</em></span>
+        {sentences.length > 0 && (
+          <span className="brief-badges">
+            <span className="badge">인용 {cited}건</span>
+            {unverified > 0 && <span className="unverified">미검증 {unverified}</span>}
+          </span>
+        )}
+      </div>
+      {!sentences.length && <div className="none">{edited ? '편집된 그래프에는 브리핑이 없다' : '이 시점 브리핑 없음'}</div>}
+      {sentences.length > 0 && !open && (
+        <p className="brief-first">{sentences[0].replace(/\[(F\d+)\]/g, '').trim()}</p>
+      )}
+      {open && <Brief scenarioId={scenarioId} step={step} edited={edited} onToast={onToast} />}
+      {sentences.length > 0 && (
+        <button type="button" className="brief-toggle" onClick={() => setOpen((o) => !o)}>{open ? '접기' : `펼치기 (${sentences.length}문장)`}</button>
+      )}
+    </div>
+  )
+}
+
+// The replay as a log. Rows come from eventRows - differences between
+// consecutive exported steps, nothing inferred. The current step's rows are
+// lit and kept in view; clicking a row jumps to the step it points at.
+function EventStream({ graph, payload, idx, onSeekIdx }) {
+  const rows = useMemo(() => eventRows(graph, payload), [graph, payload])
+  const ref = useRef(null)
+  const curT = Number(payload?.steps?.[idx]?.t ?? -1)
+  useEffect(() => {
+    const el = ref.current?.querySelector('.ev.is-now')
+    if (el) el.scrollIntoView({ block: 'nearest' })
+  }, [idx])
+  if (!rows.length) return null
+  return (
+    <div className="stream">
+      <div className="stream-head">이벤트 스트림 <em className="ref">{rows.length}건 · replay 차분</em></div>
+      <div className="stream-body" ref={ref}>
+        {rows.map((r, i) => (
+          <button
+            type="button" key={i}
+            className={`ev ev-${r.kind}${r.t <= curT ? ' is-past' : ''}${r.t === curT ? ' is-now' : ''}`}
+            onClick={() => onSeekIdx(r.stepIdx)}
+          >
+            <span className="ev-t">{r.time}</span>
+            <i className="ev-dot" style={{ background: r.cause ? (CAUSE_COLOR[r.cause] || CAUSE_COLOR.unknown) : 'var(--text-muted)' }} />
+            <span className="ev-text">{r.text}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // Wiring a box into the transport graph does not make it matter to a mission.
 // It can matter by carrying traffic (links do that through reachability), but
 // to provide a service or host work it has to be said. This block says what
@@ -399,13 +471,13 @@ function Inspect({ graph, step, data, mode, editor }) {
 const TABS = [
   ['cuts', '단절'],
   ['actions', '대응'],
-  ['brief', '브리핑'],
   ['inspect', '선택'],
 ]
 
 export default function Rail({
   graph, step, scenarioId, edited, when, tab, onTab,
   requests, onRequest, selectedData, onToast, mode, wargameSlot, editor,
+  payload, idx, onSeekIdx,
 }) {
   const cuts = cutRows(graph, step).length
   const acts = actionRows(graph, step).length
@@ -438,11 +510,13 @@ export default function Rail({
           <div className="rail-body">
             {tab === 'cuts' && <Cuts graph={graph} step={step} />}
             {tab === 'actions' && <Actions graph={graph} step={step} requests={requests} onRequest={onRequest} />}
-            {tab === 'brief' && <Brief scenarioId={scenarioId} step={step} edited={edited} onToast={onToast} />}
             {tab === 'inspect' && <Inspect graph={graph} step={step} data={selectedData} mode={mode} editor={editor} />}
           </div>
         </>
       )}
+
+      {mode !== 'wargame' && <BriefCard scenarioId={scenarioId} step={step} edited={edited} onToast={onToast} />}
+      {mode !== 'wargame' && <EventStream graph={graph} payload={payload} idx={idx} onSeekIdx={onSeekIdx} />}
 
       <div className="rail-foot">
         이 화면에는 실행 경로가 없다. 차단·격리는 사람이 별도 절차로 수행한다.

@@ -228,7 +228,7 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
 .tabs button.on { color: var(--text-primary); font-weight: 500; border-bottom-color: var(--text-primary); }
 .tabs .count { font-size: 11px; color: var(--text-muted); margin-left: 5px; }
 
-.rail-body { flex: 1; overflow-y: auto; padding: 14px 16px; scrollbar-width: thin; }
+.rail-body { flex: 1 1 auto; overflow-y: auto; padding: 14px 16px; scrollbar-width: thin; min-height: 120px; }
 .rail-caption { font-size: 11px; color: var(--text-muted); margin: 0 0 10px; }
 .rail-foot {
   flex: none; padding: 12px 16px 14px; border-top: 1px solid var(--line-strong);
@@ -236,6 +236,30 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
 }
 .rail-foot .adr { display: block; font-size: 10px; margin-top: 3px; }
 .none { font-size: 12px; color: var(--text-muted); padding: 6px 0; }
+
+.brief-card { flex: none; padding: 10px 16px; border-top: 1px solid var(--line-strong); max-height: 40vh; overflow-y: auto; scrollbar-width: thin; }
+.brief-card-head { display: flex; align-items: center; justify-content: space-between; font-size: 12px; font-weight: 500; margin-bottom: 6px; }
+.brief-badges { display: flex; gap: 6px; }
+.badge { font-size: 10px; padding: 1px 6px; border-radius: 4px; border: 1px solid var(--line-strong); color: var(--text-secondary); }
+.brief-first { margin: 0; font-size: 12px; line-height: 1.6; color: var(--text-secondary); padding-left: 10px; border-left: 2px solid var(--line-strong); }
+.brief-toggle { margin-top: 6px; font-size: 11px; padding: 3px 9px; background: none; color: var(--text-muted); }
+
+.stream { flex: none; height: 224px; display: flex; flex-direction: column; border-top: 1px solid var(--line-strong); }
+.stream-head { flex: none; padding: 8px 16px 6px; font-size: 12px; font-weight: 500; }
+.stream-body { flex: 1; overflow-y: auto; scrollbar-width: thin; padding: 0 8px 8px; }
+.ev {
+  display: grid; grid-template-columns: 44px 10px 1fr; align-items: baseline; gap: 8px;
+  width: 100%; text-align: left; background: none; border: none; border-radius: 3px;
+  padding: 3px 8px; font-size: 11.5px; line-height: 1.45; color: var(--text-muted);
+}
+.ev:hover { background: var(--surface-raised); }
+.ev.is-past { color: var(--text-secondary); }
+.ev.is-now { background: var(--surface-raised); color: var(--text-primary); }
+.ev-t { font-family: "IBM Plex Mono", ui-monospace, Consolas, monospace; font-size: 11px; color: var(--text-muted); }
+.ev.is-now .ev-t { color: var(--text-primary); }
+.ev-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; align-self: center; }
+.ev-attack .ev-text { color: var(--text-primary); }
+.ev-attack.is-past .ev-text::before { content: '● '; color: var(--attack); }
 
 /* containment candidates. cost is never red: red means attack (ADR-0012) */
 .action { background: var(--surface-raised); border-radius: var(--radius-md); padding: 11px 12px; margin-bottom: 8px; }

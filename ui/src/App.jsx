@@ -41,7 +41,7 @@ export default function App() {
   const pick = (key, allowed, dflt) => (allowed.includes(link.current.get(key)) ? link.current.get(key) : dflt)
   const [view, setView] = useState(pick('view', ['dependency', 'transport', 'geo'], 'dependency'))
   const [mode, setMode] = useState('observe')
-  const [tab, setTab] = useState(pick('tab', ['cuts', 'actions', 'brief', 'inspect'], 'actions'))
+  const [tab, setTab] = useState(pick('tab', ['cuts', 'actions', 'inspect'], 'actions'))
   const [labels, setLabels] = useState(true)
   const [playing, setPlaying] = useState(false)
   const [selectedData, setSelectedData] = useState(null)
@@ -393,6 +393,7 @@ export default function App() {
           requests={requests} onRequest={onRequest}
           selectedData={selectedData} onToast={setToast} mode={mode}
           editor={editorRef}
+          payload={payload} idx={idx} onSeekIdx={(i) => setIdx(i)}
           wargameSlot={mode === 'wargame' ? (
             <Mount
               deps={[graph, mode]}
