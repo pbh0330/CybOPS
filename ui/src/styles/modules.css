@@ -69,9 +69,7 @@ button.is-armed { border-color: rgba(255,77,94,.7); background: rgba(255,77,94,.
 
 /* ---------------------------------------------------------------- geo view */
 
-.geo-pane { flex: 1; min-height: 0; position: relative; background:
-  radial-gradient(900px 520px at 40% 20%, rgba(53,224,255,.05) 0%, rgba(5,7,11,0) 70%),
-  linear-gradient(180deg, #070b11 0%, var(--bg) 100%); }
+.geo-pane { flex: 1; min-height: 0; position: relative; background: var(--surface-board); }
 .geo-pane[hidden] { display: none; }
 .geo-svg { width: 100%; height: 100%; display: block; }
 .geo-grid { fill: none; stroke: rgba(255,255,255,.11); stroke-width: 1; }
@@ -132,7 +130,7 @@ button.is-armed { border-color: rgba(255,77,94,.7); background: rgba(255,77,94,.
 }
 .dim-switch { display: flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
 .dim-btn { border: none; border-radius: 0; background: transparent; padding: 3px 12px; color: var(--fg-dim); font-size: 11.5px; }
-.dim-btn.is-on { background: rgba(53,224,255,.14); color: #bdeaff; }
+.dim-btn.is-on { background: var(--surface-hover); color: var(--text-primary); }
 .dim-btn + .dim-btn { border-left: 1px solid var(--line); }
 .geo-slider { display: flex; align-items: center; gap: 7px; font-size: 10.5px; color: var(--fg-dim); }
 .geo-slider[hidden] { display: none; }
