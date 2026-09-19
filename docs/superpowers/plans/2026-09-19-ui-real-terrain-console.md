@@ -471,8 +471,8 @@ Expected: `ERRORS 0 / WARNINGS 0`, geo invariance `PASS` (mutation 5 self-test �
 ```powershell
 .\scripts\Export-ReplayData.ps1
 & $py - @'
-import json
-a=json.load(open(r'%TEMP%\tacnet-before.replay.json'.replace('%TEMP%',__import__('os').environ['TEMP']),encoding='utf-8'))
+import json, os
+a=json.load(open(os.path.join(os.environ['TEMP'],'tacnet-before.replay.json'),encoding='utf-8'))
 b=json.load(open('ui/public/data/tacnet-01.replay.json',encoding='utf-8'))
 keys=['mission','asset','service','task','compromise','asset_outage','link_outage','active_phases','whatif']
 bad=[(i,k) for i,(x,y) in enumerate(zip(a['steps'],b['steps'])) for k in keys if x.get(k)!=y.get(k)]
@@ -1226,6 +1226,9 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
     mapRef.current = map
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right')
     map.on('error', (e) => { if (e?.error && /tile|fetch|style/i.test(String(e.error.message || e.error))) setTileError(true) })
+    // map.on('click') is suppressed after a drag; a DOM onClick on the box is
+    // not, and would deselect on every pan
+    map.on('click', () => onSelect(null))
 
     map.on('load', () => {
       const style = map.getStyle()
@@ -1355,7 +1358,7 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
 
   return (
     <div className="map-pane" hidden={hidden}>
-      <div className="map-canvas" ref={boxRef} onClick={() => onSelect(null)} />
+      <div className="map-canvas" ref={boxRef} />
       <div className="geo-controls map-controls">
         <div className="seg" role="group" aria-label="바탕">
           {BASES.map(([id, label]) => (
