@@ -38,3 +38,5 @@
 | [0021](0021-hosting-posture-and-model-endpoint.md) | 호스팅 배치와 모델 엔드포인트는 런타임 설정 | 채택 |
 | [0022](0022-verification-is-part-of-publishing.md) | 검증을 통과하지 못한 브리핑은 발행하지 않는다 | 채택 |
 | [0023](0023-optc-labels-are-process-intervals.md) | OpTC 라벨은 구간이다 - Inria 수정판으로 교체 | 채택 |
+| [0024](0024-ui-redesign-and-react.md) | 상황도 UI 개편 - 무채색 크롬, 채널 분리, React 도입 | 채택 |
+| [0025](0025-real-terrain-geo-and-console-density.md) | 지리 뷰를 실지형 위에 올린다 - 지도 타일은 CDN 예외, 저채도 바탕 | 채택 |

@@ -12,7 +12,7 @@
 @import './styles/modules.css';
 
 :root {
-  /* surfaces - low-chroma navy-black (ADR-0025 §3). Chroma stays below 0.02
+  /* surfaces - low-chroma navy-black (ADR-0025 §3). Chroma stays below 0.03
      OKLCH: this is darker, not bluer. */
   --surface-app: #0b0f17;
   --surface-chrome: #111722;

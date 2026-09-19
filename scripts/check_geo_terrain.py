@@ -11,6 +11,9 @@ Usage:
   python scripts/check_geo_terrain.py                         # report for tacnet-01
   python scripts/check_geo_terrain.py --scenario scenarios/tacnet-01/mission.json
   python scripts/check_geo_terrain.py --sample 5700,9600 4120,2140
+
+argparse usage errors exit 2 (argparse's own behaviour); every run of the
+report itself exits 0.
 """
 import argparse
 import json
