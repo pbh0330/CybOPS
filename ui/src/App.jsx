@@ -330,6 +330,8 @@ export default function App() {
         onMode={setMode}
         phases={phases}
         onHelp={() => setOnboard(true)}
+        graph={graph}
+        step={step}
       />
 
       <div className={`main${mode === 'edit' ? ' is-editing' : ''}`}>
