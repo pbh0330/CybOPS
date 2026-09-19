@@ -41,6 +41,16 @@ const DEFAULTS = {
     // the reader think something is broken.
     unavailable_note: '이 배포본에는 모델 서버가 없다. greedy 와 random 은 그대로 동작한다.',
   },
+  // Map tiles are the one CDN exception (ADR-0025). An on-prem deployment
+  // points these at its own tile server; nothing else in the bundle leaves
+  // the box. Keyless public sources by default.
+  map: {
+    style: 'https://tiles.openfreemap.org/styles/dark',
+    satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    satellite_attribution: 'Imagery © Esri, Maxar, Earthstar Geographics',
+    dem: 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png',
+    dem_attribution: 'Terrain: AWS Terrain Tiles (Mapzen), SRTM/USGS/NRCan',
+  },
 }
 
 let loaded = null

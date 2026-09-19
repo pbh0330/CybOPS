@@ -8,6 +8,7 @@ import Topbar from './ui/Topbar.jsx'
 import BoardToolbar from './ui/BoardToolbar.jsx'
 import GraphCanvas from './ui/GraphCanvas.jsx'
 import GeoPane from './ui/GeoPane.jsx'
+import MapPane from './ui/MapPane.jsx'
 import Rail from './ui/Rail.jsx'
 import Timeline from './ui/Timeline.jsx'
 import Onboard from './ui/Onboard.jsx'
@@ -317,6 +318,7 @@ export default function App() {
   }
 
   const isGeo = view === 'geo'
+  const hasGeoref = !!(graph && graph.geo && graph.geo.georef)
 
   return (
     <div className="app">
@@ -369,10 +371,17 @@ export default function App() {
               hidden={isGeo} cyRef={cyRef} onSelect={onSelect} onTap={onTap}
               selected={selectedData?.id || null}
             />
-            <GeoPane
-              graph={graph} step={step} cam={geoCam} onCam={setGeoCam}
-              selected={selectedData?.id || null} onSelect={onSelect} hidden={!isGeo}
-            />
+            {hasGeoref ? (
+              <MapPane
+                graph={graph} step={step} steps={payload?.steps} idx={idx}
+                selected={selectedData?.id || null} onSelect={onSelect} hidden={!isGeo}
+              />
+            ) : (
+              <GeoPane
+                graph={graph} step={step} cam={geoCam} onCam={setGeoCam}
+                selected={selectedData?.id || null} onSelect={onSelect} hidden={!isGeo}
+              />
+            )}
           </div>
         </section>
 

@@ -373,3 +373,48 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
   font-size: 11px; font-weight: 500; color: var(--text-muted);
   background: var(--surface-board); padding: 0 6px 0 0;
 }
+
+/* ------------------------------------------------------------- map pane (ADR-0025) */
+.map-pane { position: absolute; inset: 0; display: flex; flex-direction: column; min-height: 0; background: var(--surface-board); }
+.map-pane[hidden] { display: none; }
+.map-canvas { flex: 1; min-height: 0; }
+.map-controls { right: 56px; }
+.maplibregl-ctrl-group { background: var(--surface-chrome) !important; border: 1px solid var(--line-strong); }
+.maplibregl-ctrl-group button { filter: invert(.85); }
+.maplibregl-ctrl-attrib { background: rgba(7,10,16,.7) !important; color: var(--text-muted) !important; font-size: 10px; }
+.maplibregl-ctrl-attrib a { color: var(--text-secondary) !important; }
+
+.map-watermark {
+  position: absolute; left: 16px; bottom: 56px; z-index: 5; pointer-events: none;
+  padding: 6px 10px; border-radius: var(--radius-sm);
+  background: rgba(7,10,16,.78); border: 1px solid var(--line-strong);
+  color: var(--text-primary); font-size: 12px; font-weight: 500; letter-spacing: .01em;
+}
+.map-tile-error {
+  position: absolute; left: 50%; top: 16px; transform: translateX(-50%); z-index: 5;
+  padding: 6px 12px; border-radius: var(--radius-sm); background: var(--surface-raised);
+  border: 1px solid var(--line-strong); font-size: 12px; color: var(--text-secondary);
+}
+
+/* markers: the symbol is the picture, state is the ring around it. Red ring
+   and pulse are attack only (ADR-0012); an outage ring takes its cause colour. */
+.map-mark { position: relative; width: 44px; height: 44px; cursor: pointer; }
+.map-mark-sym {
+  width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+  background: rgba(7,10,16,.72); border: 2px solid var(--line-strong);
+  box-shadow: 0 2px 8px rgba(0,0,0,.6);
+}
+.map-mark-sym img { width: 30px; height: 30px; display: block; }
+.map-mark-label {
+  position: absolute; left: 50%; top: 46px; transform: translateX(-50%); white-space: nowrap;
+  font-size: 11px; color: var(--text-primary); padding: 1px 6px; border-radius: 3px;
+  background: rgba(7,10,16,.72);
+}
+.map-mark.attack .map-mark-sym { border-color: var(--attack); box-shadow: 0 0 0 4px rgba(255,77,94,.22), 0 0 18px rgba(255,77,94,.55); animation: mark-pulse 1.6s ease-in-out infinite; }
+.map-mark.outage .map-mark-sym { border-style: dashed; }
+.map-mark.cause-mobility .map-mark-sym { border-color: var(--mobility); box-shadow: 0 0 14px rgba(53,200,255,.4); }
+.map-mark.cause-terrain .map-mark-sym { border-color: var(--terrain); box-shadow: 0 0 14px rgba(167,194,97,.4); }
+.map-mark.cause-maintenance .map-mark-sym { border-color: var(--maintenance); }
+.map-mark.cause-unknown .map-mark-sym { border-color: var(--unknown); box-shadow: 0 0 14px rgba(255,176,32,.4); }
+.map-mark.is-selected .map-mark-sym { outline: 3px solid var(--text-primary); outline-offset: 2px; }
+@keyframes mark-pulse { 0%, 100% { box-shadow: 0 0 0 4px rgba(255,77,94,.22), 0 0 18px rgba(255,77,94,.55); } 50% { box-shadow: 0 0 0 9px rgba(255,77,94,.08), 0 0 26px rgba(255,77,94,.75); } }
