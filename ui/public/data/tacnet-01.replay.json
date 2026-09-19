@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-09-19T19:38:59.9669865+09:00",
+    "generated":  "2026-09-19T23:22:54.4887100+09:00",
     "generator":  "scripts/Export-ReplayData.ps1",
     "contract":  1,
     "note":  "Precomputed by the deterministic engine. The UI displays these numbers and never recomputes them (ADR-0003).",
@@ -51,7 +51,7 @@
                                                                  ],
                                                            "z":  [
                                                                      0,
-                                                                     600
+                                                                     1200
                                                                  ]
                                                        },
                                             "note":  "정본 좌표는 이 로컬 평면 하나뿐이다. 자산마다 위경도를 따로 저장하지 않는다 - 두 표현을 각각 저장하면 어긋난다."
