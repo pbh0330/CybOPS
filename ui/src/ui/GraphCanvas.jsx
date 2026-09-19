@@ -48,7 +48,7 @@ function paintSymbol(n, state) {
 
 export default function GraphCanvas({ graph, step, steps, idx, view, labels, hidden, cyRef, onSelect, onTap, selected }) {
   const boxRef = useRef(null)
-  const flowRef = useRef({ raf: null, offset: 0, view })
+  const flowRef = useRef({ raf: null, offset: 0, view, hidden })
   const [bands, setBands] = useState([])
   const [hopCount, setHopCount] = useState(0)
   // Effects run in declaration order, so this one fires before the instance
@@ -56,6 +56,7 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
   const [cyReady, setCyReady] = useState(0)
 
   flowRef.current.view = view
+  flowRef.current.hidden = hidden
 
   // Measure where each layer currently sits on screen. Boundaries are placed
   // midway between the bottom of one layer and the top of the next, so the
@@ -271,7 +272,7 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
     const tick = () => {
       flowRef.current.raf = requestAnimationFrame(tick)
       const cy = cyRef.current
-      if (!cy) return
+      if (!cy || flowRef.current.hidden) return
       flowRef.current.offset = (flowRef.current.offset - 0.6) % 26
       if (flowRef.current.view === 'transport') {
         const live = cy.edges('.transport').not('.cut').not('.hidden')

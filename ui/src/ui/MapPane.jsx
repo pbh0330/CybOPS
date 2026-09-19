@@ -25,11 +25,20 @@ function firstSymbolLayer(style) {
   return l ? l.id : undefined
 }
 
+// No `glyphs` URL on the fallback style, so text (symbol) layers would throw.
+// Everything else - lines, fills, DOM markers - draws fine without glyphs.
+const FALLBACK_STYLE = { version: 8, sources: {}, layers: [{ id: 'background', type: 'background', paint: { 'background-color': '#070a10' } }] }
+
 export default function MapPane({ graph, step, steps, idx, selected, onSelect, hidden }) {
   const boxRef = useRef(null)
   const mapRef = useRef(null)
   const markers = useRef(new Map())
   const dashRef = useRef({ raf: null, i: 0 })
+  // Which scenario the current map (if any) was built for, or null. Doubles
+  // as the lazy-build guard (F1) and the rebuild-only-on-scenario-change
+  // guard (F4): an edit produces a new `graph` object but the same
+  // scenario_id, so it is not a reason to tear anything down.
+  const builtRef = useRef(null)
   const [ready, setReady] = useState(false)
   const [base, setBase] = useState('satellite')
   const [is3d, setIs3d] = useState(true)
@@ -39,82 +48,152 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
   const extent = graph?.geo?.frame?.extent
   const t = step && step.t !== undefined && step.t !== null ? Number(step.t) : 0
 
-  // --- build ------------------------------------------------------------
+  // --- build --------------------------------------------------------------
+  // Deliberately keyed on scenario identity, not on `graph` itself: keying on
+  // `graph` meant every edit (commitEdit replaces the object) tore the whole
+  // MapLibre instance down and rebuilt it from a fresh style+tile fetch,
+  // throwing away camera, base layer and 3D state on every undo/redo/reset
+  // (F4). `hidden` is a dependency purely so this effect gets a chance to run
+  // the FIRST time the pane becomes visible - the dependency-view default
+  // means the box is display:none (0x0) at mount, so building then bakes a
+  // bogus camera into both the constructor `bounds` and the first fitBounds
+  // (F1). It does not by itself trigger a teardown: hiding the pane again
+  // just leaves the map exactly as it was, and the separate resize() effect
+  // below repaints it correctly when shown again.
   useEffect(() => {
-    if (!boxRef.current || !georef || !extent) return
-    const cfg = config().map
-    const [lon0, lat0] = toLonLat(georef, extent.x[0], extent.y[0])
-    const [lon1, lat1] = toLonLat(georef, extent.x[1], extent.y[1])
-    const map = new maplibregl.Map({
-      container: boxRef.current,
-      style: cfg.style,
-      bounds: [[lon0, lat0], [lon1, lat1]],
-      fitBoundsOptions: { padding: 40 },
-      pitch: 55,
-      maxPitch: 75,
-      attributionControl: { compact: true, customAttribution: `${cfg.satellite_attribution} · ${cfg.dem_attribution}` },
-    })
-    mapRef.current = map
-    map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right')
-    map.on('error', (e) => { if (e?.error && /tile|fetch|style/i.test(String(e.error.message || e.error))) setTileError(true) })
-    // map.on('click') is suppressed after a drag; a DOM onClick on the box is
-    // not, and would deselect on every pan
-    map.on('click', () => onSelect(null))
+    if (hidden || !boxRef.current || !georef || !extent) return
+    const scenarioId = graph?.scenario_id
+    if (builtRef.current === scenarioId) return // same scenario: nothing to (re)build
 
-    map.on('load', () => {
-      const style = map.getStyle()
-      const beforeLabels = firstSymbolLayer(style)
-      map.addSource('sat', { type: 'raster', tiles: [cfg.satellite], tileSize: 256, maxzoom: 18 })
-      map.addLayer({ id: 'sat', type: 'raster', source: 'sat', paint: { 'raster-opacity': 1 }, layout: { visibility: 'none' } }, beforeLabels)
-      map.addSource('dem', { type: 'raster-dem', tiles: [cfg.dem], tileSize: 256, encoding: 'terrarium', maxzoom: 15 })
-      map.addLayer({ id: 'hillshade', type: 'hillshade', source: 'dem', layout: { visibility: 'none' },
-        paint: { 'hillshade-exaggeration': 0.6, 'hillshade-shadow-color': '#05070c', 'hillshade-highlight-color': '#b9c4d1' } }, beforeLabels)
-
-      // overlays, bottom to top
-      map.addSource('ao', { type: 'geojson', data: aoFeature(georef, extent) })
-      map.addLayer({ id: 'ao', type: 'line', source: 'ao', paint: { 'line-color': '#f2f3f4', 'line-opacity': 0.55, 'line-width': 1.5, 'line-dasharray': [4, 3] } })
-      const grid = gridFeatures(georef, extent, 2000)
-      map.addSource('grid', { type: 'geojson', data: grid.lines })
-      map.addLayer({ id: 'grid', type: 'line', source: 'grid', paint: { 'line-color': '#f2f3f4', 'line-opacity': 0.14, 'line-width': 0.8 } })
-      map.addSource('grid-labels', { type: 'geojson', data: grid.labels })
-      map.addLayer({ id: 'grid-labels', type: 'symbol', source: 'grid-labels',
-        layout: { 'text-field': ['get', 'text'], 'text-size': 10, 'text-font': ['Noto Sans Regular'], 'text-anchor': 'bottom-left', 'text-offset': [0.3, -0.2] },
-        paint: { 'text-color': '#c2c6cb', 'text-opacity': 0.75, 'text-halo-color': '#070a10', 'text-halo-width': 1 } })
-      map.addSource('tracks', { type: 'geojson', data: EMPTY })
-      map.addLayer({ id: 'tracks', type: 'line', source: 'tracks', paint: { 'line-color': '#c2c6cb', 'line-opacity': 0.5, 'line-width': 1.2, 'line-dasharray': [1, 2] } })
-      map.addSource('links', { type: 'geojson', data: EMPTY })
-      map.addLayer({ id: 'links', type: 'line', source: 'links', layout: { 'line-cap': 'round' },
-        paint: {
-          'line-color': ['case', ['get', 'cut'], ['match', ['get', 'cause'],
-            'attack', CAUSE_COLOR.attack, 'mobility', CAUSE_COLOR.mobility, 'terrain', CAUSE_COLOR.terrain,
-            'maintenance', CAUSE_COLOR.maintenance, 'unknown', CAUSE_COLOR.unknown, CAUSE_COLOR.unknown], '#9aa5b1'],
-          'line-width': ['case', ['get', 'cut'], 3, 1.6],
-          'line-opacity': 0.9,
-          'line-dasharray': ['case', ['get', 'cut'], ['literal', [1, 2.5]], ['literal', [1, 0]]],
-        } })
-      map.addSource('attack', { type: 'geojson', data: EMPTY })
-      map.addLayer({ id: 'attack', type: 'line', source: 'attack', layout: { 'line-cap': 'round' },
-        paint: { 'line-color': CAUSE_COLOR.attack, 'line-width': 2.5, 'line-opacity': 0.95, 'line-dasharray': [0, 4, 3] } })
-      map.addLayer({ id: 'attack-labels', type: 'symbol', source: 'attack',
-        layout: { 'symbol-placement': 'line-center', 'text-field': ['get', 'label'], 'text-size': 11, 'text-font': ['Noto Sans Regular'], 'text-offset': [0, -1] },
-        paint: { 'text-color': '#ffb4ba', 'text-halo-color': '#070a10', 'text-halo-width': 1.2 } })
-
-      // The constructor's own `bounds` option fits the AO before the map has a
-      // real size and before pitch is accounted for, so the initial 3D camera
-      // can crop the AO's far edge. Re-fit once the style (and its size) is
-      // actually settled.
-      map.fitBounds([[lon0, lat0], [lon1, lat1]], { padding: 40, pitch: 55, duration: 0 })
-      setReady(true)
-    })
-    return () => {
+    // A previous scenario's map is still mounted - tear it down before
+    // building the new one. This is the only place a full teardown happens.
+    if (mapRef.current) {
       cancelAnimationFrame(dashRef.current.raf)
       for (const m of markers.current.values()) m.remove()
       markers.current.clear()
-      map.remove()
+      mapRef.current.remove()
       mapRef.current = null
       setReady(false)
     }
-  }, [graph])
+
+    let cancelled = false
+    const cfg = config().map
+    const [lon0, lat0] = toLonLat(georef, extent.x[0], extent.y[0])
+    const [lon1, lat1] = toLonLat(georef, extent.x[1], extent.y[1])
+
+    const buildOn = (styleSpec, usedFallback) => {
+      // Not "if (builtRef.current === scenarioId) return" at the TOP of the
+      // effect, before the style fetch: React 18 StrictMode (and any other
+      // legitimate rapid re-run) cleans up and re-invokes this effect once
+      // synchronously on mount, before the fetch below resolves. Marking
+      // builtRef done early made the second invocation see "already built"
+      // and skip its own fetch, while the first invocation's fetch then
+      // landed on a `cancelled` closure - net result, no map ever got built.
+      // Only claim the scenario once a map is actually about to be created.
+      if (cancelled) return
+      builtRef.current = scenarioId
+      const map = new maplibregl.Map({
+        container: boxRef.current,
+        style: styleSpec,
+        bounds: [[lon0, lat0], [lon1, lat1]],
+        fitBoundsOptions: { padding: 40 },
+        pitch: 55,
+        maxPitch: 75,
+        attributionControl: { compact: true, customAttribution: `${cfg.satellite_attribution} · ${cfg.dem_attribution}` },
+      })
+      mapRef.current = map
+      map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right')
+      // Only a failure to fetch the style/a source/a tile is "offline" in the
+      // sense the banner means; glyph and sprite warnings are routine and
+      // must not flip it.
+      map.on('error', (e) => {
+        const msg = String(e?.error?.message || '')
+        if (/style|tile|source|Failed to fetch|NetworkError/i.test(msg)) setTileError(true)
+      })
+      // map.on('click') is suppressed after a drag; a DOM onClick on the box is
+      // not, and would deselect on every pan
+      map.on('click', () => onSelect(null))
+
+      map.on('load', () => {
+        const style = map.getStyle()
+        const beforeLabels = firstSymbolLayer(style)
+        map.addSource('sat', { type: 'raster', tiles: [cfg.satellite], tileSize: 256, maxzoom: 18 })
+        map.addLayer({ id: 'sat', type: 'raster', source: 'sat', paint: { 'raster-opacity': 1 }, layout: { visibility: 'none' } }, beforeLabels)
+        map.addSource('dem', { type: 'raster-dem', tiles: [cfg.dem], tileSize: 256, encoding: 'terrarium', maxzoom: 15 })
+        map.addLayer({ id: 'hillshade', type: 'hillshade', source: 'dem', layout: { visibility: 'none' },
+          paint: { 'hillshade-exaggeration': 0.6, 'hillshade-shadow-color': '#05070c', 'hillshade-highlight-color': '#b9c4d1' } }, beforeLabels)
+
+        // overlays, bottom to top
+        map.addSource('ao', { type: 'geojson', data: aoFeature(georef, extent) })
+        map.addLayer({ id: 'ao', type: 'line', source: 'ao', paint: { 'line-color': '#f2f3f4', 'line-opacity': 0.55, 'line-width': 1.5, 'line-dasharray': [4, 3] } })
+        const grid = gridFeatures(georef, extent, 2000)
+        map.addSource('grid', { type: 'geojson', data: grid.lines })
+        map.addLayer({ id: 'grid', type: 'line', source: 'grid', paint: { 'line-color': '#f2f3f4', 'line-opacity': 0.14, 'line-width': 0.8 } })
+        map.addSource('grid-labels', { type: 'geojson', data: grid.labels })
+        if (!usedFallback) {
+          map.addLayer({ id: 'grid-labels', type: 'symbol', source: 'grid-labels',
+            layout: { 'text-field': ['get', 'text'], 'text-size': 10, 'text-font': ['Noto Sans Regular'], 'text-anchor': 'bottom-left', 'text-offset': [0.3, -0.2] },
+            paint: { 'text-color': '#c2c6cb', 'text-opacity': 0.75, 'text-halo-color': '#070a10', 'text-halo-width': 1 } })
+        }
+        map.addSource('tracks', { type: 'geojson', data: EMPTY })
+        map.addLayer({ id: 'tracks', type: 'line', source: 'tracks', paint: { 'line-color': '#c2c6cb', 'line-opacity': 0.5, 'line-width': 1.2, 'line-dasharray': [1, 2] } })
+        map.addSource('links', { type: 'geojson', data: EMPTY })
+        map.addLayer({ id: 'links', type: 'line', source: 'links', layout: { 'line-cap': 'round' },
+          paint: {
+            'line-color': ['case', ['get', 'cut'], ['match', ['get', 'cause'],
+              'attack', CAUSE_COLOR.attack, 'mobility', CAUSE_COLOR.mobility, 'terrain', CAUSE_COLOR.terrain,
+              'maintenance', CAUSE_COLOR.maintenance, 'unknown', CAUSE_COLOR.unknown, CAUSE_COLOR.unknown], '#9aa5b1'],
+            'line-width': ['case', ['get', 'cut'], 3, 1.6],
+            'line-opacity': 0.9,
+            'line-dasharray': ['case', ['get', 'cut'], ['literal', [1, 2.5]], ['literal', [1, 0]]],
+          } })
+        map.addSource('attack', { type: 'geojson', data: EMPTY })
+        map.addLayer({ id: 'attack', type: 'line', source: 'attack', layout: { 'line-cap': 'round' },
+          paint: { 'line-color': CAUSE_COLOR.attack, 'line-width': 2.5, 'line-opacity': 0.95, 'line-dasharray': [0, 4, 3] } })
+        if (!usedFallback) {
+          map.addLayer({ id: 'attack-labels', type: 'symbol', source: 'attack',
+            layout: { 'symbol-placement': 'line-center', 'text-field': ['get', 'label'], 'text-size': 11, 'text-font': ['Noto Sans Regular'], 'text-offset': [0, -1] },
+            paint: { 'text-color': '#ffb4ba', 'text-halo-color': '#070a10', 'text-halo-width': 1.2 } })
+        }
+
+        // The constructor's own `bounds` option fits the AO before the map has a
+        // real size and before pitch is accounted for, so the initial 3D camera
+        // can crop the AO's far edge (or, while hidden, be computed against a
+        // 0x0 box entirely). Re-fit once the style (and its real size) is
+        // actually settled - by the time `load` fires this effect has already
+        // refused to run while `hidden`, so the box has real dimensions.
+        map.fitBounds([[lon0, lat0], [lon1, lat1]], { padding: 40, pitch: 55, duration: 0 })
+        setReady(true)
+      })
+    }
+
+    // Fetch the style ourselves rather than handing MapLibre the URL: a
+    // failed style fetch means `load` never fires and nothing - not even the
+    // overlays the offline banner promises - ever gets drawn (F2). On
+    // failure, fall back to a bare background so the AO/grid/tracks/links/
+    // attack arc/markers still render on a flat dark canvas.
+    fetch(cfg.style)
+      .then((res) => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json() })
+      .then((styleJson) => buildOn(styleJson, false))
+      .catch(() => { setTileError(true); buildOn(FALLBACK_STYLE, true) })
+
+    return () => { cancelled = true }
+  }, [graph?.scenario_id, georef?.anchor?.lat, georef?.anchor?.lon, extent?.x?.[1], extent?.y?.[1], hidden])
+
+  // Safety net for a real unmount (e.g. the scenario stops being
+  // georeferenced): the effect above only tears the map down when a NEW
+  // scenario needs building, which never happens if this component is simply
+  // removed from the tree.
+  useEffect(() => () => {
+    if (mapRef.current) {
+      cancelAnimationFrame(dashRef.current.raf)
+      for (const m of markers.current.values()) m.remove()
+      markers.current.clear()
+      mapRef.current.remove()
+      mapRef.current = null
+      builtRef.current = null
+    }
+  }, [])
 
   // --- base map / terrain ----------------------------------------------
   useEffect(() => {
@@ -214,7 +293,7 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
       </div>
       {/* not removable by design (ADR-0025): the screenshot carries the caveat */}
       <div className="map-watermark" aria-label="주의">가상 훈련 시나리오 · 실제 부대 배치 아님</div>
-      {tileError && <div className="map-tile-error">지도 타일을 받지 못했다. 오버레이만 그린다.</div>}
+      {tileError && <div className="map-tile-error">바탕 지도를 받지 못했다. 오버레이만 그린다.</div>}
       <div className="geo-foot">
         <span>{graph?.geo?.frame?.id} · 격자 2 km · MGRS {anchorMgrs}</span>
         <span>지형 DEM · 3D 과장 1.5배</span>

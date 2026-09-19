@@ -204,7 +204,7 @@ export function stylesheet() {
       style: { 'shape': 'round-rectangle', 'width': 68, 'height': 68 },
     },
     {
-      // The device icon is painted per element (paintSymbol in main.js) so its
+      // The device icon is painted per element (paintSymbol in GraphCanvas.jsx) so its
       // colour can follow the state. The node fill stays low so the icon reads
       // on top of it.
       selector: 'node[kind="asset"]',

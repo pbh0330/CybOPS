@@ -226,8 +226,8 @@ export function eventRows(graph, payload) {
     for (const seg of a.geo?.segments || []) {
       if (seg.mode !== 'move') continue
       const name = assetName(graph, a.id).ko
-      push(num(seg.from), 'move', null, `${name} 이동 시작${seg.note ? ` · ${seg.note}` : ''}`, a.id)
-      push(num(seg.to), 'move', null, `${name} 이동 완료`, a.id)
+      push(num(seg.from), 'move', null, `${name} 이동 시작 (${a.id})`, a.id)
+      push(num(seg.to), 'move', null, `${name} 이동 완료 (${a.id})`, a.id)
     }
   }
   const order = { phase: 0, move: 1, outage: 2, restore: 3, attack: 4 }
