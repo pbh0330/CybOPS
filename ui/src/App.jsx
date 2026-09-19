@@ -44,6 +44,7 @@ export default function App() {
   const [tab, setTab] = useState(pick('tab', ['cuts', 'actions', 'inspect'], 'actions'))
   const [labels, setLabels] = useState(true)
   const [playing, setPlaying] = useState(false)
+  const [speed, setSpeed] = useState(1)
   const [selectedData, setSelectedData] = useState(null)
   const [requests, setRequests] = useState([])
   const [edited, setEdited] = useState(false)
@@ -163,9 +164,9 @@ export default function App() {
     if (!playing || !payload) return
     const id = setInterval(() => {
       setIdx((i) => (i + 1 >= payload.steps.length ? 0 : i + 1))
-    }, 900)
+    }, 900 / speed)
     return () => clearInterval(id)
-  }, [playing, payload])
+  }, [playing, payload, speed])
 
   // --- edit bookkeeping -------------------------------------------------
   const commitEdit = useCallback(() => {
@@ -423,6 +424,8 @@ export default function App() {
       <Timeline
         graph={graph} payload={payload} idx={idx} step={step}
         playing={playing} onPlay={() => setPlaying((p) => !p)} onSeek={onSeek}
+        speed={speed} onSpeed={setSpeed}
+        onStep={(d) => setIdx((i) => Math.max(0, Math.min((payload?.steps.length || 1) - 1, i + d)))}
       />
 
       {onboard && <Onboard onClose={() => setOnboard(false)} />}

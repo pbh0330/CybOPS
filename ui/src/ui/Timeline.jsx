@@ -14,7 +14,7 @@ const PAD_R = 4
 const LANE_H = 14
 const H = 64
 
-export default function Timeline({ graph, payload, idx, step, playing, onPlay, onSeek }) {
+export default function Timeline({ graph, payload, idx, step, playing, onPlay, onSeek, speed, onSpeed, onStep }) {
   const [w, setW] = useState(0)
   const roRef = useRef(null)
 
@@ -103,10 +103,16 @@ export default function Timeline({ graph, payload, idx, step, playing, onPlay, o
   return (
     <footer className="timeline">
       <div className="transport">
+        <button type="button" className="step-btn" onClick={() => onStep(-1)} title="이전 (←)">◀</button>
         <button type="button" className="play-btn" onClick={onPlay} title="재생 / 정지 (Space)">
           {playing ? '❚❚' : '▶'}
         </button>
-        <span className="micro">시간축</span>
+        <button type="button" className="step-btn" onClick={() => onStep(1)} title="다음 (→)">▶</button>
+        <div className="seg speed" role="group" aria-label="배속">
+          {[1, 4, 16].map((s) => (
+            <button key={s} type="button" className={speed === s ? 'on' : ''} onClick={() => onSpeed(s)}>{s}×</button>
+          ))}
+        </div>
       </div>
 
       <div className="ribbon-wrap" ref={wrapRef}>
