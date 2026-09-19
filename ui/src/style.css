@@ -12,14 +12,15 @@
 @import './styles/modules.css';
 
 :root {
-  /* surfaces - graphite, not near-black */
-  --surface-app: #23262a;
-  --surface-chrome: #2a2e33;
-  --surface-raised: #353a41;
-  --surface-hover: #434952;
-  --surface-board: #1e2125;
-  --line-strong: #4a515a;
-  --line-soft: #343941;
+  /* surfaces - low-chroma navy-black (ADR-0025 §3). Chroma stays below 0.02
+     OKLCH: this is darker, not bluer. */
+  --surface-app: #0b0f17;
+  --surface-chrome: #111722;
+  --surface-raised: #18202c;
+  --surface-hover: #222b39;
+  --surface-board: #070a10;
+  --line-strong: #2a3442;
+  --line-soft: #1c2430;
 
   --text-primary: #f2f3f4;
   --text-secondary: #c2c6cb;
@@ -72,7 +73,7 @@ button, select {
   border-radius: var(--radius-sm); padding: 5px 11px; cursor: pointer;
   transition: background .12s ease, border-color .12s ease, color .12s ease;
 }
-button:hover, select:hover { background: var(--surface-hover); border-color: #5a626c; }
+button:hover, select:hover { background: var(--surface-hover); border-color: #3a4656; }
 button:disabled { opacity: .4; cursor: default; }
 button:disabled:hover { background: var(--surface-raised); border-color: var(--line-strong); }
 button.danger { border-color: rgba(255,77,94,.4); color: #ffc2c7; }
@@ -166,7 +167,7 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
    structural, so it does not need a sentence explaining it */
 .bands { position: absolute; inset: 0; pointer-events: none; }
 .band { position: absolute; left: 0; right: 0; border-top: 1px solid var(--line-soft); }
-.band.alt { background: rgba(255,255,255,.018); }
+.band.alt { background: rgba(255,255,255,.025); }
 .band span {
   position: absolute; left: 16px; top: 9px;
   font-size: 11px; font-weight: 500; color: var(--text-muted);

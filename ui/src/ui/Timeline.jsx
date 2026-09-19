@@ -125,7 +125,7 @@ export default function Timeline({ graph, payload, idx, step, playing, onPlay, o
         >
           {ticks.map((tk) => (
             <g key={tk.t}>
-              <line x1={x(tk.t)} y1={0} x2={x(tk.t)} y2={H} stroke="#343941" />
+              <line x1={x(tk.t)} y1={0} x2={x(tk.t)} y2={H} stroke="#1c2430" />
               {tk.label && <text x={x(tk.t) + 3} y={H - 2} fill="#99a0a7" fontSize="9">{tk.label}</text>}
             </g>
           ))}
@@ -137,8 +137,8 @@ export default function Timeline({ graph, payload, idx, step, playing, onPlay, o
               <g key={ph.id}>
                 <rect
                   x={x0} y={y} width={wd} height={LANE_H} rx="3"
-                  fill={active ? '#434952' : '#353a41'}
-                  stroke={active ? '#6d757f' : '#4a515a'}
+                  fill={active ? '#222b39' : '#18202c'}
+                  stroke={active ? '#4a5668' : '#2a3442'}
                 />
                 {wd > 46 && (
                   <text x={x0 + 6} y={y + LANE_H - 4} fill={active ? '#f2f3f4' : '#99a0a7'} fontSize="9.5">

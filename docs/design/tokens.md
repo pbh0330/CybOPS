@@ -14,15 +14,17 @@ Figma: `MC-CyCOP UI Redesign` (`mwTJW4NKL4T3W44lnn6qCR`), 컬렉션 `MC-CyCOP` /
 
 ## 표면 · 텍스트 (무채색)
 
+2026-09-19 ADR-0025 로 바탕 휘도를 낮췄다. 채도 규칙은 그대로다.
+
 | 토큰 | 값 | 용도 |
 |---|---|---|
-| `surface/app` | `#23262A` | 앱 바탕 |
-| `surface/chrome` | `#2A2E33` | 상단바, 레일, 시간축 |
-| `surface/raised` | `#353A41` | 카드, 선택된 세그먼트 |
-| `surface/hover` | `#434952` | 버튼, 호버 |
-| `surface/board` | `#1E2125` | 그래프 캔버스 (별도 평면) |
-| `line/strong` | `#4A515A` | 구획선, 테두리 |
-| `line/soft` | `#343941` | 밴드 구분, 트랙 |
+| `surface/app` | `#0B0F17` | 앱 바탕 |
+| `surface/chrome` | `#111722` | 상단바, 레일, 시간축 |
+| `surface/raised` | `#18202C` | 카드, 선택된 세그먼트 |
+| `surface/hover` | `#222B39` | 버튼, 호버 |
+| `surface/board` | `#070A10` | 그래프 캔버스 (별도 평면) |
+| `line/strong` | `#2A3442` | 구획선, 테두리 |
+| `line/soft` | `#1C2430` | 밴드 구분, 트랙 |
 | `text/primary` | `#F2F3F4` | 본문, 수치 |
 | `text/secondary` | `#C2C6CB` | 보조 |
 | `text/muted` | `#99A0A7` | 라벨, 주석 |
@@ -59,6 +61,7 @@ Figma: `MC-CyCOP UI Redesign` (`mwTJW4NKL4T3W44lnn6qCR`), 컬렉션 `MC-CyCOP` /
 | 본문 | 12-13 Regular |
 | 라벨·주석 | 11 Regular |
 | 축 눈금 | 10 Regular |
+| 수치·시계·로그·좌표 | IBM Plex Mono 500/600 (@fontsource 번들) |
 
 **대문자 트래킹 라벨을 쓰지 않는다.** 기존 `text-transform: uppercase` +
 `letter-spacing: .12em` 조합은 한글에 적용되지 않으면서 영문 라벨만 튀게 만들었다.

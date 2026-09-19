@@ -245,7 +245,7 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
         // node:selected stylesheet rule alone never shows through a bypass.
         const isSel = n.id() === selected
         n.style('background-color', degColor(v))
-        n.style('border-color', isSel ? '#f2f3f4' : (cause ? (CAUSE_COLOR[cause] || '#4a515a') : (hit ? CAUSE_COLOR.attack : '#4a515a')))
+        n.style('border-color', isSel ? '#f2f3f4' : (cause ? (CAUSE_COLOR[cause] || '#2a3442') : (hit ? CAUSE_COLOR.attack : '#2a3442')))
         n.style('border-width', isSel ? 3 : (cause || hit ? 2.5 : 1.5))
         n.style('border-style', cause ? 'dashed' : 'solid')
         n.toggleClass('hit', hit)
