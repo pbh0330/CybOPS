@@ -150,28 +150,28 @@
 
     {"id": "BN-SRV",   "type": "c2-server",           "unit": "U-1BN", "site": "대대 지휘소", "os": "linux",     "mobility": "mobile", "transit": true,
      "outages": [{"from": 95, "to": 125, "cause": "mobility", "note": "지휘소 이동(철수-전개)"}],
-     "geo": {"kind": "track", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 25, "segments": [
+     "geo": {"kind": "track", "frame": "TACGRID-01", "source": "authored-on-dem", "accuracy_m": 30, "segments": [
        {"from": 0,   "to": 95,  "mode": "hold", "at": {"x": 8800, "y": 8500, "z": 196}, "note": "1차 지휘소"},
        {"from": 95,  "to": 125, "mode": "move", "at": {"x": 8800, "y": 8500, "z": 196}, "to_at": {"x": 13500, "y": 11700, "z": 538}, "note": "지휘소 이동 - outage(mobility) 와 같은 구간"},
        {"from": 125, "to": 420, "mode": "hold", "at": {"x": 13500, "y": 11700, "z": 538}, "note": "2차 지휘소"}
      ]}},
     {"id": "BN-CP",    "type": "c2-terminal",         "unit": "U-1BN", "site": "대대 지휘소", "os": "windows",   "mobility": "mobile", "transit": false,
      "outages": [{"from": 95, "to": 125, "cause": "mobility", "note": "지휘소 이동(철수-전개)"}],
-     "geo": {"kind": "track", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 25, "segments": [
+     "geo": {"kind": "track", "frame": "TACGRID-01", "source": "authored-on-dem", "accuracy_m": 30, "segments": [
        {"from": 0,   "to": 95,  "mode": "hold", "at": {"x": 8782, "y": 8512, "z": 196}},
        {"from": 95,  "to": 125, "mode": "move", "at": {"x": 8782, "y": 8512, "z": 196}, "to_at": {"x": 13482, "y": 11712, "z": 538}},
        {"from": 125, "to": 420, "mode": "hold", "at": {"x": 13482, "y": 11712, "z": 538}}
      ]}},
     {"id": "SAT-TERM", "type": "satcom-terminal",     "unit": "U-1BN", "site": "대대 지휘소", "os": "appliance", "mobility": "mobile", "transit": true,
      "outages": [{"from": 95, "to": 125, "cause": "mobility", "note": "위성단말 철수-재전개"}],
-     "geo": {"kind": "track", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 25, "segments": [
+     "geo": {"kind": "track", "frame": "TACGRID-01", "source": "authored-on-dem", "accuracy_m": 30, "segments": [
        {"from": 0,   "to": 95,  "mode": "hold", "at": {"x": 8822, "y": 8491, "z": 196}},
        {"from": 95,  "to": 125, "mode": "move", "at": {"x": 8822, "y": 8491, "z": 196}, "to_at": {"x": 13522, "y": 11691, "z": 538}},
        {"from": 125, "to": 420, "mode": "hold", "at": {"x": 13522, "y": 11691, "z": 538}}
      ]}},
 
     {"id": "CO1-VEH",  "type": "c2-terminal",         "unit": "U-1CO", "site": "1중대 지휘차", "os": "windows",  "mobility": "mobile", "transit": false,
-     "geo": {"kind": "track", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 50, "segments": [
+     "geo": {"kind": "track", "frame": "TACGRID-01", "source": "authored-on-dem", "accuracy_m": 30, "segments": [
        {"from": 0,   "to": 90,  "mode": "hold", "at": {"x": 6600, "y": 7200, "z": 482}},
        {"from": 90,  "to": 150, "mode": "move", "at": {"x": 6600, "y": 7200, "z": 482},  "to_at": {"x": 10800, "y": 9500, "z": 208}},
        {"from": 150, "to": 195, "mode": "move", "at": {"x": 10800, "y": 9500, "z": 208}, "to_at": {"x": 16300, "y": 12800, "z": 267}, "note": "동쪽 능선 후사면 통과 - L-VHF-CO1 의 terrain outage 와 같은 구간"},
@@ -179,7 +179,7 @@
        {"from": 260, "to": 420, "mode": "hold", "at": {"x": 15700, "y": 14500, "z": 256}}
      ]}},
     {"id": "CO2-VEH",  "type": "c2-terminal",         "unit": "U-2CO", "site": "2중대 지휘차", "os": "windows",  "mobility": "mobile", "transit": false,
-     "geo": {"kind": "track", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 50, "segments": [
+     "geo": {"kind": "track", "frame": "TACGRID-01", "source": "authored-on-dem", "accuracy_m": 30, "segments": [
        {"from": 0,   "to": 100, "mode": "hold", "at": {"x": 5600, "y": 6300, "z": 327}},
        {"from": 100, "to": 205, "mode": "move", "at": {"x": 5600, "y": 6300, "z": 327},  "to_at": {"x": 11300, "y": 11000, "z": 218}},
        {"from": 205, "to": 235, "mode": "move", "at": {"x": 11300, "y": 11000, "z": 218}, "to_at": {"x": 13100, "y": 12500, "z": 232}, "note": "L-VHF-CO2 의 mobility outage 와 같은 구간 - 기동간 안테나 미전개"},
@@ -187,7 +187,7 @@
      ]}},
     {"id": "FO-TAB",   "type": "observer-terminal",   "unit": "U-FA",  "site": "관측반",       "os": "android",  "mobility": "mobile", "transit": false,
      "outages": [{"from": 0, "to": 120, "cause": "mobility", "note": "관측반 미전개 - 표적획득 단계 이전"}],
-     "geo": {"kind": "track", "frame": "TACGRID-01", "source": "asset-register", "accuracy_m": 50, "segments": [
+     "geo": {"kind": "track", "frame": "TACGRID-01", "source": "authored-on-dem", "accuracy_m": 30, "segments": [
        {"from": 0,   "to": 120, "mode": "hold", "at": {"x": 4500, "y": 2900, "z": 244}, "note": "후방 집결지 대기. outage 중이지만 위치는 정의된다"},
        {"from": 120, "to": 180, "mode": "move", "at": {"x": 4500, "y": 2900, "z": 244},   "to_at": {"x": 9500, "y": 9000, "z": 203}},
        {"from": 180, "to": 255, "mode": "move", "at": {"x": 9500, "y": 9000, "z": 203},  "to_at": {"x": 15400, "y": 12100, "z": 319}},

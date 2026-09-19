@@ -1,5 +1,5 @@
 {
-    "generated":  "2026-09-19T17:53:35.2309210+09:00",
+    "generated":  "2026-09-19T19:38:59.9669865+09:00",
     "generator":  "scripts/Export-ReplayData.ps1",
     "contract":  1,
     "note":  "Precomputed by the deterministic engine. The UI displays these numbers and never recomputes them (ADR-0003).",
@@ -460,8 +460,8 @@
                                      "geo":  {
                                                  "kind":  "track",
                                                  "frame":  "TACGRID-01",
-                                                 "source":  "asset-register",
-                                                 "accuracy_m":  25,
+                                                 "source":  "authored-on-dem",
+                                                 "accuracy_m":  30,
                                                  "segments":  [
                                                                   {
                                                                       "from":  0,
@@ -523,8 +523,8 @@
                                      "geo":  {
                                                  "kind":  "track",
                                                  "frame":  "TACGRID-01",
-                                                 "source":  "asset-register",
-                                                 "accuracy_m":  25,
+                                                 "source":  "authored-on-dem",
+                                                 "accuracy_m":  30,
                                                  "segments":  [
                                                                   {
                                                                       "from":  0,
@@ -583,8 +583,8 @@
                                      "geo":  {
                                                  "kind":  "track",
                                                  "frame":  "TACGRID-01",
-                                                 "source":  "asset-register",
-                                                 "accuracy_m":  25,
+                                                 "source":  "authored-on-dem",
+                                                 "accuracy_m":  30,
                                                  "segments":  [
                                                                   {
                                                                       "from":  0,
@@ -635,8 +635,8 @@
                                      "geo":  {
                                                  "kind":  "track",
                                                  "frame":  "TACGRID-01",
-                                                 "source":  "asset-register",
-                                                 "accuracy_m":  50,
+                                                 "source":  "authored-on-dem",
+                                                 "accuracy_m":  30,
                                                  "segments":  [
                                                                   {
                                                                       "from":  0,
@@ -718,8 +718,8 @@
                                      "geo":  {
                                                  "kind":  "track",
                                                  "frame":  "TACGRID-01",
-                                                 "source":  "asset-register",
-                                                 "accuracy_m":  50,
+                                                 "source":  "authored-on-dem",
+                                                 "accuracy_m":  30,
                                                  "segments":  [
                                                                   {
                                                                       "from":  0,
@@ -794,8 +794,8 @@
                                      "geo":  {
                                                  "kind":  "track",
                                                  "frame":  "TACGRID-01",
-                                                 "source":  "asset-register",
-                                                 "accuracy_m":  50,
+                                                 "source":  "authored-on-dem",
+                                                 "accuracy_m":  30,
                                                  "segments":  [
                                                                   {
                                                                       "from":  0,
