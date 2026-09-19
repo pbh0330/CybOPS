@@ -6,7 +6,7 @@ import { CAUSE_COLOR } from '../graph.js'
 import { attackHops } from '../derive.js'
 import { toLonLat, toMgrs } from '../georef.js'
 import { markerRows, linkFeatures, trackFeatures, attackArcFeatures, gridFeatures, aoFeature } from '../mapLayers.js'
-import { symbolDataUriWithStatus, statusForState } from '../symbols.js'
+import { deviceIconDataUri } from '../icons.js'
 import { assetName } from '../labels.js'
 
 // The map view for a georeferenced scenario (ADR-0025). Secondary by
@@ -98,6 +98,12 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
       map.addLayer({ id: 'attack-labels', type: 'symbol', source: 'attack',
         layout: { 'symbol-placement': 'line-center', 'text-field': ['get', 'label'], 'text-size': 11, 'text-font': ['Noto Sans Regular'], 'text-offset': [0, -1] },
         paint: { 'text-color': '#ffb4ba', 'text-halo-color': '#070a10', 'text-halo-width': 1.2 } })
+
+      // The constructor's own `bounds` option fits the AO before the map has a
+      // real size and before pitch is accounted for, so the initial 3D camera
+      // can crop the AO's far edge. Re-fit once the style (and its size) is
+      // actually settled.
+      map.fitBounds([[lon0, lat0], [lon1, lat1]], { padding: 40, pitch: 55, duration: 0 })
       setReady(true)
     })
     return () => {
@@ -121,8 +127,8 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
   useEffect(() => {
     const map = mapRef.current
     if (!map || !ready) return
-    if (is3d) { map.setTerrain({ source: 'dem', exaggeration: 1.5 }); map.easeTo({ pitch: 55, duration: 500 }) }
-    else { map.setTerrain(null); map.easeTo({ pitch: 0, duration: 500 }) }
+    map.setTerrain(is3d ? { source: 'dem', exaggeration: 1.5 } : null)
+    map.easeTo({ pitch: is3d ? 55 : 0, duration: 500 })
   }, [is3d, ready])
 
   // the pane is display:none while another view is up; MapLibre has to be
@@ -143,9 +149,9 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
     for (const r of rows) {
       seen.add(r.id)
       const asset = graph.assets.find((a) => a.id === r.id)
-      const status = statusForState({ compromise: r.compromise, outageCause: r.outage })
-      const uri = symbolDataUriWithStatus(asset?.type, status, { size: 34 })
       const state = r.compromise > 0 ? 'attack' : r.outage ? `outage cause-${r.outage}` : 'ok'
+      const color = r.compromise > 0 ? '#ffb4ba' : r.outage ? '#93a6ba' : '#e6f0fb'
+      const uri = deviceIconDataUri(asset?.type, { size: 30, color })
       let m = markers.current.get(r.id)
       if (!m) {
         const el = document.createElement('div')
@@ -157,7 +163,12 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
       }
       m.setLngLat([r.lon, r.lat])
       const el = m.getElement()
-      el.className = `map-mark ${state}${selected === r.id ? ' is-selected' : ''}`
+      // maplibregl.Marker's constructor stamps its own "maplibregl-marker"
+      // class onto this element (that class, not ours, is what carries
+      // position:absolute - see style.css note on .map-mark). Overwriting
+      // className wholesale on every update strips that class right back off
+      // after the very first render, so it has to be re-included here.
+      el.className = `maplibregl-marker map-mark ${state}${selected === r.id ? ' is-selected' : ''}`
       const img = el.querySelector('img')
       if (uri && img.src !== uri) img.src = uri
       const n = assetName(graph, r.id)

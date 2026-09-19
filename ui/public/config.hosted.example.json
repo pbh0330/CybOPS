@@ -9,5 +9,13 @@
     "endpoint": "/api/llm",
     "model": "qwen2.5:7b-instruct-q4_K_M",
     "unavailable_note": "공개 배포본에는 모델 서버를 붙이지 않았다. 브리핑은 미리 생성된 것이고, 교전은 greedy 와 random 으로 진행한다."
+  },
+  "_map_note": "오프라인 배치는 세 URL 을 로컬 타일 서버로 바꾼다",
+  "map": {
+    "style": "https://tiles.openfreemap.org/styles/dark",
+    "satellite": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    "satellite_attribution": "Imagery © Esri, Maxar, Earthstar Geographics",
+    "dem": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png",
+    "dem_attribution": "Terrain: AWS Terrain Tiles (Mapzen), SRTM/USGS/NRCan"
   }
 }

@@ -397,8 +397,13 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
 }
 
 /* markers: the symbol is the picture, state is the ring around it. Red ring
-   and pulse are attack only (ADR-0012); an outage ring takes its cause colour. */
-.map-mark { position: relative; width: 44px; height: 44px; cursor: pointer; }
+   and pulse are attack only (ADR-0012); an outage ring takes its cause colour.
+   No `position` here on purpose: this element also carries MapLibre's own
+   "maplibregl-marker" class, whose stylesheet sets position:absolute so the
+   marker sits at MapLibre's computed transform. Setting position:relative
+   here used to win the cascade and put the marker back in normal document
+   flow, which is why every marker piled up at the top-left of the map. */
+.map-mark { width: 44px; height: 44px; cursor: pointer; }
 .map-mark-sym {
   width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
   background: rgba(7,10,16,.72); border: 2px solid var(--line-strong);
