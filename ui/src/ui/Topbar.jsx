@@ -18,9 +18,15 @@ function Ring({ value }) {
   )
 }
 
-export default function Topbar({ scenarios, scenarioId, onScenario, mode, onMode, phases, onHelp, graph, step }) {
+export default function Topbar({ scenarios, scenarioId, onScenario, mode, onMode, phases, onHelp, graph, step, game }) {
   const k = kpiOf(graph, step)
   const clock = clockOf(step)
+  // During a game the engine sees an isolated asset as compromise 1
+  // (game.js compromiseOf), so the projected step counts it as compromised.
+  // Isolation is the defender's own mark: take it out of the count and show
+  // it separately.
+  const isolated = game ? game.isolated.length : 0
+  const compromised = Math.max(0, k.compromised.n - isolated)
   return (
     <header className="topbar">
       <div className="brand">
@@ -51,9 +57,17 @@ export default function Topbar({ scenarios, scenarioId, onScenario, mode, onMode
             </div>
           </div>
         ))}
+        {game && (
+          <div className="kpi kpi-game">
+            <div>
+              <div className="kpi-v">{game.phase === 'over' ? (game.result.win ? '승' : '패') : `${Math.min(game.turn + 1, game.cfg.turns)}/${game.cfg.turns}`}<small>{game.cfg.mode === 'hold' ? game.score.total.toFixed(2) : game.score.total}</small></div>
+              <div className="kpi-l">교전 {game.phase === 'over' ? '종료' : '턴'} · 점수</div>
+            </div>
+          </div>
+        )}
         <div className="kpi">
           <div>
-            <div className="kpi-v">{k.compromised.n}<small>/{k.compromised.total}</small></div>
+            <div className="kpi-v">{compromised}<small>/{k.compromised.total}</small>{isolated > 0 && <small>격리 {isolated}</small>}</div>
             <div className="kpi-l">침해 자산</div>
           </div>
         </div>

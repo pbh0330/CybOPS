@@ -335,6 +335,7 @@ export default function App() {
         onHelp={() => setOnboard(true)}
         graph={graph}
         step={step}
+        game={mode === 'wargame' ? game : null}
       />
 
       <div className={`main${mode === 'edit' ? ' is-editing' : ''}`}>
