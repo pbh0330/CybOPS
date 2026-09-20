@@ -100,7 +100,7 @@ export function attackerTurn(g, G, chooser) {
     defender: (G.pending && G.pending.defender) || null,
     attacker: r.move ? {
       move: { id: r.move.id, action: r.move.action, label: r.move.label, from: r.move.from, target: r.move.target, technique: r.move.technique, gain: r.move.gain, p: r.move.p },
-      success: r.success, roll: r.roll, rationale: r.rationale || null,
+      success: r.success, roll: r.roll, rationale: r.rationale || null, cited: r.cited || null,
     } : null,
     reason: r.move ? null : (r.reason || 'no legal move'),
     missions,
@@ -117,7 +117,7 @@ export function evaluate(g, G) {
   const jewels = g.crown_jewels || []
   let result = G.result || null
   if (!result && G.cfg.mode === 'jewel') {
-    const lost = jewels.find((id) => Number((G.attacker || {})[id] || 0) >= 1)
+    const lost = jewels.find((id) => !(G.isolated || []).includes(id) && Number((G.attacker || {})[id] || 0) >= 1)
     if (lost) result = { win: false, reason: `${lost} 장악`, at: G.turn }
   }
   if (!result && G.turn >= G.cfg.turns) {

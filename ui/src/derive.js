@@ -6,6 +6,8 @@
 
 import { runStep, containmentCandidates } from './engine.js'
 import { assetName, linkName, techniqueKo } from './labels.js'
+import { legalFor } from './game.js'
+import { footholds } from './attack.js'
 
 export function num(v) { return typeof v === 'number' ? v : Number(v || 0) }
 export function pct(v) { return `${(num(v) * 100).toFixed(1)}%` }
@@ -252,4 +254,23 @@ export function kpiOf(graph, s) {
   const worst = Math.max(0, ...missions.filter((m) => m.active).map((m) => m.total))
   const level = worst <= 0 ? 0 : worst < 0.3 ? 1 : worst < 0.7 ? 2 : 3
   return { missions, compromised: { n: compromised, total: assets.length }, cuts: { n: cuts, byCause }, band: { level, label: BAND_LABELS[level] } }
+}
+
+// What the pictures draw during a wargame. Candidates are the attacker's top
+// six legal moves as the engine scores them - read from the same list the
+// panel shows, never inferred. Lateral moves become edges, self-targeted
+// moves (escalate/deny/credential) become node threats.
+export function gameOverlay(g, game) {
+  if (!game) return null
+  const top = legalFor(g, game).filter((m) => m.target).slice(0, 6)
+  const candidates = [], nodeThreats = []
+  top.forEach((m, i) => {
+    if (m.from && m.from !== m.target) candidates.push({ from: m.from, to: m.target, gain: m.gain, rank: i + 1, label: m.label })
+    else nodeThreats.push({ id: m.target, gain: m.gain, rank: i + 1, label: m.label })
+  })
+  const rec = game.history[game.history.length - 1]
+  const last = rec && rec.attacker && rec.attacker.move.target
+    ? { from: rec.attacker.move.from, to: rec.attacker.move.target, success: rec.attacker.success, turn: rec.turn }
+    : null
+  return { candidates, nodeThreats, last, isolated: game.isolated.slice(), footholds: footholds(game.attacker, game.isolated), turn: game.turn }
 }

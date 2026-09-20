@@ -99,6 +99,11 @@ describe('evaluate: jewel', () => {
     G = { ...G, turn: 2, isolated: ['TOC-SRV'], history: [] }
     expect(evaluate(g, G).result).toMatchObject({ win: true })
   })
+  it('an isolated jewel that the attacker has does not cause a loss', () => {
+    let G = startGame(g, { ...base, mode: 'jewel', turns: 8 })
+    G = { ...G, turn: 1, attacker: { 'TOC-SRV': 1 }, isolated: ['TOC-SRV'], history: [] }
+    expect(evaluate(g, G).result).toBe(null)
+  })
 })
 
 describe('staffTable', () => {

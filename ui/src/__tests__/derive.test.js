@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { eventRows, kpiOf, timeLabel, BAND_LABELS } from '../derive.js'
+import payload from '../../public/data/tacnet-01.replay.json'
+import { startGame, defend, pass, attackerTurn } from '../game.js'
+import { eventRows, kpiOf, timeLabel, BAND_LABELS, gameOverlay } from '../derive.js'
 
 const graph = {
   timeline: { t0_iso: '2026-09-10T06:00:00+09:00', horizon: 420, step: 15 },
@@ -72,5 +74,24 @@ describe('kpiOf', () => {
     const at = (v) => kpiOf(graph, { mission: { 'M-C2': v }, compromise: {}, link_outage: {} }).band.level
     expect([at(0), at(0.1), at(0.5), at(0.7)]).toEqual([0, 1, 2, 3])
     expect(BAND_LABELS).toEqual(['정상', '주의', '경계', '심각'])
+  })
+})
+
+describe('gameOverlay', () => {
+  const g = payload.graph
+  it('returns null without a game', () => expect(gameOverlay(g, null)).toBe(null))
+  it('lists lateral candidates as edges, self-targets as node threats, and marks isolated/footholds', () => {
+    let G = startGame(g, { mode: 'hold', turns: 8, t: 150, foothold: { id: 'CO2-VEH', level: 0.8 }, seed: 11, strategy: 'greedy' })
+    G = defend(g, G, { type: 'isolate', id: 'FDC-TERM' })
+    const o = gameOverlay(g, G)
+    expect(o.isolated).toEqual(['FDC-TERM'])
+    expect(o.footholds).toEqual(['CO2-VEH'])
+    expect(o.candidates.every((c) => c.from !== c.to)).toBe(true)
+    expect(o.candidates.length + o.nodeThreats.length).toBeLessThanOrEqual(6)
+    expect(o.last).toBe(null)
+    G = attackerTurn(g, G)
+    const o2 = gameOverlay(g, G)
+    expect(o2.turn).toBe(1)
+    if (G.history[0].attacker && G.history[0].attacker.move.target) expect(o2.last).toMatchObject({ turn: 0 })
   })
 })
