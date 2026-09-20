@@ -159,6 +159,7 @@ export default function App() {
   // While a game runs the clock is the game's cfg.t: the timeline is frozen
   // so the pictures and the turn loop cannot drift apart.
   const locked = mode === 'wargame' && !!game
+  const lockedLabel = game && game.phase === 'over' ? '교전 종료 · 시점 고정' : '교전 중 · 시점 고정'
 
   const phases = useMemo(() => activePhaseNames(graph, step), [graph, step])
   const when = clockOf(step).time
@@ -398,7 +399,10 @@ export default function App() {
           editor={editorRef}
           payload={payload} idx={idx} onSeekIdx={(i) => setIdx(i)}
           wargameSlot={mode === 'wargame' ? (
+            // keyed on the scenario so a switch unmounts the panel: its
+            // in-flight model call is then discarded, not written back
             <Wargame
+              key={scenarioId}
               graph={graph} payload={payload} idx={idx} game={game} onGame={setGame}
               onSeekIdx={(i) => setIdx(i)} onToast={setToast} onMode={setMode}
             />
@@ -409,7 +413,7 @@ export default function App() {
       <Timeline
         graph={graph} payload={payload} idx={idx} step={step}
         playing={playing} onPlay={() => setPlaying((p) => !p)} onSeek={onSeek}
-        speed={speed} onSpeed={setSpeed} locked={locked}
+        speed={speed} onSpeed={setSpeed} locked={locked} lockedLabel={lockedLabel}
         onStep={(d) => setIdx((i) => Math.max(0, Math.min((payload?.steps.length || 1) - 1, i + d)))}
       />
 

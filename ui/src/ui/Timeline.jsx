@@ -14,7 +14,7 @@ const PAD_R = 4
 const LANE_H = 14
 const H = 64
 
-export default function Timeline({ graph, payload, idx, step, playing, onPlay, onSeek, speed, onSpeed, onStep, locked = false }) {
+export default function Timeline({ graph, payload, idx, step, playing, onPlay, onSeek, speed, onSpeed, onStep, locked = false, lockedLabel = '교전 중 · 시점 고정' }) {
   const [w, setW] = useState(0)
   const roRef = useRef(null)
 
@@ -114,7 +114,7 @@ export default function Timeline({ graph, payload, idx, step, playing, onPlay, o
             <button key={s} type="button" disabled={locked} className={speed === s ? 'on' : ''} onClick={() => onSpeed(s)}>{s}×</button>
           ))}
         </div>
-        {locked && <span className="tl-locked">교전 중 · 시점 고정</span>}
+        {locked && <span className="tl-locked">{lockedLabel}</span>}
       </div>
 
       <div className="ribbon-wrap" ref={wrapRef}>
