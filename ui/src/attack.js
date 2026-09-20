@@ -77,19 +77,26 @@ const FOOTHOLD = 0.5     // compromise level that counts as a usable foothold
 const LATERAL_FROM = 0.7 // needed on the source host to move onward
 const DENY_FROM = 0.8    // needed on the target before it can be taken down
 
-function reachableFrom(g, state, t, fromId) {
+// 격리 자산은 공격자에게 없는 자산이다: 거점도, 경유지도, 표적도 아니다 (ADR-0026).
+// state 값은 그대로 두고(임무 수치는 compromise=1 로 따로 들어간다) 목록만 걸러낸다.
+function isoSet(isolated) {
+  return new Set(Array.isArray(isolated) ? isolated : [])
+}
+
+function reachableFrom(g, state, t, fromId, isolated = []) {
+  const iso = isoSet(isolated)
   // Reuse the propagation engine's own view of the world so the attacker and
   // the mission picture never disagree about what is connected.
   const snap = runChain(g, state, { t, causes: 'all' })
   const links = g.links || []
   const assets = g.assets || []
-  if (!links.length) return assets.map((a) => a.id).filter((id) => id !== fromId)
+  if (!links.length) return assets.map((a) => a.id).filter((id) => id !== fromId && !iso.has(id))
 
   const out = []
   for (const a of assets) {
     if (a.id === fromId) continue
-    if (snap.asset_outage[a.id]) continue
-    if (isReachable(g, snap, fromId, a.id)) out.push(a.id)
+    if (snap.asset_outage[a.id] || iso.has(a.id)) continue
+    if (isReachable(g, snap, fromId, a.id, iso)) out.push(a.id)
   }
   return out
 }
@@ -97,22 +104,23 @@ function reachableFrom(g, state, t, fromId) {
 // Mirrors engine.js reach(): transit nodes form components, terminals hang off
 // them. Kept here rather than exported from engine.js so the engine's contract
 // stays "run the chain", but the rule is the same one and the parity test
-// covers the chain that uses it.
-function isReachable(g, snap, from, to) {
+// covers the chain that uses it. An isolated asset counts as down.
+function isReachable(g, snap, from, to, iso = new Set()) {
   if (from === to) return true
+  const down = (id) => !!snap.asset_outage[id] || iso.has(id)
   const links = (g.links || []).filter((l) => !snap.link_outage[l.id])
   const transit = {}
   for (const a of g.assets || []) transit[a.id] = a.transit === false ? false : true
   const adj = {}
   for (const a of g.assets || []) adj[a.id] = []
   for (const l of links) {
-    if (snap.asset_outage[l.a] || snap.asset_outage[l.b]) continue
+    if (down(l.a) || down(l.b)) continue
     adj[l.a].push(l.b)
     adj[l.b].push(l.a)
   }
   if ((adj[from] || []).includes(to)) return true
   const seen = new Set([from])
-  const stack = (adj[from] || []).filter((m) => transit[m] && !snap.asset_outage[m])
+  const stack = (adj[from] || []).filter((m) => transit[m] && !down(m))
   for (const m of stack) seen.add(m)
   while (stack.length) {
     const n = stack.pop()
@@ -121,29 +129,30 @@ function isReachable(g, snap, from, to) {
       if (seen.has(m)) continue
       seen.add(m)
       if (m === to) return true
-      if (transit[m] && !snap.asset_outage[m]) stack.push(m)
+      if (transit[m] && !down(m)) stack.push(m)
     }
   }
   return seen.has(to)
 }
 
-export function footholds(state) {
-  return Object.keys(state || {}).filter((k) => Number(state[k]) >= FOOTHOLD)
+export function footholds(state, isolated = []) {
+  const iso = isoSet(isolated)
+  return Object.keys(state || {}).filter((k) => Number(state[k]) >= FOOTHOLD && !iso.has(k))
 }
 
 // What the attacker can see: its footholds plus everything currently reachable
 // from them. Computed from the live graph, so an asset someone added a minute
 // ago is in here without anyone editing a script (ADR-0019 section 2).
-export function attackerView(g, state, t) {
-  const own = footholds(state)
+export function attackerView(g, state, t, opts = {}) {
+  const own = footholds(state, opts.isolated)
   const seen = new Set(own)
-  for (const f of own) for (const id of reachableFrom(g, state, t, f)) seen.add(id)
+  for (const f of own) for (const id of reachableFrom(g, state, t, f, opts.isolated)) seen.add(id)
   return { footholds: own, visible: [...seen] }
 }
 
-export function legalMoves(g, state, t) {
+export function legalMoves(g, state, t, opts = {}) {
   const moves = []
-  const view = attackerView(g, state, t)
+  const view = attackerView(g, state, t, opts)
   const lvl = (id) => Number((state || {})[id] || 0)
 
   if (!view.footholds.length) return moves
@@ -155,7 +164,7 @@ export function legalMoves(g, state, t) {
       moves.push({ id: `credential_access:${f}`, action: 'credential_access', target: f, from: f, ...meta('credential_access') })
     }
     if (lvl(f) >= LATERAL_FROM) {
-      for (const to of reachableFrom(g, state, t, f)) {
+      for (const to of reachableFrom(g, state, t, f, opts.isolated)) {
         if (lvl(to) >= FOOTHOLD) continue
         moves.push({ id: `lateral_move:${f}->${to}`, action: 'lateral_move', from: f, target: to, ...meta('lateral_move') })
       }
@@ -235,7 +244,12 @@ export function playTurn(g, state, t, opts = {}) {
   const turn = Number(opts.turn || 0)
   const chooser = opts.chooser || greedyChooser
 
-  const legal = scoreMoves(g, state, t, legalMoves(g, state, t), method)
+  const isolated = opts.isolated || []
+  // scoring sees the isolated assets as already down (compromise 1) so a move's
+  // gain is measured against the picture the defender is looking at
+  const scoreState = { ...(state || {}) }
+  for (const id of isolated) scoreState[id] = 1
+  const legal = scoreMoves(g, scoreState, t, legalMoves(g, state, t, { isolated }), method)
   if (!legal.length) {
     return { turn, t, move: null, reason: 'no legal move', success: false, state, legal }
   }
