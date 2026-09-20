@@ -136,6 +136,7 @@ export default function App() {
           link.current.delete('t')
         }
         setIdx(start)
+        setGame(null)   // a game belongs to the graph it started on
         setSelectedData(null)
         setHistVer((v) => v + 1)
       } catch (e) {
@@ -155,18 +156,21 @@ export default function App() {
     [payload, graph, idx, edited, wargameState]
   )
   const overlay = useMemo(() => (mode === 'wargame' && game && graph ? gameOverlay(graph, game) : null), [mode, game, graph])
+  // While a game runs the clock is the game's cfg.t: the timeline is frozen
+  // so the pictures and the turn loop cannot drift apart.
+  const locked = mode === 'wargame' && !!game
 
   const phases = useMemo(() => activePhaseNames(graph, step), [graph, step])
   const when = clockOf(step).time
 
   // --- playback ---------------------------------------------------------
   useEffect(() => {
-    if (!playing || !payload) return
+    if (!playing || !payload || locked) return
     const id = setInterval(() => {
       setIdx((i) => (i + 1 >= payload.steps.length ? 0 : i + 1))
     }, 900 / speed)
     return () => clearInterval(id)
-  }, [playing, payload, speed])
+  }, [playing, payload, speed, locked])
 
   // --- edit bookkeeping -------------------------------------------------
   const commitEdit = useCallback(() => {
@@ -236,9 +240,9 @@ export default function App() {
     const onKey = (e) => {
       const typing = /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)
       if (typing) return
-      if (e.code === 'Space') { e.preventDefault(); setPlaying((p) => !p); return }
-      if (e.key === 'ArrowRight') { setIdx((i) => Math.min((payload?.steps.length || 1) - 1, i + 1)); return }
-      if (e.key === 'ArrowLeft') { setIdx((i) => Math.max(0, i - 1)); return }
+      if (e.code === 'Space') { e.preventDefault(); if (!locked) setPlaying((p) => !p); return }
+      if (e.key === 'ArrowRight') { if (!locked) setIdx((i) => Math.min((payload?.steps.length || 1) - 1, i + 1)); return }
+      if (e.key === 'ArrowLeft') { if (!locked) setIdx((i) => Math.max(0, i - 1)); return }
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
         e.preventDefault()
         if (e.shiftKey) redo(); else undo()
@@ -246,7 +250,7 @@ export default function App() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [payload, undo, redo])
+  }, [payload, undo, redo, locked])
 
   // --- selection --------------------------------------------------------
   const onSelect = useCallback((id) => {
@@ -405,7 +409,7 @@ export default function App() {
       <Timeline
         graph={graph} payload={payload} idx={idx} step={step}
         playing={playing} onPlay={() => setPlaying((p) => !p)} onSeek={onSeek}
-        speed={speed} onSpeed={setSpeed}
+        speed={speed} onSpeed={setSpeed} locked={locked}
         onStep={(d) => setIdx((i) => Math.max(0, Math.min((payload?.steps.length || 1) - 1, i + d)))}
       />
 

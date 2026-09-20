@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { config, probeLlm } from '../config.js'
 import { assetName, techniqueLine } from '../labels.js'
 import { startGame, defaultFoothold, legalFor, defend, pass, attackerTurn, staffTable, compromiseOf } from '../game.js'
@@ -83,7 +83,7 @@ function CitedText({ text, facts, onToast }) {
   const map = new Map(facts.map((f) => [f.id, f.text]))
   const sentences = String(text).split(/(?<=[.!?。])\s+|(?<=\])\s+/).filter((x) => x.trim())
   return sentences.map((raw, i) => {
-    const cites = [...raw.matchAll(/\[(F\d+)\]/g)].map((m) => m[1])
+    const cites = [...new Set([...raw.matchAll(/\[(F\d+)\]/g)].map((m) => m[1]))]
     const body = raw.replace(/\[(F\d+)\]/g, '').replace(/\s+([.,])/g, '$1').trim()
     return (
       <p className="brief-s" key={i}>{body}{' '}
@@ -158,7 +158,12 @@ export default function Wargame({ graph, payload, idx, game, onGame, onSeekIdx, 
   const [probe, setProbe] = useState(null)
   const [busy, setBusy] = useState(false)
   const [iso, setIso] = useState('')
+  // Generation guard for the one await in here (the LLM attacker). A game
+  // that was quit, restarted or left (mode switch) while the model was
+  // thinking must not be written back over whatever replaced it.
+  const gen = useRef(0)
   useEffect(() => { let alive = true; probeLlm().then((p) => { if (alive) setProbe(p) }); return () => { alive = false } }, [])
+  useEffect(() => () => { gen.current++ }, [])
   const llmOk = !!(probe && probe.ok)
   const llmNote = probe && !probe.ok ? `${(config().llm || {}).unavailable_note || ''} ${probe.why && probe.why !== 'disabled' ? `(${probe.why})` : ''}` : ''
 
@@ -173,23 +178,30 @@ export default function Wargame({ graph, payload, idx, game, onGame, onSeekIdx, 
 
   if (!graph || !payload) return null
 
-  const start = (cfg, stepIdx) => { onSeekIdx(stepIdx); onGame(startGame(graph, cfg)) }
+  const start = (cfg, stepIdx) => { gen.current++; onSeekIdx(stepIdx); onGame(startGame(graph, cfg)) }
+  const quit = () => { gen.current++; onGame(null) }
   const isolate = (id) => { if (!id) return; onGame(defend(graph, game, { type: 'isolate', id })); setIso('') }
   const skip = () => onGame(pass(game))
   const attack = async () => {
     if (!game || game.phase !== 'attack' || busy) return
     setBusy(true)
+    const my = gen.current
     try {
       let chooser
-      if (game.cfg.strategy === 'llm') {
+      // With no legal move there is nothing to ask the model; the engine
+      // records "no legal move" itself and the turn still passes.
+      if (game.cfg.strategy === 'llm' && legal.length > 0) {
         const pick = await (await getLlmChooser(game.cfg.seed))(legal, { g: graph, state: game.attacker, t: game.cfg.t, turn: game.turn })
+        if (my !== gen.current) return
         chooser = () => pick
       }
       onGame(attackerTurn(graph, game, chooser))
     } catch (e) { onToast(`공격자 모델 호출 실패: ${String(e && e.message || e)}`) } finally { setBusy(false) }
   }
 
-  if (!game) return <StartCard graph={graph} payload={payload} idx={idx} llmOk={llmOk} llmNote={llmNote} onStart={start} />
+  // keyed on the scenario: the card's defaults are initial state, and a
+  // scenario switch while the card is up must not keep the old ones
+  if (!game) return <StartCard key={payload.scenario_id || ''} graph={graph} payload={payload} idx={idx} llmOk={llmOk} llmNote={llmNote} onStart={start} />
   if (game.phase === 'over') {
     return <Aar graph={graph} game={game} onAgain={() => onGame(startGame(graph, game.cfg))} onNewSeed={() => onGame(startGame(graph, { ...game.cfg, seed: game.cfg.seed + 1 }))} onObserve={() => onMode('observe')} />
   }
@@ -204,7 +216,7 @@ export default function Wargame({ graph, payload, idx, game, onGame, onSeekIdx, 
         <span className="wg-turn">턴 {game.turn + 1}/{game.cfg.turns}</span>
         <span className={`wg-phase is-${game.phase}`}>{game.phase === 'defend' ? '방어 페이즈' : '공격 페이즈'}</span>
         <span className="wg-foot-count">점수 {game.cfg.mode === 'hold' ? game.score.total.toFixed(2) : game.score.total} · P1 {pct(p1)}</span>
-        <button type="button" className="wg-reset" onClick={() => onGame(null)}>그만두기</button>
+        <button type="button" className="wg-reset" disabled={busy} onClick={quit}>그만두기</button>
       </div>
 
       {game.phase === 'defend' && <StaffCard graph={graph} game={game} rows={rows} p1={p1} llmOk={llmOk} onIsolate={isolate} onToast={onToast} />}

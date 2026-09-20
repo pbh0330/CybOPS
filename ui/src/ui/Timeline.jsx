@@ -14,7 +14,7 @@ const PAD_R = 4
 const LANE_H = 14
 const H = 64
 
-export default function Timeline({ graph, payload, idx, step, playing, onPlay, onSeek, speed, onSpeed, onStep }) {
+export default function Timeline({ graph, payload, idx, step, playing, onPlay, onSeek, speed, onSpeed, onStep, locked = false }) {
   const [w, setW] = useState(0)
   const roRef = useRef(null)
 
@@ -95,24 +95,26 @@ export default function Timeline({ graph, payload, idx, step, playing, onPlay, o
   const clock = clockOf(step)
 
   const seek = (evt) => {
+    if (locked) return
     const r = evt.currentTarget.getBoundingClientRect()
     const frac = Math.min(1, Math.max(0, (evt.clientX - r.left - PAD_L) / (r.width - PAD_L - PAD_R)))
     onSeek(frac * horizon)
   }
 
   return (
-    <footer className="timeline">
+    <footer className={`timeline${locked ? ' is-locked' : ''}`}>
       <div className="transport">
-        <button type="button" className="step-btn" onClick={() => onStep(-1)} title="이전 (←)">◀</button>
-        <button type="button" className="play-btn" onClick={onPlay} title="재생 / 정지 (Space)">
+        <button type="button" className="step-btn" disabled={locked} onClick={() => onStep(-1)} title="이전 (←)">◀</button>
+        <button type="button" className="play-btn" disabled={locked} onClick={onPlay} title="재생 / 정지 (Space)">
           {playing ? '❚❚' : '▶'}
         </button>
-        <button type="button" className="step-btn" onClick={() => onStep(1)} title="다음 (→)">▶</button>
+        <button type="button" className="step-btn" disabled={locked} onClick={() => onStep(1)} title="다음 (→)">▶</button>
         <div className="seg speed" role="group" aria-label="배속">
           {[1, 4, 16].map((s) => (
-            <button key={s} type="button" className={speed === s ? 'on' : ''} onClick={() => onSpeed(s)}>{s}×</button>
+            <button key={s} type="button" disabled={locked} className={speed === s ? 'on' : ''} onClick={() => onSpeed(s)}>{s}×</button>
           ))}
         </div>
+        {locked && <span className="tl-locked">교전 중 · 시점 고정</span>}
       </div>
 
       <div className="ribbon-wrap" ref={wrapRef}>
