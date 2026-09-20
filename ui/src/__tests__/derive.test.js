@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import payload from '../../public/data/tacnet-01.replay.json'
+import replay from '../../public/data/tacnet-01.replay.json'
 import { startGame, defend, pass, attackerTurn } from '../game.js'
 import { eventRows, kpiOf, timeLabel, BAND_LABELS, gameOverlay } from '../derive.js'
 
@@ -78,7 +78,7 @@ describe('kpiOf', () => {
 })
 
 describe('gameOverlay', () => {
-  const g = payload.graph
+  const g = replay.graph
   it('returns null without a game', () => expect(gameOverlay(g, null)).toBe(null))
   it('lists lateral candidates as edges, self-targets as node threats, and marks isolated/footholds', () => {
     let G = startGame(g, { mode: 'hold', turns: 8, t: 150, foothold: { id: 'CO2-VEH', level: 0.8 }, seed: 11, strategy: 'greedy' })
