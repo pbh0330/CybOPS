@@ -2,8 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { loadConfig } from './config.js'
 import { loadSymbology, unmappedTypes } from './symbols.js'
 import { createEditor } from './editor.js'
-import { createWargame } from './wargame.js'
-import { computeStep, activePhaseNames, clockOf } from './derive.js'
+import { compromiseOf } from './game.js'
+import { computeStep, activePhaseNames, clockOf, gameOverlay } from './derive.js'
 import Topbar from './ui/Topbar.jsx'
 import BoardToolbar from './ui/BoardToolbar.jsx'
 import GraphCanvas from './ui/GraphCanvas.jsx'
@@ -12,12 +12,13 @@ import MapPane from './ui/MapPane.jsx'
 import Rail from './ui/Rail.jsx'
 import Timeline from './ui/Timeline.jsx'
 import Onboard from './ui/Onboard.jsx'
+import Wargame from './ui/Wargame.jsx'
 
 const SCENARIOS = ['tacnet-01', 'defnet-01']
 const HISTORY_MAX = 60
 
-// Mounts an imperative module (editor.js, wargame.js) into the React tree.
-// Those two own their own DOM; React owns the box they live in.
+// Mounts an imperative module (editor.js) into the React tree. It owns its
+// own DOM; React owns the box it lives in.
 function Mount({ make, deps = [], className }) {
   const ref = useRef(null)
   useEffect(() => {
@@ -50,14 +51,14 @@ export default function App() {
   const [edited, setEdited] = useState(false)
   const [tool, setTool] = useState('select')
   const [histVer, setHistVer] = useState(0)
-  const [wgVer, setWgVer] = useState(0)
+  // the wargame is a value (game.js); App owns it so the pictures can read it
+  const [game, setGame] = useState(null)
   const [onboard, setOnboard] = useState(false)
   const [toast, setToast] = useState(null)
   const [geoCam, setGeoCam] = useState({ mode: '2d', az: 35, pitch: 55, zScale: 12, terrain: true })
 
   const cyRef = useRef(null)
   const editorRef = useRef(null)
-  const wargameRef = useRef(null)
   const graphRef = useRef(null)
   const hist = useRef({ past: [], future: [], last: null })
 
@@ -145,16 +146,15 @@ export default function App() {
   }, [scenarioId, storageKey])
 
   // --- derived ----------------------------------------------------------
-  const wargameState = wargameRef.current && wargameRef.current.isActive()
-    ? wargameRef.current.getState()
-    : null
-
+  // A running game replaces the replay's compromise state. If the graph is
+  // edited mid-game the game is kept: the engine recomputes on the new graph
+  // (ADR-0019).
+  const wargameState = useMemo(() => (mode === 'wargame' && game ? compromiseOf(game) : null), [mode, game])
   const step = useMemo(
     () => computeStep({ payload, graph, idx, edited, wargameState }),
-    // wgVer is the signal that the turn loop moved; wargameState is read fresh
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [payload, graph, idx, edited, wgVer]
+    [payload, graph, idx, edited, wargameState]
   )
+  const overlay = useMemo(() => (mode === 'wargame' && game && graph ? gameOverlay(graph, game) : null), [mode, game, graph])
 
   const phases = useMemo(() => activePhaseNames(graph, step), [graph, step])
   const when = clockOf(step).time
@@ -302,10 +302,7 @@ export default function App() {
 
   // --- mode switching ---------------------------------------------------
   useEffect(() => {
-    if (mode !== 'wargame' && wargameRef.current) {
-      wargameRef.current.stop?.()
-      setWgVer((v) => v + 1)
-    }
+    if (mode !== 'wargame') setGame(null)
     if (mode === 'edit') setTool('select')
   }, [mode])
 
@@ -372,12 +369,13 @@ export default function App() {
             <GraphCanvas
               graph={graph} step={step} steps={payload?.steps} idx={idx} view={view} labels={labels}
               hidden={isGeo} cyRef={cyRef} onSelect={onSelect} onTap={onTap}
-              selected={selectedData?.id || null}
+              selected={selectedData?.id || null} overlay={overlay}
             />
             {hasGeoref ? (
               <MapPane
                 graph={graph} step={step} steps={payload?.steps} idx={idx}
                 selected={selectedData?.id || null} onSelect={onSelect} hidden={!isGeo}
+                overlay={overlay}
               />
             ) : (
               <GeoPane
@@ -396,26 +394,9 @@ export default function App() {
           editor={editorRef}
           payload={payload} idx={idx} onSeekIdx={(i) => setIdx(i)}
           wargameSlot={mode === 'wargame' ? (
-            <Mount
-              deps={[graph, mode]}
-              make={(el) => {
-                const wg = createWargame({
-                  mountEl: el,
-                  getGraph: () => graphRef.current,
-                  getT: () => {
-                    const b = payload?.steps[idx]
-                    return b && b.t !== undefined && b.t !== null ? Number(b.t) : -1
-                  },
-                  getMethod: () => payload?.method || 'weighted',
-                  onChange: () => setWgVer((v) => v + 1),
-                })
-                wargameRef.current = wg
-                // start from whatever the replay says is compromised right
-                // now, so the wargame begins in the situation the operator was
-                // just looking at
-                wg.start((payload?.steps[idx] || {}).compromise || {})
-                return () => { wg.stop?.(); wargameRef.current = null }
-              }}
+            <Wargame
+              graph={graph} payload={payload} idx={idx} game={game} onGame={setGame}
+              onSeekIdx={(i) => setIdx(i)} onToast={setToast} onMode={setMode}
             />
           ) : null}
         />

@@ -200,7 +200,7 @@ body .geo-canvas:active { cursor: grabbing; }
 .wg-log-what { color: var(--fg-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .wg-log-tag { margin-left: auto; font-size: 10px; color: var(--fg-dim); }
 .wg-log-row.is-hit .wg-log-tag { color: var(--attack); }
-.wg-log-row.is-def .wg-log-tag { color: var(--mobility); }
+.wg-log-row.is-def .wg-log-tag { color: var(--fg); }
 
 .wg-llm-note {
   border: 1px solid rgba(255,176,32,.3); border-left: 3px solid var(--unknown);
@@ -208,6 +208,34 @@ body .geo-canvas:active { cursor: grabbing; }
   font-size: 11.5px; color: var(--unknown); background: rgba(255,176,32,.06);
 }
 .wg-llm-note span { display: block; color: var(--fg-dim); margin-top: 3px; font-size: 11px; line-height: 1.5; }
+
+/* start card, staff card, AAR (Wargame.jsx) */
+.wg-start .wg-pick { width: 100%; margin-bottom: 8px; }
+.wg-start select, .wg-start input { width: 100%; }
+.wg-row2 { display: flex; gap: 8px; }
+.wg-row2 .wg-pick { flex: 1; min-width: 0; }
+.wg-phase { font-size: 10.5px; padding: 1px 7px; border-radius: 3px; border: 1px solid var(--line); color: var(--fg-dim); }
+.wg-phase.is-attack { color: var(--fg); border-color: var(--fg-2); }
+.wg-staff { border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; margin-bottom: 10px; }
+.wg-staff-head { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+.wg-staff-ask { margin-left: auto; font-size: 10.5px; padding: 2px 8px; }
+.wg-staff-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; border-top: 1px solid var(--line-soft); }
+.wg-staff-rank { width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-size: 10.5px; background: var(--bg-3); color: var(--fg); flex: none; }
+.wg-staff-what { flex: 1; min-width: 0; font-size: 12px; color: var(--fg); }
+.wg-staff-what small { display: block; font-size: 10.5px; color: var(--fg-dim); }
+.wg-staff-text { margin-top: 8px; }
+.wg-aar-verdict { font-size: 18px; font-weight: 700; padding: 10px 12px; border-radius: 6px; background: var(--bg-3); margin-bottom: 8px; }
+.wg-aar-verdict span { display: block; font-size: 11px; font-weight: 400; color: var(--fg-dim); margin-top: 2px; }
+.wg-aar-verdict.is-loss { border-left: 3px solid var(--attack); }
+.wg-aar-verdict.is-win { border-left: 3px solid var(--ok); }
+.wg-aar-score { font-size: 12px; color: var(--fg-2); margin-bottom: 8px; }
+.wg-aar-score b { font-size: 20px; font-family: "IBM Plex Mono", ui-monospace, monospace; margin: 0 6px; color: var(--fg); }
+.wg-aar-score small { display: block; color: var(--fg-dim); }
+.wg-aar-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.wg-aar-table th, .wg-aar-table td { text-align: left; padding: 3px 4px; border-bottom: 1px solid var(--line-soft); }
+.wg-aar-table th { color: var(--fg-dim); font-weight: 500; }
+.wg-aar-table td.is-hit { color: var(--attack); }
+.wg-aar-btns { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
 
 /* Facility layout (defnet-01). Assets indoors, so the map draws buildings
    rather than terrain: what matters is which block a redundant pair sits in. */
