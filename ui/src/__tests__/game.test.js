@@ -67,6 +67,22 @@ describe('turns and reproducibility', () => {
     }
     expect(play().history).toEqual(play().history)
   })
+  it('a full game reaches over through attackerTurn alone, with one history row per turn', () => {
+    let G = startGame(g, { ...base, turns: 3 })
+    for (let i = 0; i < 3; i++) G = attackerTurn(g, pass(G))
+    expect(G.phase).toBe('over')
+    expect(G.history.length).toBe(3)
+    expect(G.result).not.toBe(null)
+    expect(G.result.at).toBe(3)
+  })
+  it('a turn with no legal attacker move still advances and records why', () => {
+    let G = defend(g, startGame(g, base), { type: 'isolate', id: 'CO2-VEH' })
+    G = attackerTurn(g, G)
+    expect(G.turn).toBe(1)
+    expect(G.history[0].attacker).toBe(null)
+    expect(G.history[0].reason).toBeTruthy()
+    expect(G.phase).toBe('defend')
+  })
 })
 
 describe('evaluate: hold', () => {

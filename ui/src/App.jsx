@@ -172,6 +172,8 @@ export default function App() {
     }, 900 / speed)
     return () => clearInterval(id)
   }, [playing, payload, speed, locked])
+  // a game freezes the clock; the play button must not stay lit behind it
+  useEffect(() => { if (locked) setPlaying(false) }, [locked])
 
   // --- edit bookkeeping -------------------------------------------------
   const commitEdit = useCallback(() => {
@@ -244,6 +246,8 @@ export default function App() {
       if (e.code === 'Space') { e.preventDefault(); if (!locked) setPlaying((p) => !p); return }
       if (e.key === 'ArrowRight') { if (!locked) setIdx((i) => Math.min((payload?.steps.length || 1) - 1, i + 1)); return }
       if (e.key === 'ArrowLeft') { if (!locked) setIdx((i) => Math.max(0, i - 1)); return }
+      // undo/redo rewrite the graph a running game was started on
+      if (mode === 'wargame' && game) return
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
         e.preventDefault()
         if (e.shiftKey) redo(); else undo()
@@ -251,7 +255,7 @@ export default function App() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [payload, undo, redo, locked])
+  }, [payload, undo, redo, locked, mode, game])
 
   // --- selection --------------------------------------------------------
   const onSelect = useCallback((id) => {

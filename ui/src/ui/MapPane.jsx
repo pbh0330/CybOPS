@@ -231,7 +231,9 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
     if (!map || !ready || !graph || !step) return
     map.getSource('links').setData(linkFeatures(graph, step, t, georef, overlay ? overlay.isolated : []))
     map.getSource('tracks').setData(trackFeatures(graph, t, georef))
-    const { hops } = attackHops(steps || [], idx || 0)
+    // the authored chain is hidden while a game runs: v2 starts from one
+    // chosen foothold, so the scripted arrows would contradict the game
+    const { hops } = overlay ? { hops: [] } : attackHops(steps || [], idx || 0)
     map.getSource('attack').setData(attackArcFeatures(graph, hops, t, georef))
     if (overlay) {
       // attackArcFeatures drops hops whose ends are unplaced, so the rank has

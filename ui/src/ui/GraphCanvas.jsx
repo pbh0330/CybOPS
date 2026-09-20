@@ -172,7 +172,9 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
     const cy = cyRef.current
     if (!cy) return
     cy.edges('.attack-hop').remove()
-    const { hops } = attackHops(steps || [], idx || 0)
+    // during a game the scripted chain is not the game's state (v2 starts
+    // from one chosen foothold), so the authored arrows would contradict it
+    const { hops } = overlay ? { hops: [] } : attackHops(steps || [], idx || 0)
     const els = []
     for (const h of hops) {
       if (!cy.$id(h.from).length || !cy.$id(h.to).length) continue
@@ -188,7 +190,7 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
     }
     if (els.length) cy.add(els)
     setHopCount(els.length)
-  }, [steps, idx, graph, cyReady])
+  }, [steps, idx, graph, cyReady, overlay])
 
   // --- contribution path ---------------------------------------------------
   // Structural edges point downward (mission -> task -> service -> asset), so

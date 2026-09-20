@@ -30,8 +30,12 @@ async function getLlmChooser(seed) {
 function StartCard({ graph, payload, idx, llmOk, llmNote, onStart }) {
   const steps = payload?.steps || []
   const foot = defaultFoothold(payload)
+  // the select lists graph.assets; with an edited graph the scenario's
+  // default foothold may not be in it, and a foothold outside the graph
+  // would start a game the engine cannot play
+  const inGraph = (id) => (graph.assets || []).some((a) => a.id === id)
   const [stepIdx, setStepIdx] = useState(idx)
-  const [footId, setFootId] = useState(foot?.id || (graph.assets?.[0]?.id ?? ''))
+  const [footId, setFootId] = useState(foot && inGraph(foot.id) ? foot.id : (graph.assets?.[0]?.id ?? ''))
   const [level, setLevel] = useState(foot?.level >= 0.8 ? 0.8 : 0.5)
   const [mode, setMode] = useState('hold')
   const [turns, setTurns] = useState(8)
@@ -110,17 +114,22 @@ function StaffCard({ graph, game, rows, p1, llmOk, onIsolate, onToast }) {
     } catch (e) { setNarr({ error: String(e && e.message || e) }) } finally { setBusy(false) }
   }
   const modelShort = String((config().llm || {}).model || 'llm').split(':')[0]
+  // staffTable has no "do nothing" row: when the best isolation does not
+  // pay for itself the recommendation is to pass, and the rows stay as
+  // information only
+  const none = !rows.length || rows[0].net <= 0
   return (
     <div className="wg-staff">
       <div className="wg-staff-head">참모 <em className="ref">{llmOk && narr && narr.text ? `규칙 기반 + ${modelShort}` : '규칙 기반'}</em>
         {llmOk && game.phase === 'defend' && <button type="button" className="wg-staff-ask" disabled={busy} onClick={ask}>{busy ? '문장 생성 중' : '모델에게 읽게 하기'}</button>}
       </div>
+      {none && <div className="wg-staff-none">생략 권고 - 지금 막을 수 있는 수가 없거나 격리 비용이 차단 이득보다 크다</div>}
       {rows.slice(0, 3).map((r) => (
         <div className="wg-staff-row" key={r.id}>
           <span className="wg-staff-rank">{r.rank}</span>
           <span className="wg-staff-what">{assetName(graph, r.id).ko} 격리<em className="ref">{r.id}</em>
             <small>비용 {pp(r.cost)} · 막는 수 {r.blocks} · 최대 차단 {pct(r.gainBlocked)}</small></span>
-          <button type="button" className="req-btn" disabled={game.phase !== 'defend'} onClick={() => onIsolate(r.id)}>이 행동 선택</button>
+          <button type="button" className="req-btn" disabled={none || game.phase !== 'defend'} onClick={() => onIsolate(r.id)}>{none ? '참고 (순이득 ≤ 0)' : '이 행동 선택'}</button>
         </div>
       ))}
       {narr && narr.text && <div className="wg-staff-text"><CitedText text={narr.text} facts={facts} onToast={onToast} /><span className="brief-meta">{narr.ms} ms · 표를 읽은 것이지 표를 만든 것이 아니다</span></div>}
