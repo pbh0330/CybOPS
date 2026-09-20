@@ -73,7 +73,7 @@ function StartCard({ graph, payload, idx, llmOk, llmNote, onStart }) {
       </div>
       {!llmOk && llmNote && <div className="wg-llm-note">LLM 공격자 사용 불가<span>{llmNote}</span></div>}
       <p className="rail-caption">{mode === 'hold' ? `${turns}턴 동안 P1 임무 저하도를 50% 미만으로 지키면 승. 점수는 턴별 가중 저하도의 합(낮을수록 좋음).` : `${turns}턴 동안 crown jewel 이 장악되지 않으면 승. 점수 = 버틴 턴×100 − 격리 비용.`}</p>
-      <button type="button" className="wg-go" onClick={() => onStart({ mode, turns, t, foothold: { id: footId, level }, seed, strategy, method: 'weighted' }, stepIdx)}>시작</button>
+      <button type="button" className="wg-start-go" onClick={() => onStart({ mode, turns, t, foothold: { id: footId, level }, seed, strategy, method: 'weighted' }, stepIdx)}>시작</button>
     </div>
   )
 }

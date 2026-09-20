@@ -17,7 +17,7 @@ const SYSTEM = [
 
 export function staffFacts(g, G, rows, p1) {
   const name = (id) => { const a = (g.assets || []).find((x) => x.id === id); return a ? `${a.site || id}(${id})` : id }
-  const facts = [{ id: 'F1', text: `턴 ${G.turn}/${G.cfg.turns}, 모드 ${G.cfg.mode}, 현재 P1 임무 저하도 ${(p1 * 100).toFixed(1)}%` }]
+  const facts = [{ id: 'F1', text: `턴 ${G.turn + 1}/${G.cfg.turns}, 모드 ${G.cfg.mode}, 현재 P1 임무 저하도 ${(p1 * 100).toFixed(1)}%` }]
   rows.slice(0, 5).forEach((r, i) => {
     facts.push({ id: `F${i + 2}`, text: `${name(r.id)} 격리: 임무 비용 ${r.cost >= 0 ? '+' : ''}${(r.cost * 100).toFixed(1)}%p, 막는 공격 수 ${r.blocks}개, 차단하는 최대 이득 ${(r.gainBlocked * 100).toFixed(1)}%, 순위 ${r.rank}` })
   })

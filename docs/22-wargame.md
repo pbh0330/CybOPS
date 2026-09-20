@@ -1,8 +1,14 @@
-# 교전 모드 - 규칙, 참모, 화면, 재현
+# 22. 교전 모드 - 규칙, 참모, 화면, 재현
 
-근거는 ADR-0026(교전 규칙)과 ADR-0019(공격자 엔진). 설계 논의는
+**근거**: ADR-0026(교전 규칙), ADR-0019(공격자 엔진), ADR-0003/0004(모델은 상태를 정하지
+않고 실행 경로는 없다)
+**상태**: 구현 완료(2026-09-20, 브랜치 `ui/wargame-v2`). 설계 논의는
 `docs/superpowers/specs/2026-09-20-wargame-v2-design.md`, 구현 결정은
-`docs/design/decisions.md` "2026-09-20" 절. 코드는 `ui/src/game.js`(게임 코어, 순수 함수),
+`docs/design/decisions.md` "2026-09-20" 절.
+
+---
+
+코드는 `ui/src/game.js`(게임 코어, 순수 함수),
 `ui/src/attack.js`(공격자 엔진), `ui/src/ui/Wargame.jsx`(패널), `ui/src/staff-llm.mjs`(참모
 문장), `ui/src/derive.js` `gameOverlay`(그림에 올릴 파생값).
 
@@ -17,7 +23,7 @@
 |---|---|---|
 | 시작 조건 | 시점 `t`(replay step), 초기 거점(자산 + 수준 0.5/0.8), 모드(hold/jewel), 턴 수(4/8/12), 공격자(greedy/random/LLM), 시드 | `startGame(g, cfg)` |
 | 턴 순서 | 방어 페이즈(격리 1회 또는 생략) → 공격 페이즈(엔진이 수를 고르고 판정) → 평가. `turns` 회 반복 | `defend` / `pass` → `attackerTurn` → `evaluate` |
-| 격리 - 임무 쪽 | 격리 자산은 `compromise = 1`(미가용)로 엔진에 들어간다. 대응 탭의 what-if 와 같은 산식이라 비용이 같은 숫자로 나온다 | `compromiseOf(G)`, `isolationCost` |
+| 격리 - 임무 쪽 | 격리 자산은 `compromise = 1`(미가용)로 엔진에 들어간다. 대응 탭과 같은 엔진 what-if 를 쓰되, 게임의 비용은 임무 전체의 **우선순위 가중합**(Σ delta / priority)이고 대응 탭은 **가장 나빠지는 임무 하나의 delta** 를 보인다. 다른 임무의 delta 가 0 이 아니면 두 숫자는 다르다 | `compromiseOf(G)`, `isolationCost` |
 | 격리 - 공격자 쪽 | 격리 자산은 공격자에게 **없는 자산**이다. 거점(`footholds`)·경유(`reachableFrom`)·표적(`legalMoves`) 전부에서 빠진다 | `attack.js` `opts.isolated` |
 | 격리 횟수 | 턴당 1회, 영구. 되돌리는 행동은 없다 | `defend` 가 `phase === 'defend'` 에서만 동작 |
 | 판정 | 합법수마다 성공 확률 `p`(정찰 0.95, 자격증명 탈취 0.7, 측면 이동 0.6, 권한 상승 0.65, 서비스 거부 0.8). `roll = rng(seed ^ hash(turn|move.id))`, `roll < p` 이면 성공 | `playTurn` |
@@ -34,7 +40,8 @@
 **격리 자산의 그림.** 엔진은 격리 자산을 미가용(침해 1)로 보지만 그것은 방어자의 표시이지
 적의 효과가 아니다(ADR-0012). 그래서 그래프에서는 붉은 침해 칠 대신 무채 이중선 테두리,
 지도에서는 `outage` 색 마커에 `is-isolated` 이중 링으로 그리고, 상단 띠의 "침해 자산" 칸은
-격리 수를 빼고 센 뒤 `격리 N` 을 따로 붙인다.
+격리 수를 빼고 센 뒤 `격리 N` 을 따로 붙인다. 즉 침해 자산 칸은 "침해이면서 격리 안 된
+자산" 의 수다.
 
 ## 2. 참모
 
@@ -46,7 +53,7 @@
 
 | 열 | 뜻 | 계산 |
 |---|---|---|
-| `cost` | 격리했을 때 임무가 얼마나 더 나빠지는가 | `weightedOf(격리 후) − weightedOf(격리 전)`. 대응 탭 what-if 와 같은 값 |
+| `cost` | 격리했을 때 임무가 얼마나 더 나빠지는가 | `weightedOf(격리 후) − weightedOf(격리 전)`, 즉 `Σ_missions delta / priority`. 같은 엔진 what-if(격리 = compromise 1)지만 대응 탭은 가장 나빠지는 임무 하나의 delta 를 보이므로 두 값은 다를 수 있다 |
 | `blocks` | 공격자의 현재 합법수 중 몇 개가 사라지는가 | `legalMoves(isolated ∪ {id})` 에 없는 수의 개수 |
 | `gainBlocked` | 사라지는 수 가운데 가장 큰 예상 이득 | `max(gain)` of 사라지는 수 |
 | `net` | 순이익 | `gainBlocked − cost` |
@@ -60,7 +67,7 @@
 누르면 순위표를 사실 목록으로 바꿔 넘긴다:
 
 ```
-F1: 턴 2/4, 모드 hold, 현재 P1 임무 저하도 21.4%
+F1: 턴 2/4, 모드 hold, 현재 P1 임무 저하도 21.4%     (턴 번호는 화면과 같은 1부터)
 F2: 2중대 지휘차(CO2-VEH) 격리: 임무 비용 +0.0%p, 막는 공격 수 12개, 차단하는 최대 이득 16.1%, 순위 1
 F3: 능선 중계소(RELAY-1) 격리: 임무 비용 +0.0%p, 막는 공격 수 10개, 차단하는 최대 이득 16.1%, 순위 2
 ...  (상위 5 까지, F6)

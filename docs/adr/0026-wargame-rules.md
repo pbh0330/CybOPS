@@ -34,4 +34,4 @@ LLM 이 방어 행동을 고르는 경로.
 ## 결과
 
 `ui/src/game.js`(순수, 테스트 13), `Wargame.jsx`, `attack.js` `isolated` 옵션(기본 경로
-불변, `ui/tools/parity.mjs` 통과). 상세 규칙과 재현 방법: `docs/20-wargame.md`.
+불변, `ui/tools/parity.mjs` 통과). 상세 규칙과 재현 방법: `docs/22-wargame.md`.

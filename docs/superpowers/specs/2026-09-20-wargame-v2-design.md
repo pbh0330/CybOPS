@@ -129,7 +129,7 @@ last: {from, to, success} | null, isolated: [ids], footholds: [ids] }`. App 이 
 ## 6. 파일 · 검증
 
 신규: `ui/src/game.js`, `ui/src/__tests__/game.test.js`, `ui/src/ui/Wargame.jsx`,
-`ui/src/staff-llm.mjs`, `docs/adr/0026-wargame-rules.md`, `docs/20-wargame.md`.
+`ui/src/staff-llm.mjs`, `docs/adr/0026-wargame-rules.md`, `docs/22-wargame.md`.
 수정: `ui/src/attack.js`(`isolated` 옵션, 기본 없음 → parity 불변), `derive.js`,
 `App.jsx`(game reducer, `computeStep` 에 `compromiseOf(game)`), `GraphCanvas.jsx`,
 `MapPane.jsx`, `mapLayers.js`(threat 레이어), `Topbar.jsx`, `Rail.jsx`, `Onboard.jsx`
