@@ -226,8 +226,11 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
     if (!cy) return
     cy.edges('.threat-hop').remove()
     cy.nodes().removeClass('threat isolated')
-    // no game: forget the last flashed turn so a restarted game's turn 1 flashes
-    if (!overlay) { flashRef.current.turn = -1; return }
+    // No game, or a game with nothing adjudicated yet (a restart goes straight
+    // from the old game's overlay to the new one's): forget the last flashed
+    // turn so the next adjudication flashes even on the same turn index.
+    if (!overlay || !overlay.last) flashRef.current.turn = -1
+    if (!overlay) return
     const els = []
     for (const c of overlay.candidates) {
       if (!cy.$id(c.from).length || !cy.$id(c.to).length) continue
@@ -241,11 +244,15 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
       flashRef.current.turn = overlay.last.turn
       const n = cy.$id(overlay.last.to)
       const cls = overlay.last.success ? 'flash-hit' : 'flash-miss'
-      n.addClass(cls)
+      // a second adjudication inside 800 ms: the first target's class must go
+      // too, or its underlay stays on for good once its timer is cancelled
       clearTimeout(flashRef.current.timer)
+      cy.nodes().removeClass('flash-hit flash-miss')
+      n.addClass(cls)
       flashRef.current.timer = setTimeout(() => n.removeClass(cls), 800)
     }
   }, [overlay, graph, cyReady])
+  useEffect(() => () => clearTimeout(flashRef.current.timer), [])
 
   // --- paint ------------------------------------------------------------
   useEffect(() => {

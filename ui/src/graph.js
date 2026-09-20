@@ -229,6 +229,9 @@ export function stylesheet() {
     // edge rules below, after the base 'edge' rule that would otherwise
     // override its width and curve.
     { selector: 'node.threat', style: { 'underlay-color': CAUSE_COLOR.attack, 'underlay-opacity': 0.12, 'underlay-padding': 8, 'underlay-shape': 'ellipse' } },
+    // a foothold that is also a self-move target keeps the hit glow: what has
+    // happened outranks what might
+    { selector: 'node.hit.threat', style: { 'underlay-color': CAUSE_COLOR.attack, 'underlay-opacity': 0.28, 'underlay-padding': 12, 'underlay-shape': 'ellipse' } },
     // isolation is the defender's mark: achromatic double ring
     { selector: 'node.isolated', style: { 'underlay-color': '#f2f3f4', 'underlay-opacity': 0.10, 'underlay-padding': 10, 'underlay-shape': 'ellipse' } },
     { selector: 'node.flash-hit', style: { 'underlay-color': CAUSE_COLOR.attack, 'underlay-opacity': 0.55, 'underlay-padding': 22, 'underlay-shape': 'ellipse', 'transition-property': 'underlay-opacity, underlay-padding', 'transition-duration': '350ms' } },

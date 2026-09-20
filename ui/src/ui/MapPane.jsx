@@ -195,6 +195,7 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
   // scenario needs building, which never happens if this component is simply
   // removed from the tree.
   useEffect(() => () => {
+    clearTimeout(flashRef.current.timer)
     if (mapRef.current) {
       cancelAnimationFrame(dashRef.current.raf)
       for (const m of markers.current.values()) m.remove()
@@ -245,7 +246,6 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
       map.getSource('threat').setData(ghosts)
     } else {
       map.getSource('threat').setData(EMPTY)
-      flashRef.current.turn = -1 // no game: a restarted game's turn 1 flashes again
     }
     const isolated = overlay ? overlay.isolated : []
     const threats = overlay ? new Set(overlay.nodeThreats.map((n) => n.id)) : new Set()
@@ -288,22 +288,29 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
       el.title = `${n.ko} · ${r.id} · ${Math.round(r.z)} m`
     }
     for (const [id, m] of markers.current) if (!seen.has(id)) { m.remove(); markers.current.delete(id) }
-
-    // one flash per adjudicated turn, on the target's marker. A hidden pane
-    // records the turn without flashing, so showing it later replays nothing.
-    if (overlay && overlay.last && overlay.last.turn !== flashRef.current.turn) {
-      flashRef.current.turn = overlay.last.turn
-      const m = hidden ? null : markers.current.get(overlay.last.to)
-      if (m) {
-        const el = m.getElement()
-        const cls = overlay.last.success ? 'flash-hit' : 'flash-miss'
-        el.classList.remove('flash-hit', 'flash-miss')
-        el.classList.add(cls)
-        clearTimeout(flashRef.current.timer)
-        flashRef.current.timer = setTimeout(() => el.classList.remove(cls), 800)
-      }
-    }
   }, [graph, step, steps, idx, t, georef, ready, selected, onSelect, overlay])
+
+  // One flash per adjudicated turn, on the target's marker. Declared after the
+  // marker effect so the markers exist when it runs. The turn is recorded
+  // whether or not the map is built or shown, so opening the pane later never
+  // replays an old adjudication; a game with nothing adjudicated yet (a fresh
+  // start, or a restart straight from the old game's overlay) forgets it.
+  useEffect(() => {
+    if (!overlay || !overlay.last) { flashRef.current.turn = -1; return }
+    if (overlay.last.turn === flashRef.current.turn) return
+    flashRef.current.turn = overlay.last.turn
+    if (!ready || hidden) return
+    const m = markers.current.get(overlay.last.to)
+    if (!m) return
+    const cls = overlay.last.success ? 'flash-hit' : 'flash-miss'
+    // a second adjudication inside 800 ms: strip the first target too, or its
+    // class stays on for good once its timer is cancelled
+    clearTimeout(flashRef.current.timer)
+    for (const mk of markers.current.values()) mk.getElement().classList.remove('flash-hit', 'flash-miss')
+    const el = m.getElement()
+    el.classList.add(cls)
+    flashRef.current.timer = setTimeout(() => el.classList.remove(cls), 800)
+  }, [overlay, ready, hidden])
 
   // the attack arc crawls: a route, not a border (same idea as the transport
   // flow in GraphCanvas)
