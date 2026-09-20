@@ -65,8 +65,9 @@ compromiseOf(G) -> { [assetId]: level }      // 엔진 입력: attacker 상태 +
 ```
 
 - **턴 순서**: 방어(1행동 또는 생략) → 공격 → 평가. `cfg.turns` 회.
-- **격리의 의미**: 임무 수치에는 `compromise = 1`(자산 미가용)로 들어간다 - 지금 대응
-  탭의 what-if 와 같은 산식이라 비용이 같은 숫자로 나온다. 공격자에게는 없는 자산이다:
+- **격리의 의미**: 임무 수치에는 `compromise = 1`(자산 미가용)로 들어간다 - 대응 탭과
+  같은 엔진 what-if 를 쓴다(집계는 다르다 - 게임은 우선순위 가중합, 대응 탭은 최악 임무
+  하나의 delta). 공격자에게는 없는 자산이다:
   `legalMoves(g, state, t, { isolated })` 가 거점·도달성·표적에서 뺀다. 격리는 턴당 1회,
   되돌릴 수 없다. 침해 1.0 인 자산을 격리하면 임무 비용은 0 이지만 확산이 막힌다 -
   이것이 게임의 핵심 선택이다.
@@ -76,14 +77,14 @@ compromiseOf(G) -> { [assetId]: level }      // 엔진 입력: attacker 상태 +
   성공) 즉시 패. N턴 버티면 승. 점수 = 버틴 턴 × 100 − Σ 격리 비용(%p × 100). 자기가
   격리한 보석은 패가 아니지만 비용은 든다.
 - **참모 순위표**: 격리 후보(격리 안 된 자산 전부)마다
-  (a) `cost` = 엔진 what-if delta 의 우선순위 가중 합(현재 대응 탭 산식과 동일),
+  (a) `cost` = 엔진 what-if delta 의 우선순위 가중 합(대응 탭은 최악 임무 하나만 보인다),
   (b) `blocks` = 그 자산을 격리했을 때 사라지는 공격자 합법수의 개수,
   (c) `gainBlocked` = 사라지는 수 중 최대 gain.
   순위 = `gainBlocked − cost` 내림차순, 동률이면 `blocks` 내림차순, id.
 - 재현성: 같은 graph·cfg·행동 열이면 history 가 바이트 단위로 같다.
 
 **테스트(Vitest, ≥ 10)**: 격리 자산이 `footholds`/`legalMoves` 에서 빠짐; 격리 비용이
-대응 탭 what-if 와 같은 값; hold 승/패, jewel 즉시 패/버티기 승; 점수 산식 두 모드;
+엔진 what-if delta 의 우선순위 가중합과 같은 값; hold 승/패, jewel 즉시 패/버티기 승; 점수 산식 두 모드;
 `pass` 후 phase; `defend` 를 attack 페이즈에 부르면 무시; 재현성(같은 시드 두 판 동일);
 `staffTable` 정렬.
 
