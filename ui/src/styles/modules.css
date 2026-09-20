@@ -288,3 +288,4 @@ body .geo-canvas:active { cursor: grabbing; }
 /* legend: the attack-path arrow swatch */
 .legend-arrow { display: inline-block; width: 18px; height: 0; border-top: 2px dashed var(--attack); position: relative; margin-right: 6px; vertical-align: middle; }
 .legend-arrow::after { content: ''; position: absolute; right: -1px; top: -5px; border: 4px solid transparent; border-left: 6px solid var(--attack); }
+.legend-arrow.ghost { border-top-style: dotted; opacity: .45; }

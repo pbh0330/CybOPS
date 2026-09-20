@@ -46,7 +46,7 @@ function paintSymbol(n, state) {
   })
 }
 
-export default function GraphCanvas({ graph, step, steps, idx, view, labels, hidden, cyRef, onSelect, onTap, selected }) {
+export default function GraphCanvas({ graph, step, steps, idx, view, labels, hidden, cyRef, onSelect, onTap, selected, overlay }) {
   const boxRef = useRef(null)
   const flowRef = useRef({ raf: null, offset: 0, view, hidden })
   const [bands, setBands] = useState([])
@@ -151,7 +151,7 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
     if (!cy || view === 'geo') return
     const transport = cy.edges('.transport')
     // attack hops go between assets and belong in both views
-    const structural = cy.edges().not('.transport').not('.attack-hop')
+    const structural = cy.edges().not('.transport').not('.attack-hop').not('.threat-hop')
     const nonAssets = cy.nodes('[kind != "asset"]')
     if (view === 'transport') {
       transport.removeClass('hidden')
@@ -164,7 +164,7 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
     }
     // attack hops are drawn over the layout, never fed to it: an extra
     // asset-to-asset edge would change what dagre thinks the ranks are
-    cy.elements().not('.hidden').not('.attack-hop').layout(LAYOUTS[view] || LAYOUTS.dependency).run()
+    cy.elements().not('.hidden').not('.attack-hop').not('.threat-hop').layout(LAYOUTS[view] || LAYOUTS.dependency).run()
   }, [view, graph])
 
   // --- attack path --------------------------------------------------------
@@ -201,11 +201,11 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
     if (!selected || view === 'transport') return
     const n = cy.$id(selected)
     if (!n.length) return
-    const structural = cy.edges().not('.transport').not('.attack-hop')
+    const structural = cy.edges().not('.transport').not('.attack-hop').not('.threat-hop')
     const up = n.predecessors().filter((e) => e.isNode() || structural.contains(e))
     const down = n.successors().filter((e) => e.isNode() || structural.contains(e))
     const keep = n.union(up).union(down)
-    cy.elements().not(keep).not('.attack-hop').addClass('faded')
+    cy.elements().not(keep).not('.attack-hop').not('.threat-hop').addClass('faded')
     keep.edges().addClass('path')
   }, [selected, view, graph, cyReady])
 
@@ -214,6 +214,38 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
     if (!cy) return
     cy.nodes().style('text-opacity', labels ? 1 : 0)
   }, [labels, graph])
+
+  // --- wargame overlay -----------------------------------------------------
+  // Ghost arrows are the attacker's candidate moves (the engine's legal move
+  // table, top n by gain). They are drawn over the layout and never fed to
+  // it, and they do not crawl: a move that has not happened is not traffic.
+  // The flash marks one adjudication, once per turn.
+  const flashRef = useRef({ turn: -1, timer: null })
+  useEffect(() => {
+    const cy = cyRef.current
+    if (!cy) return
+    cy.edges('.threat-hop').remove()
+    cy.nodes().removeClass('threat isolated')
+    // no game: forget the last flashed turn so a restarted game's turn 1 flashes
+    if (!overlay) { flashRef.current.turn = -1; return }
+    const els = []
+    for (const c of overlay.candidates) {
+      if (!cy.$id(c.from).length || !cy.$id(c.to).length) continue
+      els.push({ group: 'edges', classes: 'threat-hop', data: { id: `threat:${c.from}->${c.to}`, source: c.from, target: c.to, w: Math.max(1.5, 4 - c.rank * 0.4) } })
+    }
+    if (els.length) cy.add(els)
+    for (const n of overlay.nodeThreats) cy.$id(n.id).addClass('threat')
+    for (const id of overlay.isolated) cy.$id(id).addClass('isolated')
+    // one flash per adjudicated turn
+    if (overlay.last && overlay.last.turn !== flashRef.current.turn) {
+      flashRef.current.turn = overlay.last.turn
+      const n = cy.$id(overlay.last.to)
+      const cls = overlay.last.success ? 'flash-hit' : 'flash-miss'
+      n.addClass(cls)
+      clearTimeout(flashRef.current.timer)
+      flashRef.current.timer = setTimeout(() => n.removeClass(cls), 800)
+    }
+  }, [overlay, graph, cyReady])
 
   // --- paint ------------------------------------------------------------
   useEffect(() => {
@@ -234,10 +266,15 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
         else if (d.kind === 'mission') v = num(step.mission?.[d.id])
 
         const cause = d.kind === 'asset' ? assetOut[d.id] : null
-        const hit = d.kind === 'asset' && num(step.compromise?.[d.id]) > 0
+        // isolation (wargame) is the defender's own mark. The engine counts an
+        // isolated asset as down (game.js compromiseOf), which would paint it
+        // as attacked; it is not, so the mark is achromatic and wins over
+        // the red here (ADR-0012: red means adversary effect and nothing else).
+        const isIso = !!(overlay && overlay.isolated.includes(d.id))
+        const hit = d.kind === 'asset' && !isIso && num(step.compromise?.[d.id]) > 0
 
         if (d.kind === 'asset' && d.assetType) {
-          paintSymbol(n, hit ? 'attack' : cause ? 'outage' : 'ok')
+          paintSymbol(n, hit ? 'attack' : cause || isIso ? 'outage' : 'ok')
         }
 
         // degradation is a luminance ramp, cause is the border: red stays
@@ -246,9 +283,9 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
         // node:selected stylesheet rule alone never shows through a bypass.
         const isSel = n.id() === selected
         n.style('background-color', degColor(v))
-        n.style('border-color', isSel ? '#f2f3f4' : (cause ? (CAUSE_COLOR[cause] || '#2a3442') : (hit ? CAUSE_COLOR.attack : '#2a3442')))
-        n.style('border-width', isSel ? 3 : (cause || hit ? 2.5 : 1.5))
-        n.style('border-style', cause ? 'dashed' : 'solid')
+        n.style('border-color', isSel ? '#f2f3f4' : isIso ? '#f2f3f4' : (cause ? (CAUSE_COLOR[cause] || '#2a3442') : (hit ? CAUSE_COLOR.attack : '#2a3442')))
+        n.style('border-width', isSel ? 3 : isIso ? 4 : (cause || hit ? 2.5 : 1.5))
+        n.style('border-style', isIso ? 'double' : (cause ? 'dashed' : 'solid'))
         n.toggleClass('hit', hit)
         n.toggleClass('out', !!cause && !hit)
         n.data('outColor', cause ? (CAUSE_COLOR[cause] || CAUSE_COLOR.unknown) : '#000')
@@ -264,7 +301,7 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
         e.style('label', cause ? `${e.data('bearer')} · ${cause}` : e.data('bearer'))
       }
     })
-  }, [step, graph, selected])
+  }, [step, graph, selected, overlay])
 
   // Dashes crawling along a link mean traffic is moving on it. A cut link
   // stops moving, so the eye finds the break before it finds the label.
@@ -314,6 +351,20 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
               <span className="legend-item legend-hop" title="저작된 침해 순서를 화살표로 그린 것. 엔진이 추론한 경로가 아니다.">
                 <span className="legend-arrow" />공격 경로 {hopCount}구간 · 저작 순서
               </span>
+            </>
+          )}
+          {overlay && overlay.candidates.length + overlay.nodeThreats.length > 0 && (
+            <>
+              <span className="lg-rule" />
+              <span className="legend-item legend-threat" title="엔진의 합법수 표에서 이득 상위 n개. 공격자가 실제로 고른 수가 아니다.">
+                <span className="legend-arrow ghost" />유령 화살표 = 공격자 후보수 상위 {overlay.candidates.length + overlay.nodeThreats.length}
+              </span>
+            </>
+          )}
+          {overlay && overlay.isolated.length > 0 && (
+            <>
+              <span className="lg-rule" />
+              <span className="legend-item">이중선 = 격리</span>
             </>
           )}
           {selected && view !== 'transport' && (

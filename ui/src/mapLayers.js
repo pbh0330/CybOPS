@@ -33,14 +33,17 @@ export function markerRows(graph, step, t, georef) {
   return rows
 }
 
-export function linkFeatures(graph, step, t, georef) {
+// `isolated` is the wargame's defender mark: a link touching an isolated
+// asset is dead for the duration, whatever the step's outage table says.
+export function linkFeatures(graph, step, t, georef, isolated = []) {
   const pos = placed(graph, t, georef)
+  const iso = new Set(isolated || [])
   const feats = []
   for (const l of graph?.links || []) {
     const a = pos.get(l.a), b = pos.get(l.b)
     if (!a || !b) continue
     const cause = (step?.link_outage || {})[l.id] || null
-    feats.push(line([[a.lon, a.lat], [b.lon, b.lat]], { id: l.id, cause, cut: !!cause, bearer: l.bearer || '' }))
+    feats.push(line([[a.lon, a.lat], [b.lon, b.lat]], { id: l.id, cause, cut: !!cause, bearer: l.bearer || '', dead: iso.has(l.a) || iso.has(l.b) }))
   }
   return fc(feats)
 }

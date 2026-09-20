@@ -29,11 +29,13 @@ function firstSymbolLayer(style) {
 // Everything else - lines, fills, DOM markers - draws fine without glyphs.
 const FALLBACK_STYLE = { version: 8, sources: {}, layers: [{ id: 'background', type: 'background', paint: { 'background-color': '#070a10' } }] }
 
-export default function MapPane({ graph, step, steps, idx, selected, onSelect, hidden }) {
+export default function MapPane({ graph, step, steps, idx, selected, onSelect, hidden, overlay }) {
   const boxRef = useRef(null)
   const mapRef = useRef(null)
   const markers = useRef(new Map())
   const dashRef = useRef({ raf: null, i: 0 })
+  // one flash per adjudicated wargame turn (same rule as GraphCanvas)
+  const flashRef = useRef({ turn: -1, timer: null })
   // Which scenario the current map (if any) was built for, or null. Doubles
   // as the lazy-build guard (F1) and the rebuild-only-on-scenario-change
   // guard (F4): an edit produces a new `graph` object but the same
@@ -102,6 +104,7 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
         attributionControl: { compact: true, customAttribution: `${cfg.satellite_attribution} · ${cfg.dem_attribution}` },
       })
       mapRef.current = map
+      if (import.meta.env && import.meta.env.DEV) window.__map = map
       map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right')
       // Only a failure to fetch the style/a source/a tile is "offline" in the
       // sense the banner means; glyph and sprite warnings are routine and
@@ -140,13 +143,20 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
         map.addSource('links', { type: 'geojson', data: EMPTY })
         map.addLayer({ id: 'links', type: 'line', source: 'links', layout: { 'line-cap': 'round' },
           paint: {
-            'line-color': ['case', ['get', 'cut'], ['match', ['get', 'cause'],
+            // dead (an end is isolated in the wargame) wins over cut: the
+            // defender pulled the plug, so the link carries nothing and no cause
+            'line-color': ['case', ['get', 'dead'], '#4a5568', ['case', ['get', 'cut'], ['match', ['get', 'cause'],
               'attack', CAUSE_COLOR.attack, 'mobility', CAUSE_COLOR.mobility, 'terrain', CAUSE_COLOR.terrain,
-              'maintenance', CAUSE_COLOR.maintenance, 'unknown', CAUSE_COLOR.unknown, CAUSE_COLOR.unknown], '#9aa5b1'],
-            'line-width': ['case', ['get', 'cut'], 3, 1.6],
-            'line-opacity': 0.9,
-            'line-dasharray': ['case', ['get', 'cut'], ['literal', [1, 2.5]], ['literal', [1, 0]]],
+              'maintenance', CAUSE_COLOR.maintenance, 'unknown', CAUSE_COLOR.unknown, CAUSE_COLOR.unknown], '#9aa5b1']],
+            'line-width': ['case', ['get', 'dead'], 1.6, ['case', ['get', 'cut'], 3, 1.6]],
+            'line-opacity': ['case', ['get', 'dead'], 0.55, 0.9],
+            'line-dasharray': ['case', ['get', 'dead'], ['literal', [1, 0]], ['case', ['get', 'cut'], ['literal', [1, 2.5]], ['literal', [1, 0]]]],
           } })
+        // the attacker's candidate moves during a wargame: faint, dotted, red
+        // (ADR-0012), under the real attack arc
+        map.addSource('threat', { type: 'geojson', data: EMPTY })
+        map.addLayer({ id: 'threat', type: 'line', source: 'threat', layout: { 'line-cap': 'round' },
+          paint: { 'line-color': CAUSE_COLOR.attack, 'line-width': ['get', 'w'], 'line-opacity': 0.28, 'line-dasharray': [1, 2] } })
         map.addSource('attack', { type: 'geojson', data: EMPTY })
         map.addLayer({ id: 'attack', type: 'line', source: 'attack', layout: { 'line-cap': 'round' },
           paint: { 'line-color': CAUSE_COLOR.attack, 'line-width': 2.5, 'line-opacity': 0.95, 'line-dasharray': [0, 4, 3] } })
@@ -218,18 +228,38 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
   useEffect(() => {
     const map = mapRef.current
     if (!map || !ready || !graph || !step) return
-    map.getSource('links').setData(linkFeatures(graph, step, t, georef))
+    map.getSource('links').setData(linkFeatures(graph, step, t, georef, overlay ? overlay.isolated : []))
     map.getSource('tracks').setData(trackFeatures(graph, t, georef))
     const { hops } = attackHops(steps || [], idx || 0)
     map.getSource('attack').setData(attackArcFeatures(graph, hops, t, georef))
+    if (overlay) {
+      // attackArcFeatures drops hops whose ends are unplaced, so the rank has
+      // to ride on the feature itself rather than be re-read by index
+      const cands = overlay.candidates.map((c) => ({ from: c.from, to: c.to, t: overlay.turn, technique: null, rank: c.rank }))
+      const ghosts = attackArcFeatures(graph, cands, t, georef)
+      for (const f of ghosts.features) {
+        const c = cands.find((x) => x.from === f.properties.from && x.to === f.properties.to)
+        f.properties.w = Math.max(1.5, 4 - (c ? c.rank : 6) * 0.4)
+        f.properties.label = ''
+      }
+      map.getSource('threat').setData(ghosts)
+    } else {
+      map.getSource('threat').setData(EMPTY)
+      flashRef.current.turn = -1 // no game: a restarted game's turn 1 flashes again
+    }
+    const isolated = overlay ? overlay.isolated : []
+    const threats = overlay ? new Set(overlay.nodeThreats.map((n) => n.id)) : new Set()
 
     const rows = markerRows(graph, step, t, georef)
     const seen = new Set()
     for (const r of rows) {
       seen.add(r.id)
       const asset = graph.assets.find((a) => a.id === r.id)
-      const state = r.compromise > 0 ? 'attack' : r.outage ? `outage cause-${r.outage}` : 'ok'
-      const color = r.compromise > 0 ? '#ffb4ba' : r.outage ? '#93a6ba' : '#e6f0fb'
+      // an isolated asset counts as down for the engine but is the defender's
+      // mark, not the attacker's: it never gets the red (same rule as GraphCanvas)
+      const iso = isolated.includes(r.id)
+      const state = iso ? 'outage' : r.compromise > 0 ? 'attack' : r.outage ? `outage cause-${r.outage}` : 'ok'
+      const color = iso ? '#93a6ba' : r.compromise > 0 ? '#ffb4ba' : r.outage ? '#93a6ba' : '#e6f0fb'
       const uri = deviceIconDataUri(asset?.type, { size: 30, color })
       let m = markers.current.get(r.id)
       if (!m) {
@@ -247,7 +277,10 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
       // position:absolute - see style.css note on .map-mark). Overwriting
       // className wholesale on every update strips that class right back off
       // after the very first render, so it has to be re-included here.
-      el.className = `maplibregl-marker map-mark ${state}${selected === r.id ? ' is-selected' : ''}`
+      // a flash in progress survives the rewrite: this effect re-runs on any
+      // prop change, well inside the 800 ms the animation needs
+      const flash = el.classList.contains('flash-hit') ? ' flash-hit' : el.classList.contains('flash-miss') ? ' flash-miss' : ''
+      el.className = `maplibregl-marker map-mark ${state}${selected === r.id ? ' is-selected' : ''}${iso ? ' is-isolated' : ''}${threats.has(r.id) ? ' is-threat' : ''}${flash}`
       const img = el.querySelector('img')
       if (uri && img.src !== uri) img.src = uri
       const n = assetName(graph, r.id)
@@ -255,7 +288,22 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
       el.title = `${n.ko} · ${r.id} · ${Math.round(r.z)} m`
     }
     for (const [id, m] of markers.current) if (!seen.has(id)) { m.remove(); markers.current.delete(id) }
-  }, [graph, step, steps, idx, t, georef, ready, selected, onSelect])
+
+    // one flash per adjudicated turn, on the target's marker. A hidden pane
+    // records the turn without flashing, so showing it later replays nothing.
+    if (overlay && overlay.last && overlay.last.turn !== flashRef.current.turn) {
+      flashRef.current.turn = overlay.last.turn
+      const m = hidden ? null : markers.current.get(overlay.last.to)
+      if (m) {
+        const el = m.getElement()
+        const cls = overlay.last.success ? 'flash-hit' : 'flash-miss'
+        el.classList.remove('flash-hit', 'flash-miss')
+        el.classList.add(cls)
+        clearTimeout(flashRef.current.timer)
+        flashRef.current.timer = setTimeout(() => el.classList.remove(cls), 800)
+      }
+    }
+  }, [graph, step, steps, idx, t, georef, ready, selected, onSelect, overlay])
 
   // the attack arc crawls: a route, not a border (same idea as the transport
   // flow in GraphCanvas)

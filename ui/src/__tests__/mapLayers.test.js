@@ -28,8 +28,13 @@ describe('linkFeatures', () => {
   it('draws only links with both ends placed, with cause and cut flags', () => {
     const fc = linkFeatures(graph, step, 150, georef)
     expect(fc.features.length).toBe(1)
-    expect(fc.features[0].properties).toEqual({ id: 'L1', cause: 'terrain', cut: true, bearer: 'vhf' })
+    expect(fc.features[0].properties).toEqual({ id: 'L1', cause: 'terrain', cut: true, bearer: 'vhf', dead: false })
     expect(fc.features[0].geometry.coordinates.length).toBe(2)
+  })
+  it('marks links touching an isolated asset as dead', () => {
+    const fc = linkFeatures(graph, step, 150, georef, ['B'])
+    expect(fc.features[0].properties.dead).toBe(true)
+    expect(linkFeatures(graph, step, 150, georef).features[0].properties.dead).toBe(false)
   })
 })
 

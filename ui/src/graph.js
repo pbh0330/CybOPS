@@ -224,6 +224,15 @@ export function stylesheet() {
     // read the same way as its border (ADR-0012: red only for attack)
     { selector: 'node.hit', style: { 'underlay-color': CAUSE_COLOR.attack, 'underlay-opacity': 0.28, 'underlay-padding': 12, 'underlay-shape': 'ellipse' } },
     { selector: 'node.out', style: { 'underlay-color': 'data(outColor)', 'underlay-opacity': 0.16, 'underlay-padding': 10, 'underlay-shape': 'ellipse' } },
+    // wargame marks on nodes. They sit after .hit/.out so a flash wins the
+    // underlay; the matching edge rule (edge.threat-hop) lives with the other
+    // edge rules below, after the base 'edge' rule that would otherwise
+    // override its width and curve.
+    { selector: 'node.threat', style: { 'underlay-color': CAUSE_COLOR.attack, 'underlay-opacity': 0.12, 'underlay-padding': 8, 'underlay-shape': 'ellipse' } },
+    // isolation is the defender's mark: achromatic double ring
+    { selector: 'node.isolated', style: { 'underlay-color': '#f2f3f4', 'underlay-opacity': 0.10, 'underlay-padding': 10, 'underlay-shape': 'ellipse' } },
+    { selector: 'node.flash-hit', style: { 'underlay-color': CAUSE_COLOR.attack, 'underlay-opacity': 0.55, 'underlay-padding': 22, 'underlay-shape': 'ellipse', 'transition-property': 'underlay-opacity, underlay-padding', 'transition-duration': '350ms' } },
+    { selector: 'node.flash-miss', style: { 'underlay-color': '#9aa5b1', 'underlay-opacity': 0.35, 'underlay-padding': 18, 'underlay-shape': 'ellipse', 'transition-property': 'underlay-opacity, underlay-padding', 'transition-duration': '350ms' } },
 
     {
       selector: 'edge',
@@ -291,6 +300,13 @@ export function stylesheet() {
         'z-index': 9,
       },
     },
+    // the attacker's candidate moves during a wargame: red because they are
+    // the attacker's (ADR-0012), faint because they have not happened. Must
+    // follow the base 'edge' rule (width, curve-style) to take effect.
+    { selector: 'edge.threat-hop', style: {
+      'curve-style': 'unbundled-bezier', 'control-point-distances': [40], 'control-point-weights': [0.5],
+      'line-color': CAUSE_COLOR.attack, 'target-arrow-color': CAUSE_COLOR.attack, 'target-arrow-shape': 'triangle',
+      'line-style': 'dotted', 'width': 'data(w)', 'opacity': 0.28, 'z-index': 8, 'label': '' } },
     // contribution path of the selected node: what it rests on and what
     // rests on it. Everything else steps back instead of disappearing, so
     // the path is read in its context.
