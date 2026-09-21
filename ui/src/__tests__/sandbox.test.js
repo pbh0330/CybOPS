@@ -123,6 +123,45 @@ describe('readiness', () => {
     expect(readiness(g).tasks.ok).toBe(0)
     expect(readiness(g).tasks.missing).toContain(g.tasks[0].id)
   })
+  it('a task whose performer cannot reach the provider over the links is not ready', () => {
+    // every service on SRV-01; seven tasks at WKS-01 (wired to SRV-01 by
+    // g3's L-1), one task at CP-01, which has no link at all. Note the engine
+    // treats a graph with zero links as fully reachable, so the case needs
+    // at least one link somewhere - g3 already has one.
+    const g = g3()
+    g.edges.provided_by = ['S-C2MSG', 'S-BFT', 'S-VOICE', 'S-FIRE', 'S-INTEL'].map((s) => ({ from: s, to: 'SRV-01', w: 1 }))
+    g.tasks = g.tasks.map((t) => ({ ...t, performed_at: 'WKS-01' }))
+    const lone = g.tasks[3].id
+    g.tasks[3].performed_at = 'CP-01'
+    const r = readiness(g)
+    expect(r.services.missing).toEqual([])
+    expect(r.tasks.missing).toEqual([])
+    expect(r.unreachable).toEqual([lone])
+    expect(r.ready).toBe(false)
+    // CP-01 is an end terminal (transit=false); it needs a transit neighbour
+    // that is in SRV-01's component. Two links close the gap.
+    g.links.push({ id: 'L-2', a: 'CP-01', b: 'SAT-01', bearer: 'wired' })
+    g.links.push({ id: 'L-3', a: 'SAT-01', b: 'SRV-01', bearer: 'satcom' })
+    const r2 = readiness(g)
+    expect(r2.unreachable).toEqual([])
+    expect(r2.ready).toBe(true)
+  })
+  it('a performer that hosts the provider is reachable with no link', () => {
+    const g = g3()
+    g.links = []
+    g.edges.provided_by = ['S-C2MSG', 'S-BFT', 'S-VOICE', 'S-FIRE', 'S-INTEL'].map((s) => ({ from: s, to: 'SRV-01', w: 1 }))
+    g.tasks = g.tasks.map((t) => ({ ...t, performed_at: 'SRV-01' }))
+    const r = readiness(g)
+    expect(r.unreachable).toEqual([])
+    expect(r.ready).toBe(true)
+  })
+  it('does not run the engine while the structure is still short', () => {
+    const g = g3()
+    g.tasks = g.tasks.map((t) => ({ ...t, performed_at: 'CP-01' }))   // no providers yet
+    const r = readiness(g)
+    expect(r.services.missing.length).toBe(5)
+    expect(r.unreachable).toEqual([])
+  })
 })
 
 describe('placement', () => {

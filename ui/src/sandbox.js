@@ -6,7 +6,11 @@
 // The engine treats a service with no provider as degraded 0, so an empty
 // sandbox reads as "mission fine". readiness() is the gate that keeps a game
 // from starting until every service has a provider and every task a
-// performer - it is what teaches what the mission needs.
+// performer - it is what teaches what the mission needs. The gate also asks
+// the engine for a no-attack baseline: a performer that cannot reach its
+// provider over the links is degradation 1 before anyone attacks.
+
+import { runChain } from './engine.js'
 
 export const SANDBOX_ID = 'sandbox-01'
 export const TEMPLATE_ID = 'tacnet-01'
@@ -98,9 +102,22 @@ export function readiness(g) {
   for (const l of g.links || []) { linkedIds.add(l.a); linkedIds.add(l.b) }
   const isolated = (g.assets || []).filter((a) => !linkedIds.has(a.id)).map((a) => a.id)
   const jewels = (g.crown_jewels || []).filter((id) => assetIds.has(id)).length
+  // Engine baseline with no attack: a provider the task performer cannot
+  // reach over the links counts as degradation 1 in serviceDegFor, so a
+  // structurally complete board can still be functionally dead. Only asked
+  // once the structure is in place - runChain on a half-empty graph is
+  // noise. runChain never reads geo (Test-GeoInvariance).
+  let unreachable = []
+  if (sMissing.length === 0 && tMissing.length === 0) {
+    const base = runChain(g, {}, { t: -1, method: 'weighted', causes: 'all' })
+    unreachable = (g.tasks || []).filter((t) => Number(base.task[t.id] || 0) > 1e-9).map((t) => t.id)
+  }
   const services = { ok: (g.services || []).length - sMissing.length, total: (g.services || []).length, missing: sMissing }
   const tasks = { ok: (g.tasks || []).length - tMissing.length, total: (g.tasks || []).length, missing: tMissing }
-  return { services, tasks, isolated, jewels, ready: sMissing.length === 0 && tMissing.length === 0 }
+  return {
+    services, tasks, isolated, jewels, unreachable,
+    ready: sMissing.length === 0 && tMissing.length === 0 && unreachable.length === 0,
+  }
 }
 
 function extentOf(g) { return (g.geo && g.geo.frame && g.geo.frame.extent) || { x: [0, 24000], y: [0, 18000] } }

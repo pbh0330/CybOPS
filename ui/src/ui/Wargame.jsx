@@ -49,6 +49,13 @@ function StartCard({ graph, payload, idx, llmOk, llmNote, onStart, readyState })
   const jewels = readyState.jewels
   const shortS = (readyState.services && readyState.services.missing || []).length
   const shortT = (readyState.tasks && readyState.tasks.missing || []).length
+  // structure complete but the engine's no-attack baseline says a performer
+  // cannot reach its provider over the links: a different fix (links), so a
+  // different caption
+  const shortR = (readyState.unreachable || []).length
+  const lockText = shortS === 0 && shortT === 0 && shortR > 0
+    ? `준비도 미충족 - 작업 ${shortR} 이 서비스에 닿지 않는다 (링크 확인)`
+    : `준비도 미충족 - 서비스 ${shortS}·작업 ${shortT} 이 비어 있다`
   // jewel mode needs a jewel; if the last one is un-marked while the card is
   // up, the mode falls back rather than starting a game with nothing to hold
   useEffect(() => { if (jewels === 0 && mode === 'jewel') setMode('hold') }, [jewels, mode])
@@ -92,7 +99,7 @@ function StartCard({ graph, payload, idx, llmOk, llmNote, onStart, readyState })
       {!llmOk && llmNote && <div className="wg-llm-note">LLM 공격자 사용 불가<span>{llmNote}</span></div>}
       <p className="rail-caption">{mode === 'hold' ? `${turns}턴 동안 P1 임무 저하도를 50% 미만으로 지키면 승. 점수는 턴별 가중 저하도의 합(낮을수록 좋음).` : `${turns}턴 동안 crown jewel 이 장악되지 않으면 승. 점수 = 버틴 턴×100 − 격리 비용.`}</p>
       <button type="button" className="wg-start-go" disabled={!ready} onClick={() => onStart({ mode, turns, t, foothold: { id: footId, level }, seed, strategy, method: 'weighted' }, stepIdx)}>시작</button>
-      {!ready && <p className="wg-lock">준비도 미충족 - 서비스 {shortS}·작업 {shortT} 이 비어 있다</p>}
+      {!ready && <p className="wg-lock">{lockText}</p>}
     </div>
   )
 }
@@ -204,7 +211,7 @@ export default function Wargame({ graph, payload, idx, game, onGame, onSeekIdx, 
   // construction, and their jewel count is whatever the file says
   const readyState = useMemo(() => (sandbox && graph
     ? readiness(graph)
-    : { ready: true, jewels: ((graph && graph.crown_jewels) || []).length, services: { missing: [] }, tasks: { missing: [] } }), [sandbox, graph])
+    : { ready: true, jewels: ((graph && graph.crown_jewels) || []).length, services: { missing: [] }, tasks: { missing: [] }, unreachable: [] }), [sandbox, graph])
 
   if (!graph || !payload) return null
 

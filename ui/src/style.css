@@ -429,8 +429,9 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
 .rd-label { min-width: 72px; color: var(--text-muted); }
 .rd-count { font-family: "IBM Plex Mono", ui-monospace, monospace; color: var(--text-secondary); }
 .rd-missing { flex: 1; min-width: 0; font-size: 11px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.rd-row.is-short .rd-count { color: var(--text-primary); }
-.rd-row.is-warn .rd-count { color: var(--unknown); }
+/* short and warn rows are the same achromatic emphasis - the only colour on
+   this card is --ok on the ready word below (ADR-0024/0025) */
+.rd-row.is-short .rd-count, .rd-row.is-warn .rd-count { color: var(--text-primary); font-weight: 600; }
 .rd .rail-caption { margin: 6px 0 0; }
 .rd.is-ready .rail-head .when { color: var(--ok); }
 /* the locked start button says why */

@@ -19,11 +19,16 @@ export default function Readiness({ graph }) {
       {missing.length > 0 && <span className="rd-missing" title={missing.join(', ')}>{missing.join(', ')}</span>}
     </div>
   )
+  // 도달성 only appears once the structure is complete: readiness() does not
+  // run the engine before then, and the user should fix structure first.
+  const structural = r.services.missing.length === 0 && r.tasks.missing.length === 0
+  const unreachable = r.unreachable || []
   return (
     <div className={`rd${r.ready ? ' is-ready' : ''}`}>
       <div className="rail-head"><h2>준비도</h2><span className="when">{r.ready ? '교전 가능' : '구성 중'}</span></div>
       {row('서비스 제공', r.services.ok, r.services.total, r.services.missing.map((id) => name(graph, graph.services, id)))}
       {row('작업 배치', r.tasks.ok, r.tasks.total, r.tasks.missing.map((id) => name(graph, graph.tasks, id)))}
+      {structural && row('도달성', r.tasks.total - unreachable.length, r.tasks.total, unreachable.map((id) => name(graph, graph.tasks, id)))}
       <div className={`rd-row${r.isolated.length ? ' is-warn' : ''}`}>
         <span className="rd-label">고립 자산</span>
         <b className="rd-count">{r.isolated.length}</b>
