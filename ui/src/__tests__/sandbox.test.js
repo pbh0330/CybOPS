@@ -3,7 +3,7 @@ import replay from '../../public/data/tacnet-01.replay.json'
 import rules from '../../public/data/link-rules.json'
 import {
   makeSandbox, linkCandidates, missionCandidates, readiness, placeFree, placeNear,
-  validateImport, listPlans, savePlan, loadPlan, deletePlan, SANDBOX_ID,
+  validateImport, listPlans, savePlan, loadPlan, deletePlan, SANDBOX_ID, siteOf,
 } from '../sandbox.js'
 
 const tg = replay.graph
@@ -82,6 +82,13 @@ describe('linkCandidates', () => {
     const c = linkCandidates(g, rules, 'N1')
     expect(c.some((x) => x.bearer === 'wired')).toBe(false)
     expect(c.some((x) => x.why === 'site')).toBe(false)
+  })
+
+  it('siteOf reads the placeholder and a missing site as no site', () => {
+    expect(siteOf({ site: '신규' })).toBeNull()
+    expect(siteOf({})).toBeNull()
+    expect(siteOf(undefined)).toBeNull()
+    expect(siteOf({ site: '여단 TOC' })).toBe('여단 TOC')
   })
 })
 

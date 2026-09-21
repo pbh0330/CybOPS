@@ -48,7 +48,10 @@ export function rules() { return rulesCache }
 
 const byId = (g, id) => (g.assets || []).find((a) => a.id === id)
 const linked = (g, a, b) => (g.links || []).some((l) => (l.a === a && l.b === b) || (l.a === b && l.b === a))
-const siteOf = (a) => (a && a.site && a.site !== '신규' ? a.site : null)
+// '신규' is the placeholder a freshly placed asset carries, not a place; two of
+// them are not at the same site. Exported so the inspector flags links by the
+// same reading that proposed them.
+export const siteOf = (a) => (a && a.site && a.site !== '신규' ? a.site : null)
 
 export function linkCandidates(g, rules, assetId) {
   const me = byId(g, assetId)

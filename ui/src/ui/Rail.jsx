@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { CAUSE_COLOR } from '../graph.js'
 import { num, pct, missionRows, cutRows, actionRows, linkageOf, eventRows } from '../derive.js'
 import detection from '../detection.json'
-import { techniqueKo, techniqueMeaning, tacticKo, assetName } from '../labels.js'
-import { linkCandidates, missionCandidates, BEARER_ORDER } from '../sandbox.js'
+import { techniqueKo, techniqueMeaning, tacticKo, assetName, typeKo } from '../labels.js'
+import { linkCandidates, missionCandidates, siteOf, BEARER_ORDER } from '../sandbox.js'
 
 // The rail. Six stacked panels became one fixed block plus tabs (ADR-0024):
 // mission state is always visible because it is the answer to "how bad is it",
@@ -458,7 +458,14 @@ const WHY_KO = { site: '같은 위치', unit: '같은 부대', transit: '중계 
 function Build({ graph, assetId, editor, rules }) {
   const ed = editor.current
   const asset = (graph.assets || []).find((a) => a.id === assetId)
+  // the site input is committed on blur / Enter, not per keystroke: setSite
+  // snaps an empty value back to '신규', which would fight the person mid-word.
+  // Hooks sit above the early return so their order never changes.
+  const liveSite = asset ? asset.site || '' : ''
+  const [siteDraft, setSiteDraft] = useState(liveSite)
+  useEffect(() => { setSiteDraft(liveSite) }, [assetId, liveSite])
   if (!asset) return null
+  const commitSite = () => { if (siteDraft !== liveSite) ed.setSite(assetId, siteDraft) }
   const cands = linkCandidates(graph, rules, assetId)
   const mine = (graph.links || []).filter((l) => l.a === assetId || l.b === assetId)
   const known = !!(rules && rules.types && rules.types[asset.type])
@@ -468,13 +475,20 @@ function Build({ graph, assetId, editor, rules }) {
     if (!known || !o || !rules.types[o.type]) return true
     const both = (rules.types[asset.type].bearers || []).includes(l.bearer) && (rules.types[o.type].bearers || []).includes(l.bearer)
     const r = (rules.bearers || {})[l.bearer] || {}
-    return both && !(r.same_site && asset.site !== o.site) && !(r.needs_type && asset.type !== r.needs_type && o.type !== r.needs_type)
+    // same reading as linkCandidates: the placeholder site is not a site
+    const sameSite = !!siteOf(asset) && siteOf(asset) === siteOf(o)
+    return both && !(r.same_site && !sameSite) && !(r.needs_type && asset.type !== r.needs_type && o.type !== r.needs_type)
   }
   return (
     <div className="build">
       <div className="lk-head">구성</div>
       <div className="build-row">
-        <label>위치(site)<input value={asset.site || ''} onChange={(e) => ed.setSite(assetId, e.target.value)} /></label>
+        <label>위치(site)<input
+          value={siteDraft}
+          onChange={(e) => setSiteDraft(e.target.value)}
+          onBlur={commitSite}
+          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); commitSite() } }}
+        /></label>
         <label>부대<select value={asset.unit || ''} onChange={(e) => ed.setUnit(assetId, e.target.value)}>
           <option value="">-</option>{(graph.units || []).map((u) => <option key={u.id} value={u.id}>{u.name || u.id}</option>)}</select></label>
       </div>
@@ -511,15 +525,16 @@ function Inspect({ graph, step, data, mode, editor, rules }) {
   const rows = []
   const add = (k, v) => rows.push([k, v])
   add('종류', KIND_KO[data.kind] || data.kind)
+  // an asset is editable in the build block below (site, unit, transit), so
+  // its rows and title read the live graph, not the selection snapshot
+  const live = data.kind === 'asset' ? (graph.assets || []).find((a) => a.id === data.id) : null
   if (data.kind === 'asset') {
-    add('자산 유형', data.assetTypeKo || data.assetType)
-    // site and unit are editable in the build block below, so read them from
-    // the graph rather than from the selection snapshot
-    const live = (graph.assets || []).find((a) => a.id === data.id) || data
-    const unitName = ((graph.units || []).find((u) => u.id === live.unit) || {}).name || live.unit || '-'
-    add('부대 / 위치', `${unitName} / ${live.site || '-'}`)
-    add('기동성', data.mobility)
-    add('중계', data.transit ? '가능' : '종단 단말(중계 안 함)')
+    const a = live || data
+    add('자산 유형', live ? typeKo(live.type) : (data.assetTypeKo || data.assetType))
+    const unitName = ((graph.units || []).find((u) => u.id === a.unit) || {}).name || a.unit || '-'
+    add('부대 / 위치', `${unitName} / ${a.site || '-'}`)
+    add('기동성', a.mobility || 'static')
+    add('중계', a.transit === false ? '종단 단말(중계 안 함)' : '가능')
     add('영향도', pct(num(step?.asset?.[data.id])))
     const c = (step?.asset_outage || {})[data.id]
     if (c) add('현재 단절', c)
@@ -544,7 +559,7 @@ function Inspect({ graph, step, data, mode, editor, rules }) {
   return (
     <div className="inspect">
       <div className="rail-head" style={{ marginBottom: 10 }}>
-        <h2>{data.siteName || data.label?.split('\n')[0] || data.id}</h2>
+        <h2>{live ? assetName(graph, data.id).ko : (data.siteName || data.label?.split('\n')[0] || data.id)}</h2>
         <span className="when">{data.id}</span>
       </div>
       <dl>{rows.map(([k, v]) => <div key={k} style={{ display: 'contents' }}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
