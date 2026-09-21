@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { CAUSE_COLOR } from '../graph.js'
 import { num, pct, missionRows, cutRows, actionRows, linkageOf, eventRows } from '../derive.js'
 import detection from '../detection.json'
-import { techniqueKo, techniqueMeaning, tacticKo } from '../labels.js'
+import { techniqueKo, techniqueMeaning, tacticKo, assetName } from '../labels.js'
+import { linkCandidates, missionCandidates, BEARER_ORDER } from '../sandbox.js'
 
 // The rail. Six stacked panels became one fixed block plus tabs (ADR-0024):
 // mission state is always visible because it is the answer to "how bad is it",
@@ -352,11 +353,48 @@ function nameOf(list, id) {
   return x ? x.name || id : id
 }
 
-function Linkage({ graph, assetId, mode, editor }) {
+function Linkage({ graph, assetId, mode, editor, rules }) {
   const link = linkageOf(graph, assetId)
   const asset = (graph.assets || []).find((a) => a.id === assetId)
   const ed = editor && editor.current
   const editing = mode === 'edit' && ed
+  // the rule table says which services a type can provide and which tasks it
+  // can perform; those come first, the rest fold away. No table: everything.
+  const mc = rules ? missionCandidates(graph, rules, assetId) : null
+  const split = (list, ids) => {
+    if (!mc) return [list, []]
+    const want = new Set(ids)
+    return [list.filter((x) => want.has(x.id)), list.filter((x) => !want.has(x.id))]
+  }
+  const [svcFirst, svcRest] = split(graph.services || [], mc ? mc.services : [])
+  const [taskFirst, taskRest] = split(graph.tasks || [], mc ? mc.tasks : [])
+  const svcRow = (svc) => (
+    <label className="chk lk-chk" key={svc.id}>
+      <input
+        type="checkbox"
+        checked={link.provides.includes(svc.id)}
+        onChange={(e) => {
+          const next = link.provides.filter((id) => id !== svc.id)
+          if (e.target.checked) next.push(svc.id)
+          ed.setProvidedBy(assetId, next)
+        }}
+      />
+      {svc.name || svc.id} <span className="ref">{svc.id}</span>
+    </label>
+  )
+  const taskRow = (t) => (
+    <label className="chk lk-chk" key={t.id}>
+      <input
+        type="checkbox"
+        checked={t.performed_at === assetId}
+        onChange={(e) => ed.setPerformedAt(t.id, e.target.checked ? assetId : null)}
+      />
+      {t.name || t.id} <span className="ref">{t.id}</span>
+      {t.performed_at && t.performed_at !== assetId && (
+        <span className="ref">지금: {t.performed_at}</span>
+      )}
+    </label>
+  )
   const rows = [
     ['서비스 제공', link.provides.map((id) => nameOf(graph.services, id))],
     ['작업 수행', link.hosts.map((id) => nameOf(graph.tasks, id))],
@@ -379,37 +417,20 @@ function Linkage({ graph, assetId, mode, editor }) {
       {editing && (
         <>
           <div className="lk-group">
-            <div className="lk-sub">이 자산이 제공하는 서비스</div>
-            {(graph.services || []).map((svc) => (
-              <label className="chk lk-chk" key={svc.id}>
-                <input
-                  type="checkbox"
-                  checked={link.provides.includes(svc.id)}
-                  onChange={(e) => {
-                    const next = link.provides.filter((id) => id !== svc.id)
-                    if (e.target.checked) next.push(svc.id)
-                    ed.setProvidedBy(assetId, next)
-                  }}
-                />
-                {svc.name || svc.id} <span className="ref">{svc.id}</span>
-              </label>
-            ))}
+            <div className="lk-sub">이 자산이 제공하는 서비스{mc ? ` - 유형에 맞는 ${svcFirst.length}` : ''}</div>
+            {svcFirst.map(svcRow)}
+            {mc && svcFirst.length === 0 && svcRest.length > 0 && <div className="none">이 유형이 제공하는 서비스 종류가 규칙표에 없다</div>}
+            {svcRest.length > 0 && (mc
+              ? <details className="lk-more"><summary>그 외 {svcRest.length}</summary>{svcRest.map(svcRow)}</details>
+              : svcRest.map(svcRow))}
           </div>
           <div className="lk-group">
-            <div className="lk-sub">이 자산에서 수행하는 작업</div>
-            {(graph.tasks || []).map((t) => (
-              <label className="chk lk-chk" key={t.id}>
-                <input
-                  type="checkbox"
-                  checked={t.performed_at === assetId}
-                  onChange={(e) => ed.setPerformedAt(t.id, e.target.checked ? assetId : null)}
-                />
-                {t.name || t.id} <span className="ref">{t.id}</span>
-                {t.performed_at && t.performed_at !== assetId && (
-                  <span className="ref">지금: {t.performed_at}</span>
-                )}
-              </label>
-            ))}
+            <div className="lk-sub">이 자산에서 수행하는 작업{mc ? ` - 유형에 맞는 ${taskFirst.length}` : ''}</div>
+            {taskFirst.map(taskRow)}
+            {mc && taskFirst.length === 0 && taskRest.length > 0 && <div className="none">이 유형이 수행하는 작업이 규칙표에 없다</div>}
+            {taskRest.length > 0 && (mc
+              ? <details className="lk-more"><summary>그 외 {taskRest.length}</summary>{taskRest.map(taskRow)}</details>
+              : taskRest.map(taskRow))}
           </div>
           <label className="chk lk-chk">
             <input
@@ -425,14 +446,78 @@ function Linkage({ graph, assetId, mode, editor }) {
   )
 }
 
-function Inspect({ graph, step, data, mode, editor }) {
+// Building the network. The rule table (data/link-rules.json) says which
+// types can link over which bearer and under what condition (wired needs the
+// same site, satcom needs a satcom terminal at one end); the candidate list is
+// that table applied to the board, so the person is told what can be wired
+// rather than left to guess and be refused. A link that no longer fits the
+// rule (site changed after wiring, bearer switched) is flagged, not removed:
+// the board stays the person's, the flag is the table's opinion.
+const WHY_KO = { site: '같은 위치', unit: '같은 부대', transit: '중계 노드', bearer: '베어러 일치' }
+
+function Build({ graph, assetId, editor, rules }) {
+  const ed = editor.current
+  const asset = (graph.assets || []).find((a) => a.id === assetId)
+  if (!asset) return null
+  const cands = linkCandidates(graph, rules, assetId)
+  const mine = (graph.links || []).filter((l) => l.a === assetId || l.b === assetId)
+  const known = !!(rules && rules.types && rules.types[asset.type])
+  const jewel = (graph.crown_jewels || []).includes(assetId)
+  const bearerOk = (l) => {
+    const o = (graph.assets || []).find((a) => a.id === (l.a === assetId ? l.b : l.a))
+    if (!known || !o || !rules.types[o.type]) return true
+    const both = (rules.types[asset.type].bearers || []).includes(l.bearer) && (rules.types[o.type].bearers || []).includes(l.bearer)
+    const r = (rules.bearers || {})[l.bearer] || {}
+    return both && !(r.same_site && asset.site !== o.site) && !(r.needs_type && asset.type !== r.needs_type && o.type !== r.needs_type)
+  }
+  return (
+    <div className="build">
+      <div className="lk-head">구성</div>
+      <div className="build-row">
+        <label>위치(site)<input value={asset.site || ''} onChange={(e) => ed.setSite(assetId, e.target.value)} /></label>
+        <label>부대<select value={asset.unit || ''} onChange={(e) => ed.setUnit(assetId, e.target.value)}>
+          <option value="">-</option>{(graph.units || []).map((u) => <option key={u.id} value={u.id}>{u.name || u.id}</option>)}</select></label>
+      </div>
+      <label className="chk lk-chk"><input type="checkbox" checked={jewel} onChange={() => ed.toggleJewel(assetId)} /> 보석(crown jewel)으로 표시 - 보석 방어 모드의 패배 조건</label>
+
+      <div className="lk-sub">연결 가능 {known ? `(${cands.length})` : '- 규칙표에 없는 유형'}</div>
+      {cands.slice(0, 8).map((c) => (
+        <div className="build-cand" key={`${c.id}:${c.bearer}`}>
+          <span>{assetName(graph, c.id).ko}<em className="ref">{c.id}</em></span>
+          <span className="build-bearer">{c.bearer}</span>
+          <span className="build-why">{WHY_KO[c.why]}</span>
+          <button type="button" className="req-btn" onClick={() => ed.addLinkWith(assetId, c.id, c.bearer)}>연결</button>
+        </div>
+      ))}
+      {known && cands.length === 0 && <div className="none">지금 연결할 수 있는 상대가 없다. 같은 위치의 자산을 놓거나 베어러가 맞는 중계 노드를 두어라.</div>}
+
+      {mine.length > 0 && <div className="lk-sub">이 자산의 링크</div>}
+      {mine.map((l) => (
+        <div className="build-cand" key={l.id}>
+          <span>{assetName(graph, l.a === assetId ? l.b : l.a).ko}<em className="ref">{l.id}</em></span>
+          <select value={l.bearer} onChange={(e) => ed.setLinkBearer(l.id, e.target.value)}>
+            {BEARER_ORDER.map((b) => <option key={b} value={b}>{b}</option>)}
+          </select>
+          {!bearerOk(l) && <span className="build-warn">규칙 밖</span>}
+          <button type="button" className="req-btn" onClick={() => ed.removeLink(l.id)}>끊기</button>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function Inspect({ graph, step, data, mode, editor, rules }) {
   if (!data) return <div className="inspect-empty">노드를 클릭하면 기여 경로가 나온다.</div>
   const rows = []
   const add = (k, v) => rows.push([k, v])
   add('종류', KIND_KO[data.kind] || data.kind)
   if (data.kind === 'asset') {
     add('자산 유형', data.assetTypeKo || data.assetType)
-    add('부대 / 위치', `${data.unitName || data.unit} / ${data.site}`)
+    // site and unit are editable in the build block below, so read them from
+    // the graph rather than from the selection snapshot
+    const live = (graph.assets || []).find((a) => a.id === data.id) || data
+    const unitName = ((graph.units || []).find((u) => u.id === live.unit) || {}).name || live.unit || '-'
+    add('부대 / 위치', `${unitName} / ${live.site || '-'}`)
     add('기동성', data.mobility)
     add('중계', data.transit ? '가능' : '종단 단말(중계 안 함)')
     add('영향도', pct(num(step?.asset?.[data.id])))
@@ -463,7 +548,10 @@ function Inspect({ graph, step, data, mode, editor }) {
         <span className="when">{data.id}</span>
       </div>
       <dl>{rows.map(([k, v]) => <div key={k} style={{ display: 'contents' }}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
-      {data.kind === 'asset' && <Linkage graph={graph} assetId={data.id} mode={mode} editor={editor} />}
+      {data.kind === 'asset' && mode === 'edit' && editor && editor.current && (
+        <Build graph={graph} assetId={data.id} editor={editor} rules={rules} />
+      )}
+      {data.kind === 'asset' && <Linkage graph={graph} assetId={data.id} mode={mode} editor={editor} rules={rules} />}
     </div>
   )
 }
@@ -477,7 +565,7 @@ const TABS = [
 export default function Rail({
   graph, step, scenarioId, edited, when, tab, onTab,
   requests, onRequest, selectedData, onToast, mode, wargameSlot, editor,
-  payload, idx, onSeekIdx,
+  payload, idx, onSeekIdx, rules, sandbox,
 }) {
   const cuts = cutRows(graph, step).length
   const acts = actionRows(graph, step).length
@@ -510,7 +598,7 @@ export default function Rail({
           <div className="rail-body">
             {tab === 'cuts' && <Cuts graph={graph} step={step} />}
             {tab === 'actions' && <Actions graph={graph} step={step} requests={requests} onRequest={onRequest} />}
-            {tab === 'inspect' && <Inspect graph={graph} step={step} data={selectedData} mode={mode} editor={editor} />}
+            {tab === 'inspect' && <Inspect graph={graph} step={step} data={selectedData} mode={mode} editor={editor} rules={rules} />}
           </div>
         </>
       )}

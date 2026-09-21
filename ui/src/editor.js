@@ -13,6 +13,7 @@
 
 import { symbolDataUri } from './symbols.js' // eslint-disable-line no-unused-vars
 import { iconSvgMarkup } from './icons.js'
+import { placeFree } from './sandbox.js'
 
 // The palette. Types match configs/symbology-2525.json so a placed node gets a
 // real symbol rather than a blank box.
@@ -81,6 +82,9 @@ export function createEditor({ paletteEl, onChange, getGraph, getCy }) {
       mobility: 'static',
       transit: item.transit,
       _added: true,
+      // a georeferenced graph draws every asset on the map, so a new one needs
+      // a point: the first free cell, not a hidden default
+      ...(g.geo && g.geo.georef ? { geo: { kind: 'fixed', frame: g.geo.frame && g.geo.frame.id, source: 'sandbox', accuracy_m: 0, at: placeFree(g) } } : {}),
     })
     onChange({ reason: 'add-asset', id })
     return id
@@ -121,6 +125,43 @@ export function createEditor({ paletteEl, onChange, getGraph, getCy }) {
     const g = getGraph()
     g.links = (g.links || []).filter((l) => l.id !== id)
     onChange({ reason: 'remove-link', id })
+  }
+
+  // The inspector's candidate list already knows which bearer the rule table
+  // allows between two types, so it hands the bearer over with the pair.
+  function addLinkWith(a, b, bearer) {
+    const id = addLink(a, b)
+    if (id && bearer) setLinkBearer(id, bearer)
+    return id
+  }
+
+  // site and unit are what the link rules read (wired needs the same site), so
+  // they are edited here rather than only shown
+  function setSite(assetId, site) {
+    const g = getGraph()
+    g.assets = (g.assets || []).map((x) => (x.id === assetId ? { ...x, site: String(site || '').trim() || '신규' } : x))
+    onChange({ reason: 'site', id: assetId })
+  }
+
+  function setUnit(assetId, unit) {
+    const g = getGraph()
+    g.assets = (g.assets || []).map((x) => (x.id === assetId ? { ...x, unit: unit || null } : x))
+    onChange({ reason: 'unit', id: assetId })
+  }
+
+  function toggleJewel(assetId) {
+    const g = getGraph()
+    const cj = new Set(g.crown_jewels || [])
+    if (cj.has(assetId)) cj.delete(assetId); else cj.add(assetId)
+    g.crown_jewels = [...cj]
+    onChange({ reason: 'jewel', id: assetId })
+  }
+
+  function moveAsset(assetId, x, y) {
+    const g = getGraph()
+    g.assets = (g.assets || []).map((a) => (a.id === assetId && a.geo && a.geo.kind === 'fixed'
+      ? { ...a, geo: { ...a.geo, at: { ...(a.geo.at || {}), x: Math.round(x), y: Math.round(y), z: (a.geo.at && a.geo.at.z) || 0 } } } : a))
+    onChange({ reason: 'move', id: assetId })
   }
 
   // ------------------------------------------------------------ mission layer
@@ -247,8 +288,9 @@ export function createEditor({ paletteEl, onChange, getGraph, getCy }) {
   }
 
   return {
-    renderPalette, setTool, handleTap, addLink, removeAsset, removeLink,
+    renderPalette, setTool, handleTap, addLink, addLinkWith, removeAsset, removeLink,
     setProvidedBy, setPerformedAt, setTransit, setLinkBearer, missionLinkage,
+    setSite, setUnit, toggleJewel, moveAsset,
     get tool() { return tool }, BEARERS,
   }
 }

@@ -400,6 +400,27 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
 .action .req-btn { white-space: nowrap; flex: none; }
 .action-detail > span:first-child { min-width: 0; }
 
+/* inspector build block (sandbox, ADR-0027): site, unit, jewel, then the link
+   candidates the rule table allows and this asset's own links. Achromatic like
+   the rest of the rail; the one mark, 규칙 밖, is the unknown-cause amber. */
+.build { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--line-strong); }
+.build .lk-head { font-size: 11px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; letter-spacing: .02em; }
+.build .lk-sub { font-size: 11px; color: var(--text-muted); margin: 10px 0 4px; }
+.build .lk-chk { display: flex; margin: 3px 0; }
+.build-row { display: flex; gap: 8px; margin: 6px 0 8px; }
+.build-row label { flex: 1; display: flex; flex-direction: column; gap: 3px; font-size: 11px; color: var(--text-muted); }
+.build-row input, .build-row select { padding: 4px 7px; font-size: 12px; background: var(--surface-raised); border: 1px solid var(--line-strong); border-radius: 4px; color: var(--text-primary); }
+.build-cand { display: flex; align-items: center; gap: 6px; padding: 5px 0; border-bottom: 1px solid var(--line-soft); font-size: 12px; }
+.build-cand > span:first-child { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.build-bearer { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; color: var(--text-secondary); }
+.build-why { font-size: 10.5px; color: var(--text-muted); }
+.build-warn { font-size: 10px; padding: 1px 6px; border-radius: 3px; border: 1px solid var(--unknown); color: var(--unknown); }
+.build-cand select { font-size: 11px; padding: 2px 6px; }
+.build .req-btn { white-space: nowrap; flex: none; font-size: 11px; padding: 3px 9px; color: var(--text-secondary); }
+/* mission linkage: the rule table's picks first, the rest folded */
+.linkage .lk-more { margin-top: 4px; }
+.linkage .lk-more summary { cursor: pointer; font-size: 11px; color: var(--text-muted); }
+
 /* geo layout, corrected: the pane must fill the canvas box the way #cy does,
    otherwise geo.js measures a zero-height container and draws nothing. */
 .geo-pane {

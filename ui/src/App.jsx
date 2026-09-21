@@ -471,7 +471,7 @@ export default function App() {
           when={when} tab={tab} onTab={setTab}
           requests={requests} onRequest={onRequest}
           selectedData={selectedData} onToast={setToast} mode={mode}
-          editor={editorRef}
+          editor={editorRef} rules={rules} sandbox={isSandbox}
           payload={payload} idx={idx} onSeekIdx={(i) => setIdx(i)}
           wargameSlot={mode === 'wargame' ? (
             // keyed on the scenario so a switch unmounts the panel: its
