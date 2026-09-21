@@ -1,5 +1,6 @@
 import { kpiOf, clockOf, pct } from '../derive.js'
 import { CAUSE_COLOR } from '../graph.js'
+import { SANDBOX_ID } from '../sandbox.js'
 
 // Top strip. Achromatic by rule (ADR-0024/0025): the numbers are big, the
 // chrome is not coloured, and the only hue is the cause dot on the cut count.
@@ -18,14 +19,13 @@ function Ring({ value }) {
   )
 }
 
-const SANDBOX_ID = 'sandbox-01'
 const scenarioLabel = (id) => (id === SANDBOX_ID ? `${id} · 교전장` : id)
 
 export default function Topbar({ scenarios, scenarioId, onScenario, mode, onMode, phases, onHelp, graph, step, game, sandbox = false }) {
   const k = kpiOf(graph, step)
   // The sandbox has no time axis, so every phase is active at once; listing
-  // five names overflows the strip, so say so in two words instead.
-  const phaseText = sandbox && phases.length >= 5 ? '전체(정적)' : phases.join(' · ')
+  // every name overflows the strip, so say so in two words instead.
+  const phaseText = sandbox ? '전체(정적)' : phases.join(' · ')
   const clock = clockOf(step)
   // During a game the engine sees an isolated asset as compromise 1
   // (game.js compromiseOf), so the projected step counts it as compromised.

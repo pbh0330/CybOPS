@@ -49,6 +49,21 @@ describe('addLinkWith placement', () => {
     expect(at(g, 'AUTH-01')).toEqual({ x: 5000, y: 5000, z: 0 })
     expect(Math.round(dist(at(g, n), at(g, 'AUTH-01')))).toBe(150)
   })
+  it('is one commit: link, bearer and placement land in a single onChange', () => {
+    const { g, ed, changes } = harness()
+    const a = ed.addAsset({ type: 'c2-server', transit: true })
+    const b = ed.addAsset({ type: 'satcom-terminal', transit: true })
+    changes.length = 0
+    const id = ed.addLinkWith(a, b, 'satcom')
+    expect(changes).toEqual([{ reason: 'link', id }])
+    expect(g.links.find((l) => l.id === id).bearer).toBe('satcom')
+    expect(Math.round(dist(at(g, a), at(g, b)))).toBe(150)
+    changes.length = 0
+    expect(ed.addLinkWith(a, b, 'satcom')).toBeNull()                    // duplicate: no commit at all
+    expect(changes).toEqual([])
+    ed.addLink(b, ed.addAsset({ type: 'switch', transit: true }))       // palette path keeps its own single commit
+    expect(changes.map((c) => c.reason)).toEqual(['add-asset', 'add-link'])
+  })
   it('a duplicate link moves nothing', () => {
     const { g, ed } = harness()
     const a = ed.addAsset({ type: 'c2-server', transit: true })

@@ -50,6 +50,15 @@ export async function loadRules(base = './data/link-rules.json') {
 }
 export function rules() { return rulesCache }
 
+// Why the inspector has no candidates for a type: null when the rule table
+// knows it, otherwise the string the inspector shows. A table that failed to
+// load is a different message from a type the table does not list.
+export function ruleGap(rules, type) {
+  if (!rules || !rules.types || !Object.keys(rules.types).length) return '규칙표 없음'
+  if (!rules.types[type]) return '규칙표에 없는 유형'
+  return null
+}
+
 const byId = (g, id) => (g.assets || []).find((a) => a.id === id)
 const linked = (g, a, b) => (g.links || []).some((l) => (l.a === a && l.b === b) || (l.a === b && l.b === a))
 // '신규' is the placeholder a freshly placed asset carries, not a place; two of
@@ -109,7 +118,13 @@ export function readiness(g) {
   // noise. runChain never reads geo (Test-GeoInvariance).
   let unreachable = []
   if (sMissing.length === 0 && tMissing.length === 0) {
-    const base = runChain(g, {}, { t: -1, method: 'weighted', causes: 'all' })
+    // With no links at all the engine treats everything as reachable (parity
+    // with the reference). A board that has more than one asset and no link is
+    // not that case, so probe it with one self-loop: connectivity is unchanged,
+    // but the engine now applies its reachability rule.
+    const noLinks = !(g.links || []).length && (g.assets || []).length > 1
+    const probe = noLinks ? { ...g, links: [{ id: '_probe', a: g.assets[0].id, b: g.assets[0].id }] } : g
+    const base = runChain(probe, {}, { t: -1, method: 'weighted', causes: 'all' })
     unreachable = (g.tasks || []).filter((t) => Number(base.task[t.id] || 0) > 1e-9).map((t) => t.id)
   }
   const services = { ok: (g.services || []).length - sMissing.length, total: (g.services || []).length, missing: sMissing }
@@ -150,6 +165,13 @@ export function placeFree(g) {
   return { x: ext.x[0] + 1000, y: ext.y[0] + 1000, z: 0 }
 }
 
+// The graph is written to localStorage and drawn by cytoscape on the next
+// load, and cytoscape throws on an edge whose end does not exist - a file
+// that gets past this check with a hole in it kills the app on every reload.
+// So every edge kind is walked, not only the links.
+const EDGE_KINDS = ['requires', 'provided_by', 'hosted_on', 'depends_on', 'redundant_with']
+const pairKey = (e) => `${e.from}>${e.to}`
+
 export function validateImport(sandbox, graph) {
   const errors = []
   const t = sandbox.graph
@@ -159,8 +181,32 @@ export function validateImport(sandbox, graph) {
     if (!same('missions')) errors.push('임무 목록이 템플릿과 다르다')
     if (!same('tasks')) errors.push('작업 목록이 템플릿과 다르다')
     if (!same('services')) errors.push('서비스 목록이 템플릿과 다르다')
+    if (!Array.isArray(graph.links)) errors.push('links 배열이 없다')
+    if (graph.edges != null && (typeof graph.edges !== 'object' || Array.isArray(graph.edges))) errors.push('edges 가 객체가 아니다')
+    const E = graph.edges && typeof graph.edges === 'object' && !Array.isArray(graph.edges) ? graph.edges : {}
+    const kinds = new Set([...EDGE_KINDS, ...Object.keys(E).filter((k) => !k.startsWith('_'))])
+    for (const k of kinds) {
+      const has = ((t.edges || {})[k] || []).length > 0
+      if (E[k] === undefined) { if (has) errors.push(`edges.${k} 배열이 없다`); continue }
+      if (!Array.isArray(E[k])) errors.push(`edges.${k} 가 배열이 아니다`)
+    }
     const ids = new Set(graph.assets.map((a) => a.id))
-    for (const l of graph.links || []) if (!ids.has(l.a) || !ids.has(l.b)) errors.push(`링크 ${l.id} 의 끝이 없는 자산을 가리킨다`)
+    const seen = new Set()
+    for (const a of graph.assets) { if (seen.has(a.id)) errors.push(`자산 id ${a.id} 가 중복된다`); seen.add(a.id) }
+    if (Array.isArray(graph.links)) for (const l of graph.links) if (!ids.has(l.a) || !ids.has(l.b)) errors.push(`링크 ${l.id} 의 끝이 없는 자산을 가리킨다`)
+    const nodes = new Set([...ids, ...(graph.services || []).map((s) => s.id), ...(graph.tasks || []).map((x) => x.id)])
+    for (const k of kinds) {
+      if (!Array.isArray(E[k])) continue
+      E[k].forEach((e, i) => {
+        const ends = e && typeof e === 'object' ? ('a' in e || 'b' in e ? [e.a, e.b] : [e.from, e.to]) : [undefined, undefined]
+        if (!ends.every((x) => nodes.has(x))) errors.push(`edges.${k}[${i}] 의 끝이 없는 노드를 가리킨다`)
+      })
+    }
+    if (Array.isArray(E.requires)) {
+      const want = ((t.edges || {}).requires || []).map(pairKey).sort()
+      const got = E.requires.map((e) => (e && typeof e === 'object' ? pairKey(e) : '')).sort()
+      if (JSON.stringify(want) !== JSON.stringify(got)) errors.push('edges.requires 가 템플릿과 다르다')
+    }
   }
   return { ok: errors.length === 0, errors }
 }

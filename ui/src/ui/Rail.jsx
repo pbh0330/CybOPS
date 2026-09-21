@@ -3,7 +3,7 @@ import { CAUSE_COLOR } from '../graph.js'
 import { num, pct, missionRows, cutRows, actionRows, linkageOf, eventRows } from '../derive.js'
 import detection from '../detection.json'
 import { techniqueKo, techniqueMeaning, tacticKo, assetName, typeKo } from '../labels.js'
-import { linkCandidates, missionCandidates, siteOf, BEARER_ORDER } from '../sandbox.js'
+import { linkCandidates, missionCandidates, siteOf, ruleGap, BEARER_ORDER } from '../sandbox.js'
 import Readiness from './Readiness.jsx'
 
 // The rail. Six stacked panels became one fixed block plus tabs (ADR-0024):
@@ -469,7 +469,10 @@ function Build({ graph, assetId, editor, rules }) {
   const commitSite = () => { if (siteDraft !== liveSite) ed.setSite(assetId, siteDraft) }
   const cands = linkCandidates(graph, rules, assetId)
   const mine = (graph.links || []).filter((l) => l.a === assetId || l.b === assetId)
-  const known = !!(rules && rules.types && rules.types[asset.type])
+  // null when the table knows the type; else the reason ('규칙표 없음' when
+  // link-rules.json did not load, '규칙표에 없는 유형' otherwise)
+  const gap = ruleGap(rules, asset.type)
+  const known = !gap
   const jewel = (graph.crown_jewels || []).includes(assetId)
   const bearerOk = (l) => {
     const o = (graph.assets || []).find((a) => a.id === (l.a === assetId ? l.b : l.a))
@@ -495,7 +498,7 @@ function Build({ graph, assetId, editor, rules }) {
       </div>
       <label className="chk lk-chk"><input type="checkbox" checked={jewel} onChange={() => ed.toggleJewel(assetId)} /> 보석(crown jewel)으로 표시 - 보석 방어 모드의 패배 조건</label>
 
-      <div className="lk-sub">연결 가능 {known ? `(${cands.length})` : '- 규칙표에 없는 유형'}</div>
+      <div className="lk-sub">연결 가능 {known ? `(${cands.length})` : `- ${gap}`}</div>
       {cands.slice(0, 8).map((c) => (
         <div className="build-cand" key={`${c.id}:${c.bearer}`}>
           <span>{assetName(graph, c.id).ko}<em className="ref">{c.id}</em></span>

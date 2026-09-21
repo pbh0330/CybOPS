@@ -287,6 +287,9 @@ export default function App() {
     const g = obj && obj.graph ? obj.graph : obj
     const v = validateImport(payload, g)
     if (!v.ok) { setToast(`불러오기 거부: ${v.errors.join(' / ')}`); return }
+    // a tacnet-01 replay passes the mission-layer check but carries its own
+    // id; what lands on this board is the sandbox, whatever the file said
+    g.scenario_id = SANDBOX_ID
     hist.current.past.push(structuredClone(graphRef.current))
     if (hist.current.past.length > HISTORY_MAX) hist.current.past.shift()
     hist.current.future = []

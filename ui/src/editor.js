@@ -90,8 +90,9 @@ export function createEditor({ paletteEl, onChange, getGraph, getCy }) {
     return id
   }
 
-  function addLink(a, b) {
-    const g = getGraph()
+  // pushes the link and returns its id, or null for a self-link or a
+  // duplicate; the caller commits, so one gesture is one undo step
+  function pushLink(g, a, b, bearer) {
     if (a === b) return null
     const exists = (g.links || []).some((l) => (l.a === a && l.b === b) || (l.a === b && l.b === a))
     if (exists) return null
@@ -100,7 +101,14 @@ export function createEditor({ paletteEl, onChange, getGraph, getCy }) {
     const used = new Set(g.links.map((l) => l.id))
     while (used.has(`L-NEW-${i}`)) i++
     const id = `L-NEW-${i}`
-    g.links.push({ id, a, b, bearer: 'wired', _added: true })
+    g.links.push({ id, a, b, bearer: bearer || 'wired', _added: true })
+    return id
+  }
+
+  function addLink(a, b) {
+    const g = getGraph()
+    const id = pushLink(g, a, b)
+    if (!id) return null
     onChange({ reason: 'add-link', id })
     return id
   }
@@ -134,17 +142,19 @@ export function createEditor({ paletteEl, onChange, getGraph, getCy }) {
   // (addAsset), and the moment it is wired to something it moves to a 150 m
   // ring beside that something. Only an asset this editor added, and only its
   // first link - an authored position, or one the user already dragged and
-  // wired, is never second-guessed. Read from the graph AFTER addLink pushed
-  // the link, so "first link" is "exactly one link".
+  // wired, is never second-guessed. Read from the graph AFTER pushLink added
+  // the link, so "first link" is "exactly one link". Link, bearer and
+  // placement are one gesture, so they commit once: one undo step, and no
+  // transient 'wired' bearer in the history.
   function addLinkWith(a, b, bearer) {
-    const id = addLink(a, b)
-    if (!id) return null
-    if (bearer) setLinkBearer(id, bearer)
     const g = getGraph()
+    const id = pushLink(g, a, b, bearer)
+    if (!id) return null
     const byId = (x) => (g.assets || []).find((k) => k.id === x)
     const fresh = (x) => { const k = byId(x); return !!(k && k._added) && (g.links || []).filter((l) => l.a === x || l.b === x).length === 1 }
-    if (fresh(b)) { const p = placeNear(g, a); moveAsset(b, p.x, p.y) }
-    else if (fresh(a)) { const p = placeNear(g, b); moveAsset(a, p.x, p.y) }
+    if (fresh(b)) { const p = placeNear(g, a); place(g, b, p.x, p.y) }
+    else if (fresh(a)) { const p = placeNear(g, b); place(g, a, p.x, p.y) }
+    onChange({ reason: 'link', id })
     return id
   }
 
@@ -170,10 +180,14 @@ export function createEditor({ paletteEl, onChange, getGraph, getCy }) {
     onChange({ reason: 'jewel', id: assetId })
   }
 
-  function moveAsset(assetId, x, y) {
-    const g = getGraph()
+  function place(g, assetId, x, y) {
     g.assets = (g.assets || []).map((a) => (a.id === assetId && a.geo && a.geo.kind === 'fixed'
       ? { ...a, geo: { ...a.geo, at: { ...(a.geo.at || {}), x: Math.round(x), y: Math.round(y), z: (a.geo.at && a.geo.at.z) || 0 } } } : a))
+  }
+
+  // the drag path: its own single commit
+  function moveAsset(assetId, x, y) {
+    place(getGraph(), assetId, x, y)
     onChange({ reason: 'move', id: assetId })
   }
 

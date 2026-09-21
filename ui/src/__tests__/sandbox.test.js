@@ -3,7 +3,7 @@ import replay from '../../public/data/tacnet-01.replay.json'
 import rules from '../../public/data/link-rules.json'
 import {
   makeSandbox, linkCandidates, missionCandidates, readiness, placeFree, placeNear,
-  validateImport, listPlans, savePlan, loadPlan, deletePlan, SANDBOX_ID, siteOf,
+  validateImport, listPlans, savePlan, loadPlan, deletePlan, SANDBOX_ID, siteOf, ruleGap,
 } from '../sandbox.js'
 
 const tg = replay.graph
@@ -24,7 +24,8 @@ describe('makeSandbox', () => {
     expect(sb.graph.timeline).toBeUndefined()
     expect(sb.graph.phases.every((p) => !p.window)).toBe(true)
     expect(sb.graph.geo.georef.anchor.lat).toBe(38.02)
-    expect(sb.graph.geo.terrain).toBeUndefined()
+    expect(tg.geo.dem_source).toBeDefined()               // the template has it
+    expect(sb.graph.geo.dem_source).toBeUndefined()       // the sandbox drops it
     expect(sb.steps).toEqual([])
   })
   it('does not share objects with the template', () => {
@@ -73,6 +74,13 @@ describe('linkCandidates', () => {
     expect(linkCandidates(g, rules, 'NOPE')).toEqual([])
     g.assets.push({ id: 'X', type: 'toaster', site: '여단 TOC' })
     expect(linkCandidates(g, rules, 'X')).toEqual([])
+  })
+  it('ruleGap tells a missing table from a type the table does not list', () => {
+    expect(ruleGap(rules, 'c2-server')).toBeNull()
+    expect(ruleGap(rules, 'toaster')).toBe('규칙표에 없는 유형')
+    expect(ruleGap(null, 'c2-server')).toBe('규칙표 없음')
+    expect(ruleGap({}, 'c2-server')).toBe('규칙표 없음')
+    expect(ruleGap({ types: {} }, 'c2-server')).toBe('규칙표 없음')
   })
   it('a placeholder or missing site is not a site: no wired candidates, no site rank', () => {
     const g = g3()
@@ -146,6 +154,24 @@ describe('readiness', () => {
     expect(r2.unreachable).toEqual([])
     expect(r2.ready).toBe(true)
   })
+  it('a board with more than one asset and no link is not reachable', () => {
+    // nine assets, zero links: every service on SRV-01, every task on an
+    // asset that is not SRV-01. The engine alone would read a link-less graph
+    // as fully reachable; the gate probes it with a self-loop instead.
+    const g = g3()
+    g.links = []
+    for (let i = 2; i <= 5; i++) g.assets.push({ id: `WKS-0${i}`, type: 'workstation', unit: 'U-BDE', site: '신규', transit: false })
+    expect(g.assets.length).toBe(9)
+    g.edges.provided_by = ['S-C2MSG', 'S-BFT', 'S-VOICE', 'S-FIRE', 'S-INTEL'].map((s) => ({ from: s, to: 'SRV-01', w: 1 }))
+    const others = g.assets.map((a) => a.id).filter((id) => id !== 'SRV-01')
+    g.tasks = g.tasks.map((t, i) => ({ ...t, performed_at: others[i % others.length] }))
+    const r = readiness(g)
+    expect(r.services.missing).toEqual([])
+    expect(r.tasks.missing).toEqual([])
+    expect(r.unreachable.length).toBe(8)
+    expect(r.ready).toBe(false)
+    expect(g.links).toEqual([])                          // the probe never touches the board
+  })
   it('a performer that hosts the provider is reachable with no link', () => {
     const g = g3()
     g.links = []
@@ -193,6 +219,47 @@ describe('validateImport', () => {
     expect(r.ok).toBe(false)
     expect(r.errors.length).toBeGreaterThan(0)
     expect(validateImport(sb, { assets: 'x' }).ok).toBe(false)
+  })
+  it('accepts the template replay graph itself', () => {
+    const sb = makeSandbox(replay)
+    expect(validateImport(sb, structuredClone(tg))).toEqual({ ok: true, errors: [] })
+  })
+  it('rejects an edge whose end is not on the board', () => {
+    const sb = makeSandbox(replay)
+    const g = g3()
+    g.edges.provided_by = [{ from: 'S-C2MSG', to: 'GHOST', w: 1 }]
+    const r = validateImport(sb, g)
+    expect(r.ok).toBe(false)
+    expect(r.errors.some((e) => e.includes('provided_by'))).toBe(true)
+    const h = g3()
+    h.edges.hosted_on = [{ from: 'SRV-01', to: 'NOPE' }]
+    expect(validateImport(sb, h).ok).toBe(false)
+  })
+  it('rejects a non-array links or edges list without throwing', () => {
+    const sb = makeSandbox(replay)
+    const g = g3(); g.links = {}
+    let r
+    expect(() => { r = validateImport(sb, g) }).not.toThrow()
+    expect(r.ok).toBe(false)
+    const h = g3(); h.edges.provided_by = { from: 'S-C2MSG', to: 'SRV-01' }
+    expect(validateImport(sb, h).ok).toBe(false)
+    const k = g3(); k.edges = []
+    expect(validateImport(sb, k).ok).toBe(false)
+  })
+  it('requires the template requires pairs and unique asset ids', () => {
+    const sb = makeSandbox(replay)
+    const g = g3(); delete g.edges.requires
+    expect(validateImport(sb, g).ok).toBe(false)
+    const h = g3(); h.edges.requires = h.edges.requires.slice(1)
+    expect(validateImport(sb, h).ok).toBe(false)
+    const k = g3(); k.edges.requires = k.edges.requires.map((e) => ({ from: e.from, to: e.to }))  // same pairs, no w/hard: fine
+    expect(validateImport(sb, k).ok).toBe(true)
+    const d = g3(); d.assets.push({ ...d.assets[0] })
+    const r = validateImport(sb, d)
+    expect(r.ok).toBe(false)
+    expect(r.errors.some((e) => e.includes('중복'))).toBe(true)
+    const m = g3(); delete m.edges.provided_by                              // template has none: absent is fine
+    expect(validateImport(sb, m).ok).toBe(true)
   })
 })
 
