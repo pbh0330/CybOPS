@@ -480,6 +480,7 @@ export default function App() {
               key={scenarioId}
               graph={graph} payload={payload} idx={idx} game={game} onGame={setGame}
               onSeekIdx={(i) => setIdx(i)} onToast={setToast} onMode={setMode}
+              sandbox={isSandbox}
             />
           ) : null}
         />

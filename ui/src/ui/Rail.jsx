@@ -4,6 +4,7 @@ import { num, pct, missionRows, cutRows, actionRows, linkageOf, eventRows } from
 import detection from '../detection.json'
 import { techniqueKo, techniqueMeaning, tacticKo, assetName, typeKo } from '../labels.js'
 import { linkCandidates, missionCandidates, siteOf, BEARER_ORDER } from '../sandbox.js'
+import Readiness from './Readiness.jsx'
 
 // The rail. Six stacked panels became one fixed block plus tabs (ADR-0024):
 // mission state is always visible because it is the answer to "how bad is it",
@@ -588,6 +589,8 @@ export default function Rail({
 
   return (
     <aside className="rail">
+      {/* sandbox: whether the board is playable comes before how bad it is */}
+      {sandbox && graph && <Readiness graph={graph} />}
       <MissionState graph={graph} step={step} when={when} />
 
       {mode === 'wargame' ? (

@@ -4,6 +4,7 @@ import { assetName, techniqueLine } from '../labels.js'
 import { startGame, defaultFoothold, legalFor, defend, pass, attackerTurn, staffTable, compromiseOf } from '../game.js'
 import { staffFacts, narrateStaff } from '../staff-llm.mjs'
 import { runChain } from '../engine.js'
+import { readiness } from '../sandbox.js'
 
 // The wargame panel (ADR-0026). Every number on it comes from game.js; this
 // file only draws and forwards clicks. The three boundaries of the old
@@ -27,7 +28,7 @@ async function getLlmChooser(seed) {
   return llmChooser
 }
 
-function StartCard({ graph, payload, idx, llmOk, llmNote, onStart }) {
+function StartCard({ graph, payload, idx, llmOk, llmNote, onStart, readyState }) {
   const steps = payload?.steps || []
   const foot = defaultFoothold(payload)
   // the select lists graph.assets; with an edited graph the scenario's
@@ -41,6 +42,16 @@ function StartCard({ graph, payload, idx, llmOk, llmNote, onStart }) {
   const [turns, setTurns] = useState(8)
   const [strategy, setStrategy] = useState('greedy')
   const [seed, setSeed] = useState(20260906)
+  // readiness gate (sandbox, ADR-0027): a service without a provider reads
+  // as degradation 0, so a half-built board would play as a healthy one.
+  // Outside the sandbox readyState is always open.
+  const ready = !!readyState.ready
+  const jewels = readyState.jewels
+  const shortS = (readyState.services && readyState.services.missing || []).length
+  const shortT = (readyState.tasks && readyState.tasks.missing || []).length
+  // jewel mode needs a jewel; if the last one is un-marked while the card is
+  // up, the mode falls back rather than starting a game with nothing to hold
+  useEffect(() => { if (jewels === 0 && mode === 'jewel') setMode('hold') }, [jewels, mode])
   // no steps (the sandbox, ADR-0027): there is no time axis, the engine runs
   // static at t = -1 and the picker has one entry to say so
   const t = steps[stepIdx] ? Number(steps[stepIdx].t) : (steps.length ? 0 : -1)
@@ -64,7 +75,7 @@ function StartCard({ graph, payload, idx, llmOk, llmNote, onStart }) {
       </div>
       <div className="wg-row2">
         <label className="wg-pick"><span>모드</span>
-          <select value={mode} onChange={(e) => setMode(e.target.value)}>{MODES.map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>
+          <select value={mode} onChange={(e) => setMode(e.target.value)}>{MODES.map(([k, l]) => <option key={k} value={k} disabled={k === 'jewel' && jewels === 0}>{l}{k === 'jewel' && jewels === 0 ? ' (보석 없음)' : ''}</option>)}</select></label>
         <label className="wg-pick"><span>턴</span>
           <select value={turns} onChange={(e) => setTurns(Number(e.target.value))}>{[4, 8, 12].map((n) => <option key={n} value={n}>{n}</option>)}</select></label>
       </div>
@@ -80,7 +91,8 @@ function StartCard({ graph, payload, idx, llmOk, llmNote, onStart }) {
       </div>
       {!llmOk && llmNote && <div className="wg-llm-note">LLM 공격자 사용 불가<span>{llmNote}</span></div>}
       <p className="rail-caption">{mode === 'hold' ? `${turns}턴 동안 P1 임무 저하도를 50% 미만으로 지키면 승. 점수는 턴별 가중 저하도의 합(낮을수록 좋음).` : `${turns}턴 동안 crown jewel 이 장악되지 않으면 승. 점수 = 버틴 턴×100 − 격리 비용.`}</p>
-      <button type="button" className="wg-start-go" onClick={() => onStart({ mode, turns, t, foothold: { id: footId, level }, seed, strategy, method: 'weighted' }, stepIdx)}>시작</button>
+      <button type="button" className="wg-start-go" disabled={!ready} onClick={() => onStart({ mode, turns, t, foothold: { id: footId, level }, seed, strategy, method: 'weighted' }, stepIdx)}>시작</button>
+      {!ready && <p className="wg-lock">준비도 미충족 - 서비스 {shortS}·작업 {shortT} 이 비어 있다</p>}
     </div>
   )
 }
@@ -166,7 +178,7 @@ function Aar({ graph, game, onAgain, onNewSeed, onObserve }) {
   )
 }
 
-export default function Wargame({ graph, payload, idx, game, onGame, onSeekIdx, onToast, onMode }) {
+export default function Wargame({ graph, payload, idx, game, onGame, onSeekIdx, onToast, onMode, sandbox }) {
   const [probe, setProbe] = useState(null)
   const [busy, setBusy] = useState(false)
   const [iso, setIso] = useState('')
@@ -187,6 +199,12 @@ export default function Wargame({ graph, payload, idx, game, onGame, onSeekIdx, 
     const first = [...(graph.missions || [])].sort((a, b) => (a.priority || 9) - (b.priority || 9))[0]
     return first ? Number(m[first.id] || 0) : 0
   }, [game, graph])
+
+  // the gate only binds in the sandbox: authored scenarios are complete by
+  // construction, and their jewel count is whatever the file says
+  const readyState = useMemo(() => (sandbox && graph
+    ? readiness(graph)
+    : { ready: true, jewels: ((graph && graph.crown_jewels) || []).length, services: { missing: [] }, tasks: { missing: [] } }), [sandbox, graph])
 
   if (!graph || !payload) return null
 
@@ -213,7 +231,7 @@ export default function Wargame({ graph, payload, idx, game, onGame, onSeekIdx, 
 
   // keyed on the scenario: the card's defaults are initial state, and a
   // scenario switch while the card is up must not keep the old ones
-  if (!game) return <StartCard key={payload.scenario_id || ''} graph={graph} payload={payload} idx={idx} llmOk={llmOk} llmNote={llmNote} onStart={start} />
+  if (!game) return <StartCard key={payload.scenario_id || ''} graph={graph} payload={payload} idx={idx} llmOk={llmOk} llmNote={llmNote} onStart={start} readyState={readyState} />
   if (game.phase === 'over') {
     return <Aar graph={graph} game={game} onAgain={() => onGame(startGame(graph, game.cfg))} onNewSeed={() => onGame(startGame(graph, { ...game.cfg, seed: game.cfg.seed + 1 }))} onObserve={() => onMode('observe')} />
   }
