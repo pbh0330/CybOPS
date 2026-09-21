@@ -456,6 +456,8 @@ export default function App() {
                 graph={graph} step={step} steps={payload?.steps} idx={idx}
                 selected={selectedData?.id || null} onSelect={onSelect} hidden={!isGeo}
                 overlay={overlay}
+                editable={mode === 'edit'}
+                onMove={(id, x, y) => editorRef.current && editorRef.current.moveAsset(id, x, y)}
               />
             ) : (
               <GeoPane

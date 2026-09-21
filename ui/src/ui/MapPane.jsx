@@ -4,7 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import { config } from '../config.js'
 import { CAUSE_COLOR } from '../graph.js'
 import { attackHops } from '../derive.js'
-import { toLonLat, toMgrs } from '../georef.js'
+import { toLonLat, fromLonLat, toMgrs } from '../georef.js'
 import { markerRows, linkFeatures, trackFeatures, attackArcFeatures, gridFeatures, aoFeature } from '../mapLayers.js'
 import { deviceIconDataUri } from '../icons.js'
 import { assetName } from '../labels.js'
@@ -29,7 +29,7 @@ function firstSymbolLayer(style) {
 // Everything else - lines, fills, DOM markers - draws fine without glyphs.
 const FALLBACK_STYLE = { version: 8, sources: {}, layers: [{ id: 'background', type: 'background', paint: { 'background-color': '#070a10' } }] }
 
-export default function MapPane({ graph, step, steps, idx, selected, onSelect, hidden, overlay }) {
+export default function MapPane({ graph, step, steps, idx, selected, onSelect, hidden, overlay, editable, onMove }) {
   const boxRef = useRef(null)
   const mapRef = useRef(null)
   const markers = useRef(new Map())
@@ -41,12 +41,19 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
   // guard (F4): an edit produces a new `graph` object but the same
   // scenario_id, so it is not a reason to tear anything down.
   const builtRef = useRef(null)
+  // Markers are created once and their handlers registered at creation, so
+  // the dragend handler reads the latest onMove/georef through refs rather
+  // than the closure it was born in (which would be the first render's).
+  const moveRef = useRef(onMove)
+  moveRef.current = onMove
+  const georefRef = useRef(null)
   const [ready, setReady] = useState(false)
   const [base, setBase] = useState('satellite')
   const [is3d, setIs3d] = useState(true)
   const [tileError, setTileError] = useState(false)
 
   const georef = graph?.geo?.georef
+  georefRef.current = georef
   const extent = graph?.geo?.frame?.extent
   const t = step && step.t !== undefined && step.t !== null ? Number(step.t) : 0
 
@@ -268,10 +275,24 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
         const el = document.createElement('div')
         el.className = 'map-mark'
         el.innerHTML = `<div class="map-mark-sym"><img alt="" /></div><div class="map-mark-label"></div>`
-        el.addEventListener('click', (e) => { e.stopPropagation(); onSelect(r.id) })
-        m = new maplibregl.Marker({ element: el, anchor: 'center' }).setLngLat([r.lon, r.lat]).addTo(map)
+        // a drag ends with a click on the same element; that click must not
+        // reselect (or, in link mode, wire) what was only being moved
+        let dragged = false
+        el.addEventListener('click', (e) => { e.stopPropagation(); if (dragged) { dragged = false; return } onSelect(r.id) })
+        m = new maplibregl.Marker({ element: el, anchor: 'center', draggable: !!editable }).setLngLat([r.lon, r.lat]).addTo(map)
+        m.on('dragstart', () => { dragged = true })
+        m.on('dragend', () => {
+          // the trailing click (if any) is dispatched before this timer runs
+          setTimeout(() => { dragged = false }, 0)
+          const { lng, lat } = m.getLngLat()
+          const gr = georefRef.current
+          if (!gr || !moveRef.current) return
+          const p = fromLonLat(gr, lng, lat)
+          moveRef.current(r.id, p.x, p.y)
+        })
         markers.current.set(r.id, m)
       }
+      m.setDraggable(!!editable)
       m.setLngLat([r.lon, r.lat])
       const el = m.getElement()
       // maplibregl.Marker's constructor stamps its own "maplibregl-marker"
@@ -282,7 +303,7 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
       // a flash in progress survives the rewrite: this effect re-runs on any
       // prop change, well inside the 800 ms the animation needs
       const flash = el.classList.contains('flash-hit') ? ' flash-hit' : el.classList.contains('flash-miss') ? ' flash-miss' : ''
-      el.className = `maplibregl-marker map-mark ${state}${selected === r.id ? ' is-selected' : ''}${iso ? ' is-isolated' : ''}${threats.has(r.id) ? ' is-threat' : ''}${flash}`
+      el.className = `maplibregl-marker map-mark ${state}${selected === r.id ? ' is-selected' : ''}${iso ? ' is-isolated' : ''}${threats.has(r.id) ? ' is-threat' : ''}${editable ? ' is-draggable' : ''}${flash}`
       const img = el.querySelector('img')
       if (uri && img.src !== uri) img.src = uri
       const n = assetName(graph, r.id)
@@ -290,7 +311,7 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
       el.title = `${n.ko} · ${r.id} · ${Math.round(r.z)} m`
     }
     for (const [id, m] of markers.current) if (!seen.has(id)) { m.remove(); markers.current.delete(id) }
-  }, [graph, step, steps, idx, t, georef, ready, selected, onSelect, overlay])
+  }, [graph, step, steps, idx, t, georef, ready, selected, onSelect, overlay, editable])
 
   // One flash per adjudicated turn, on the target's marker. Declared after the
   // marker effect so the markers exist when it runs. The turn is recorded
@@ -354,7 +375,7 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
       <div className="geo-foot">
         <span>{graph?.geo?.frame?.id} · 격자 2 km · MGRS {anchorMgrs}</span>
         <span>지형 DEM · 3D 과장 1.5배</span>
-        <span className="geo-warn">위치는 표시 전용이다. 단절 원인은 저작값이고 지형에서 계산하지 않는다.</span>
+        <span className="geo-warn">{editable ? '편집 모드 - 마커를 끌어 배치한다' : '위치는 표시 전용이다. 단절 원인은 저작값이고 지형에서 계산하지 않는다.'}</span>
       </div>
     </div>
   )

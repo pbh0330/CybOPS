@@ -13,7 +13,7 @@
 
 import { symbolDataUri } from './symbols.js' // eslint-disable-line no-unused-vars
 import { iconSvgMarkup } from './icons.js'
-import { placeFree } from './sandbox.js'
+import { placeFree, placeNear } from './sandbox.js'
 
 // The palette. Types match configs/symbology-2525.json so a placed node gets a
 // real symbol rather than a blank box.
@@ -129,9 +129,22 @@ export function createEditor({ paletteEl, onChange, getGraph, getCy }) {
 
   // The inspector's candidate list already knows which bearer the rule table
   // allows between two types, so it hands the bearer over with the pair.
+  //
+  // Placement rides on the first link: a new asset starts in a free grid cell
+  // (addAsset), and the moment it is wired to something it moves to a 150 m
+  // ring beside that something. Only an asset this editor added, and only its
+  // first link - an authored position, or one the user already dragged and
+  // wired, is never second-guessed. Read from the graph AFTER addLink pushed
+  // the link, so "first link" is "exactly one link".
   function addLinkWith(a, b, bearer) {
     const id = addLink(a, b)
-    if (id && bearer) setLinkBearer(id, bearer)
+    if (!id) return null
+    if (bearer) setLinkBearer(id, bearer)
+    const g = getGraph()
+    const byId = (x) => (g.assets || []).find((k) => k.id === x)
+    const fresh = (x) => { const k = byId(x); return !!(k && k._added) && (g.links || []).filter((l) => l.a === x || l.b === x).length === 1 }
+    if (fresh(b)) { const p = placeNear(g, a); moveAsset(b, p.x, p.y) }
+    else if (fresh(a)) { const p = placeNear(g, b); moveAsset(a, p.x, p.y) }
     return id
   }
 
@@ -288,7 +301,7 @@ export function createEditor({ paletteEl, onChange, getGraph, getCy }) {
   }
 
   return {
-    renderPalette, setTool, handleTap, addLink, addLinkWith, removeAsset, removeLink,
+    renderPalette, setTool, handleTap, addAsset, addLink, addLinkWith, removeAsset, removeLink,
     setProvidedBy, setPerformedAt, setTransit, setLinkBearer, missionLinkage,
     setSite, setUnit, toggleJewel, moveAsset,
     get tool() { return tool }, BEARERS,
