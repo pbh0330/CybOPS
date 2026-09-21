@@ -5,6 +5,7 @@ import { startGame, defaultFoothold, legalFor, defend, pass, attackerTurn, staff
 import { staffFacts, narrateStaff } from '../staff-llm.mjs'
 import { runChain } from '../engine.js'
 import { readiness } from '../sandbox.js'
+import { PRESETS } from '../presets.js'
 
 // The wargame panel (ADR-0026). Every number on it comes from game.js; this
 // file only draws and forwards clicks. The three boundaries of the old
@@ -35,9 +36,20 @@ function StartCard({ graph, payload, idx, llmOk, llmNote, onStart, readyState })
   // default foothold may not be in it, and a foothold outside the graph
   // would start a game the engine cannot play
   const inGraph = (id) => (graph.assets || []).some((a) => a.id === id)
+  // no authored timeline (the sandbox): the first end terminal is the
+  // natural seed - an attacker starts at a user, not at a relay
+  const firstTerminal = () => ((graph.assets || []).find((a) => a.transit === false) || graph.assets?.[0])?.id ?? ''
   const [stepIdx, setStepIdx] = useState(idx)
-  const [footId, setFootId] = useState(foot && inGraph(foot.id) ? foot.id : (graph.assets?.[0]?.id ?? ''))
+  const [footId, setFootId] = useState(foot && inGraph(foot.id) ? foot.id : firstTerminal())
   const [level, setLevel] = useState(foot?.level >= 0.8 ? 0.8 : 0.5)
+  // an attack preset: several seeds picked from the graph by presets.js.
+  // Touching the foothold select clears it; the seeds are re-checked
+  // against the graph on every render because the sandbox can lose an asset
+  // while this card is up
+  const [preset, setPreset] = useState(null)   // { id, label, seeds } | null
+  const activePreset = preset && preset.seeds.every((f) => inGraph(f.id)) ? preset : null
+  const footSel = inGraph(footId) ? footId : firstTerminal()
+  const usePreset = (p, seeds) => { setPreset({ id: p.id, label: p.label, seeds }); setFootId(seeds[0].id); setLevel(seeds[0].level) }
   const [mode, setMode] = useState('hold')
   const [turns, setTurns] = useState(8)
   const [strategy, setStrategy] = useState('greedy')
@@ -70,16 +82,26 @@ function StartCard({ graph, payload, idx, llmOk, llmNote, onStart, readyState })
           {steps.length === 0 && <option value={0}>정적</option>}
           {steps.map((s, i) => <option key={i} value={i}>{s.time_iso ? s.time_iso.slice(11, 16) : `+${s.t}분`} · {s.label || ''}</option>)}
         </select></label>
+      <div className="wg-presets">
+        <span className="wg-presets-label">공격 프리셋</span>
+        {PRESETS.map((p) => {
+          const seeds = p.pick(graph)
+          return <button type="button" key={p.id} className={`wg-preset${activePreset && activePreset.id === p.id ? ' is-on' : ''}`} disabled={!seeds}
+            title={seeds ? `${p.desc} - ${seeds.map((f) => f.id).join(', ')}` : `${p.desc} - 해당하는 자산이 없다`}
+            onClick={() => seeds && usePreset(p, seeds)}>{p.label}</button>
+        })}
+      </div>
       <div className="wg-row2">
         <label className="wg-pick"><span>초기 거점</span>
-          <select value={footId} onChange={(e) => setFootId(e.target.value)}>
+          <select value={footSel} onChange={(e) => { setPreset(null); setFootId(e.target.value) }}>
             {(graph.assets || []).map((a) => <option key={a.id} value={a.id}>{assetName(graph, a.id).ko} ({a.id})</option>)}
           </select></label>
         <label className="wg-pick"><span>수준</span>
-          <select value={level} onChange={(e) => setLevel(Number(e.target.value))}>
+          <select value={level} onChange={(e) => { setPreset(null); setLevel(Number(e.target.value)) }}>
             <option value={0.5}>0.5 거점</option><option value={0.8}>0.8 자격증명</option>
           </select></label>
       </div>
+      {activePreset && <p className="rail-caption wg-preset-note">프리셋: {activePreset.label} ({activePreset.seeds.map((f) => f.id).join(', ')})</p>}
       <div className="wg-row2">
         <label className="wg-pick"><span>모드</span>
           <select value={mode} onChange={(e) => setMode(e.target.value)}>{MODES.map(([k, l]) => <option key={k} value={k} disabled={k === 'jewel' && jewels === 0}>{l}{k === 'jewel' && jewels === 0 ? ' (보석 없음)' : ''}</option>)}</select></label>
@@ -98,7 +120,7 @@ function StartCard({ graph, payload, idx, llmOk, llmNote, onStart, readyState })
       </div>
       {!llmOk && llmNote && <div className="wg-llm-note">LLM 공격자 사용 불가<span>{llmNote}</span></div>}
       <p className="rail-caption">{mode === 'hold' ? `${turns}턴 동안 P1 임무 저하도를 50% 미만으로 지키면 승. 점수는 턴별 가중 저하도의 합(낮을수록 좋음).` : `${turns}턴 동안 crown jewel 이 장악되지 않으면 승. 점수 = 버틴 턴×100 − 격리 비용.`}</p>
-      <button type="button" className="wg-start-go" disabled={!ready} onClick={() => onStart({ mode, turns, t, foothold: { id: footId, level }, seed, strategy, method: 'weighted' }, stepIdx)}>시작</button>
+      <button type="button" className="wg-start-go" disabled={!ready} onClick={() => onStart({ mode, turns, t, foothold: { id: footSel, level }, ...(activePreset ? { footholds: activePreset.seeds } : {}), seed, strategy, method: 'weighted' }, stepIdx)}>시작</button>
       {!ready && <p className="wg-lock">{lockText}</p>}
     </div>
   )
