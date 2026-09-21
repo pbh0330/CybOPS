@@ -74,6 +74,15 @@ describe('linkCandidates', () => {
     g.assets.push({ id: 'X', type: 'toaster', site: '여단 TOC' })
     expect(linkCandidates(g, rules, 'X')).toEqual([])
   })
+  it('a placeholder or missing site is not a site: no wired candidates, no site rank', () => {
+    const g = g3()
+    g.assets.push({ id: 'N1', type: 'workstation', unit: 'U-BDE', site: '신규', transit: false })
+    g.assets.push({ id: 'N2', type: 'c2-server', unit: 'U-BDE', site: '신규', transit: true })
+    g.assets.push({ id: 'N3', type: 'c2-server', unit: 'U-BDE', transit: true })
+    const c = linkCandidates(g, rules, 'N1')
+    expect(c.some((x) => x.bearer === 'wired')).toBe(false)
+    expect(c.some((x) => x.why === 'site')).toBe(false)
+  })
 })
 
 describe('missionCandidates', () => {

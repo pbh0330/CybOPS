@@ -48,6 +48,7 @@ export function rules() { return rulesCache }
 
 const byId = (g, id) => (g.assets || []).find((a) => a.id === id)
 const linked = (g, a, b) => (g.links || []).some((l) => (l.a === a && l.b === b) || (l.a === b && l.b === a))
+const siteOf = (a) => (a && a.site && a.site !== '신규' ? a.site : null)
 
 export function linkCandidates(g, rules, assetId) {
   const me = byId(g, assetId)
@@ -60,9 +61,11 @@ export function linkCandidates(g, rules, assetId) {
     for (const b of BEARER_ORDER) {
       if (!mine.includes(b) || !theirs.includes(b)) continue
       const rule = (rules.bearers || {})[b] || {}
-      if (rule.same_site && me.site !== o.site) continue
+      if (rule.same_site && (!siteOf(me) || !siteOf(o) || siteOf(me) !== siteOf(o))) continue
       if (rule.needs_type && me.type !== rule.needs_type && o.type !== rule.needs_type) continue
-      const why = me.site === o.site ? 'site' : me.unit === o.unit ? 'unit' : o.transit !== false ? 'transit' : 'bearer'
+      const mySite = siteOf(me)
+      const oSite = siteOf(o)
+      const why = mySite && mySite === oSite ? 'site' : me.unit === o.unit ? 'unit' : o.transit !== false ? 'transit' : 'bearer'
       out.push({ id: o.id, bearer: b, why })
     }
   }
