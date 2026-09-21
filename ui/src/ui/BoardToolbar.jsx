@@ -7,6 +7,8 @@ const VIEWS = [
 export default function BoardToolbar({
   view, onView, mode, labels, onLabels, onFit,
   tool, onTool, canUndo, canRedo, onUndo, onRedo, onExport, onReset, editState,
+  // sandbox (ADR-0027): named plans in localStorage and a JSON import
+  sandbox = false, plans = [], onSavePlan, onLoadPlan, onDeletePlan, onImport,
 }) {
   const editing = mode === 'edit'
   return (
@@ -42,12 +44,30 @@ export default function BoardToolbar({
 
       <span className="sp" />
 
+      {editing && sandbox && (
+        <>
+          <span className="tb-rule" />
+          <button type="button" onClick={() => { const n = window.prompt('구성 이름', ''); if (n && n.trim()) onSavePlan(n.trim()) }}>구성 저장</button>
+          <select value="" onChange={(e) => { if (e.target.value) onLoadPlan(e.target.value) }} title="저장한 구성 불러오기">
+            <option value="">구성 불러오기…</option>
+            {plans.map((p) => <option key={p.name} value={p.name}>{p.name}</option>)}
+          </select>
+          {plans.length > 0 && (
+            <select value="" onChange={(e) => { if (e.target.value && window.confirm(`'${e.target.value}' 을 지울까?`)) onDeletePlan(e.target.value) }} title="저장한 구성 삭제">
+              <option value="">삭제…</option>
+              {plans.map((p) => <option key={p.name} value={p.name}>{p.name}</option>)}
+            </select>
+          )}
+          <label className="tb-file">JSON 불러오기<input type="file" accept="application/json,.json" onChange={(e) => { const f = e.target.files && e.target.files[0]; if (f) onImport(f); e.target.value = '' }} /></label>
+        </>
+      )}
+
       {editing && (
         <>
           <button type="button" onClick={onUndo} disabled={!canUndo} title="되돌리기 (Ctrl+Z)">되돌리기</button>
           <button type="button" onClick={onRedo} disabled={!canRedo} title="다시 실행 (Ctrl+Shift+Z)">다시 실행</button>
           <button type="button" onClick={onExport}>시나리오 내보내기</button>
-          <button type="button" className="danger" onClick={onReset}>시나리오 초기화</button>
+          <button type="button" className="danger" onClick={onReset}>{sandbox ? '교전장 비우기' : '시나리오 초기화'}</button>
         </>
       )}
 

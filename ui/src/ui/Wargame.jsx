@@ -41,12 +41,15 @@ function StartCard({ graph, payload, idx, llmOk, llmNote, onStart }) {
   const [turns, setTurns] = useState(8)
   const [strategy, setStrategy] = useState('greedy')
   const [seed, setSeed] = useState(20260906)
-  const t = steps[stepIdx] ? Number(steps[stepIdx].t) : 0
+  // no steps (the sandbox, ADR-0027): there is no time axis, the engine runs
+  // static at t = -1 and the picker has one entry to say so
+  const t = steps[stepIdx] ? Number(steps[stepIdx].t) : (steps.length ? 0 : -1)
   return (
     <div className="wg-start">
       <div className="wg-sub">교전 시작 - 조건을 고른다</div>
       <label className="wg-pick"><span>시점</span>
         <select value={stepIdx} onChange={(e) => setStepIdx(Number(e.target.value))}>
+          {steps.length === 0 && <option value={0}>정적</option>}
           {steps.map((s, i) => <option key={i} value={i}>{s.time_iso ? s.time_iso.slice(11, 16) : `+${s.t}분`} · {s.label || ''}</option>)}
         </select></label>
       <div className="wg-row2">

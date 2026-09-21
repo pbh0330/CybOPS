@@ -156,6 +156,15 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
   margin: 0; min-width: 0; flex: 0 1 auto;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
+.board-toolbar select { flex: none; }
+/* A file input dressed as a toolbar button: the real input covers the label
+   invisibly so the click opens the picker. */
+.tb-file {
+  position: relative; overflow: hidden; display: inline-flex; align-items: center;
+  padding: 5px 11px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+  background: var(--surface-raised); cursor: pointer; font-size: 13px; white-space: nowrap; flex: none;
+}
+.tb-file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 .chk { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text-secondary); cursor: pointer; }
 .chk input { accent-color: var(--text-secondary); }
 

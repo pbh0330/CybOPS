@@ -18,8 +18,14 @@ function Ring({ value }) {
   )
 }
 
-export default function Topbar({ scenarios, scenarioId, onScenario, mode, onMode, phases, onHelp, graph, step, game }) {
+const SANDBOX_ID = 'sandbox-01'
+const scenarioLabel = (id) => (id === SANDBOX_ID ? `${id} · 교전장` : id)
+
+export default function Topbar({ scenarios, scenarioId, onScenario, mode, onMode, phases, onHelp, graph, step, game, sandbox = false }) {
   const k = kpiOf(graph, step)
+  // The sandbox has no time axis, so every phase is active at once; listing
+  // five names overflows the strip, so say so in two words instead.
+  const phaseText = sandbox && phases.length >= 5 ? '전체(정적)' : phases.join(' · ')
   const clock = clockOf(step)
   // During a game the engine sees an isolated asset as compromise 1
   // (game.js compromiseOf), so the projected step counts it as compromised.
@@ -37,7 +43,7 @@ export default function Topbar({ scenarios, scenarioId, onScenario, mode, onMode
       <div className="tb-field">
         <label htmlFor="scenario">시나리오</label>
         <select id="scenario" value={scenarioId || ''} onChange={(e) => onScenario(e.target.value)}>
-          {scenarios.map((id) => <option key={id} value={id}>{id}</option>)}
+          {scenarios.map((id) => <option key={id} value={id}>{scenarioLabel(id)}</option>)}
         </select>
       </div>
       <div className="seg" role="group" aria-label="모드">
@@ -90,7 +96,7 @@ export default function Topbar({ scenarios, scenarioId, onScenario, mode, onMode
       </div>
 
       <span className="tb-spacer" />
-      <div className="tb-phase">{phases.length ? <>활성 단계 <b>{phases.join(' · ')}</b></> : '활성 단계 없음'}</div>
+      <div className="tb-phase">{phases.length ? <>활성 단계 <b>{phaseText}</b></> : '활성 단계 없음'}</div>
       <div className="tb-clock"><b>{clock.time}</b><span>{clock.off}</span></div>
       <button type="button" className="help-btn" title="이 화면 읽는 법" onClick={onHelp}>?</button>
     </header>
