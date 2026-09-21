@@ -152,6 +152,15 @@ lostJewel }`. `pathLinks` = 공격자가 성공한 `lateral_move` 의 (from,targ
 jewel 버틴 턴 높을수록). 상위 3 을 "강화 제안" 카드에 `이 변형 적용` 버튼(편집으로 적용,
 undo 가능). 실행 비용: 변형 수(≤ 20) × 자동 교전.
 
+### B5. 공격자 전략 비교표 (혜안 RUN COMPARE)
+`compareStrategies(g, cfg, seeds=[s, s+1, s+2])` — greedy / random 을 각 시드로 `autoPlay(policy:'staff')`
+하고 `{ strategy, seed, score, turnsToJewel|null, firstCompromised }` 표. LLM 공격자는 모델이
+있을 때만 한 시드(비동기). 분석 탭 하단에 표로.
+
+### B6. 강화 제안에 링크 추가 후보 (사활 최적 경로)
+B3 의 변형 (c): 규칙표 안에서 가능한 링크 하나 추가(`linkCandidates` 로 후보를 만들되 최대
+10개 - 준비도 `isolated` 자산과 제공자 자산 우선). 같은 채점.
+
 ### B4. AAR 서술 (LLM 있으면)
 
 `aarFacts(g, game, cf)` → F1..Fn(결과, 점수, 따름 비율, 가장 아팠던 턴, 반사실 최대 차이).
@@ -199,3 +208,39 @@ A(계획 1): 규칙표+sandbox.js → 가상 시나리오·저장/로드·불러
 잠금 → 지도 배치·드래그 → 프리셋(footholds[]) → 문서.
 B(계획 2): analysis.js(autoPlay·counterfactual·hardening) → 분석 탭·취약 경로 강조 → AAR
 열·세 줄·서술 → ADR-0027·docs/23·검증.
+
+---
+
+## C. 데모·설명 계층 (D4D 추가 차용, 계획 3)
+
+### C1. 데모 대본 모드 (stealthgraph 시뮬레이션 재생 · 조건1 · link16 시연자 콘솔)
+`ui/public/data/demo-script.json`: `{ title, scenes: [{ id, scenario, t, view, tab, select, mode?,
+title, text }] }`. 상단 `?` 옆 `대본` 버튼 → 대본 모드: 하단 우측에 장면 카드(제목·설명·`n/N`·
+이전/다음), 숫자키 `1~9` 로 장면 점프, `Esc` 로 끝. 장면 진입 = 기존 딥링크 상태 세팅과 같다
+(`setScenarioId/onSeek/setView/setTab/onSelect`). 장면 6개 초안: ① 좌표계는 그래프다(의존 뷰, t=0)
+② 120분 지휘소 이동은 공격이 아니다 ③ 300분 상호작용 100% - 이중화가 도달 불가면 이중화가
+아니다 ④ 지리 뷰 실지형에서 같은 장면 ⑤ 브리핑의 인용 ⑥ 교전장에서 한 턴. 대본은 데이터라
+발표자가 고친다. 문장은 사람이 쓴다(LLM 아님).
+
+### C2. 임무 저하 추이 차트 (DELPHI belief 타임라인)
+시간축 리본 위 36 px 띠에 P1 저하도의 누적 면적(공격/환경/상호작용, 기존 원인 색), P2 는 선.
+`payload.steps` 의 `mission/mission_attack/mission_env` 만 읽는다(정적 시나리오는 그리지 않음).
+현재 시점 헤드 선 공유. SVG, 라이브러리 없음.
+
+### C3. SITREP 내보내기 + 승인 워크플로 기록 (Fusion · RabbiOn)
+- `sitrep(graph, step, brief, requests)` → Markdown: 제목·시각·KPI·임무 저하 원인 분해·단절 표·
+  침해 표·브리핑(인용 칩은 `[F#]` 원문 그대로)·대응 후보 비용·승인 요청/승인 기록·"실행 없음
+  (ADR-0004)" 각주. 툴바 `SITREP 저장` → `.md` 다운로드.
+- 승인 요청에 **승인 기록**: 요청 행에 `승인`/`반려` 버튼 → 승인자 이름(입력, 로컬 저장)·시각·
+  사유 한 줄 → 행 상태 `승인됨(모의)`/`반려`. 감사 로그는 `requests` 배열에 남고 SITREP 에 들어간다.
+  여전히 아무것도 실행하지 않는다.
+
+### C4. 산출 근거 체인 (MERIDIAN TRACEABLE)
+임무 카드의 수치 클릭 → 레일 "선택" 탭에 근거 표: 임무 → 활성 단계의 작업(중요도, 저하도) →
+작업이 요구하는 서비스(w, hard, 저하도) → 제공 자산(영향도, 원인, 도달 여부) — 전부
+`step`(엔진 출력)과 `graph.edges` 에서 읽는다. 맨 위에 전파 함수식(`weighted`:
+Σ w·v / Σ w, `max`, `noisyor`)과 `TRACEABLE` 배지. `derive.js` `traceMission(graph, step, missionId)`
+순수 함수 + 테스트.
+
+## D-2. 순서 갱신
+A(계획 1) → B(계획 2, B5·B6 포함) → C(계획 3).
