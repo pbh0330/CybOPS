@@ -4,6 +4,7 @@ import { loadSymbology, unmappedTypes } from './symbols.js'
 import { createEditor } from './editor.js'
 import { compromiseOf } from './game.js'
 import { computeStep, activePhaseNames, clockOf, gameOverlay } from './derive.js'
+import { makeSandbox, loadRules, validateImport, listPlans, savePlan, loadPlan, deletePlan, SANDBOX_ID, TEMPLATE_ID } from './sandbox.js'
 import Topbar from './ui/Topbar.jsx'
 import BoardToolbar from './ui/BoardToolbar.jsx'
 import GraphCanvas from './ui/GraphCanvas.jsx'
@@ -14,7 +15,9 @@ import Timeline from './ui/Timeline.jsx'
 import Onboard from './ui/Onboard.jsx'
 import Wargame from './ui/Wargame.jsx'
 
-const SCENARIOS = ['tacnet-01', 'defnet-01']
+// The sandbox is not a file: it is derived in the browser from the template
+// replay (ADR-0027), so it is always listed and never HEAD-checked.
+const SCENARIOS = ['tacnet-01', 'defnet-01', SANDBOX_ID]
 const HISTORY_MAX = 60
 
 // Mounts an imperative module (editor.js) into the React tree. It owns its
@@ -56,6 +59,10 @@ export default function App() {
   const [onboard, setOnboard] = useState(false)
   const [toast, setToast] = useState(null)
   const [geoCam, setGeoCam] = useState({ mode: '2d', az: 35, pitch: 55, zScale: 12, terrain: true })
+  // sandbox (ADR-0027): the link rule table, and the saved plans in localStorage
+  const [rules, setRules] = useState(null)
+  const [plans, setPlans] = useState([])
+  const isSandbox = scenarioId === SANDBOX_ID
 
   const cyRef = useRef(null)
   const editorRef = useRef(null)
@@ -71,13 +78,17 @@ export default function App() {
       try {
         await loadConfig()
         await loadSymbology()
+        const linkRules = await loadRules()
         const available = []
         for (const id of SCENARIOS) {
+          if (id === SANDBOX_ID) { available.push(id); continue }
           const res = await fetch(`./data/${id}.replay.json`, { method: 'HEAD' }).catch(() => null)
           if (res && res.ok) available.push(id)
         }
         const list = available.length ? available : SCENARIOS
         if (!alive) return
+        setRules(linkRules)
+        setPlans(listPlans())
         setScenarios(list)
         const wanted = link.current.get('scenario')
         setScenarioId(list.includes(wanted) ? wanted : list[0])
@@ -102,15 +113,24 @@ export default function App() {
     setPlaying(false)
     ;(async () => {
       try {
-        const res = await fetch(`./data/${scenarioId}.replay.json`)
-        if (!res.ok) throw new Error(`${scenarioId}.replay.json (${res.status})`)
-        const p = await res.json()
+        // the sandbox has no file of its own: fetch the template and derive
+        const sandbox = scenarioId === SANDBOX_ID
+        const fileId = sandbox ? TEMPLATE_ID : scenarioId
+        const res = await fetch(`./data/${fileId}.replay.json`)
+        if (!res.ok) throw new Error(`${fileId}.replay.json (${res.status})`)
+        const loaded = await res.json()
         if (!alive) return
+        let p = loaded
+        if (sandbox) {
+          p = makeSandbox(loaded)
+          p.template = loaded   // presets and import validation read the template
+        }
         const missing = unmappedTypes()
         if (missing.length) console.warn('[symbols] SIDC 미매핑 타입:', missing.join(', '))
 
         let g = structuredClone(p.graph)
-        let wasEdited = false
+        // the sandbox has no exported steps: it is always the local engine's
+        let wasEdited = sandbox
         try {
           const raw = localStorage.getItem(storageKey(scenarioId))
           if (raw) {
@@ -224,10 +244,58 @@ export default function App() {
     const g = structuredClone(payload.graph)
     hist.current = { past: [], future: [], last: structuredClone(g) }
     setGraph(g)
-    setEdited(false)
+    // the sandbox stays on the local engine: its "original" is the empty board
+    setEdited(isSandbox)
     setHistVer((v) => v + 1)
-    setToast('시나리오를 원본으로 되돌렸다')
-  }, [payload, scenarioId, storageKey])
+    setToast(isSandbox ? '교전장을 비웠다' : '시나리오를 원본으로 되돌렸다')
+  }, [payload, scenarioId, storageKey, isSandbox])
+
+  // --- sandbox plans (ADR-0027) -----------------------------------------
+  // A plan is a graph snapshot under a name in localStorage. Loading one is
+  // an edit like any other: it goes through applySnapshot so undo can take
+  // it back and the per-scenario overlay is rewritten.
+  const onSavePlan = useCallback((name) => {
+    if (!graphRef.current) return
+    savePlan(name, graphRef.current)
+    setPlans(listPlans())
+    setToast(`구성 '${name}' 을 저장했다`)
+  }, [])
+
+  const onLoadPlan = useCallback((name) => {
+    const g = loadPlan(name)
+    if (!g) { setToast(`구성 '${name}' 이 없다`); return }
+    hist.current.past.push(structuredClone(graphRef.current))
+    if (hist.current.past.length > HISTORY_MAX) hist.current.past.shift()
+    hist.current.future = []
+    applySnapshot(g)
+    setToast(`구성 '${name}' 을 불러왔다`)
+  }, [applySnapshot])
+
+  const onDeletePlan = useCallback((name) => {
+    deletePlan(name)
+    setPlans(listPlans())
+    setToast(`구성 '${name}' 을 지웠다`)
+  }, [])
+
+  // A file exported from this screen (the graph) or a whole replay payload
+  // ({ graph, ... }). It must share the template's mission layer: the
+  // sandbox is about the network, not about rewriting what the mission needs.
+  const onImport = useCallback(async (file) => {
+    if (!payload) return
+    let obj
+    try { obj = JSON.parse(await file.text()) } catch { setToast('JSON 을 읽지 못했다'); return }
+    const g = obj && obj.graph ? obj.graph : obj
+    const v = validateImport(payload, g)
+    if (!v.ok) { setToast(`불러오기 거부: ${v.errors.join(' / ')}`); return }
+    // a tacnet-01 replay passes the mission-layer check but carries its own
+    // id; what lands on this board is the sandbox, whatever the file said
+    g.scenario_id = SANDBOX_ID
+    hist.current.past.push(structuredClone(graphRef.current))
+    if (hist.current.past.length > HISTORY_MAX) hist.current.past.shift()
+    hist.current.future = []
+    applySnapshot(g)
+    setToast(`${file.name} 을 불러왔다 · 자산 ${(g.assets || []).length} · 링크 ${(g.links || []).length}`)
+  }, [payload, applySnapshot])
 
   const exportScenario = useCallback(() => {
     const blob = new Blob([JSON.stringify(graphRef.current, null, 2)], { type: 'application/json' })
@@ -340,6 +408,7 @@ export default function App() {
         graph={graph}
         step={step}
         game={mode === 'wargame' ? game : null}
+        sandbox={isSandbox}
       />
 
       <div className={`main${mode === 'edit' ? ' is-editing' : ''}`}>
@@ -373,7 +442,11 @@ export default function App() {
             canRedo={hist.current.future.length > 0}
             onUndo={undo} onRedo={redo}
             onExport={exportScenario} onReset={resetEdits}
-            editState={edited ? '편집됨 · 수치는 로컬 엔진이 계산한다' : ''}
+            editState={isSandbox
+              ? `구성 중 · 자산 ${graph?.assets?.length ?? 0} · 링크 ${graph?.links?.length ?? 0}`
+              : (edited ? '편집됨 · 수치는 로컬 엔진이 계산한다' : '')}
+            sandbox={isSandbox} plans={plans}
+            onSavePlan={onSavePlan} onLoadPlan={onLoadPlan} onDeletePlan={onDeletePlan} onImport={onImport}
           />
           <div className="canvas-wrap">
             <GraphCanvas
@@ -386,6 +459,8 @@ export default function App() {
                 graph={graph} step={step} steps={payload?.steps} idx={idx}
                 selected={selectedData?.id || null} onSelect={onSelect} hidden={!isGeo}
                 overlay={overlay}
+                editable={mode === 'edit'}
+                onMove={(id, x, y) => editorRef.current && editorRef.current.moveAsset(id, x, y)}
               />
             ) : (
               <GeoPane
@@ -401,7 +476,7 @@ export default function App() {
           when={when} tab={tab} onTab={setTab}
           requests={requests} onRequest={onRequest}
           selectedData={selectedData} onToast={setToast} mode={mode}
-          editor={editorRef}
+          editor={editorRef} rules={rules} sandbox={isSandbox}
           payload={payload} idx={idx} onSeekIdx={(i) => setIdx(i)}
           wargameSlot={mode === 'wargame' ? (
             // keyed on the scenario so a switch unmounts the panel: its
@@ -410,6 +485,7 @@ export default function App() {
               key={scenarioId}
               graph={graph} payload={payload} idx={idx} game={game} onGame={setGame}
               onSeekIdx={(i) => setIdx(i)} onToast={setToast} onMode={setMode}
+              sandbox={isSandbox}
             />
           ) : null}
         />

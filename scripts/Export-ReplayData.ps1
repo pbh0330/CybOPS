@@ -256,4 +256,13 @@ if (Test-Path $symSrc) {
 } else {
   Write-Output "note: configs\symbology-2525.json not found - UI falls back to plain shapes"
 }
+
+# Link rules feed the sandbox editor's connection candidates. Data, not code,
+# so a scenario author can change what talks to what without touching the UI.
+$rulesSrc = Join-Path (Split-Path $PSScriptRoot -Parent) 'configs\link-rules.json'
+if (Test-Path $rulesSrc) {
+  $rulesDst = Join-Path (Split-Path $Out -Parent) 'link-rules.json'
+  Copy-Item $rulesSrc $rulesDst -Force
+  Write-Output ("copied {0}" -f $rulesDst)
+}
 Write-Output ""

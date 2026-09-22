@@ -17,6 +17,16 @@ describe('startGame / defaultFoothold', () => {
     expect(G).toMatchObject({ turn: 0, phase: 'defend', isolated: [], history: [], result: null })
     expect(G.score).toEqual({ total: 0, perTurn: [], isolationCost: 0 })
   })
+  it('footholds[] seeds several assets at once (presets)', () => {
+    const G = startGame(g, { ...base, foothold: null, footholds: [{ id: 'CO2-VEH', level: 0.5 }, { id: 'FO-TAB', level: 0.5 }] })
+    expect(G.attacker).toEqual({ 'CO2-VEH': 0.5, 'FO-TAB': 0.5 })
+    expect(footholds(G.attacker, G.isolated).sort()).toEqual(['CO2-VEH', 'FO-TAB'])
+  })
+  it('foothold alone gives the same attacker as before footholds[] existed', () => {
+    expect(startGame(g, base).attacker).toEqual({ 'CO2-VEH': 0.8 })
+    expect(startGame(g, { ...base, footholds: [] }).attacker).toEqual({ 'CO2-VEH': 0.8 })
+    expect(startGame(g, { ...base, foothold: null }).attacker).toEqual({})
+  })
   it('defaultFoothold reads the first compromised asset of the attack timeline', () => {
     expect(defaultFoothold(payload)).toEqual({ id: 'CO2-VEH', level: 0.5 })
     expect(defaultFoothold({ attack: { steps: [] } })).toBe(null)

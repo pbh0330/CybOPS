@@ -48,7 +48,11 @@ export function defaultFoothold(payload) {
 
 export function startGame(g, cfg = {}) {
   const c = { ...DEFAULTS, ...cfg }
-  const attacker = c.foothold && c.foothold.id ? { [c.foothold.id]: Number(c.foothold.level) || 0.5 } : {}
+  // footholds[] (several seeds, the presets) wins when present; foothold
+  // (one seed) is the original shape and every existing caller. Both end up
+  // in the same attacker map, so the rest of the game does not know which.
+  const seeds = Array.isArray(c.footholds) && c.footholds.length ? c.footholds : (c.foothold && c.foothold.id ? [c.foothold] : [])
+  const attacker = Object.fromEntries(seeds.filter((f) => f && f.id).map((f) => [f.id, Number(f.level) || 0.5]))
   return {
     cfg: c, turn: 0, phase: 'defend', attacker, isolated: [], pending: null,
     history: [], score: { total: 0, perTurn: [], isolationCost: 0 }, result: null,

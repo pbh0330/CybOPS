@@ -292,3 +292,11 @@ body .geo-canvas:active { cursor: grabbing; }
 .legend-arrow { display: inline-block; width: 18px; height: 0; border-top: 2px dashed var(--attack); position: relative; margin-right: 6px; vertical-align: middle; }
 .legend-arrow::after { content: ''; position: absolute; right: -1px; top: -5px; border: 4px solid transparent; border-left: 6px solid var(--attack); }
 .legend-arrow.ghost { border-top-style: dotted; opacity: .45; }
+
+/* attack presets on the start card (presets.js): plain chrome buttons, the
+   chosen one is marked by weight and border, not colour */
+.wg-presets { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.wg-presets-label { font-size: 10.5px; color: var(--fg-dim); margin-right: 2px; }
+.wg-preset { font-size: 11px; padding: 3px 9px; }
+.wg-preset.is-on { border-color: var(--fg-2); color: var(--fg); font-weight: 600; }
+.wg-preset-note { margin: -4px 0 8px; }
