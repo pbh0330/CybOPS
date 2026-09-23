@@ -1,0 +1,54 @@
+- generic [ref=f4e3]:
+  - banner [ref=f4e4]:
+    - generic [ref=f4e5]:
+      - generic [ref=f4e6]: MC-CyCOP
+      - generic [ref=f4e7]: 임무중심 사이버 공동상황도
+    - generic [ref=f4e9]:
+      - generic [ref=f4e10]: 시나리오
+      - combobox "시나리오" [ref=f4e11] [cursor=pointer]:
+        - option "tacnet-01" [selected]
+        - option "defnet-01"
+    - group "모드" [ref=f4e12]:
+      - button "관측" [pressed] [ref=f4e13] [cursor=pointer]
+      - button "편집" [ref=f4e14] [cursor=pointer]
+      - button "교전" [ref=f4e15] [cursor=pointer]
+    - generic [ref=f4e16]: 활성 단계 없음
+    - button "?" [ref=f4e17] [cursor=pointer]
+  - generic [ref=f4e18]:
+    - generic [ref=f4e19]:
+      - generic [ref=f4e20]:
+        - group "뷰" [ref=f4e21]:
+          - button "임무 의존" [ref=f4e22] [cursor=pointer]
+          - button "전송로" [ref=f4e23] [cursor=pointer]
+          - button "지리" [pressed] [ref=f4e24] [cursor=pointer]
+        - generic [ref=f4e25] [cursor=pointer]:
+          - checkbox "라벨" [checked] [ref=f4e26]
+          - text: 라벨
+        - button "화면 맞춤" [ref=f4e27] [cursor=pointer]
+      - generic [ref=f4e30]:
+        - group "차원" [ref=f4e31]:
+          - button "2D" [ref=f4e32] [cursor=pointer]
+          - button "3D" [ref=f4e33] [cursor=pointer]
+        - generic [ref=f4e35] [cursor=pointer]:
+          - checkbox "지형" [checked] [ref=f4e36]
+          - text: 지형
+        - generic [ref=f4e37]:
+          - generic [ref=f4e38]: 회전
+          - slider "회전 35°" [ref=f4e39]: "35"
+          - generic [ref=f4e40]: 35°
+        - generic [ref=f4e42]: 끌어서 회전 · Ctrl+끌기 확대
+        - button "원래대로" [ref=f4e43] [cursor=pointer]
+    - complementary [ref=f4e45]:
+      - generic [ref=f4e47]:
+        - heading "임무 저하도" [level=2] [ref=f4e48]
+        - generic [ref=f4e49]: 스냅샷
+      - tablist [ref=f4e50]:
+        - tab "단절" [ref=f4e51] [cursor=pointer]
+        - tab "대응" [selected] [ref=f4e52] [cursor=pointer]
+        - tab "브리핑" [ref=f4e53] [cursor=pointer]
+        - tab "선택" [ref=f4e54] [cursor=pointer]
+      - generic [ref=f4e55]: 대응 후보 없음
+      - generic [ref=f4e57]:
+        - text: 이 화면에는 실행 경로가 없다. 차단·격리는 사람이 별도 절차로 수행한다.
+        - generic [ref=f4e58]: ADR-0004
+  - contentinfo [ref=f4e59]

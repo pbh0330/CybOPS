@@ -1,0 +1,59 @@
+[     583ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5180/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=963e5dc2:21550
+[     594ms] [INFO] milsymbol.js 3.0.4 - Copyright (c) 2024 Måns Beckman  http://www.spatialillusions.com @ http://localhost:5180/node_modules/.vite/deps/milsymbol.js?v=f789e378:2562
+[     757ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5180/favicon.ico:0
+[     828ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5180/node_modules/.vite/deps/cytoscape.js?v=442f8e28:1091
+[    1196ms] [WARNING] Image "wood-pattern" could not be loaded. Please make sure you have added the image with map.addImage() or a "sprite" property in your style. You can provide missing images by listening for the "styleimagemissing" map event. @ http://localhost:5180/node_modules/.vite/deps/maplibre-gl.js?v=b6deb240:315
+[    1491ms] [WARNING] You are using the same source for a hillshade layer and for 3D terrain. Please consider using two separate sources to improve rendering quality. @ http://localhost:5180/node_modules/.vite/deps/maplibre-gl.js?v=b6deb240:315
+[   20090ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5180/node_modules/.vite/deps/cytoscape.js?v=442f8e28:1091
+[   20560ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5180/node_modules/.vite/deps/cytoscape.js?v=442f8e28:1091
+[   84180ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5180/node_modules/.vite/deps/cytoscape.js?v=442f8e28:1091
+[   85193ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5180/node_modules/.vite/deps/cytoscape.js?v=442f8e28:1091
+[   86184ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5180/node_modules/.vite/deps/cytoscape.js?v=442f8e28:1091
+[  100197ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5180/node_modules/.vite/deps/cytoscape.js?v=442f8e28:1091
+[  119527ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5180/node_modules/.vite/deps/cytoscape.js?v=442f8e28:1091
+[  120660ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5180/node_modules/.vite/deps/cytoscape.js?v=442f8e28:1091
+[  121258ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5180/node_modules/.vite/deps/cytoscape.js?v=442f8e28:1091
+[  137347ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5180/node_modules/.vite/deps/cytoscape.js?v=442f8e28:1091
+[  161159ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5180/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=963e5dc2:21550
+[  161163ms] [INFO] milsymbol.js 3.0.4 - Copyright (c) 2024 Måns Beckman  http://www.spatialillusions.com @ http://localhost:5180/node_modules/.vite/deps/milsymbol.js?v=f789e378:2562
+[  161362ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5180/node_modules/.vite/deps/cytoscape.js?v=442f8e28:1091
+[  161688ms] [WARNING] Image "wood-pattern" could not be loaded. Please make sure you have added the image with map.addImage() or a "sprite" property in your style. You can provide missing images by listening for the "styleimagemissing" map event. @ http://localhost:5180/node_modules/.vite/deps/maplibre-gl.js?v=b6deb240:315
+[  161972ms] [WARNING] You are using the same source for a hillshade layer and for 3D terrain. Please consider using two separate sources to improve rendering quality. @ http://localhost:5180/node_modules/.vite/deps/maplibre-gl.js?v=b6deb240:315
+[  165485ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5180/node_modules/.vite/deps/cytoscape.js?v=442f8e28:1091
+[  166232ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5180/node_modules/.vite/deps/cytoscape.js?v=442f8e28:1091
+[  442450ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5180/node_modules/.vite/deps/cytoscape.js?v=442f8e28:1091
+[  442612ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5180/node_modules/.vite/deps/cytoscape.js?v=442f8e28:1091
+[  442662ms] TypeError: Cannot read properties of undefined (reading 'setData')
+    at http://localhost:5180/src/ui/MapPane.jsx?t=1789982851801:218:27
+    at commitHookEffectListMount (http://localhost:5180/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=963e5dc2:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5180/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=963e5dc2:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5180/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=963e5dc2:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5180/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=963e5dc2:18119:15)
+    at commitPassiveMountEffects (http://localhost:5180/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=963e5dc2:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5180/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=963e5dc2:19490:11)
+    at flushPassiveEffects (http://localhost:5180/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=963e5dc2:19447:22)
+    at http://localhost:5180/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=963e5dc2:19328:17
+    at workLoop (http://localhost:5180/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=963e5dc2:197:42)
+[  442668ms] [ERROR] The above error occurred in the <MapPane> component:
+
+    at MapPane (http://localhost:5180/src/ui/MapPane.jsx?t=1789982851801:35:35)
+    at div
+    at section
+    at div
+    at div
+    at App (http://localhost:5180/src/App.jsx?t=1789982851801:53:29)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5180/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=963e5dc2:14031
+[  442668ms] TypeError: Cannot read properties of undefined (reading 'setData')
+    at http://localhost:5180/src/ui/MapPane.jsx?t=1789982851801:218:27
+    at commitHookEffectListMount (http://localhost:5180/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=963e5dc2:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5180/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=963e5dc2:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5180/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=963e5dc2:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5180/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=963e5dc2:18119:15)
+    at commitPassiveMountEffects (http://localhost:5180/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=963e5dc2:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5180/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=963e5dc2:19490:11)
+    at flushPassiveEffects (http://localhost:5180/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=963e5dc2:19447:22)
+    at http://localhost:5180/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=963e5dc2:19328:17
+    at workLoop (http://localhost:5180/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=963e5dc2:197:42)
+[  498201ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5180/node_modules/.vite/deps/cytoscape.js?v=442f8e28:1091

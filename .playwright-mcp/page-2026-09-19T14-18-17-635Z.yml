@@ -1,0 +1,310 @@
+- generic [ref=f4e3]:
+  - banner [ref=f4e4]:
+    - generic [ref=f4e5]:
+      - generic [ref=f4e6]: MC-CyCOP
+      - generic [ref=f4e7]: 임무중심 사이버 공동상황도
+    - generic [ref=f4e9]:
+      - generic [ref=f4e10]: 시나리오
+      - combobox "시나리오" [ref=f4e11] [cursor=pointer]:
+        - option "tacnet-01" [selected]
+        - option "defnet-01"
+    - group "모드" [ref=f4e12]:
+      - button "관측" [pressed] [ref=f4e13] [cursor=pointer]
+      - button "편집" [ref=f4e14] [cursor=pointer]
+      - button "교전" [ref=f4e15] [cursor=pointer]
+    - generic [ref=f4e17]:
+      - generic [ref=f4e85]:
+        - generic [ref=f4e86]: 0.0%
+        - generic [ref=f4e87]:
+          - text: 지휘통제
+          - generic [ref=f4e88]: P1
+      - generic [ref=f4e523]:
+        - generic [ref=f4e524]: 0.0%
+        - generic [ref=f4e525]:
+          - text: 군수지원
+          - generic [ref=f4e526]: P2
+      - generic [ref=f4e19]:
+        - generic [ref=f4e20]:
+          - text: "1"
+          - generic [ref=f4e21]: /16
+        - generic [ref=f4e22]: 침해 자산
+      - generic [ref=f4e24]:
+        - generic [ref=f4e25]: "0"
+        - generic [ref=f4e26]: 단절 링크
+      - generic [ref=f4e28]:
+        - generic [ref=f4e29]: 정상
+        - generic [ref=f4e30]: 상황 등급
+    - generic [ref=f4e31]: 활성 단계 없음
+    - generic [ref=f4e32]: +0분
+    - button "?" [ref=f4e34] [cursor=pointer]
+  - generic [ref=f4e35]:
+    - generic [ref=f4e36]:
+      - generic [ref=f4e37]:
+        - group "뷰" [ref=f4e38]:
+          - button "임무 의존" [ref=f4e39] [cursor=pointer]
+          - button "전송로" [ref=f4e40] [cursor=pointer]
+          - button "지리" [active] [pressed] [ref=f4e41] [cursor=pointer]
+        - generic [ref=f4e42] [cursor=pointer]:
+          - checkbox "라벨" [checked] [ref=f4e43]
+          - text: 라벨
+        - button "화면 맞춤" [ref=f4e44] [cursor=pointer]
+      - generic [ref=f4e527]:
+        - generic [ref=f4e528]:
+          - group "차원" [ref=f4e529]:
+            - button "2D" [ref=f4e530] [cursor=pointer]
+            - button "3D" [ref=f4e531] [cursor=pointer]
+          - generic [ref=f4e533] [cursor=pointer]:
+            - checkbox "지형" [checked] [ref=f4e534]
+            - text: 지형
+          - generic [ref=f4e535]:
+            - generic [ref=f4e536]: 회전
+            - slider "회전 35°" [ref=f4e537]: "35"
+            - generic [ref=f4e538]: 35°
+          - generic [ref=f4e540]: 끌어서 회전 · Ctrl+끌기 확대
+          - button "원래대로" [ref=f4e541] [cursor=pointer]
+        - generic [ref=f4e542]:
+          - img [ref=f4e543]:
+            - generic [ref=f4e544]: "0"
+            - generic [ref=f4e545]: "50"
+            - generic [ref=f4e546]: "100"
+            - generic [ref=f4e547]: "150"
+            - generic [ref=f4e548]: "200"
+            - generic [ref=f4e549]: "250"
+            - generic [ref=f4e550]: "300"
+            - generic [ref=f4e551]: "0"
+            - generic [ref=f4e552]: "50"
+            - generic [ref=f4e553]: "100"
+            - generic [ref=f4e554]: "150"
+            - generic [ref=f4e555]: "200"
+            - generic "본부 전산동 · 2층" [ref=f4e556]
+            - generic [ref=f4e557]: 본부 전산동
+            - generic "본관 (지휘소) · 4층" [ref=f4e558]
+            - generic [ref=f4e559]: 본관 (지휘소)
+            - generic "예비 전산동 · 1층" [ref=f4e560]
+            - generic [ref=f4e561]: 예비 전산동
+            - generic "1대대 청사 · 2층" [ref=f4e562]
+            - generic [ref=f4e563]: 1대대 청사
+            - generic "군수대대 청사 · 2층" [ref=f4e564]
+            - generic [ref=f4e565]: 군수대대 청사
+            - generic "L-SW-DC01 wired · 지표 포설" [ref=f4e566]
+            - generic "L-SW-MAIL01 wired · 지표 포설" [ref=f4e567]
+            - generic "L-SW-FS01 wired · 지표 포설" [ref=f4e568]
+            - generic "L-SW-DB01 wired · 지표 포설" [ref=f4e569]
+            - generic "L-SW-WEB01 wired · 지표 포설" [ref=f4e570]
+            - generic "L-SW-ESX01 wired · 지표 포설" [ref=f4e571]
+            - generic "L-SW-ESX02 wired · 지표 포설" [ref=f4e572]
+            - generic "L-SW-DC02 wired · 지표 포설" [ref=f4e573]
+            - generic "L-SW-DB02 wired · 지표 포설" [ref=f4e574]
+            - generic "L-SW-FW01 wired · 지표 포설"
+            - generic "L-FW-WKS001 wired · 지표 포설" [ref=f4e575]
+            - generic "L-FW-WKS002 wired · 지표 포설" [ref=f4e576]
+            - generic "L-FW-WKS003 wired · 지표 포설" [ref=f4e577]
+            - generic "L-FW-WKS004 wired · 지표 포설" [ref=f4e578]
+            - generic "L-FW-WKS005 wired · 지표 포설"
+            - generic "본부 전산실 파일 서버 · FS01 (170, 158, 1 m)" [ref=f4e579] [cursor=pointer]:
+              - generic [ref=f4e583]: 본부 전산실
+              - generic [ref=f4e584]: FS01
+            - generic "본부 전산실 데이터베이스 · DB01 (182, 158, 1 m)" [ref=f4e585] [cursor=pointer]:
+              - generic [ref=f4e589]: 본부 전산실
+              - generic [ref=f4e590]: DB01
+            - generic "본부 전산실 웹 서버 · WEB01 (194, 158, 1 m)" [ref=f4e591] [cursor=pointer]:
+              - generic [ref=f4e595]: 본부 전산실
+              - generic [ref=f4e596]: WEB01
+            - generic "본부 전산실 도메인 컨트롤러 · DC01 (182, 140, 1 m)" [ref=f4e597] [cursor=pointer]:
+              - generic [ref=f4e601]: 본부 전산실
+              - generic [ref=f4e602]: DC01
+            - generic "본부 전산실 메일 서버 · MAIL01 (194, 140, 1 m)" [ref=f4e603] [cursor=pointer]:
+              - generic [ref=f4e607]: 본부 전산실
+              - generic [ref=f4e608]: MAIL01
+            - generic "본부 전산실 하이퍼바이저 · ESX01 (170, 140, 1 m)" [ref=f4e609] [cursor=pointer]:
+              - generic [ref=f4e613]: 본부 전산실
+              - generic [ref=f4e614]: ESX01
+            - generic "지휘소 워크스테이션 · WKS001 (45, 140, 5 m)" [ref=f4e615] [cursor=pointer]:
+              - generic [ref=f4e619]: 지휘소
+              - generic [ref=f4e620]: WKS001
+            - generic "지휘소 워크스테이션 · WKS002 (62, 140, 5 m)" [ref=f4e621] [cursor=pointer]:
+              - generic [ref=f4e625]: 지휘소
+              - generic [ref=f4e626]: WKS002
+            - generic "본부 전산실 방화벽 · FW01 (150, 132, 1 m)" [ref=f4e627] [cursor=pointer]:
+              - generic [ref=f4e631]: 본부 전산실
+              - generic [ref=f4e632]: FW01
+            - generic "본부 전산실 스위치 · SW01 (158, 132, 1 m)" [ref=f4e633] [cursor=pointer]:
+              - generic [ref=f4e637]: 본부 전산실
+              - generic [ref=f4e638]: SW01
+            - generic "예비 전산실 도메인 컨트롤러 · DC02 (252, 55, 1 m)" [ref=f4e639] [cursor=pointer]:
+              - generic [ref=f4e643]: 예비 전산실
+              - generic [ref=f4e644]: DC02
+            - generic "예비 전산실 데이터베이스 · DB02 (266, 55, 1 m)" [ref=f4e645] [cursor=pointer]:
+              - generic [ref=f4e649]: 예비 전산실
+              - generic [ref=f4e650]: DB02
+            - generic "예비 전산실 하이퍼바이저 · ESX02 (280, 55, 1 m)" [ref=f4e651] [cursor=pointer]:
+              - generic [ref=f4e655]: 예비 전산실
+              - generic [ref=f4e656]: ESX02
+            - generic "1대대 워크스테이션 · WKS003 (50, 45, 5 m)" [ref=f4e657] [cursor=pointer]:
+              - generic [ref=f4e661]: 1대대
+              - generic [ref=f4e662]: WKS003
+            - generic "1대대 워크스테이션 · WKS004 (75, 45, 5 m)" [ref=f4e663] [cursor=pointer]:
+              - generic [ref=f4e667]: 1대대
+              - generic [ref=f4e668]: WKS004
+            - generic "군수대대 워크스테이션 · WKS005 (150, 42, 5 m)" [ref=f4e669] [cursor=pointer]:
+              - generic [ref=f4e673]: 군수대대
+              - generic [ref=f4e674]: WKS005
+          - generic [ref=f4e675]:
+            - generic [ref=f4e676]: FACGRID-01 · 격자 50 m · 단위 m
+            - generic [ref=f4e677]: 가상 좌표다. 영내 배치는 저작 도면이고 실제 시설이 아니다.
+    - complementary [ref=f4e62]:
+      - generic [ref=f4e63]:
+        - generic [ref=f4e64]:
+          - heading "임무 저하도" [level=2] [ref=f4e65]
+          - generic [ref=f4e66]: +0분
+        - generic [ref=f4e170]:
+          - generic [ref=f4e171]:
+            - generic [ref=f4e172]: 지휘통제
+            - generic [ref=f4e173]: P1
+            - generic [ref=f4e174]: 0.0%
+          - generic [ref=f4e177]:
+            - generic [ref=f4e178]: 공격0.0%
+            - generic [ref=f4e180]: 환경0.0%
+            - generic [ref=f4e182]: 상호작용0.0%
+        - generic [ref=f4e680]:
+          - generic [ref=f4e681]:
+            - generic [ref=f4e682]: 군수지원
+            - generic [ref=f4e683]: P2
+            - generic [ref=f4e684]: 0.0%
+          - generic [ref=f4e686]:
+            - generic [ref=f4e687]: 공격0.0%
+            - generic [ref=f4e689]: 환경0.0%
+            - generic [ref=f4e691]: 상호작용0.0%
+      - tablist [ref=f4e67]:
+        - tab "단절1" [ref=f4e693] [cursor=pointer]
+        - tab "대응6" [selected] [ref=f4e200] [cursor=pointer]
+        - tab "선택" [ref=f4e70] [cursor=pointer]
+      - generic [ref=f4e71]:
+        - paragraph [ref=f4e201]: 격리했을 때 임무가 얼마나 더 나빠지는가
+        - generic [ref=f4e694]:
+          - generic [ref=f4e695]:
+            - generic [ref=f4e696]:
+              - text: 1대대
+              - emphasis [ref=f4e697]: WKS003
+            - generic [ref=f4e698]: 침해
+            - generic [ref=f4e699]: 0.0%p
+          - generic [ref=f4e700]:
+            - generic [ref=f4e701]: 임무 영향 없음
+            - button "승인 요청" [ref=f4e702] [cursor=pointer]
+        - generic [ref=f4e703]:
+          - generic [ref=f4e704]:
+            - generic [ref=f4e705]:
+              - text: 본부 전산실
+              - emphasis [ref=f4e706]: DC01
+            - generic [ref=f4e707]: 0.0%p
+          - generic [ref=f4e708]:
+            - generic [ref=f4e709]: 임무 영향 없음
+            - button "승인 요청" [ref=f4e710] [cursor=pointer]
+        - generic [ref=f4e711]:
+          - generic [ref=f4e712]:
+            - generic [ref=f4e713]:
+              - text: 예비 전산실
+              - emphasis [ref=f4e714]: DC02
+            - generic [ref=f4e715]: 0.0%p
+          - generic [ref=f4e716]:
+            - generic [ref=f4e717]: 임무 영향 없음
+            - button "승인 요청" [ref=f4e718] [cursor=pointer]
+        - generic [ref=f4e719]:
+          - generic [ref=f4e720]:
+            - generic [ref=f4e721]:
+              - text: 본부 전산실
+              - emphasis [ref=f4e722]: DB01
+            - generic [ref=f4e723]: 0.0%p
+          - generic [ref=f4e724]:
+            - generic [ref=f4e725]: 임무 영향 없음
+            - button "승인 요청" [ref=f4e726] [cursor=pointer]
+        - generic [ref=f4e727]:
+          - generic [ref=f4e728]:
+            - generic [ref=f4e729]:
+              - text: 예비 전산실
+              - emphasis [ref=f4e730]: DB02
+            - generic [ref=f4e731]: 0.0%p
+          - generic [ref=f4e732]:
+            - generic [ref=f4e733]: 임무 영향 없음
+            - button "승인 요청" [ref=f4e734] [cursor=pointer]
+        - generic [ref=f4e735]:
+          - generic [ref=f4e736]:
+            - generic [ref=f4e737]:
+              - text: 본부 전산실
+              - emphasis [ref=f4e738]: MAIL01
+            - generic [ref=f4e739]: +100.0%p
+          - generic [ref=f4e740]:
+            - generic [ref=f4e741]:
+              - generic [ref=f4e742]: 지휘통제 +100.0%p
+              - generic [ref=f4e743]: 군수지원 +21.8%p
+            - button "승인 요청" [ref=f4e744] [cursor=pointer]
+      - generic [ref=f4e73]:
+        - generic [ref=f4e75]:
+          - text: 브리핑
+          - emphasis [ref=f4e76]: LLM · 인용 필수
+        - generic [ref=f4e745]: 이 시점 브리핑 없음
+      - generic [ref=f4e258]:
+        - generic [ref=f4e259]:
+          - text: 이벤트 스트림
+          - emphasis [ref=f4e260]: 4건 · replay 차분
+        - generic [ref=f4e261]:
+          - button "+0분 ● 1대대 침해 · 첨부파일 스피어피싱 (초기 침해)" [ref=f4e746] [cursor=pointer]:
+            - generic [ref=f4e263]: +0분
+            - generic [ref=f4e265]: ● 1대대 침해 · 첨부파일 스피어피싱 (초기 침해)
+          - button "+30분 본부 전산실 침해 · SMB 관리 공유 접속 (DC01 측면이동)" [ref=f4e747] [cursor=pointer]:
+            - generic [ref=f4e267]: +30분
+            - generic [ref=f4e269]: 본부 전산실 침해 · SMB 관리 공유 접속 (DC01 측면이동)
+          - button "+55분 예비 전산실 침해 · SMB 관리 공유 접속 (DC02 측면이동)" [ref=f4e748] [cursor=pointer]:
+            - generic [ref=f4e271]: +55분
+            - generic [ref=f4e273]: 예비 전산실 침해 · SMB 관리 공유 접속 (DC02 측면이동)
+          - button "+70분 본부 전산실 침해 · 도메인 계정 악용 (DB01 접근)" [ref=f4e749] [cursor=pointer]:
+            - generic [ref=f4e275]: +70분
+            - generic [ref=f4e277]: 본부 전산실 침해 · 도메인 계정 악용 (DB01 접근)
+      - generic [ref=f4e78]:
+        - text: 이 화면에는 실행 경로가 없다. 차단·격리는 사람이 별도 절차로 수행한다.
+        - generic [ref=f4e79]: ADR-0004
+  - contentinfo [ref=f4e80]:
+    - generic [ref=f4e454]:
+      - button "◀" [ref=f4e455] [cursor=pointer]
+      - button "▶" [ref=f4e456] [cursor=pointer]
+      - button "▶" [ref=f4e457] [cursor=pointer]
+      - group "배속" [ref=f4e458]:
+        - button "1×" [ref=f4e459] [cursor=pointer]
+        - button "4×" [ref=f4e460] [cursor=pointer]
+        - button "16×" [ref=f4e461] [cursor=pointer]
+    - img "단계와 단절 타임라인" [ref=f4e463] [cursor=pointer]:
+      - generic [ref=f4e464]: +0분
+      - generic [ref=f4e750]: +30분
+      - generic [ref=f4e466]: +60분
+      - generic [ref=f4e752]: +90분
+      - generic [ref=f4e754]:
+        - generic "초기 침해 T1566.001 첨부파일 스피어피싱" [ref=f4e755]
+        - generic [ref=f4e756]: 초기 침해
+      - generic [ref=f4e503]:
+        - generic "실행 확인 T1059.001 PowerShell 실행" [ref=f4e757]
+        - generic [ref=f4e758]: 실행 확인
+      - generic [ref=f4e505]:
+        - generic "C2 수립 T1071.001 웹 프로토콜 C2 통신" [ref=f4e759]
+        - generic [ref=f4e760]: C2 수립
+      - generic [ref=f4e507]:
+        - generic "자격증명 탈취 T1003.001 LSASS 메모리 덤프" [ref=f4e761]
+        - generic [ref=f4e762]: 자격증명 탈취
+      - generic [ref=f4e509]:
+        - generic "DC01 측면이동 T1021.002 SMB 관리 공유 접속" [ref=f4e763]
+        - generic [ref=f4e764]: DC01 측면이동
+      - generic [ref=f4e511]:
+        - generic "도메인 자격증명 탈취 T1003.003 도메인 DB(NTDS) 덤프" [ref=f4e765]
+        - generic [ref=f4e766]: 도메인 자격증명 탈취
+      - generic [ref=f4e513]:
+        - generic "DC02 측면이동 T1021.002 SMB 관리 공유 접속" [ref=f4e767]
+        - generic [ref=f4e768]: DC02 측면이동
+      - generic [ref=f4e769]:
+        - generic "DB01 접근 T1078.002 도메인 계정 악용" [ref=f4e770]
+        - generic [ref=f4e771]: DB01 접근
+      - generic [ref=f4e772]:
+        - generic "데이터 수집 T1005 로컬 데이터 수집" [ref=f4e773]
+        - generic [ref=f4e774]: 데이터 수집
+      - generic "유출 T1048.003 별도 채널 유출" [ref=f4e776]
+    - generic [ref=f4e516]:
+      - generic [ref=f4e517]: +0분
+      - generic [ref=f4e518]: 초기 침해

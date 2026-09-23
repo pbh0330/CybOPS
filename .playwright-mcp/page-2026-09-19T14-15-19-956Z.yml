@@ -1,0 +1,384 @@
+- generic [ref=f3e3]:
+  - banner [ref=f3e4]:
+    - generic [ref=f3e5]:
+      - generic [ref=f3e6]: MC-CyCOP
+      - generic [ref=f3e7]: 임무중심 사이버 공동상황도
+    - generic [ref=f3e9]:
+      - generic [ref=f3e10]: 시나리오
+      - combobox "시나리오" [ref=f3e11] [cursor=pointer]:
+        - option "tacnet-01" [selected]
+        - option "defnet-01"
+    - group "모드" [ref=f3e12]:
+      - button "관측" [ref=f3e13] [cursor=pointer]
+      - button "편집" [pressed] [ref=f3e14] [cursor=pointer]
+      - button "교전" [ref=f3e15] [cursor=pointer]
+    - generic [ref=f3e17]:
+      - generic [ref=f3e85]:
+        - generic [ref=f3e86]: 0.0%
+        - generic [ref=f3e87]:
+          - text: 지휘통제
+          - generic [ref=f3e88]: P1
+      - generic [ref=f3e1167]:
+        - generic [ref=f3e1168]: —
+        - generic [ref=f3e1169]:
+          - text: 화력지원
+          - generic [ref=f3e1170]: P2
+      - generic [ref=f3e19]:
+        - generic [ref=f3e20]:
+          - text: "0"
+          - generic [ref=f3e21]: /13
+        - generic [ref=f3e22]: 침해 자산
+      - generic [ref=f3e24]:
+        - generic [ref=f3e25]: "0"
+        - generic [ref=f3e26]: 단절 링크
+      - generic [ref=f3e28]:
+        - generic [ref=f3e29]: 정상
+        - generic [ref=f3e30]: 상황 등급
+    - generic [ref=f3e31]:
+      - text: 활성 단계
+      - generic [ref=f3e1171]: 집결·준비
+    - generic [ref=f3e32]:
+      - generic [ref=f3e33]: 06:00
+      - generic [ref=f3e100]: +0분
+    - button "?" [ref=f3e34] [cursor=pointer]
+  - generic [ref=f3e35]:
+    - generic [ref=f3e519]:
+      - generic [ref=f3e1172]:
+        - heading "자산 팔레트" [level=2] [ref=f3e1173]
+        - paragraph [ref=f3e1174]: 클릭하면 캔버스에 추가된다. 연결 도구로 두 자산을 차례로 누르면 링크가 생긴다.
+      - generic [ref=f3e1175]:
+        - generic [ref=f3e1176]: 지휘통제
+        - generic [ref=f3e1177]:
+          - button "C2 서버" [ref=f3e1178] [cursor=pointer]
+          - button "C2 단말" [ref=f3e1183] [cursor=pointer]
+          - button "워크스테이션" [ref=f3e1187] [cursor=pointer]
+          - button "단말" [ref=f3e1191] [cursor=pointer]
+      - generic [ref=f3e1195]:
+        - generic [ref=f3e1196]: 통신
+        - generic [ref=f3e1197]:
+          - button "무선 중계소" [ref=f3e1198] [cursor=pointer]
+          - button "위성 단말" [ref=f3e1205] [cursor=pointer]
+          - button "게이트웨이" [ref=f3e1214] [cursor=pointer]
+          - button "스위치" [ref=f3e1220] [cursor=pointer]
+          - button "방화벽" [ref=f3e1227] [cursor=pointer]
+      - generic [ref=f3e1232]:
+        - generic [ref=f3e1233]: 서버
+        - generic [ref=f3e1234]:
+          - button "사격지휘 서버" [ref=f3e1235] [cursor=pointer]
+          - button "데이터베이스" [ref=f3e1249] [cursor=pointer]
+          - button "파일 서버" [ref=f3e1255] [cursor=pointer]
+          - button "메일 서버" [ref=f3e1260] [cursor=pointer]
+          - button "웹 서버" [ref=f3e1265] [cursor=pointer]
+          - button "도메인 컨트롤러" [ref=f3e1277] [cursor=pointer]
+          - button "하이퍼바이저" [ref=f3e1282] [cursor=pointer]
+      - generic [ref=f3e1288]:
+        - generic [ref=f3e1289]: 관측
+        - button "관측반 단말" [ref=f3e1291] [cursor=pointer]
+      - generic [ref=f3e1296]: 추가한 자산은 아직 어떤 서비스도 제공하지 않는다. 임무 저하도에 영향을 주려면 서비스에 연결하거나 작업의 수행 위치로 지정해야 한다.
+    - generic [ref=f3e36]:
+      - generic [ref=f3e37]:
+        - group "뷰" [ref=f3e38]:
+          - button "임무 의존" [ref=f3e39] [cursor=pointer]
+          - button "전송로" [ref=f3e40] [cursor=pointer]
+          - button "지리" [active] [pressed] [ref=f3e41] [cursor=pointer]
+        - group "편집 도구" [ref=f3e646]:
+          - button "선택" [ref=f3e647] [cursor=pointer]
+          - button "연결" [ref=f3e648] [cursor=pointer]
+          - button "삭제" [ref=f3e649] [cursor=pointer]
+        - button "되돌리기" [disabled] [ref=f3e650]
+        - button "다시 실행" [disabled] [ref=f3e651]
+        - button "시나리오 내보내기" [ref=f3e652] [cursor=pointer]
+        - button "시나리오 초기화" [ref=f3e653] [cursor=pointer]
+        - generic [ref=f3e42] [cursor=pointer]:
+          - checkbox "라벨" [checked] [ref=f3e43]
+          - text: 라벨
+        - button "화면 맞춤" [ref=f3e44] [cursor=pointer]
+      - generic [ref=f3e1297]:
+        - generic [ref=f3e1299]:
+          - group "바탕" [ref=f3e1300]:
+            - button "다크" [ref=f3e1301] [cursor=pointer]
+            - button "위성" [pressed] [ref=f3e1302] [cursor=pointer]
+            - button "지형" [ref=f3e1303] [cursor=pointer]
+          - group "차원" [ref=f3e1304]:
+            - button "2D" [ref=f3e1305] [cursor=pointer]
+            - button "3D" [ref=f3e1306] [cursor=pointer]
+        - generic "주의": 가상 훈련 시나리오 · 실제 부대 배치 아님
+        - generic [ref=f3e1307]:
+          - generic [ref=f3e1308]: TACGRID-01 · 격자 2 km · MGRS 52SDH192084
+          - generic [ref=f3e1309]: 지형 DEM · 3D 과장 1.5배
+          - generic [ref=f3e1310]: 위치는 표시 전용이다. 단절 원인은 저작값이고 지형에서 계산하지 않는다.
+    - complementary [ref=f3e62]:
+      - generic [ref=f3e63]:
+        - generic [ref=f3e64]:
+          - heading "임무 저하도" [level=2] [ref=f3e65]
+          - generic [ref=f3e66]: 06:00
+        - generic [ref=f3e170]:
+          - generic [ref=f3e171]:
+            - generic [ref=f3e172]: 지휘통제
+            - generic [ref=f3e173]: P1
+            - generic [ref=f3e174]: 0.0%
+          - generic [ref=f3e177]:
+            - generic [ref=f3e178]: 공격0.0%
+            - generic [ref=f3e180]: 환경0.0%
+            - generic [ref=f3e182]: 상호작용0.0%
+        - generic [ref=f3e1311]:
+          - generic [ref=f3e1312]: 화력지원
+          - generic [ref=f3e1313]: P2
+          - generic [ref=f3e1314]: 해당 단계 없음
+      - tablist [ref=f3e67]:
+        - tab "단절1" [ref=f3e1079] [cursor=pointer]
+        - tab "대응6" [selected] [ref=f3e200] [cursor=pointer]
+        - tab "선택" [ref=f3e70] [cursor=pointer]
+      - generic [ref=f3e71]:
+        - paragraph [ref=f3e201]: 격리했을 때 임무가 얼마나 더 나빠지는가
+        - generic [ref=f3e1315]:
+          - generic [ref=f3e1316]:
+            - generic [ref=f3e1317]:
+              - text: 여단 TOC
+              - emphasis [ref=f3e1318]: TOC-SRV
+            - generic [ref=f3e1319]: 0.0%p
+          - generic [ref=f3e1320]:
+            - generic [ref=f3e1321]: 임무 영향 없음
+            - button "승인 요청" [ref=f3e1322] [cursor=pointer]
+        - generic [ref=f3e1323]:
+          - generic [ref=f3e1324]:
+            - generic [ref=f3e1325]:
+              - text: 대대 지휘소
+              - emphasis [ref=f3e1326]: BN-SRV
+            - generic [ref=f3e1327]: 0.0%p
+          - generic [ref=f3e1328]:
+            - generic [ref=f3e1329]: 임무 영향 없음
+            - button "승인 요청" [ref=f3e1330] [cursor=pointer]
+        - generic [ref=f3e1331]:
+          - generic [ref=f3e1332]:
+            - generic [ref=f3e1333]:
+              - text: 포병 FDC
+              - emphasis [ref=f3e1334]: FDC-SRV
+            - generic [ref=f3e1335]: 0.0%p
+          - generic [ref=f3e1336]:
+            - generic [ref=f3e1337]: 임무 영향 없음
+            - button "승인 요청" [ref=f3e1338] [cursor=pointer]
+        - generic [ref=f3e1339]:
+          - generic [ref=f3e1340]:
+            - generic [ref=f3e1341]:
+              - text: 능선 중계소
+              - emphasis [ref=f3e1342]: RELAY-1
+            - generic [ref=f3e1343]: 0.0%p
+          - generic [ref=f3e1344]:
+            - generic [ref=f3e1345]: 임무 영향 없음
+            - button "승인 요청" [ref=f3e1346] [cursor=pointer]
+        - generic [ref=f3e1347]:
+          - generic [ref=f3e1348]:
+            - generic [ref=f3e1349]:
+              - text: 대대 지휘소
+              - emphasis [ref=f3e1350]: SAT-TERM
+            - generic [ref=f3e1351]: 0.0%p
+          - generic [ref=f3e1352]:
+            - generic [ref=f3e1353]: 임무 영향 없음
+            - button "승인 요청" [ref=f3e1354] [cursor=pointer]
+        - generic [ref=f3e1355]:
+          - generic [ref=f3e1356]:
+            - generic [ref=f3e1357]:
+              - text: 2중대 지휘차
+              - emphasis [ref=f3e1358]: CO2-VEH
+            - generic [ref=f3e1359]: 0.0%p
+          - generic [ref=f3e1360]:
+            - generic [ref=f3e1361]: 임무 영향 없음
+            - button "승인 요청" [ref=f3e1362] [cursor=pointer]
+      - generic [ref=f3e73]:
+        - generic [ref=f3e75]:
+          - text: 브리핑
+          - emphasis [ref=f3e76]: LLM · 인용 필수
+        - generic [ref=f3e1131]: 이 시점 브리핑 없음
+      - generic [ref=f3e258]:
+        - generic [ref=f3e259]:
+          - text: 이벤트 스트림
+          - emphasis [ref=f3e260]: 48건 · replay 차분
+        - generic [ref=f3e261]:
+          - button "06:00 집결·준비 단계 시작" [ref=f3e1363] [cursor=pointer]:
+            - generic [ref=f3e263]: 06:00
+            - generic [ref=f3e265]: 집결·준비 단계 시작
+          - button "06:00 관측반 단절 · 기동" [ref=f3e1364] [cursor=pointer]:
+            - generic [ref=f3e267]: 06:00
+            - generic [ref=f3e269]: 관측반 단절 · 기동
+          - button "07:30 기동 단계 시작" [ref=f3e1365] [cursor=pointer]:
+            - generic [ref=f3e271]: 07:30
+            - generic [ref=f3e273]: 기동 단계 시작
+          - button "07:30 1중대 지휘차 이동 시작 (CO1-VEH)" [ref=f3e1366] [cursor=pointer]:
+            - generic [ref=f3e275]: 07:30
+            - generic [ref=f3e277]: 1중대 지휘차 이동 시작 (CO1-VEH)
+          - button "07:35 대대 지휘소 이동 시작 (BN-SRV)" [ref=f3e1367] [cursor=pointer]:
+            - generic [ref=f3e1368]: 07:35
+            - generic [ref=f3e1370]: 대대 지휘소 이동 시작 (BN-SRV)
+          - button "07:35 대대 지휘소 이동 시작 (BN-CP)" [ref=f3e1371] [cursor=pointer]:
+            - generic [ref=f3e1372]: 07:35
+            - generic [ref=f3e1374]: 대대 지휘소 이동 시작 (BN-CP)
+          - button "07:35 대대 지휘소 이동 시작 (SAT-TERM)" [ref=f3e1375] [cursor=pointer]:
+            - generic [ref=f3e1376]: 07:35
+            - generic [ref=f3e1378]: 대대 지휘소 이동 시작 (SAT-TERM)
+          - button "07:40 2중대 지휘차 이동 시작 (CO2-VEH)" [ref=f3e1379] [cursor=pointer]:
+            - generic [ref=f3e1380]: 07:40
+            - generic [ref=f3e1382]: 2중대 지휘차 이동 시작 (CO2-VEH)
+          - button "07:45 대대 지휘소 단절 · 기동" [ref=f3e1383] [cursor=pointer]:
+            - generic [ref=f3e1384]: 07:45
+            - generic [ref=f3e1386]: 대대 지휘소 단절 · 기동
+          - button "07:45 대대 지휘소 단절 · 기동" [ref=f3e1387] [cursor=pointer]:
+            - generic [ref=f3e1388]: 07:45
+            - generic [ref=f3e1390]: 대대 지휘소 단절 · 기동
+          - button "07:45 대대 지휘소 단절 · 기동" [ref=f3e1391] [cursor=pointer]:
+            - generic [ref=f3e1392]: 07:45
+            - generic [ref=f3e1394]: 대대 지휘소 단절 · 기동
+          - button "08:00 표적 획득 단계 시작" [ref=f3e1395] [cursor=pointer]:
+            - generic [ref=f3e1396]: 08:00
+            - generic [ref=f3e1398]: 표적 획득 단계 시작
+          - button "08:00 관측반 이동 시작 (FO-TAB)" [ref=f3e1399] [cursor=pointer]:
+            - generic [ref=f3e1400]: 08:00
+            - generic [ref=f3e1402]: 관측반 이동 시작 (FO-TAB)
+          - button "08:00 관측반 복구" [ref=f3e1403] [cursor=pointer]:
+            - generic [ref=f3e1404]: 08:00
+            - generic [ref=f3e1406]: 관측반 복구
+          - button "08:05 대대 지휘소 이동 완료 (BN-SRV)" [ref=f3e1407] [cursor=pointer]:
+            - generic [ref=f3e1408]: 08:05
+            - generic [ref=f3e1410]: 대대 지휘소 이동 완료 (BN-SRV)
+          - button "08:05 대대 지휘소 이동 완료 (BN-CP)" [ref=f3e1411] [cursor=pointer]:
+            - generic [ref=f3e1412]: 08:05
+            - generic [ref=f3e1414]: 대대 지휘소 이동 완료 (BN-CP)
+          - button "08:05 대대 지휘소 이동 완료 (SAT-TERM)" [ref=f3e1415] [cursor=pointer]:
+            - generic [ref=f3e1416]: 08:05
+            - generic [ref=f3e1418]: 대대 지휘소 이동 완료 (SAT-TERM)
+          - button "08:15 대대 지휘소 복구" [ref=f3e1419] [cursor=pointer]:
+            - generic [ref=f3e1420]: 08:15
+            - generic [ref=f3e1422]: 대대 지휘소 복구
+          - button "08:15 대대 지휘소 복구" [ref=f3e1423] [cursor=pointer]:
+            - generic [ref=f3e1424]: 08:15
+            - generic [ref=f3e1426]: 대대 지휘소 복구
+          - button "08:15 대대 지휘소 복구" [ref=f3e1427] [cursor=pointer]:
+            - generic [ref=f3e1428]: 08:15
+            - generic [ref=f3e1430]: 대대 지휘소 복구
+          - button "08:30 1중대 지휘차 이동 완료 (CO1-VEH)" [ref=f3e1431] [cursor=pointer]:
+            - generic [ref=f3e1432]: 08:30
+            - generic [ref=f3e1434]: 1중대 지휘차 이동 완료 (CO1-VEH)
+          - button "08:30 1중대 지휘차 이동 시작 (CO1-VEH)" [ref=f3e1435] [cursor=pointer]:
+            - generic [ref=f3e1436]: 08:30
+            - generic [ref=f3e1438]: 1중대 지휘차 이동 시작 (CO1-VEH)
+          - button "08:30 1중대 지휘차 ↔ 능선 중계소 단절 · 지형" [ref=f3e1439] [cursor=pointer]:
+            - generic [ref=f3e1440]: 08:30
+            - generic [ref=f3e1442]: 1중대 지휘차 ↔ 능선 중계소 단절 · 지형
+          - button "08:30 2중대 지휘차 침해 · 유효 계정 악용 (노획 단말 비인가 접속)" [ref=f3e1443] [cursor=pointer]:
+            - generic [ref=f3e1444]: 08:30
+            - generic [ref=f3e1446]: 2중대 지휘차 침해 · 유효 계정 악용 (노획 단말 비인가 접속)
+          - button "09:00 화력 유도 단계 시작" [ref=f3e1447] [cursor=pointer]:
+            - generic [ref=f3e1448]: 09:00
+            - generic [ref=f3e1450]: 화력 유도 단계 시작
+          - button "09:00 관측반 이동 완료 (FO-TAB)" [ref=f3e1451] [cursor=pointer]:
+            - generic [ref=f3e1452]: 09:00
+            - generic [ref=f3e1454]: 관측반 이동 완료 (FO-TAB)
+          - button "09:00 관측반 이동 시작 (FO-TAB)" [ref=f3e1455] [cursor=pointer]:
+            - generic [ref=f3e1456]: 09:00
+            - generic [ref=f3e1458]: 관측반 이동 시작 (FO-TAB)
+          - button "09:15 1중대 지휘차 이동 완료 (CO1-VEH)" [ref=f3e1459] [cursor=pointer]:
+            - generic [ref=f3e1460]: 09:15
+            - generic [ref=f3e1462]: 1중대 지휘차 이동 완료 (CO1-VEH)
+          - button "09:15 1중대 지휘차 이동 시작 (CO1-VEH)" [ref=f3e1463] [cursor=pointer]:
+            - generic [ref=f3e1464]: 09:15
+            - generic [ref=f3e1466]: 1중대 지휘차 이동 시작 (CO1-VEH)
+          - button "09:15 1중대 지휘차 ↔ 능선 중계소 복구" [ref=f3e1467] [cursor=pointer]:
+            - generic [ref=f3e1468]: 09:15
+            - generic [ref=f3e1470]: 1중대 지휘차 ↔ 능선 중계소 복구
+          - button "09:25 2중대 지휘차 이동 완료 (CO2-VEH)" [ref=f3e1471] [cursor=pointer]:
+            - generic [ref=f3e1472]: 09:25
+            - generic [ref=f3e1474]: 2중대 지휘차 이동 완료 (CO2-VEH)
+          - button "09:25 2중대 지휘차 이동 시작 (CO2-VEH)" [ref=f3e1475] [cursor=pointer]:
+            - generic [ref=f3e1476]: 09:25
+            - generic [ref=f3e1478]: 2중대 지휘차 이동 시작 (CO2-VEH)
+          - button "09:30 2중대 지휘차 ↔ 능선 중계소 단절 · 기동" [ref=f3e1479] [cursor=pointer]:
+            - generic [ref=f3e1480]: 09:30
+            - generic [ref=f3e1482]: 2중대 지휘차 ↔ 능선 중계소 단절 · 기동
+          - button "09:55 2중대 지휘차 이동 완료 (CO2-VEH)" [ref=f3e1483] [cursor=pointer]:
+            - generic [ref=f3e1484]: 09:55
+            - generic [ref=f3e1486]: 2중대 지휘차 이동 완료 (CO2-VEH)
+          - button "10:00 목표 확보 단계 시작" [ref=f3e1487] [cursor=pointer]:
+            - generic [ref=f3e1488]: 10:00
+            - generic [ref=f3e1490]: 목표 확보 단계 시작
+          - button "10:00 2중대 지휘차 ↔ 능선 중계소 복구" [ref=f3e1491] [cursor=pointer]:
+            - generic [ref=f3e1492]: 10:00
+            - generic [ref=f3e1494]: 2중대 지휘차 ↔ 능선 중계소 복구
+          - button "10:15 관측반 이동 완료 (FO-TAB)" [ref=f3e1495] [cursor=pointer]:
+            - generic [ref=f3e1496]: 10:15
+            - generic [ref=f3e1498]: 관측반 이동 완료 (FO-TAB)
+          - button "10:15 관측반 이동 시작 (FO-TAB)" [ref=f3e1499] [cursor=pointer]:
+            - generic [ref=f3e1500]: 10:15
+            - generic [ref=f3e1502]: 관측반 이동 시작 (FO-TAB)
+          - button "10:15 관측반 ↔ 능선 중계소 단절 · 지형" [ref=f3e1503] [cursor=pointer]:
+            - generic [ref=f3e1504]: 10:15
+            - generic [ref=f3e1506]: 관측반 ↔ 능선 중계소 단절 · 지형
+          - button "10:20 1중대 지휘차 이동 완료 (CO1-VEH)" [ref=f3e1507] [cursor=pointer]:
+            - generic [ref=f3e1508]: 10:20
+            - generic [ref=f3e1510]: 1중대 지휘차 이동 완료 (CO1-VEH)
+          - button "10:30 대대 지휘소 침해 · 원격 서비스 접속 (대대 지휘소 서버 침해)" [ref=f3e1511] [cursor=pointer]:
+            - generic [ref=f3e1512]: 10:30
+            - generic [ref=f3e1514]: 대대 지휘소 침해 · 원격 서비스 접속 (대대 지휘소 서버 침해)
+          - button "10:35 관측반 이동 완료 (FO-TAB)" [ref=f3e1515] [cursor=pointer]:
+            - generic [ref=f3e1516]: 10:35
+            - generic [ref=f3e1518]: 관측반 이동 완료 (FO-TAB)
+          - button "10:35 관측반 이동 시작 (FO-TAB)" [ref=f3e1519] [cursor=pointer]:
+            - generic [ref=f3e1520]: 10:35
+            - generic [ref=f3e1522]: 관측반 이동 시작 (FO-TAB)
+          - button "10:45 관측반 ↔ 능선 중계소 복구" [ref=f3e1523] [cursor=pointer]:
+            - generic [ref=f3e1524]: 10:45
+            - generic [ref=f3e1526]: 관측반 ↔ 능선 중계소 복구
+          - button "11:00 대대 지휘소 ↔ 여단 TOC 단절 · 미상" [ref=f3e1527] [cursor=pointer]:
+            - generic [ref=f3e1528]: 11:00
+            - generic [ref=f3e1530]: 대대 지휘소 ↔ 여단 TOC 단절 · 미상
+          - button "11:30 관측반 이동 완료 (FO-TAB)" [ref=f3e1531] [cursor=pointer]:
+            - generic [ref=f3e1532]: 11:30
+            - generic [ref=f3e1534]: 관측반 이동 완료 (FO-TAB)
+          - button "11:45 대대 지휘소 ↔ 여단 TOC 복구" [ref=f3e1535] [cursor=pointer]:
+            - generic [ref=f3e1536]: 11:45
+            - generic [ref=f3e1538]: 대대 지휘소 ↔ 여단 TOC 복구
+          - button "11:45 여단 TOC 침해 · SSH 접속 (여단 TOC 침투)" [ref=f3e1539] [cursor=pointer]:
+            - generic [ref=f3e1540]: 11:45
+            - generic [ref=f3e1542]: 여단 TOC 침해 · SSH 접속 (여단 TOC 침투)
+      - generic [ref=f3e78]:
+        - text: 이 화면에는 실행 경로가 없다. 차단·격리는 사람이 별도 절차로 수행한다.
+        - generic [ref=f3e79]: ADR-0004
+  - contentinfo [ref=f3e80]:
+    - generic [ref=f3e454]:
+      - button "◀" [ref=f3e455] [cursor=pointer]
+      - button "▶" [ref=f3e456] [cursor=pointer]
+      - button "▶" [ref=f3e457] [cursor=pointer]
+      - group "배속" [ref=f3e458]:
+        - button "1×" [ref=f3e459] [cursor=pointer]
+        - button "4×" [ref=f3e460] [cursor=pointer]
+        - button "16×" [ref=f3e461] [cursor=pointer]
+    - img "단계와 단절 타임라인" [ref=f3e463] [cursor=pointer]:
+      - generic [ref=f3e464]: 06:00
+      - generic [ref=f3e466]: 07:00
+      - generic [ref=f3e1543]: 08:00
+      - generic [ref=f3e1545]: 09:00
+      - generic [ref=f3e1547]: 10:00
+      - generic [ref=f3e1549]: 11:00
+      - generic [ref=f3e1551]: 12:00
+      - generic [ref=f3e1553]: 13:00
+      - generic [ref=f3e1555]: 집결·준비
+      - generic [ref=f3e1558]: 기동
+      - generic [ref=f3e1561]: 목표 확보
+      - generic [ref=f3e1564]: 표적 획득
+      - generic [ref=f3e1567]: 화력 유도
+      - generic "BN-SRV · mobility · 지휘소 이동(철수-전개)" [ref=f3e1570]
+      - generic "BN-CP · mobility · 지휘소 이동(철수-전개)" [ref=f3e1571]
+      - generic "SAT-TERM · mobility · 위성단말 철수-재전개" [ref=f3e1572]
+      - generic "FO-TAB · mobility · 관측반 미전개 - 표적획득 단계 이전" [ref=f3e1573]
+      - generic "L-SAT-TOC · unknown · 신호 단절. 재밍/기상 구분 불가 - 공격으로 단정하지 않는다" [ref=f3e1574]
+      - generic "L-VHF-CO1 · terrain · 능선 차폐" [ref=f3e1575]
+      - generic "L-VHF-CO2 · mobility · 기동간 안테나 미전개" [ref=f3e1576]
+      - generic "L-VHF-FO · terrain · 계곡 진입" [ref=f3e1577]
+      - generic "노획 단말 비인가 접속 T1078 유효 계정 악용 2중대 지휘차 단말에서 비인가 계정 사용" [ref=f3e1578]
+      - generic "자격증명 탈취 T1003 운영체제 자격증명 덤프 같은 시각 L-VHF-CO2 가 기동으로 단절된다(cause=mobility). 두 사건이 겹치는 구간이며 상황도는 이를 구분해야 한다" [ref=f3e1579]
+      - generic "대대 지휘소 서버 침해 T1021 원격 서비스 접속 중계망을 타고 BN-SRV 로 측면이동" [ref=f3e1580]
+      - generic "BN-SRV 장악 T1078.002 도메인 계정 악용 같은 시각 위성 링크가 cause=unknown 으로 단절된다(300~345). 재밍인지 기상인지 알 수 없다 - 공격으로 단정하지 않는다" [ref=f3e1581]
+      - generic "여단 TOC 침투 T1021.004 SSH 접속 위성 링크 복구와 동시에 신뢰 경로를 타고 여단으로 확산" [ref=f3e1582]
+      - generic "TOC-SRV 장악 T1486 데이터 암호화(무력화) C2 메시징 이중화가 양쪽 다 침해되어 무력화된다" [ref=f3e1583]
+    - generic [ref=f3e516]:
+      - generic [ref=f3e517]: 06:00
+      - generic [ref=f3e518]: 정상 +0분

@@ -1,0 +1,183 @@
+- generic [ref=f17e3]:
+  - banner [ref=f17e4]:
+    - generic [ref=f17e5]:
+      - generic [ref=f17e6]: MC-CyCOP
+      - generic [ref=f17e7]: 임무중심 사이버 공동상황도
+    - generic [ref=f17e9]:
+      - generic [ref=f17e10]: 시나리오
+      - combobox "시나리오" [ref=f17e11] [cursor=pointer]:
+        - option "tacnet-01"
+        - option "defnet-01"
+        - option "sandbox-01 · 교전장" [selected]
+    - group "모드" [ref=f17e12]:
+      - button "관측" [ref=f17e13] [cursor=pointer]
+      - button "편집" [active] [pressed] [ref=f17e14] [cursor=pointer]
+      - button "교전" [ref=f17e15] [cursor=pointer]
+    - generic [ref=f17e17]:
+      - generic [ref=f17e85]:
+        - generic [ref=f17e86]: 0.0%
+        - generic [ref=f17e87]:
+          - text: 지휘통제
+          - generic [ref=f17e88]: P1
+      - generic [ref=f17e93]:
+        - generic [ref=f17e94]: 0.0%
+        - generic [ref=f17e95]:
+          - text: 화력지원
+          - generic [ref=f17e96]: P2
+      - generic [ref=f17e19]:
+        - generic [ref=f17e20]:
+          - text: "0"
+          - generic [ref=f17e21]: /9
+        - generic [ref=f17e22]: 침해 자산
+      - generic [ref=f17e24]:
+        - generic [ref=f17e25]: "0"
+        - generic [ref=f17e26]: 단절 링크
+      - generic [ref=f17e28]:
+        - generic [ref=f17e29]: 정상
+        - generic [ref=f17e30]: 상황 등급
+    - generic [ref=f17e31]:
+      - text: 활성 단계
+      - generic [ref=f17e97]: 전체(정적)
+    - generic [ref=f17e32]: 스냅샷
+    - button "?" [ref=f17e34] [cursor=pointer]
+  - generic [ref=f17e35]:
+    - generic [ref=f17e98]:
+      - generic [ref=f17e99]:
+        - heading "자산 팔레트" [level=2] [ref=f17e100]
+        - paragraph [ref=f17e101]: 클릭하면 캔버스에 추가된다. 연결 도구로 두 자산을 차례로 누르면 링크가 생긴다.
+      - generic [ref=f17e102]:
+        - generic [ref=f17e103]: 지휘통제
+        - generic [ref=f17e104]:
+          - button "C2 서버" [ref=f17e105] [cursor=pointer]
+          - button "C2 단말" [ref=f17e110] [cursor=pointer]
+          - button "워크스테이션" [ref=f17e114] [cursor=pointer]
+          - button "단말" [ref=f17e118] [cursor=pointer]
+      - generic [ref=f17e122]:
+        - generic [ref=f17e123]: 통신
+        - generic [ref=f17e124]:
+          - button "무선 중계소" [ref=f17e125] [cursor=pointer]
+          - button "위성 단말" [ref=f17e132] [cursor=pointer]
+          - button "게이트웨이" [ref=f17e141] [cursor=pointer]
+          - button "스위치" [ref=f17e147] [cursor=pointer]
+          - button "방화벽" [ref=f17e154] [cursor=pointer]
+      - generic [ref=f17e159]:
+        - generic [ref=f17e160]: 서버
+        - generic [ref=f17e161]:
+          - button "사격지휘 서버" [ref=f17e162] [cursor=pointer]
+          - button "데이터베이스" [ref=f17e176] [cursor=pointer]
+          - button "파일 서버" [ref=f17e182] [cursor=pointer]
+          - button "메일 서버" [ref=f17e187] [cursor=pointer]
+          - button "웹 서버" [ref=f17e192] [cursor=pointer]
+          - button "도메인 컨트롤러" [ref=f17e204] [cursor=pointer]
+          - button "하이퍼바이저" [ref=f17e209] [cursor=pointer]
+      - generic [ref=f17e215]:
+        - generic [ref=f17e216]: 관측
+        - button "관측반 단말" [ref=f17e218] [cursor=pointer]
+      - generic [ref=f17e223]: 추가한 자산은 아직 어떤 서비스도 제공하지 않는다. 임무 저하도에 영향을 주려면 서비스에 연결하거나 작업의 수행 위치로 지정해야 한다.
+    - generic [ref=f17e36]:
+      - generic [ref=f17e37]:
+        - group "뷰" [ref=f17e38]:
+          - button "임무 의존" [pressed] [ref=f17e39] [cursor=pointer]
+          - button "전송로" [ref=f17e40] [cursor=pointer]
+          - button "지리" [ref=f17e41] [cursor=pointer]
+        - group "편집 도구" [ref=f17e225]:
+          - button "선택" [ref=f17e226] [cursor=pointer]
+          - button "연결" [ref=f17e227] [cursor=pointer]
+          - button "삭제" [ref=f17e228] [cursor=pointer]
+        - generic "구성 중 · 자산 9 · 링크 9" [ref=f17e229]
+        - button "구성 저장" [ref=f17e231] [cursor=pointer]
+        - combobox "저장한 구성 불러오기" [ref=f17e232] [cursor=pointer]:
+          - option "구성 불러오기…" [selected]
+        - generic [ref=f17e233] [cursor=pointer]:
+          - text: JSON 불러오기
+          - button "JSON 불러오기" [ref=f17e234]
+        - button "되돌리기" [disabled] [ref=f17e235]
+        - button "다시 실행" [disabled] [ref=f17e236]
+        - button "시나리오 내보내기" [ref=f17e237] [cursor=pointer]
+        - button "교전장 비우기" [ref=f17e238] [cursor=pointer]
+        - generic [ref=f17e42] [cursor=pointer]:
+          - checkbox "라벨" [checked] [ref=f17e43]
+          - text: 라벨
+        - button "화면 맞춤" [ref=f17e44] [cursor=pointer]
+      - generic [ref=f17e45]:
+        - generic [aria-hidden]:
+          - generic: 임무
+          - generic: 작업
+          - generic: 서비스·자산
+        - generic [ref=f17e47]:
+          - generic [ref=f17e48]: 테두리 = 원인
+          - generic [ref=f17e50]: 공격
+          - generic [ref=f17e52]: 기동
+          - generic [ref=f17e54]: 지형
+          - generic [ref=f17e56]: 정비
+          - generic [ref=f17e58]: 미상
+          - generic [ref=f17e60]: 정상
+    - complementary [ref=f17e62]:
+      - generic [ref=f17e243]:
+        - generic [ref=f17e244]:
+          - heading "준비도" [level=2] [ref=f17e245]
+          - generic [ref=f17e246]: 교전 가능
+        - generic [ref=f17e247]:
+          - generic [ref=f17e248]: 서비스 제공
+          - generic [ref=f17e249]: 5/5
+        - generic [ref=f17e250]:
+          - generic [ref=f17e251]: 작업 배치
+          - generic [ref=f17e252]: 8/8
+        - generic [ref=f17e253]:
+          - generic [ref=f17e254]: 도달성
+          - generic [ref=f17e255]: 8/8
+        - generic [ref=f17e256]:
+          - generic [ref=f17e257]: 고립 자산
+          - generic [ref=f17e258]: "0"
+        - generic [ref=f17e259]:
+          - generic [ref=f17e260]: 보석
+          - generic [ref=f17e261]: "1"
+        - paragraph [ref=f17e262]: 서비스마다 제공 자산, 작업마다 수행 자산이 있어야 교전이 열린다. 엔진은 제공자 없는 서비스를 저하 0 으로 보기 때문이다(ADR-0027).
+      - generic [ref=f17e63]:
+        - generic [ref=f17e64]:
+          - heading "임무 저하도" [level=2] [ref=f17e65]
+          - generic [ref=f17e66]: 스냅샷
+        - generic [ref=f17e265]:
+          - generic [ref=f17e266]:
+            - generic [ref=f17e267]: 지휘통제
+            - generic [ref=f17e268]: P1
+            - generic [ref=f17e269]: 0.0%
+          - generic [ref=f17e271]:
+            - generic [ref=f17e272]: 공격0.0%
+            - generic [ref=f17e274]: 환경0.0%
+            - generic [ref=f17e276]: 상호작용0.0%
+        - generic [ref=f17e280]:
+          - generic [ref=f17e281]:
+            - generic [ref=f17e282]: 화력지원
+            - generic [ref=f17e283]: P2
+            - generic [ref=f17e284]: 0.0%
+          - generic [ref=f17e286]:
+            - generic [ref=f17e287]: 공격0.0%
+            - generic [ref=f17e289]: 환경0.0%
+            - generic [ref=f17e291]: 상호작용0.0%
+      - tablist [ref=f17e67]:
+        - tab "단절" [ref=f17e68] [cursor=pointer]
+        - tab "대응1" [selected] [ref=f17e293] [cursor=pointer]
+        - tab "선택" [ref=f17e70] [cursor=pointer]
+      - generic [ref=f17e71]:
+        - paragraph [ref=f17e294]: 격리했을 때 임무가 얼마나 더 나빠지는가
+        - generic [ref=f17e295]:
+          - generic [ref=f17e296]:
+            - generic [ref=f17e297]:
+              - text: 여단 TOC
+              - emphasis [ref=f17e298]: SRV-01
+            - generic [ref=f17e299]: +90.3%p
+          - generic [ref=f17e300]:
+            - generic [ref=f17e301]:
+              - generic [ref=f17e302]: 지휘통제 +90.3%p
+              - generic [ref=f17e303]: 화력지원 +26.2%p
+            - button "승인 요청" [ref=f17e304] [cursor=pointer]
+      - generic [ref=f17e73]:
+        - generic [ref=f17e75]:
+          - text: 브리핑
+          - emphasis [ref=f17e76]: LLM · 인용 필수
+        - generic [ref=f17e77]: 편집된 그래프에는 브리핑이 없다
+      - generic [ref=f17e78]:
+        - text: 이 화면에는 실행 경로가 없다. 차단·격리는 사람이 별도 절차로 수행한다.
+        - generic [ref=f17e79]: ADR-0004
+  - contentinfo [ref=f17e80]

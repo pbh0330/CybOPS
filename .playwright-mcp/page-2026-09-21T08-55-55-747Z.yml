@@ -1,0 +1,161 @@
+- generic [ref=f3e3]:
+  - banner [ref=f3e4]:
+    - generic [ref=f3e5]:
+      - generic [ref=f3e6]: MC-CyCOP
+      - generic [ref=f3e7]: 임무중심 사이버 공동상황도
+    - generic [ref=f3e9]:
+      - generic [ref=f3e10]: 시나리오
+      - combobox "시나리오" [ref=f3e11] [cursor=pointer]:
+        - option "tacnet-01"
+        - option "defnet-01"
+        - option "sandbox-01 · 교전장" [selected]
+    - group "모드" [ref=f3e12]:
+      - button "관측" [ref=f3e13] [cursor=pointer]
+      - button "편집" [ref=f3e14] [cursor=pointer]
+      - button "교전" [active] [pressed] [ref=f3e15] [cursor=pointer]
+    - generic [ref=f3e17]:
+      - generic [ref=f3e85]:
+        - generic [ref=f3e86]: 74.8%
+        - generic [ref=f3e87]:
+          - text: 지휘통제
+          - generic [ref=f3e88]: P1
+      - generic [ref=f3e93]:
+        - generic [ref=f3e94]: 76.2%
+        - generic [ref=f3e95]:
+          - text: 화력지원
+          - generic [ref=f3e96]: P2
+      - generic [ref=f3e19]:
+        - generic [ref=f3e20]:
+          - text: "0"
+          - generic [ref=f3e21]: /8
+        - generic [ref=f3e22]: 침해 자산
+      - generic [ref=f3e24]:
+        - generic [ref=f3e25]: "0"
+        - generic [ref=f3e26]: 단절 링크
+      - generic [ref=f3e28]:
+        - generic [ref=f3e29]: 심각
+        - generic [ref=f3e30]: 상황 등급
+    - generic [ref=f3e31]:
+      - text: 활성 단계
+      - generic [ref=f3e97]: 전체(정적)
+    - generic [ref=f3e32]: 스냅샷
+    - button "?" [ref=f3e34] [cursor=pointer]
+  - generic [ref=f3e35]:
+    - generic [ref=f3e36]:
+      - generic [ref=f3e37]:
+        - group "뷰" [ref=f3e38]:
+          - button "임무 의존" [pressed] [ref=f3e39] [cursor=pointer]
+          - button "전송로" [ref=f3e40] [cursor=pointer]
+          - button "지리" [ref=f3e41] [cursor=pointer]
+        - generic [ref=f3e42] [cursor=pointer]:
+          - checkbox "라벨" [checked] [ref=f3e43]
+          - text: 라벨
+        - button "화면 맞춤" [ref=f3e44] [cursor=pointer]
+      - generic [ref=f3e45]:
+        - generic [aria-hidden]:
+          - generic: 임무
+          - generic: 작업
+          - generic: 서비스·자산
+        - generic [ref=f3e47]:
+          - generic [ref=f3e48]: 테두리 = 원인
+          - generic [ref=f3e50]: 공격
+          - generic [ref=f3e52]: 기동
+          - generic [ref=f3e54]: 지형
+          - generic [ref=f3e56]: 정비
+          - generic [ref=f3e58]: 미상
+          - generic [ref=f3e60]: 정상
+    - complementary [ref=f3e62]:
+      - generic [ref=f3e102]:
+        - generic [ref=f3e103]:
+          - heading "준비도" [level=2] [ref=f3e104]
+          - generic [ref=f3e105]: 교전 가능
+        - generic [ref=f3e106]:
+          - generic [ref=f3e107]: 서비스 제공
+          - generic [ref=f3e108]: 5/5
+        - generic [ref=f3e109]:
+          - generic [ref=f3e110]: 작업 배치
+          - generic [ref=f3e111]: 8/8
+        - generic [ref=f3e112]:
+          - generic [ref=f3e113]: 고립 자산
+          - generic [ref=f3e114]: "0"
+        - generic [ref=f3e115]:
+          - generic [ref=f3e116]: 보석
+          - generic [ref=f3e117]: "1"
+        - paragraph [ref=f3e118]: 서비스마다 제공 자산, 작업마다 수행 자산이 있어야 교전이 열린다. 엔진은 제공자 없는 서비스를 저하 0 으로 보기 때문이다(ADR-0027).
+      - generic [ref=f3e63]:
+        - generic [ref=f3e64]:
+          - heading "임무 저하도" [level=2] [ref=f3e65]
+          - generic [ref=f3e66]: 스냅샷
+        - generic [ref=f3e121]:
+          - generic [ref=f3e122]:
+            - generic [ref=f3e123]: 지휘통제
+            - generic [ref=f3e124]: P1
+            - generic [ref=f3e125]: 74.8%
+          - generic [ref=f3e128]:
+            - generic [ref=f3e129]: 공격0.0%
+            - generic [ref=f3e131]: 환경0.0%
+            - generic [ref=f3e133]: 상호작용74.8%
+        - generic [ref=f3e137]:
+          - generic [ref=f3e138]:
+            - generic [ref=f3e139]: 화력지원
+            - generic [ref=f3e140]: P2
+            - generic [ref=f3e141]: 76.2%
+          - generic [ref=f3e144]:
+            - generic [ref=f3e145]: 공격0.0%
+            - generic [ref=f3e147]: 환경0.0%
+            - generic [ref=f3e149]: 상호작용76.2%
+      - button "교전" [ref=f3e152] [cursor=pointer]
+      - generic [ref=f3e153]:
+        - generic [ref=f3e154]: 교전 시작 - 조건을 고른다
+        - generic [ref=f3e155]:
+          - generic [ref=f3e156]: 시점
+          - combobox "시점" [ref=f3e157] [cursor=pointer]:
+            - option "정적" [selected]
+        - generic [ref=f3e158]:
+          - generic [ref=f3e159]:
+            - generic [ref=f3e160]: 초기 거점
+            - combobox "초기 거점" [ref=f3e161] [cursor=pointer]:
+              - option "본부 (SRV-01)" [selected]
+              - option "본부 (WKS-01)"
+              - option "본부 (GW-01)"
+              - option "중계소 (RLY-01)"
+              - option "대대 지휘소 (SAT-01)"
+              - option "대대 지휘소 (TRM-01)"
+              - option "관측반 (OBS-01)"
+              - option "FDC (FDC-01)"
+          - generic [ref=f3e162]:
+            - generic [ref=f3e163]: 수준
+            - combobox "수준" [ref=f3e164] [cursor=pointer]:
+              - option "0.5 거점" [selected]
+              - option "0.8 자격증명"
+        - generic [ref=f3e165]:
+          - generic [ref=f3e166]:
+            - generic [ref=f3e167]: 모드
+            - combobox "모드" [ref=f3e168] [cursor=pointer]:
+              - option "버티기" [selected]
+              - option "보석 방어"
+          - generic [ref=f3e169]:
+            - generic [ref=f3e170]: 턴
+            - combobox "턴" [ref=f3e171] [cursor=pointer]:
+              - option "4"
+              - option "8" [selected]
+              - option "12"
+        - generic [ref=f3e172]:
+          - generic [ref=f3e173]:
+            - generic [ref=f3e174]: 공격자
+            - combobox "공격자" [ref=f3e175] [cursor=pointer]:
+              - option "greedy (대조군)" [selected]
+              - option "random (하한)"
+              - option "LLM - 사용 불가" [disabled]
+          - generic [ref=f3e176]:
+            - generic [ref=f3e177]: 시드
+            - spinbutton "시드" [ref=f3e178]: "20260906"
+        - generic [ref=f3e179]:
+          - text: LLM 공격자 사용 불가
+          - generic [ref=f3e180]: 이 배포본에는 모델 서버가 없다. greedy 와 random 은 그대로 동작한다. (Failed to fetch)
+        - paragraph [ref=f3e181]: 8턴 동안 P1 임무 저하도를 50% 미만으로 지키면 승. 점수는 턴별 가중 저하도의 합(낮을수록 좋음).
+        - button "시작" [ref=f3e182] [cursor=pointer]
+      - generic [ref=f3e78]:
+        - text: 이 화면에는 실행 경로가 없다. 차단·격리는 사람이 별도 절차로 수행한다.
+        - generic [ref=f3e79]: ADR-0004
+  - contentinfo [ref=f3e80]

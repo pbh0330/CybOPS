@@ -1,0 +1,71 @@
+- generic [ref=f24e3]:
+  - banner [ref=f24e4]:
+    - generic [ref=f24e5]:
+      - generic [ref=f24e6]: MC-CyCOP
+      - generic [ref=f24e7]: 임무중심 사이버 공동상황도
+    - generic [ref=f24e9]:
+      - generic [ref=f24e10]: 시나리오
+      - combobox "시나리오" [ref=f24e11] [cursor=pointer]:
+        - option "tacnet-01" [selected]
+        - option "defnet-01"
+    - group "모드" [ref=f24e12]:
+      - button "관측" [pressed] [ref=f24e13] [cursor=pointer]
+      - button "편집" [ref=f24e14] [cursor=pointer]
+      - button "교전" [ref=f24e15] [cursor=pointer]
+    - generic [ref=f24e17]:
+      - generic [ref=f24e19]:
+        - generic [ref=f24e20]:
+          - text: "0"
+          - generic [ref=f24e21]: /0
+        - generic [ref=f24e22]: 침해 자산
+      - generic [ref=f24e24]:
+        - generic [ref=f24e25]: "0"
+        - generic [ref=f24e26]: 단절 링크
+      - generic [ref=f24e28]:
+        - generic [ref=f24e29]: 정상
+        - generic [ref=f24e30]: 상황 등급
+    - generic [ref=f24e31]: 활성 단계 없음
+    - generic [ref=f24e32]: 스냅샷
+    - button "?" [ref=f24e34] [cursor=pointer]
+  - generic [ref=f24e35]:
+    - generic [ref=f24e36]:
+      - generic [ref=f24e37]:
+        - group "뷰" [ref=f24e38]:
+          - button "임무 의존" [ref=f24e39] [cursor=pointer]
+          - button "전송로" [ref=f24e40] [cursor=pointer]
+          - button "지리" [pressed] [ref=f24e41] [cursor=pointer]
+        - generic [ref=f24e42] [cursor=pointer]:
+          - checkbox "라벨" [checked] [ref=f24e43]
+          - text: 라벨
+        - button "화면 맞춤" [ref=f24e44] [cursor=pointer]
+      - generic [ref=f24e47]:
+        - group "차원" [ref=f24e48]:
+          - button "2D" [ref=f24e49] [cursor=pointer]
+          - button "3D" [ref=f24e50] [cursor=pointer]
+        - generic [ref=f24e52] [cursor=pointer]:
+          - checkbox "지형" [checked] [ref=f24e53]
+          - text: 지형
+        - generic [ref=f24e54]:
+          - generic [ref=f24e55]: 회전
+          - slider "회전 35°" [ref=f24e56]: "35"
+          - generic [ref=f24e57]: 35°
+        - generic [ref=f24e59]: 끌어서 회전 · Ctrl+끌기 확대
+        - button "원래대로" [ref=f24e60] [cursor=pointer]
+    - complementary [ref=f24e62]:
+      - generic [ref=f24e64]:
+        - heading "임무 저하도" [level=2] [ref=f24e65]
+        - generic [ref=f24e66]: 스냅샷
+      - tablist [ref=f24e67]:
+        - tab "단절" [ref=f24e68] [cursor=pointer]
+        - tab "대응" [selected] [ref=f24e69] [cursor=pointer]
+        - tab "선택" [ref=f24e70] [cursor=pointer]
+      - generic [ref=f24e71]: 대응 후보 없음
+      - generic [ref=f24e73]:
+        - generic [ref=f24e75]:
+          - text: 브리핑
+          - emphasis [ref=f24e76]: LLM · 인용 필수
+        - generic [ref=f24e77]: 이 시점 브리핑 없음
+      - generic [ref=f24e78]:
+        - text: 이 화면에는 실행 경로가 없다. 차단·격리는 사람이 별도 절차로 수행한다.
+        - generic [ref=f24e79]: ADR-0004
+  - contentinfo [ref=f24e80]

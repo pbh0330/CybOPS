@@ -1,0 +1,8 @@
+[     128ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:21550
+[     133ms] [INFO] milsymbol.js 3.0.4 - Copyright (c) 2024 Måns Beckman  http://www.spatialillusions.com @ http://localhost:5179/node_modules/.vite/deps/milsymbol.js?v=39a074bf:2562
+[     336ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5179/node_modules/.vite/deps/cytoscape.js?v=39a074bf:1091
+[    7970ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:11434/api/tags:0
+[    7970ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:11434/api/tags:0
+[  211452ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:11434/api/tags:0
+[  211452ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:11434/api/tags:0
+[  970526ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:11434/api/tags:0

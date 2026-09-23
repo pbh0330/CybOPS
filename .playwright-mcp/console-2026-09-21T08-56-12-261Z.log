@@ -1,0 +1,12 @@
+[     135ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:21550
+[     139ms] [INFO] milsymbol.js 3.0.4 - Copyright (c) 2024 Måns Beckman  http://www.spatialillusions.com @ http://localhost:5179/node_modules/.vite/deps/milsymbol.js?v=39a074bf:2562
+[     351ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5179/node_modules/.vite/deps/cytoscape.js?v=39a074bf:1091
+[    4710ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:11434/api/tags:0
+[    4710ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:11434/api/tags:0
+[  676013ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:11434/api/tags:0
+[  676034ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5179/node_modules/.vite/deps/cytoscape.js?v=39a074bf:1091
+[  683479ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:11434/api/tags:0
+[  683500ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5179/node_modules/.vite/deps/cytoscape.js?v=39a074bf:1091
+[  713834ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:11434/api/tags:0
+[  717243ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:11434/api/tags:0
+[  721211ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:11434/api/tags:0

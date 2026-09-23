@@ -1,0 +1,66 @@
+- generic [ref=f15e3]:
+  - banner [ref=f15e4]:
+    - generic [ref=f15e5]:
+      - generic [ref=f15e6]: MC-CyCOP
+      - generic [ref=f15e7]: 임무중심 사이버 공동상황도
+    - generic [ref=f15e9]:
+      - generic [ref=f15e10]: 시나리오
+      - combobox "시나리오" [ref=f15e11] [cursor=pointer]:
+        - option "tacnet-01" [selected]
+        - option "defnet-01"
+    - group "모드" [ref=f15e12]:
+      - button "관측" [pressed] [ref=f15e13] [cursor=pointer]
+      - button "편집" [ref=f15e14] [cursor=pointer]
+      - button "교전" [ref=f15e15] [cursor=pointer]
+    - generic [ref=f15e17]:
+      - generic [ref=f15e19]:
+        - generic [ref=f15e20]:
+          - text: "0"
+          - generic [ref=f15e21]: /0
+        - generic [ref=f15e22]: 침해 자산
+      - generic [ref=f15e24]:
+        - generic [ref=f15e25]: "0"
+        - generic [ref=f15e26]: 단절 링크
+      - generic [ref=f15e28]:
+        - generic [ref=f15e29]: 정상
+        - generic [ref=f15e30]: 상황 등급
+    - generic [ref=f15e31]: 활성 단계 없음
+    - generic [ref=f15e32]: 스냅샷
+    - button "?" [ref=f15e34] [cursor=pointer]
+  - generic [ref=f15e35]:
+    - generic [ref=f15e36]:
+      - generic [ref=f15e37]:
+        - group "뷰" [ref=f15e38]:
+          - button "임무 의존" [pressed] [ref=f15e39] [cursor=pointer]
+          - button "전송로" [ref=f15e40] [cursor=pointer]
+          - button "지리" [ref=f15e41] [cursor=pointer]
+        - generic [ref=f15e42] [cursor=pointer]:
+          - checkbox "라벨" [checked] [ref=f15e43]
+          - text: 라벨
+        - button "화면 맞춤" [ref=f15e44] [cursor=pointer]
+      - generic [ref=f15e47]:
+        - generic [ref=f15e48]: 테두리 = 원인
+        - generic [ref=f15e50]: 공격
+        - generic [ref=f15e52]: 기동
+        - generic [ref=f15e54]: 지형
+        - generic [ref=f15e56]: 정비
+        - generic [ref=f15e58]: 미상
+        - generic [ref=f15e60]: 정상
+    - complementary [ref=f15e62]:
+      - generic [ref=f15e64]:
+        - heading "임무 저하도" [level=2] [ref=f15e65]
+        - generic [ref=f15e66]: 스냅샷
+      - tablist [ref=f15e67]:
+        - tab "단절" [ref=f15e68] [cursor=pointer]
+        - tab "대응" [selected] [ref=f15e69] [cursor=pointer]
+        - tab "선택" [ref=f15e70] [cursor=pointer]
+      - generic [ref=f15e71]: 대응 후보 없음
+      - generic [ref=f15e73]:
+        - generic [ref=f15e75]:
+          - text: 브리핑
+          - emphasis [ref=f15e76]: LLM · 인용 필수
+        - generic [ref=f15e77]: 이 시점 브리핑 없음
+      - generic [ref=f15e78]:
+        - text: 이 화면에는 실행 경로가 없다. 차단·격리는 사람이 별도 절차로 수행한다.
+        - generic [ref=f15e79]: ADR-0004
+  - contentinfo [ref=f15e80]

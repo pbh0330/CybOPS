@@ -1,0 +1,150 @@
+[     105ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:21550
+[     109ms] [INFO] milsymbol.js 3.0.4 - Copyright (c) 2024 Måns Beckman  http://www.spatialillusions.com @ http://localhost:5179/node_modules/.vite/deps/milsymbol.js?v=39a074bf:2562
+[     233ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5179/node_modules/.vite/deps/cytoscape.js?v=39a074bf:1091
+[     841ms] [WARNING] You are using the same source for a hillshade layer and for 3D terrain. Please consider using two separate sources to improve rendering quality. @ http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:315
+[    1096ms] [WARNING] Image "wood-pattern" could not be loaded. Please make sure you have added the image with map.addImage() or a "sprite" property in your style. You can provide missing images by listening for the "styleimagemissing" map event. @ http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:315
+[  373997ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:21550
+[  374005ms] [INFO] milsymbol.js 3.0.4 - Copyright (c) 2024 Måns Beckman  http://www.spatialillusions.com @ http://localhost:5179/node_modules/.vite/deps/milsymbol.js?v=39a074bf:2562
+[  374383ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5179/node_modules/.vite/deps/cytoscape.js?v=39a074bf:1091
+[  375126ms] [WARNING] You are using the same source for a hillshade layer and for 3D terrain. Please consider using two separate sources to improve rendering quality. @ http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:315
+[  375404ms] [WARNING] Image "wood-pattern" could not be loaded. Please make sure you have added the image with map.addImage() or a "sprite" property in your style. You can provide missing images by listening for the "styleimagemissing" map event. @ http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:315
+[  432637ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5179/node_modules/.vite/deps/cytoscape.js?v=39a074bf:1091
+[  432713ms] Error: Style is not done loading.
+    at ki._checkLoaded (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:18693:38)
+    at ki.setLayoutProperty (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:18933:18)
+    at ds.setLayoutProperty (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:23077:31)
+    at http://localhost:5179/src/ui/MapPane.jsx?t=1789813379832:152:9
+    at commitHookEffectListMount (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18119:15)
+    at commitPassiveMountEffects (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:19490:11)
+[  432719ms] [ERROR] The above error occurred in the <MapPane> component:
+
+    at MapPane (http://localhost:5179/src/ui/MapPane.jsx?t=1789813379832:34:35)
+    at div
+    at section
+    at div
+    at div
+    at App (http://localhost:5179/src/App.jsx?t=1789812874490:51:29)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:14031
+[  432757ms] Error: Style is not done loading.
+    at ki._checkLoaded (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:18693:38)
+    at ki.setLayoutProperty (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:18933:18)
+    at ds.setLayoutProperty (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:23077:31)
+    at http://localhost:5179/src/ui/MapPane.jsx?t=1789813379832:152:9
+    at commitHookEffectListMount (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18119:15)
+    at commitPassiveMountEffects (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:19490:11)
+[  433622ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5179/node_modules/.vite/deps/cytoscape.js?v=39a074bf:1091
+[  434842ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5179/node_modules/.vite/deps/cytoscape.js?v=39a074bf:1091
+[  434903ms] Error: Style is not done loading.
+    at ki._checkLoaded (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:18693:38)
+    at ki.setLayoutProperty (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:18933:18)
+    at ds.setLayoutProperty (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:23077:31)
+    at http://localhost:5179/src/ui/MapPane.jsx?t=1789813381886:152:9
+    at commitHookEffectListMount (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18119:15)
+    at commitPassiveMountEffects (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:19490:11)
+[  434907ms] [ERROR] The above error occurred in the <MapPane> component:
+
+    at MapPane (http://localhost:5179/src/ui/MapPane.jsx?t=1789813381886:34:35)
+    at div
+    at section
+    at div
+    at div
+    at App (http://localhost:5179/src/App.jsx?t=1789812874490:51:29)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:14031
+[  434939ms] Error: Style is not done loading.
+    at ki._checkLoaded (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:18693:38)
+    at ki.setLayoutProperty (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:18933:18)
+    at ds.setLayoutProperty (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:23077:31)
+    at http://localhost:5179/src/ui/MapPane.jsx?t=1789813381886:152:9
+    at commitHookEffectListMount (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18119:15)
+    at commitPassiveMountEffects (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:19490:11)
+[  435905ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5179/node_modules/.vite/deps/cytoscape.js?v=39a074bf:1091
+[  437106ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5179/node_modules/.vite/deps/cytoscape.js?v=39a074bf:1091
+[  437159ms] Error: Style is not done loading.
+    at ki._checkLoaded (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:18693:38)
+    at ki.setLayoutProperty (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:18933:18)
+    at ds.setLayoutProperty (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:23077:31)
+    at http://localhost:5179/src/ui/MapPane.jsx?t=1789813384309:152:9
+    at commitHookEffectListMount (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18119:15)
+    at commitPassiveMountEffects (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:19490:11)
+[  437162ms] [ERROR] The above error occurred in the <MapPane> component:
+
+    at MapPane (http://localhost:5179/src/ui/MapPane.jsx?t=1789813384309:34:35)
+    at div
+    at section
+    at div
+    at div
+    at App (http://localhost:5179/src/App.jsx?t=1789812874490:51:29)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:14031
+[  437188ms] Error: Style is not done loading.
+    at ki._checkLoaded (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:18693:38)
+    at ki.setLayoutProperty (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:18933:18)
+    at ds.setLayoutProperty (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:23077:31)
+    at http://localhost:5179/src/ui/MapPane.jsx?t=1789813384309:152:9
+    at commitHookEffectListMount (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18119:15)
+    at commitPassiveMountEffects (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:19490:11)
+[  438024ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5179/node_modules/.vite/deps/cytoscape.js?v=39a074bf:1091
+[  439061ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5179/node_modules/.vite/deps/cytoscape.js?v=39a074bf:1091
+[  439114ms] Error: Style is not done loading.
+    at ki._checkLoaded (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:18693:38)
+    at ki.setLayoutProperty (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:18933:18)
+    at ds.setLayoutProperty (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:23077:31)
+    at http://localhost:5179/src/ui/MapPane.jsx?t=1789813386219:152:9
+    at commitHookEffectListMount (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18119:15)
+    at commitPassiveMountEffects (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:19490:11)
+[  439117ms] [ERROR] The above error occurred in the <MapPane> component:
+
+    at MapPane (http://localhost:5179/src/ui/MapPane.jsx?t=1789813386219:34:35)
+    at div
+    at section
+    at div
+    at div
+    at App (http://localhost:5179/src/App.jsx?t=1789812874490:51:29)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries. @ http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:14031
+[  439138ms] Error: Style is not done loading.
+    at ki._checkLoaded (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:18693:38)
+    at ki.setLayoutProperty (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:18933:18)
+    at ds.setLayoutProperty (http://localhost:5179/node_modules/.vite/deps/maplibre-gl.js?v=39a074bf:23077:31)
+    at http://localhost:5179/src/ui/MapPane.jsx?t=1789813386219:152:9
+    at commitHookEffectListMount (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:16915:34)
+    at commitPassiveMountOnFiber (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18156:19)
+    at commitPassiveMountEffects_complete (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18129:17)
+    at commitPassiveMountEffects_begin (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18119:15)
+    at commitPassiveMountEffects (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:18109:11)
+    at flushPassiveEffectsImpl (http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=39a074bf:19490:11)
+[  451373ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5179/node_modules/.vite/deps/cytoscape.js?v=39a074bf:1091

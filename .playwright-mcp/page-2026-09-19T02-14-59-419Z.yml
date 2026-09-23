@@ -1,0 +1,73 @@
+- generic [ref=e3]:
+  - banner [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: MC-CyCOP
+      - generic [ref=e7]: 임무중심 사이버 공동상황도
+    - generic [ref=e9]:
+      - generic [ref=e10]: 시나리오
+      - combobox "시나리오" [ref=e11] [cursor=pointer]:
+        - option "tacnet-01" [selected]
+        - option "defnet-01"
+    - group "모드" [ref=e12]:
+      - button "관측" [pressed] [ref=e13] [cursor=pointer]
+      - button "편집" [ref=e14] [cursor=pointer]
+      - button "교전" [ref=e15] [cursor=pointer]
+    - generic [ref=e16]: 활성 단계 없음
+    - button "?" [ref=e17] [cursor=pointer]
+  - generic [ref=e18]:
+    - generic [ref=e19]:
+      - generic [ref=e20]:
+        - group "뷰" [ref=e21]:
+          - button "임무 의존" [pressed] [ref=e22] [cursor=pointer]
+          - button "전송로" [ref=e23] [cursor=pointer]
+          - button "지리" [ref=e24] [cursor=pointer]
+        - generic [ref=e25] [cursor=pointer]:
+          - checkbox "라벨" [checked] [ref=e26]
+          - text: 라벨
+        - button "화면 맞춤" [ref=e27] [cursor=pointer]
+      - generic [ref=e30]:
+        - generic [ref=e31]: 테두리 = 원인
+        - generic [ref=e33]: 공격
+        - generic [ref=e35]: 기동
+        - generic [ref=e37]: 지형
+        - generic [ref=e39]: 정비
+        - generic [ref=e41]: 미상
+        - generic [ref=e43]: 정상
+    - complementary [ref=e45]:
+      - generic [ref=e47]:
+        - heading "임무 저하도" [level=2] [ref=e48]
+        - generic [ref=e49]: 스냅샷
+      - tablist [ref=e50]:
+        - tab "단절" [ref=e51] [cursor=pointer]
+        - tab "대응" [selected] [ref=e52] [cursor=pointer]
+        - tab "브리핑" [ref=e53] [cursor=pointer]
+        - tab "선택" [ref=e54] [cursor=pointer]
+      - generic [ref=e55]: 대응 후보 없음
+      - generic [ref=e57]:
+        - text: 이 화면에는 실행 경로가 없다. 차단·격리는 사람이 별도 절차로 수행한다.
+        - generic [ref=e58]: ADR-0004
+  - contentinfo [ref=e59]
+  - dialog "이 화면을 읽는 법" [ref=e60]:
+    - generic [ref=e61]:
+      - generic [ref=e62]:
+        - heading "이 화면을 읽는 법" [level=2] [ref=e63]
+        - button "닫기" [ref=e64] [cursor=pointer]: ✕
+      - list [ref=e65]:
+        - listitem [ref=e66]:
+          - text: 좌표계가 지도가 아니다. 노드의 위치는 지리가 아니라
+          - emphasis [ref=e67]: 무엇이 무엇을 떠받치는가
+          - text: 로 정해진다. 임무가 맨 위, 그것을 떠받치는 것일수록 아래다. 왼쪽 가장자리의 이름은 그 종류가 처음 나타나는 행을 가리킨다.
+        - listitem [ref=e68]: 채도는 의미에만 쓴다. 상단바·패널·버튼에는 색이 없다. 화면에서 색을 가진 것은 원인뿐이므로, 색이 보이면 그것은 장식이 아니라 판단 재료다.
+        - listitem [ref=e69]: 붉은색은 공격에만 쓴다. 전술망에서 링크가 죽는 흔한 이유는 공격이 아니라 기동과 지형이다. 그 둘을 같은 색으로 칠하면 상황도가 언덕을 적의 소행으로 보고하게 된다.
+        - listitem [ref=e70]: 저하도는 밝기로 읽는다. 노드가 밝을수록 나쁘다. 저하도에 색상을 쓰지 않는 이유는, 심한 저하가 빨강이 되면 위 규칙이 깨지기 때문이다.
+        - listitem [ref=e71]:
+          - text: 임무 저하도는 공격 / 환경 / 상호작용으로 나뉜다. 상호작용이 크다는 것은
+          - emphasis [ref=e72]: 어느 원인 하나만으로는 이 저하가 생기지 않았다
+          - text: 는 뜻이다.
+        - listitem [ref=e73]: 봉쇄에도 비용이 있다. 우측 "대응"은 그 자산을 격리했을 때 임무가 얼마나 더 나빠지는지를 미리 계산한 값이다. 이 화면에는 실행 버튼이 없다. 차단은 사람이 별도 절차로 한다.
+        - listitem [ref=e74]: 편집·교전 모드가 있다. 편집은 좌측 팔레트에서 자산을 추가하고 링크로 연결한다. 교전은 그 시각의 상황을 그대로 물려받아 공격자 턴을 시작한다. 모델은열거된 합법수 중 하나를 고를 뿐이고 성공 여부는 시드 난수가 정한다.
+      - generic [ref=e75]:
+        - generic [ref=e76] [cursor=pointer]:
+          - checkbox "다음부터 보지 않기" [ref=e77]
+          - text: 다음부터 보지 않기
+        - button "시작" [ref=e78] [cursor=pointer]

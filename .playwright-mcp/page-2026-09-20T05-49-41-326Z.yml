@@ -1,0 +1,208 @@
+- generic [ref=f25e3]:
+  - banner [ref=f25e4]:
+    - generic [ref=f25e5]:
+      - generic [ref=f25e6]: MC-CyCOP
+      - generic [ref=f25e7]: 임무중심 사이버 공동상황도
+    - generic [ref=f25e9]:
+      - generic [ref=f25e10]: 시나리오
+      - combobox "시나리오" [ref=f25e11] [cursor=pointer]:
+        - option "tacnet-01" [selected]
+        - option "defnet-01"
+    - group "모드" [ref=f25e12]:
+      - button "관측" [ref=f25e13] [cursor=pointer]
+      - button "편집" [ref=f25e14] [cursor=pointer]
+      - button "교전" [pressed] [ref=f25e15] [cursor=pointer]
+    - generic [ref=f25e17]:
+      - generic [ref=f25e85]:
+        - generic [ref=f25e86]: 0.0%
+        - generic [ref=f25e87]:
+          - text: 지휘통제
+          - generic [ref=f25e88]: P1
+      - generic [ref=f25e93]:
+        - generic [ref=f25e94]: 0.0%
+        - generic [ref=f25e95]:
+          - text: 화력지원
+          - generic [ref=f25e96]: P2
+      - generic [ref=f25e326]:
+        - generic [ref=f25e327]:
+          - text: 2/8
+          - generic [ref=f25e328]: "0.00"
+        - generic [ref=f25e329]: 교전 턴 · 점수
+      - generic [ref=f25e19]:
+        - generic [ref=f25e20]:
+          - text: "0"
+          - generic [ref=f25e21]: /13
+          - generic [ref=f25e476]: 격리 1
+        - generic [ref=f25e22]: 침해 자산
+      - generic [ref=f25e24]:
+        - generic [ref=f25e25]:
+          - text: "1"
+          - generic "unknown 1" [ref=f25e98]
+        - generic [ref=f25e26]: 단절 링크
+      - generic [ref=f25e28]:
+        - generic [ref=f25e29]: 정상
+        - generic [ref=f25e30]: 상황 등급
+    - generic [ref=f25e31]:
+      - text: 활성 단계
+      - generic [ref=f25e99]: 목표 확보 · 화력 유도
+    - generic [ref=f25e32]:
+      - generic [ref=f25e33]: 11:00
+      - generic [ref=f25e100]: +300분
+    - button "?" [ref=f25e34] [cursor=pointer]
+  - generic [ref=f25e35]:
+    - generic [ref=f25e36]:
+      - generic [ref=f25e37]:
+        - group "뷰" [ref=f25e38]:
+          - button "임무 의존" [pressed] [ref=f25e39] [cursor=pointer]
+          - button "전송로" [ref=f25e40] [cursor=pointer]
+          - button "지리" [ref=f25e41] [cursor=pointer]
+        - generic [ref=f25e42] [cursor=pointer]:
+          - checkbox "라벨" [checked] [ref=f25e43]
+          - text: 라벨
+        - button "화면 맞춤" [ref=f25e44] [cursor=pointer]
+      - generic [ref=f25e45]:
+        - generic [aria-hidden]:
+          - generic: 임무
+          - generic: 작업
+          - generic: 서비스·자산
+        - generic [ref=f25e458]:
+          - generic [ref=f25e459]: 테두리 = 원인
+          - generic [ref=f25e461]: 공격
+          - generic [ref=f25e463]: 기동
+          - generic [ref=f25e465]: 지형
+          - generic [ref=f25e467]: 정비
+          - generic [ref=f25e469]: 미상
+          - generic [ref=f25e471]: 정상
+          - generic [ref=f25e478]: 이중선 = 격리
+    - complementary [ref=f25e62]:
+      - generic [ref=f25e63]:
+        - generic [ref=f25e64]:
+          - heading "임무 저하도" [level=2] [ref=f25e65]
+          - generic [ref=f25e66]: 11:00
+        - generic [ref=f25e110]:
+          - generic [ref=f25e111]:
+            - generic [ref=f25e112]: 지휘통제
+            - generic [ref=f25e113]: P1
+            - generic [ref=f25e114]: 0.0%
+          - generic [ref=f25e117]:
+            - generic [ref=f25e118]: 공격0.0%
+            - generic [ref=f25e120]: 환경0.0%
+            - generic [ref=f25e122]: 상호작용0.0%
+        - generic [ref=f25e126]:
+          - generic [ref=f25e127]:
+            - generic [ref=f25e128]: 화력지원
+            - generic [ref=f25e129]: P2
+            - generic [ref=f25e130]: 0.0%
+          - generic [ref=f25e132]:
+            - generic [ref=f25e133]: 공격0.0%
+            - generic [ref=f25e135]: 환경0.0%
+            - generic [ref=f25e137]: 상호작용0.0%
+      - button "교전" [ref=f25e140] [cursor=pointer]
+      - generic [ref=f25e333]:
+        - generic [ref=f25e334]:
+          - generic [ref=f25e335]: 턴 2/8
+          - generic [ref=f25e336]: 방어 페이즈
+          - generic [ref=f25e337]: 점수 0.00 · P1 0.0%
+          - button "그만두기" [ref=f25e338] [cursor=pointer]
+        - generic [ref=f25e479]:
+          - generic [ref=f25e480]:
+            - text: 참모
+            - emphasis [ref=f25e481]: 규칙 기반
+          - generic [ref=f25e482]: 생략 권고 - 지금 막을 수 있는 수가 없거나 격리 비용이 차단 이득보다 크다
+          - generic [ref=f25e483]:
+            - generic [ref=f25e484]: "1"
+            - generic [ref=f25e485]:
+              - text: 여단 TOC 격리
+              - emphasis [ref=f25e486]: BFT-GW
+              - generic [ref=f25e487]: 비용 +0.0%p · 막는 수 0 · 최대 차단 0.0%
+            - button "참고 (순이득 ≤ 0)" [disabled] [ref=f25e488]
+          - generic [ref=f25e489]:
+            - generic [ref=f25e490]: "2"
+            - generic [ref=f25e491]:
+              - text: 1중대 지휘차 격리
+              - emphasis [ref=f25e492]: CO1-VEH
+              - generic [ref=f25e493]: 비용 +0.0%p · 막는 수 0 · 최대 차단 0.0%
+            - button "참고 (순이득 ≤ 0)" [disabled] [ref=f25e494]
+          - generic [ref=f25e495]:
+            - generic [ref=f25e496]: "3"
+            - generic [ref=f25e497]:
+              - text: 관측반 격리
+              - emphasis [ref=f25e498]: FO-TAB
+              - generic [ref=f25e499]: 비용 +0.0%p · 막는 수 0 · 최대 차단 0.0%
+            - button "참고 (순이득 ≤ 0)" [disabled] [ref=f25e500]
+        - generic [ref=f25e501]: no legal move
+        - generic [ref=f25e360]: 공격자가 지금 둘 수 있는 수 0개 중 상위 0
+        - generic [ref=f25e382]:
+          - generic [ref=f25e383]: 방어측 - 격리 (모의, 턴당 1회, 영구)
+          - generic [ref=f25e384]:
+            - combobox [ref=f25e385] [cursor=pointer]:
+              - option "자산 선택" [selected]
+              - option "여단 TOC (TOC-ESX)"
+              - option "여단 TOC (TOC-SRV)"
+              - option "여단 TOC (TOC-WS)"
+              - option "여단 TOC (BFT-GW)"
+              - option "포병 FDC (FDC-SRV)"
+              - option "포병 FDC (FDC-TERM)"
+              - option "능선 중계소 (RELAY-1)"
+              - option "대대 지휘소 (BN-SRV)"
+              - option "대대 지휘소 (BN-CP)"
+              - option "대대 지휘소 (SAT-TERM)"
+              - option "1중대 지휘차 (CO1-VEH)"
+              - option "관측반 (FO-TAB)"
+            - button "격리" [disabled] [ref=f25e386]
+            - button "생략" [ref=f25e387] [cursor=pointer]
+          - button "공격 턴 진행" [disabled] [ref=f25e388]
+        - generic [ref=f25e503]:
+          - generic [ref=f25e504]:
+            - generic [ref=f25e505]: T1
+            - generic [ref=f25e506]: 격리 CO2-VEH (+0.0%p)
+            - generic [ref=f25e507]: 방어
+          - generic [ref=f25e508]:
+            - generic [ref=f25e509]: T1
+            - generic [ref=f25e510]: no legal move
+            - generic [ref=f25e511]: "-"
+        - paragraph [ref=f25e389]: 격리는 모의 상태만 바꾼다. 실행 경로는 없다 (ADR-0004).
+      - generic [ref=f25e78]:
+        - text: 이 화면에는 실행 경로가 없다. 차단·격리는 사람이 별도 절차로 수행한다.
+        - generic [ref=f25e79]: ADR-0004
+  - contentinfo [ref=f25e80]:
+    - generic [ref=f25e171]:
+      - button "◀" [disabled] [ref=f25e172]
+      - button "▶" [disabled] [ref=f25e173]
+      - button "▶" [disabled] [ref=f25e174]
+      - group "배속" [ref=f25e175]:
+        - button "1×" [disabled] [ref=f25e176]
+        - button "4×" [disabled] [ref=f25e177]
+        - button "16×" [disabled] [ref=f25e178]
+      - generic [ref=f25e390]: 교전 중 · 시점 고정
+    - img "단계와 단절 타임라인" [ref=f25e180]:
+      - generic [ref=f25e181]: 06:00
+      - generic [ref=f25e183]: 07:00
+      - generic [ref=f25e185]: 08:00
+      - generic [ref=f25e187]: 09:00
+      - generic [ref=f25e189]: 10:00
+      - generic [ref=f25e191]: 11:00
+      - generic [ref=f25e193]: 12:00
+      - generic [ref=f25e195]: 13:00
+      - generic [ref=f25e197]: 집결·준비
+      - generic [ref=f25e200]: 기동
+      - generic [ref=f25e203]: 목표 확보
+      - generic [ref=f25e206]: 표적 획득
+      - generic [ref=f25e209]: 화력 유도
+      - generic "BN-SRV · mobility · 지휘소 이동(철수-전개)" [ref=f25e212]
+      - generic "BN-CP · mobility · 지휘소 이동(철수-전개)" [ref=f25e213]
+      - generic "SAT-TERM · mobility · 위성단말 철수-재전개" [ref=f25e214]
+      - generic "FO-TAB · mobility · 관측반 미전개 - 표적획득 단계 이전" [ref=f25e215]
+      - generic "L-SAT-TOC · unknown · 신호 단절. 재밍/기상 구분 불가 - 공격으로 단정하지 않는다" [ref=f25e216]
+      - generic "L-VHF-CO1 · terrain · 능선 차폐" [ref=f25e217]
+      - generic "L-VHF-CO2 · mobility · 기동간 안테나 미전개" [ref=f25e218]
+      - generic "L-VHF-FO · terrain · 계곡 진입" [ref=f25e219]
+      - generic "노획 단말 비인가 접속 T1078 유효 계정 악용 2중대 지휘차 단말에서 비인가 계정 사용" [ref=f25e221]
+      - generic "자격증명 탈취 T1003 운영체제 자격증명 덤프 같은 시각 L-VHF-CO2 가 기동으로 단절된다(cause=mobility). 두 사건이 겹치는 구간이며 상황도는 이를 구분해야 한다" [ref=f25e223]
+      - generic "대대 지휘소 서버 침해 T1021 원격 서비스 접속 중계망을 타고 BN-SRV 로 측면이동" [ref=f25e225]
+      - generic "BN-SRV 장악 T1078.002 도메인 계정 악용 같은 시각 위성 링크가 cause=unknown 으로 단절된다(300~345). 재밍인지 기상인지 알 수 없다 - 공격으로 단정하지 않는다" [ref=f25e227]
+      - generic "여단 TOC 침투 T1021.004 SSH 접속 위성 링크 복구와 동시에 신뢰 경로를 타고 여단으로 확산" [ref=f25e229]
+      - generic "TOC-SRV 장악 T1486 데이터 암호화(무력화) C2 메시징 이중화가 양쪽 다 침해되어 무력화된다" [ref=f25e231]
+    - generic [ref=f25e233]:
+      - generic [ref=f25e234]: 11:00
+      - generic [ref=f25e235]: BN-SRV 장악 +300분

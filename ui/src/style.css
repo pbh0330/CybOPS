@@ -540,3 +540,37 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
 @keyframes flash-hit { 0% { box-shadow: 0 0 0 0 rgba(255,77,94,.7); } 100% { box-shadow: 0 0 0 26px rgba(255,77,94,0); } }
 @keyframes flash-miss { 0% { box-shadow: 0 0 0 0 rgba(154,165,177,.6); } 100% { box-shadow: 0 0 0 20px rgba(154,165,177,0); } }
 @keyframes mark-pulse { 0%, 100% { box-shadow: 0 0 0 4px rgba(255,77,94,.22), 0 0 18px rgba(255,77,94,.55); } 50% { box-shadow: 0 0 0 9px rgba(255,77,94,.08), 0 0 26px rgba(255,77,94,.75); } }
+
+/* ------------------------------------------------------- compact: sheet */
+
+.sheet { display: none; }
+
+[data-compact="1"] .sheet {
+  display: flex; flex-direction: column;
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+  background: var(--surface-chrome);
+  border-top: 1px solid var(--line-strong);
+  border-radius: 12px 12px 0 0;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  transition: height .18s ease;
+}
+[data-compact="1"] .sheet[data-state="peek"] { height: 56px; }
+[data-compact="1"] .sheet[data-state="half"] { height: 50dvh; }
+[data-compact="1"] .sheet[data-state="full"] { height: 86dvh; }
+
+.sheet-grip {
+  flex: none; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  background: none; border: none; border-radius: 12px 12px 0 0;
+  padding: 8px 12px 6px; width: 100%; min-height: 44px;
+  touch-action: none;                 /* the grip drags; the page must not */
+}
+.sheet-bar { width: 36px; height: 4px; border-radius: 2px; background: var(--line-strong); }
+.sheet-peek {
+  font-size: 12px; color: var(--text-secondary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+.sheet-body {
+  flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+[data-compact="1"] .sheet[data-state="peek"] .sheet-body { display: none; }
