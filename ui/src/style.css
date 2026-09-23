@@ -668,6 +668,15 @@ button.staff-fact {
 }
 button.staff-fact:hover { color: var(--text-primary); border-bottom-color: var(--text-primary); }
 
+/* A card whose basis (staff.js ctxT) no longer matches the screen - the
+   timeline moved or the graph changed since it ran. Reduced emphasis on the
+   whole card plus a caption line, never a colour (ADR-0024): red stays
+   attack-only, and "stale" is not an attack. */
+.staff-ans.is-stale { opacity: 0.72; }
+.staff-stale {
+  margin: 0 0 8px; font-size: 11px; font-style: italic; line-height: 1.5;
+  color: var(--text-muted); border-left: 2px dashed var(--line-strong); padding-left: 8px;
+}
 .staff-tie { margin: 0 0 6px; font-size: 11px; color: var(--text-muted); }
 .staff-table-wrap { overflow-x: auto; scrollbar-width: thin; }
 .staff-table { width: 100%; border-collapse: collapse; font-size: 11px; }

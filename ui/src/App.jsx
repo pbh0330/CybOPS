@@ -88,6 +88,17 @@ export default function App() {
 
   graphRef.current = graph
 
+  // The rail's 참모 tab exists only when App hands it a staffSlot, which only
+  // happens on a phone (`staffSlot={compact ? staffEl : null}` below). Rail
+  // derives its own fallback from that (`active = tab === 'staff' && !hasStaff
+  // ? 'actions' : tab`), but `tab` itself - the state App owns and would put
+  // back into a `?tab=` link - never gets told. Left alone, a phone-to-desktop
+  // rotate leaves `tab` pointing at 'staff' while the rail visibly shows 대응:
+  // this keeps the one stored value in step with what Rail can actually show.
+  useEffect(() => {
+    if (!compact && tab === 'staff') setTab('actions')
+  }, [compact, tab])
+
   // --- boot -------------------------------------------------------------
   useEffect(() => {
     let alive = true

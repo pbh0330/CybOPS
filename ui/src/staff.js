@@ -60,11 +60,24 @@ const taskLabel = (g, id) => rowLabel(g?.tasks, id)
 // In a game the truth is the game state and its turn clock, not the exported
 // step: that is what makes the opponent real rather than a replay. Outside a
 // game it is the step's compromise map at the step's t.
+//
+// `ctxT` is the one place that reads "what time is it" out of a ctx. `ask`
+// stamps every Answer with it, and the dock re-reads it live off the same ctx
+// shape to tell whether a logged card's numbers still match the screen - one
+// definition, so the two readings cannot drift apart (ADR-0009: a claim's
+// basis has to be checkable, not just present).
+export function ctxT(ctx) {
+  const G = ctx && ctx.game
+  if (G && G.cfg) return Number(G.cfg.t)
+  const s = (ctx && ctx.step) || {}
+  return s.t === undefined || s.t === null ? -1 : Number(s.t)
+}
+
 function baseOf(ctx) {
   const G = ctx && ctx.game
-  if (G && G.cfg) return { compromise: compromiseOf(G), t: Number(G.cfg.t), method: G.cfg.method || 'weighted' }
+  const t = ctxT(ctx)
+  if (G && G.cfg) return { compromise: compromiseOf(G), t, method: G.cfg.method || 'weighted' }
   const s = (ctx && ctx.step) || {}
-  const t = s.t === undefined || s.t === null ? -1 : Number(s.t)
   return { compromise: { ...(s.compromise || {}) }, t, method: (ctx && ctx.method) || 'weighted' }
 }
 
@@ -464,5 +477,9 @@ export function ask(ctx, queryId, args) {
     // wargame panel, never from here (ADR-0004); S3 wires that up.
     actions: [],
     note: r.note || null,
+    // The scenario clock this answer's numbers were computed at (ctxT), so a
+    // logged card can be checked against the screen later, not just timestamped
+    // in wall-clock time.
+    t: ctxT(ctx),
   }
 }

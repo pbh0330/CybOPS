@@ -21,8 +21,23 @@
 // writers for the same localStorage key.
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { catalog, ask } from '../staff.js'
+import { catalog, ask, ctxT } from '../staff.js'
+import { timeLabel } from '../derive.js'
 import { assetName } from '../labels.js'
+
+// A raw argument name is what `staff.js` rejects by (the message says
+// `assetId`, `aId`, ...), so the control keeps that name in its `title` even
+// once the visible label is Korean. Unlisted names fall back to themselves -
+// the catalogue is closed (staff.js QUERIES), so this only needs to cover
+// what is there today.
+const ARG_KO = {
+  missionId: '임무',
+  assetId: '자산',
+  aId: '비교할 자산 A',
+  bId: '비교할 자산 B',
+  k: '표시 개수',
+}
+const argLabel = (name) => ARG_KO[name] || name
 
 export const LOG_MAX = 10
 
@@ -126,8 +141,12 @@ function ArgControl({ spec, value, onChange, graph }) {
     const opts = K_CHOICES.includes(spec.default) ? K_CHOICES : [spec.default, ...K_CHOICES]
     return (
       <label className="staff-arg">
-        <span>{spec.name}</span>
-        <select value={value === undefined || value === '' ? String(spec.default) : String(value)} onChange={(e) => onChange(Number(e.target.value))}>
+        <span>{argLabel(spec.name)}</span>
+        <select
+          title={spec.name}
+          value={value === undefined || value === '' ? String(spec.default) : String(value)}
+          onChange={(e) => onChange(Number(e.target.value))}
+        >
           {opts.map((k) => <option key={k} value={k}>{k}</option>)}
         </select>
       </label>
@@ -136,8 +155,8 @@ function ArgControl({ spec, value, onChange, graph }) {
   const opts = optionsOf(graph, spec.kind)
   return (
     <label className="staff-arg">
-      <span>{spec.name}</span>
-      <select value={value || ''} onChange={(e) => onChange(e.target.value)}>
+      <span>{argLabel(spec.name)}</span>
+      <select title={spec.name} value={value || ''} onChange={(e) => onChange(e.target.value)}>
         {!opts.length && <option value="">(없음)</option>}
         {opts.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
       </select>
@@ -181,18 +200,34 @@ function AnswerTable({ table }) {
   )
 }
 
-function Answer({ answer, graph, onSelect }) {
+// A card's numbers were computed at `answer.t` (staff.js `ctxT`, stamped by
+// `ask`). `curT` is the same reading taken live, right now, off the ctx the
+// dock is rendering with. They agree until the timeline seeks or the graph is
+// edited out from under the card - at which point the card is showing a
+// figure the engine would no longer produce, and ADR-0009 says that has to be
+// visible, not just timestamped. A card with no `t` at all (written by a
+// build before this fix) has no checkable basis either, so it reads as stale
+// too rather than being quietly trusted.
+function Answer({ answer, graph, curT, onSelect }) {
   const ids = useMemo(() => selectableIds(graph), [graph])
   const args = Object.entries(answer.args || {})
+  const hasT = answer.t !== undefined && answer.t !== null
+  const ansLabel = hasT ? timeLabel(graph, answer.t) : null
+  const stale = !hasT || Number(answer.t) !== curT
   return (
-    <article className="staff-ans">
+    <article className={`staff-ans${stale ? ' is-stale' : ''}`}>
       <div className="staff-run">
-        <span className="staff-badge">실행</span>
+        <span className="staff-badge">실행{ansLabel ? ` · ${ansLabel}` : ''}</span>
         <span className="staff-run-label">{answer.label}</span>
         <code className="staff-qid">{answer.query}</code>
         {args.map(([k, v]) => <code key={k} className="staff-argchip">{k}={String(v)}</code>)}
         {answer.when && <span className="staff-when">{answer.when}</span>}
       </div>
+      {stale && (
+        <p className="staff-stale">
+          기준 시각이 다름 - 이 답은 {ansLabel || '알 수 없는 시각'} 기준이고, 화면은 지금 {timeLabel(graph, curT)} 이다.
+        </p>
+      )}
 
       <ol className="staff-facts">
         {answer.facts.map((fact) => {
@@ -235,6 +270,9 @@ export default function StaffDock({
     [graph, step, game, sandbox, method],
   )
   const queries = useMemo(() => catalog(ctx), [ctx])
+  // What "now" reads as for a logged card's staleness check - the identical
+  // definition `ask` stamps every new answer with (staff.js `ctxT`).
+  const curT = useMemo(() => ctxT(ctx), [ctx])
 
   const [open, setOpen] = useState(false)
   const [log, setLog] = useState([])
@@ -323,7 +361,7 @@ export default function StaffDock({
           </p>
         )}
         {log.map((a) => (
-          <Answer key={a.at} answer={a} graph={graph} onSelect={onSelect} />
+          <Answer key={a.at} answer={a} graph={graph} curT={curT} onSelect={onSelect} />
         ))}
       </div>
     </div>
