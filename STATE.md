@@ -12,7 +12,7 @@
 | 모델 | 시간축 온톨로지 완료(ADR-0017). LLM 4종 비교 완료, 기본 프롬프트 **briefing.ko v4** |
 | UI | **2차 개편 완료(09-19, ADR-0025)**: tacnet-01 은 인제 실지형 위 MapLibre, KPI 띠·이벤트 스트림·배속, 저채도 바탕. **교전 2차(09-20, ADR-0026)**: 턴제·승패·점수·참모·그래프/지도 오버레이. `Test-UiUnit.ps1` 이 오프라인 게이트다(vitest 43개) |
 | UI 교전장 | **교전장 A 완료(09-21, 브랜치 `ui/sandbox-a`, ADR-0027 은 B 에서 초안)**: `sandbox-01` 은 tacnet-01 임무 계층에서 브라우저 파생, 규칙표 후보 연결, 준비도 게이트(서비스·작업·도달성), 지도 자동 배치·드래그, 플랜 저장, 공격 프리셋 3종·`footholds[]`. vitest 75개. **다음: B 단계(분석)** |
-| 배포 | **AWS-0 완료(09-23, 브랜치 `aws/static-0`, ADR-0029)**: 비공개 S3 + CloudFront OAC, 인증은 뷰어 함수 basic auth(검사 후 `authorization` 삭제), 로그 90일. 모델 경로는 조건부라 **AWS-0 에서는 아예 안 생긴다**. `Deploy-Aws.ps1`(8단계, `-DryRun`), 절차 `docs/24-aws-demo.md`. **AWS 자원 생성은 사람이 한다** |
+| 배포 | **떠 있다 - https://d147o29xcdmyy3.cloudfront.net** (basic auth, 사용자 `demo`. 09-23 AWS-0 완료, main 에 머지, ADR-0029). 스택 `mc-cycop-demo`(ap-northeast-2), 버킷 `mc-cycop-demo-codaprk`, 배포 `E2C8TYB3NNFS7T`. 자세 `off`(모델 없음). 비공개 S3 + CloudFront OAC, 인증은 뷰어 함수가 하고 검사 후 `authorization` 을 지운다, 로그 90일. 모델 경로는 조건부라 아직 리소스 자체가 없다. 재배포는 `Deploy-Aws.ps1`, 절차 `docs/24-aws-demo.md` |
 | 다음 | 그래프 특징 실험 1회 채점(RDP 엣지 x160, 전역 첫 등장 프로세스 쌍 x5.4; docs/19 17절) → 논문. 출처 검증 체크리스트 21개(docs/02 8절) 미착수. E3 **완료**. UI 미이식 **0건**. defnet-01 공격 체인이 이제 화면에 나온다(09-14) |
 | 도구 | Figma pro/Full 좌석. Node 24.20.0 **포터블 설치**, Python 3.12, Git 2.55 |
 
@@ -20,9 +20,12 @@
 
 심사·시연용 공개 사본을 S3 + CloudFront 로 올릴 수 있는 **저장소 자산**을 만들었다
 (ADR-0029, 절차 `docs/24-aws-demo.md`, 설계
-`docs/superpowers/specs/2026-09-23-aws-demo-design.md`). 브랜치 `aws/static-0`.
-**AWS 자원은 하나도 만들지 않았다** - 스택 생성·삭제는 돈과 공개 노출이 걸린 행위라서
-사람이 친다(ADR-0004 와 같은 자세).
+`docs/superpowers/specs/2026-09-23-aws-demo-design.md`). 브랜치 `aws/static-0` 은 main 에
+머지했다.
+
+**그리고 같은 날 실제로 올렸다.** 아래 "실제 배포" 절을 볼 것. 저장소 자산을 만드는 단계에서는
+AWS 자원을 하나도 만들지 않았고(스택 생성·삭제는 돈과 공개 노출이 걸린 행위라 사람이 친다,
+ADR-0004 와 같은 자세), 사용자가 자격증명을 붙인 뒤에 스택 생성만 사용자가 실행했다.
 
 **먼저 고친 것: `proxied` 자세가 깨져 있었다.** 클라이언트는 `${endpoint}/api/chat` 을
 부르는데(`staff-llm.mjs`, `attack-llm.mjs`, `probeLlm` 는 `/api/tags`) 배포 예시 둘은
@@ -49,8 +52,34 @@ CloudFront + 로그 버킷(90일 만료). 인증은 뷰어 요청 함수의 basi
 
 `docs/21-deployment.md` 6절의 **접속 로그 미결 항목을 닫았다**(표준 로그 90일, 유량 제한
 기록은 따로 안 남긴다). 검증: vitest 75개, `parity.mjs` 불일치 0, `Invoke-Gates.ps1` 9/9,
-cfn-lint exit 0. **다음: AWS-1(GPU 오리진 `infra/demo-llm.yaml` + `user-data.sh`),
-확인 목록 7~10번은 그때 실물로 본다.**
+cfn-lint exit 0.
+
+### 실제 배포 (09-23)
+
+| | |
+|---|---|
+| 주소 | **https://d147o29xcdmyy3.cloudfront.net** |
+| 인증 | basic auth, 사용자 `demo`. **비밀번호는 여기 적지 않는다** - 배포된 함수 코드에 박혀 있어 `cloudfront get-function` 으로 꺼낼 수 있으므로 다른 데 쓰는 비밀번호를 쓰지 않는다 |
+| 스택 | `mc-cycop-demo` (ap-northeast-2), CREATE_COMPLETE |
+| 버킷 / 배포 | `mc-cycop-demo-codaprk` / `E2C8TYB3NNFS7T` |
+| 자세 | `off` - 모델 없음. LLM 공격자만 사유와 함께 비활성이고 나머지는 전부 동작한다 |
+| 예산 | `mc-cycop-demo` 월 $20, 실제 50% / 예상 100% 에서 메일 |
+
+자격증명은 **IAM Identity Center(SSO)** 다. 세션 `mccycop`, 프로필 `default`, 포털
+`https://d-9b675d3526.awsapps.com/start`. 만료되면 `aws sso login --sso-session mccycop`
+한 줄. 루트 액세스 키를 쓰다가 갈아탄 것이고, **루트 키는 삭제했다** - 루트 키는 권한을
+좁힐 수 없고 유출되면 계정 전체가 열린다.
+
+재배포는 `.\scripts\Deploy-Aws.ps1 -Bucket mc-cycop-demo-codaprk -DistributionId E2C8TYB3NNFS7T -Posture off`.
+`aws` 는 `%LOCALAPPDATA%\Programs\awscli\Amazon\AWSCLIV2\aws.exe` 에 포터블로 넣었고 User
+PATH 에 있다(설치 전에 열린 셸은 못 본다).
+
+확인한 것: 자격 없이 `/index.html` 과 `/config.json` 이 **401**. 확인 목록 7~10번은 GPU
+오리진이 필요하므로 AWS-1 에서 본다.
+
+**다음: AWS-1(GPU 오리진 `infra/demo-llm.yaml` + `user-data.sh`).** 그때 `deploy/` 의 예시를
+그대로 쓰면 안 된다 - 엣지가 `authorization` 을 지우므로 `auth_basic`/`basicauth` 블록을 빼고
+`X-Demo-Origin` 검사로 대체해야 한다(`docs/24-aws-demo.md`).
 
 ## 2026-09-21 - 교전장 A
 
