@@ -1,4 +1,4 @@
-# 현재 상태 - 2026-09-21
+# 현재 상태 - 2026-09-23
 
 작업 시작 전 이 파일부터 읽는다.
 
@@ -12,8 +12,45 @@
 | 모델 | 시간축 온톨로지 완료(ADR-0017). LLM 4종 비교 완료, 기본 프롬프트 **briefing.ko v4** |
 | UI | **2차 개편 완료(09-19, ADR-0025)**: tacnet-01 은 인제 실지형 위 MapLibre, KPI 띠·이벤트 스트림·배속, 저채도 바탕. **교전 2차(09-20, ADR-0026)**: 턴제·승패·점수·참모·그래프/지도 오버레이. `Test-UiUnit.ps1` 이 오프라인 게이트다(vitest 43개) |
 | UI 교전장 | **교전장 A 완료(09-21, 브랜치 `ui/sandbox-a`, ADR-0027 은 B 에서 초안)**: `sandbox-01` 은 tacnet-01 임무 계층에서 브라우저 파생, 규칙표 후보 연결, 준비도 게이트(서비스·작업·도달성), 지도 자동 배치·드래그, 플랜 저장, 공격 프리셋 3종·`footholds[]`. vitest 75개. **다음: B 단계(분석)** |
+| 배포 | **AWS-0 완료(09-23, 브랜치 `aws/static-0`, ADR-0029)**: 비공개 S3 + CloudFront OAC, 인증은 뷰어 함수 basic auth(검사 후 `authorization` 삭제), 로그 90일. 모델 경로는 조건부라 **AWS-0 에서는 아예 안 생긴다**. `Deploy-Aws.ps1`(8단계, `-DryRun`), 절차 `docs/24-aws-demo.md`. **AWS 자원 생성은 사람이 한다** |
 | 다음 | 그래프 특징 실험 1회 채점(RDP 엣지 x160, 전역 첫 등장 프로세스 쌍 x5.4; docs/19 17절) → 논문. 출처 검증 체크리스트 21개(docs/02 8절) 미착수. E3 **완료**. UI 미이식 **0건**. defnet-01 공격 체인이 이제 화면에 나온다(09-14) |
 | 도구 | Figma pro/Full 좌석. Node 24.20.0 **포터블 설치**, Python 3.12, Git 2.55 |
+
+## 2026-09-23 - AWS 시연 사본 (AWS-0)
+
+심사·시연용 공개 사본을 S3 + CloudFront 로 올릴 수 있는 **저장소 자산**을 만들었다
+(ADR-0029, 절차 `docs/24-aws-demo.md`, 설계
+`docs/superpowers/specs/2026-09-23-aws-demo-design.md`). 브랜치 `aws/static-0`.
+**AWS 자원은 하나도 만들지 않았다** - 스택 생성·삭제는 돈과 공개 노출이 걸린 행위라서
+사람이 친다(ADR-0004 와 같은 자세).
+
+**먼저 고친 것: `proxied` 자세가 깨져 있었다.** 클라이언트는 `${endpoint}/api/chat` 을
+부르는데(`staff-llm.mjs`, `attack-llm.mjs`, `probeLlm` 는 `/api/tags`) 배포 예시 둘은
+`/api/generate` 만 허용목록에 넣어 뒀다. **그 자세로 올렸으면 모든 모델 호출이 403** 이다.
+예시를 고치고, 같은 어긋남이 다시 생기지 않게 `scripts/Test-ProxyAllowlist.ps1` 을 만들어
+게이트에 넣었다(8 → **9개**) - `ui/src/` 에서 실제 호출 경로를 긁어 두 예시와 대조한다.
+
+**올린 것.** `infra/demo-static.yaml` - 비공개 S3(퍼블릭 4종 차단, ACL 끔) + OAC +
+CloudFront + 로그 버킷(90일 만료). 인증은 뷰어 요청 함수의 basic auth 이고 **검사 직후
+`authorization` 헤더를 지운다** - 도메인이 없어 모델 오리진 구간이 평문 http 라 자격이 그
+구간을 건너가면 안 된다. `/api/llm/*` 의 원본 요청 정책은 `AllViewer` 가 아니라
+허용목록(`content-type`, `accept`)이다. **모델 경로는 `LlmOriginDomain` 이 빌 때 리소스
+자체가 안 만들어진다** - AWS-1 에서 파라미터 둘로 켠다. `scripts/Deploy-Aws.ps1`(ASCII,
+`-DryRun`, 8단계, 버킷 이름을 스택의 3~56자 제한으로 먼저 거른다),
+`ui/public/config.aws.example.json`.
+
+**엔진은 브라우저에 남는다.** tacnet-01 에서 `runChain` 1회 **0.07 ms** 대 리전 왕복
+10~50 ms 다. 옮기면 100~700배 느려지고 구현이 셋이 된다(`parity.mjs` 가 지키는 것은 둘
+사이 1,622값). **모델이 꺼져 있어도 화면은 온전하다** - 빠지는 것은 실시간 LLM 공격자와
+참모 서술 문장 둘뿐이다(ADR-0003). **꺼진 상태는 고장이 아니다.**
+
+**비용에서 틀리기 쉬운 것 둘**: EBS 와 **공인 IPv4 주소는 인스턴스가 꺼져 있어도 나간다**
+(2024-02 이후 모든 공인 IPv4 시간당 과금). 합쳐 월 약 $6.
+
+`docs/21-deployment.md` 6절의 **접속 로그 미결 항목을 닫았다**(표준 로그 90일, 유량 제한
+기록은 따로 안 남긴다). 검증: vitest 75개, `parity.mjs` 불일치 0, `Invoke-Gates.ps1` 9/9,
+cfn-lint exit 0. **다음: AWS-1(GPU 오리진 `infra/demo-llm.yaml` + `user-data.sh`),
+확인 목록 7~10번은 그때 실물로 본다.**
 
 ## 2026-09-21 - 교전장 A
 

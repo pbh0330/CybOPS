@@ -41,3 +41,8 @@
 | [0024](0024-ui-redesign-and-react.md) | 상황도 UI 개편 - 무채색 크롬, 채널 분리, React 도입 | 채택 |
 | [0025](0025-real-terrain-geo-and-console-density.md) | 지리 뷰를 실지형 위에 올린다 - 지도 타일은 CDN 예외, 저채도 바탕 | 채택 |
 | [0026](0026-wargame-rules.md) | 교전 규칙 - 턴, 승패, 점수, 격리의 의미, 참모의 권한 | 채택 |
+| [0029](0029-aws-demo-posture.md) | AWS 시연 사본 - 정적 번들, 시연 시간에만 모델, 엔진은 클라이언트에 | 채택 |
+
+0027(교전장 B - 분석)과 0028(LLM 참모)은 **예약 번호**다. 해당 단계에서 쓴다
+(`docs/23-sandbox.md`, `docs/superpowers/specs/2026-09-23-staff-officer-design.md`).
+번호가 비어 있는 것은 누락이 아니다.

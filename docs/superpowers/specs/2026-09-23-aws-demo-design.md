@@ -48,11 +48,16 @@ CloudFront distribution
 
 - **S3**: 퍼블릭 액세스 전면 차단. CloudFront OAC 로만 읽는다.
 - **인증은 CloudFront 에서** 한다. 뷰어 요청 함수가 `Authorization` 헤더를 상수와 비교하고
-  없으면 401 + `WWW-Authenticate`. 도메인이 없어도 되고, 비밀번호는 CloudFront 까지
-  TLS 안에서만 흐른다.
+  없으면 401 + `WWW-Authenticate`. 도메인이 없어도 된다. 비밀번호가 CloudFront 까지만
+  흐르는 것은 저절로 그렇게 되는 것이 아니라 **함수가 검사 직후 `authorization` 헤더를
+  지우기 때문**이다. 거기에 더해 `/api/llm/*` 의 원본 요청 정책을 허용목록(`content-type`,
+  `accept` 만)으로 두어 `AllViewer` 가 무엇을 통과시키는지에 의존하지 않게 한다.
 - **CloudFront -> GPU 오리진은 http** 다. ACM 인증서를 받으려면 도메인이 필요한데 시연
-  사본에는 없다. 대신 오리진은 **비밀 헤더가 있는 요청만** 받는다(직접 접속 차단).
-  도메인을 사는 순간 오리진을 https 로 바꾸는 것이 낫다 - 그때 한 줄 바뀐다.
+  사본에는 없다. 직접 접속에 대한 **실제 통제는 보안 그룹**이다 - 80/tcp 를 CloudFront
+  관리 프리픽스 목록에서만 받는다(5절). 비밀 헤더 `X-Demo-Origin` 은 **두 번째 겹**이고,
+  프리픽스 목록 안의 다른 CloudFront 배포를 막는 용도다. 평문 구간의 도청자는 이 헤더를
+  읽어 재생할 수 있으므로 그 사람에게는 비밀이 아니다. 도메인을 사는 순간 오리진을
+  https 로 바꾸는 것이 낫다 - 그때 이 문단이 통째로 없어진다.
 - **`/api/llm/*` 는 캐시 없음**(`CachingDisabled`), POST 허용, 오리진 응답 시간 60초.
 
 ## 3. 캐시 정책
@@ -90,10 +95,10 @@ EIP 를 쓰는 이유: 인스턴스를 켤 때마다 공개 DNS 가 바뀌면 Cl
 
 - **Ollama API 는 추론 API 이자 모델 관리 API 다**(`docs/21` 3.1절). 프록시에서
   `/api/chat`, `/api/tags` 만 통과시키고 `/api/pull`, `/api/delete`, `/api/create`,
-  `/api/push` 는 404 로 막는다. 안 막으면 접근한 사람이 그 GPU 에 임의의 모델을 올린다.
+  `/api/push` 는 403 으로 막는다. 안 막으면 접근한 사람이 그 GPU 에 임의의 모델을 올린다.
 - 보안 그룹은 80/tcp 만, 소스는 CloudFront 관리 프리픽스 목록
   (`com.amazonaws.global.cloudfront.origin-facing`). 22 는 열지 않는다 - 관리는 SSM 으로 한다.
-- 유량 제한은 사람 속도에 맞춘다(`docs/21` 3.2절): IP 당 분당 20건.
+- 유량 제한은 사람 속도에 맞춘다(`docs/21` 3.2절): IP 당 분당 6건.
 - 올리는 데이터는 **합성·저작 시나리오뿐**이다. OpTC 파생물, `data/`, `eval/results/` 는
   올리지 않는다(라이선스·크기, ADR-0010).
 - 워터마크 "가상 훈련 시나리오 · 실제 부대 배치 아님" 은 끌 수 없다(ADR-0025). 공개 사본에도
@@ -141,7 +146,8 @@ aws ec2 stop-instances  --instance-ids <id>
 3. 교전장에서 자산을 놓고 연결하면 준비도가 찬다
 4. **인스턴스가 꺼진 상태에서** 참모 드로어가 질의 버튼 + 사실 목록으로 동작한다
 5. 인스턴스를 켜면 질의창이 활성화되고 문장에 `[F#]` 이 붙는다
-6. `/api/llm/api/pull` 이 404 다
+6. `/api/llm/api/pull` 이 403 이다(허용목록 밖은 거부 - `deploy/nginx.example.conf` 의
+   `location /api/llm/ { return 403; }`. 중요한 것은 200 이 아니라는 것이다)
 7. `curl` 로 오리진에 직접(비밀 헤더 없이) 치면 403 이다
 8. 30분 뒤 인스턴스가 스스로 멈춰 있다
 

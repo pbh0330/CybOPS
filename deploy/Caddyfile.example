@@ -19,12 +19,14 @@ mc-cycop.example.ac.kr {
     }
 
     # ---- model, only if this deployment has one ---------------------------
-    handle /api/llm/api/generate {
+    handle /api/llm/api/chat {
+        # The client uses /api/chat (staff-llm.mjs, attack-llm.mjs). /api/generate
+        # is not used and is therefore not allowed - see Test-ProxyAllowlist.ps1.
         basicauth {
             demo $2a$14$REPLACE_WITH_A_REAL_BCRYPT_HASH
         }
         reverse_proxy 127.0.0.1:11434 {
-            rewrite /api/generate
+            rewrite /api/chat
         }
     }
 
