@@ -14,7 +14,10 @@ export function useCompact() {
       : false)
 
   useEffect(() => {
-    if (typeof window === 'undefined' || typeof window.matchMedia === 'function') return
+    // Guard the absence of matchMedia, not its presence: with `===` here the
+    // subscription never runs and the value is frozen at first render, so a
+    // rotate or a resize is never noticed.
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return
     const mq = window.matchMedia(COMPACT_QUERY)
     const onChange = (e) => setCompact(e.matches)
     setCompact(mq.matches)
