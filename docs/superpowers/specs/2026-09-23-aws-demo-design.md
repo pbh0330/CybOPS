@@ -146,7 +146,8 @@ aws ec2 stop-instances  --instance-ids <id>
 3. 교전장에서 자산을 놓고 연결하면 준비도가 찬다
 4. **인스턴스가 꺼진 상태에서** 참모 드로어가 질의 버튼 + 사실 목록으로 동작한다
 5. 인스턴스를 켜면 질의창이 활성화되고 문장에 `[F#]` 이 붙는다
-6. `/api/llm/api/pull` 이 404 다
+6. `/api/llm/api/pull` 이 403 이다(허용목록 밖은 거부 - `deploy/nginx.example.conf` 의
+   `location /api/llm/ { return 403; }`. 중요한 것은 200 이 아니라는 것이다)
 7. `curl` 로 오리진에 직접(비밀 헤더 없이) 치면 403 이다
 8. 30분 뒤 인스턴스가 스스로 멈춰 있다
 
