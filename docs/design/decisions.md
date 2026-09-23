@@ -422,3 +422,46 @@ D4D 쇼케이스 49개를 조사한 뒤 여섯 가지를 바꿨다. 상세와 �
 
 확인: vitest 75개(sandbox 23, game 17, editor 5), `parity.mjs` 불일치 0, `Invoke-Gates.ps1`
 8/8, 스크린샷 4장(`docs/design/screens/2026-09-21-sandbox-{empty,build,map,play}.png`).
+
+## 2026-09-23 - AWS 시연 사본 (ADR-0029)
+
+심사·시연용 공개 사본의 저장소 자산(템플릿·배포 스크립트·문서). 설계는
+`docs/superpowers/specs/2026-09-23-aws-demo-design.md`, 절차는 `docs/24-aws-demo.md`,
+브랜치 `aws/static-0`. AWS 자원은 하나도 만들지 않았다.
+
+- **엔진을 서버로 옮기지 않기로 한 판단, 그리고 그 측정값.** tacnet-01(자산 13, 링크 12,
+  서비스 5, 작업 8, 임무 2)에서 `runChain` 1회가 **0.07 ms** 다(Node 24, 1000회 평균).
+  서울 리전 왕복은 **10~50 ms**. 옮기면 계산 한 번이 **100~700배** 느려지는데, 더 나쁜 것은
+  호출 횟수다 - 마커 드래그와 시간 슬라이더가 매 프레임 재계산이라 조작 한 번이 요청
+  수십 개가 된다. 두 번째 이유는 정합이다. 지금 구현은 둘(PowerShell 참조, 브라우저 JS)이고
+  `parity.mjs` 가 그 사이 1,622개 값을 지킨다. 서버 엔진은 **구현을 셋으로 만들고 그 게이트
+  비용을 그대로 늘린다.** 무거운 배치가 필요하면 같은 `engine.js` 를 Node 에서 돌리면 된다 -
+  구현은 둘 그대로다. **"서버가 더 빠를 것" 이라는 직관이 두 자릿수 틀렸다는 것이 이 항목의
+  전부다.**
+- **프록시 허용목록이 클라이언트와 어긋나 있었다.** 클라이언트는 `${endpoint}/api/chat` 을
+  부르는데(`staff-llm.mjs:33`, `attack-llm.mjs:213`; `probeLlm` 는 `/api/tags`)
+  `deploy/nginx.example.conf` 와 `deploy/Caddyfile.example` 은 `/api/generate` 만 열어 뒀다.
+  **`proxied` 자세로 올렸으면 모든 모델 호출이 403** 이고, 화면에는 "모델 없음" 으로 보였을
+  것이다 - 설정이 의도대로 동작하는 모습과 구분이 안 된다. 허용목록은 옳은 선택이지만
+  **허용목록은 양쪽이 같은 경로를 말할 때만 방어**이고, 한쪽은 코드고 다른 쪽은 문서라
+  조용히 갈라진다.
+- **그래서 고친 것을 검사기로 묶었다.** `scripts/Test-ProxyAllowlist.ps1` 이 `ui/src/` 의
+  `.js`/`.mjs` 에서 `${endpoint}/api/...` 를 긁어 두 예시 파일과 대조하고 하나라도 빠지면
+  exit 1 이다. 게이트 8 → 9개. **막는 것은 지식이 아니라 검사기다**(CLAUDE.md 의 대소문자
+  충돌 항목과 같은 교훈이다). 클라이언트가 새 엔드포인트를 부르기 시작하는 날 게이트가 먼저
+  운다.
+- **계획서가 들고 있던 틀린 명령 둘을 실행해 보고 걷어냈다.**
+  - `python -m cfn_lint` 은 **없는 모듈이다.** cfn-lint 1.x 의 패키지 이름은 `cfnlint` 이고
+    `__main__` 이 없다. `Scripts\cfn-lint.exe` 를 직접 부르거나
+    `python -c "from cfnlint import runner"` 로 설치만 확인한다. 검증 명령이 틀리면
+    "검증했다" 가 "usage 를 봤다" 와 같은 뜻이 된다.
+  - PowerShell 5.1 의 `Set-Content -Encoding utf8` 은 **BOM 을 붙인다.** 계획은 그것으로
+    `config.json` 을 쓰게 돼 있었다. JSON 앞의 BOM 은 `fetch().json()` 을 통과하기 때문에
+    **그 다음에 raw 텍스트를 `JSON.parse` 하는 쪽에서 처음 죽는다.** `Deploy-Aws.ps1` 은
+    `[IO.File]::WriteAllText(..., New-Object Text.UTF8Encoding($false))` 로 쓴다.
+    (CLAUDE.md 인코딩 규칙 2 는 한글 `.ps1` 에 BOM 을 **붙이라**고 한다. 그것은 스크립트
+    파일 이야기이고, 스크립트가 **생성하는 데이터 파일**은 반대다.)
+- **확인 목록을 두 곳에 두지 않았다.** `Deploy-Aws.ps1` 마지막 단계가 찍는 여섯 줄은
+  `docs/24-aws-demo.md` 7.1 절과 **같은 번호**다. GPU 가 있어야 볼 수 있는 넷(7~10)은 문서의
+  7.2 절에만 있고 스크립트는 안 찍는다 - 지금 확인할 수 없는 항목을 출력하면 목록 전체가
+  "대충 읽고 넘기는 것" 이 된다.

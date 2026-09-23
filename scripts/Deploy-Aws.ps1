@@ -265,18 +265,21 @@ if ($Posture -eq 'proxied') { $expectLine = 'true, with endpoint /api/llm' }
 
 Write-Step 'what to check now'
 
-Write-Output '      The same list is in docs/24 (the AWS demo copy runbook).'
+Write-Output '      These six are list 7.1 of docs/24-aws-demo.md, same numbering. The four'
+Write-Output '      that need the GPU origin are 7 to 10 there (AWS-1) and are not printed here.'
 Write-Output ''
-Write-Output '      1. the distribution URL asks for basic auth, and a wrong password gives 401'
+Write-Output '      1. the distribution URL asks for basic auth, a wrong password gives 401,'
+Write-Output '         and the right one opens the page'
 Write-Output ("         aws cloudfront get-distribution --id {0} --query Distribution.DomainName" -f $DistributionId)
 Write-Output '      2. /config.json in the browser is the file just uploaded, not a cached one'
 Write-Output ("         expect llm.enabled = {0}" -f $expectLine)
-Write-Output '      3. the wargame LLM attacker: off posture shows it disabled WITH its reason,'
-Write-Output '         and greedy / random still run'
-Write-Output '      4. proxied posture only: /api/llm reaches the model, and the model-management'
-Write-Output '         paths do not. A 200 from /api/llm/api/pull means this demo is now a public'
-Write-Output '         model-management API (docs/21-deployment.md section 5)'
-Write-Output '      5. a scenario briefing renders, with its citations, without any model running'
+Write-Output '      3. the situation picture draws and the time slider runs. That IS the evidence'
+Write-Output '         that the engine runs in the browser: dragging it adds no network requests'
+Write-Output '      4. in the sandbox (sandbox-01), placing assets and linking them fills the'
+Write-Output '         readiness card (providers, performers, reachability)'
+Write-Output '      5. with no model at all: a briefing renders with its citations and the wargame'
+Write-Output '         staff ranking table appears. Only the LLM attacker is disabled, WITH its'
+Write-Output '         reason (config.json llm.unavailable_note), and greedy / random still run'
 Write-Output '      6. assets/* come back with max-age=31536000 and index.html does not'
 Write-Output '         curl -sI <url>/index.html   and   curl -sI <url>/assets/<one file>'
 
