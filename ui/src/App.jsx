@@ -536,7 +536,7 @@ export default function App() {
       />
 
       {compact && (
-        <Sheet peek={peekLine(graph, step, mode === 'wargame' ? game : null)} raised={!!selectedData}>
+        <Sheet peek={peekLine(graph, step, mode === 'wargame' ? game : null)} raised={selectedData?.id ?? null}>
           {railEl}
         </Sheet>
       )}

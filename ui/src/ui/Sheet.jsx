@@ -29,9 +29,12 @@ export default function Sheet({ peek, children, raised, onStateChange }) {
   const dragEndedAt = useRef(0)
 
   // A selection raises the sheet, but only from peek: once the user has set a
-  // height, nothing takes it away from them.
+  // height, nothing takes it away from them. `raised` is the IDENTITY of the
+  // selection, not a boolean - a boolean stays true across the second and
+  // third pick, so the effect never re-ran and only the first selection of a
+  // session raised the sheet.
   useEffect(() => {
-    if (raised && state === 'peek') setState('half')
+    if (raised != null && state === 'peek') setState('half')
   }, [raised])          // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { if (onStateChange) onStateChange(state) }, [state, onStateChange])
@@ -54,7 +57,9 @@ export default function Sheet({ peek, children, raised, onStateChange }) {
     // the rest of the sequence - pointerup AND the click - to the sheet, which
     // is the button's ancestor, so the button's own onClick never fires and a
     // tap does nothing at all.
-    e.currentTarget.setPointerCapture(e.pointerId)
+    // A stale or already-released pointerId throws NotFoundError, and it would
+    // throw inside a React handler. Capture is an optimisation, not the drag.
+    try { e.currentTarget.setPointerCapture(e.pointerId) } catch { /* no such pointer */ }
   }
 
   function onPointerMove(e) {
@@ -63,7 +68,9 @@ export default function Sheet({ peek, children, raised, onStateChange }) {
     const dy = drag.current.startY - e.clientY
     if (!drag.current.moved && Math.abs(dy) <= TAP_SLOP) return
     drag.current.moved = true
-    drag.current.h = Math.max(56, drag.current.startH + dy)
+    // Clamped at both ends: without an upper bound a hard pull grows the sheet
+    // past 86dvh and over the top bar for the length of the gesture.
+    drag.current.h = Math.min(heights().full, Math.max(56, drag.current.startH + dy))
     el.style.height = drag.current.h + 'px'
   }
 

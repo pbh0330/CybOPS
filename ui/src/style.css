@@ -582,7 +582,21 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
      value it understands rather than collapsing to nothing. */
   .app { height: 100dvh; }
   .main { grid-template-columns: 1fr; }
-  .main.is-editing { grid-template-columns: 1fr; }
+  /* One column means two ROWS, and `auto auto` gave the palette its full
+     content height (527px) and the board whatever was left (71px), which made
+     .canvas-wrap 0px - the stage this breakpoint exists to keep. The palette
+     takes what it asks for up to a third of the viewport, the board takes the
+     rest. minmax(0, 1fr) and not 1fr: a 1fr row floors at its content's
+     min-content height, which the canvas would push past the screen.
+     (Turning the palette into a horizontal strip is M2.) */
+  .main.is-editing {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .main.is-editing .palette {
+    max-height: 30dvh; min-height: 0;
+    border-right: none; border-bottom: 1px solid var(--line);
+  }
   /* The rail's CONTENT moved into the sheet - the same React node, in the
      other parent. This hides the empty grid column only; scoping it to a
      direct child of .main matters because what is inside the sheet is also
