@@ -5,6 +5,7 @@ import { createEditor } from './editor.js'
 import { compromiseOf } from './game.js'
 import { computeStep, activePhaseNames, clockOf, gameOverlay } from './derive.js'
 import { makeSandbox, loadRules, validateImport, listPlans, savePlan, loadPlan, deletePlan, SANDBOX_ID, TEMPLATE_ID } from './sandbox.js'
+import { useCompact } from './useCompact.js'
 import Topbar from './ui/Topbar.jsx'
 import BoardToolbar from './ui/BoardToolbar.jsx'
 import GraphCanvas from './ui/GraphCanvas.jsx'
@@ -32,6 +33,7 @@ function Mount({ make, deps = [], className }) {
 }
 
 export default function App() {
+  const compact = useCompact()
   const [error, setError] = useState(null)
   const [scenarios, setScenarios] = useState(SCENARIOS)
   const [scenarioId, setScenarioId] = useState(null)
@@ -396,7 +398,7 @@ export default function App() {
   const hasGeoref = !!(graph && graph.geo && graph.geo.georef)
 
   return (
-    <div className="app">
+    <div className="app" data-compact={compact ? '1' : undefined}>
       <Topbar
         scenarios={scenarios}
         scenarioId={scenarioId}
