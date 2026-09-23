@@ -113,7 +113,8 @@ Resources:
         Runtime: cloudfront-js-2.0
       FunctionCode: !Sub |
         function handler(event) {
-          var h = event.request.headers;
+          var request = event.request;
+          var h = request.headers;
           var want = 'Basic ${BasicAuthBase64}';
           if (!h.authorization || h.authorization.value !== want) {
             return {
@@ -121,8 +122,27 @@ Resources:
               headers: { 'www-authenticate': { value: 'Basic realm="MC-CyCOP demo"' } }
             };
           }
-          return event.request;
+          // The credential has done its job at the edge. The model origin is plain
+          // http, so nothing that is a secret may travel past this point.
+          // CloudFront Functions header keys are lowercase.
+          delete request.headers.authorization;
+          return request;
         }
+
+  LlmOriginRequestPolicy:
+    Type: AWS::CloudFront::OriginRequestPolicy
+    Condition: HasLlm
+    Properties:
+      OriginRequestPolicyConfig:
+        Name: !Sub '${AWS::StackName}-llm-origin'
+        Comment: 'Deny by default. Only what the Ollama call needs crosses the plain http hop.'
+        HeadersConfig:
+          HeaderBehavior: whitelist
+          Headers: [content-type, accept]
+        CookiesConfig:
+          CookieBehavior: none
+        QueryStringsConfig:
+          QueryStringBehavior: none
 
   Distribution:
     Type: AWS::CloudFront::Distribution
@@ -181,8 +201,9 @@ Resources:
               Compress: false
               # CachingDisabled
               CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
-              # AllViewer
-              OriginRequestPolicyId: 216adef6-5c7f-47e4-b989-5492eb8d9cf2
+              # Allowlist, not AllViewer: the viewer's Authorization header must
+              # not cross the plain http hop to the model origin.
+              OriginRequestPolicyId: !Ref LlmOriginRequestPolicy
               FunctionAssociations:
                 - EventType: viewer-request
                   FunctionARN: !GetAtt AuthFunction.FunctionMetadata.FunctionARN

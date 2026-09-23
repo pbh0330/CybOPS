@@ -27,6 +27,9 @@
 - **`AuthFunction`** - CloudFront Function(`cloudfront-js-2.0`, 뷰어 요청). `Authorization`
   헤더를 상수와 비교하고, 다르면 401 + `WWW-Authenticate: Basic realm="MC-CyCOP demo"`.
   상수는 `BasicAuthBase64` 파라미터에서 `Fn::Sub` 로 박히므로 **저장소에는 비밀이 남지 않는다.**
+  검사를 통과하면 **`authorization` 헤더를 지우고** 요청을 넘긴다. 자격은 엣지에서 할 일을
+  다 했고, 모델 오리진 구간은 평문이라 비밀이 그 구간을 건너가면 안 된다. CloudFront
+  Functions 의 헤더 키는 소문자라서 `authorization` 으로 지운다.
 - **`Distribution`** - `index.html` 기본 루트, HTTP/2+3, 기본 행동은 `CachingOptimized`,
   뷰어 프로토콜 `redirect-to-https`.
 - **`BucketPolicy`** - `cloudfront.amazonaws.com` 서비스 주체에게 `s3:GetObject` 만 허용하고,
@@ -70,9 +73,12 @@ PowerShell 5.1 에서:
 
 - 오리진 `llm`: `http-only` / 80포트 / 오리진 응답 대기 60초,
   요청에 `X-Demo-Origin: <LlmOriginSecret>` 헤더가 붙는다. GPU 쪽 프록시가 이 헤더를
-  검사해서 CloudFront 를 거치지 않은 직접 접속을 거부한다.
-- 행동 `/api/llm/*`: `https-only`, `CachingDisabled`, `AllViewer` 원본 요청 정책,
-  POST/PUT/PATCH/DELETE 허용.
+  검사한다. 이것이 무엇을 막고 무엇을 못 막는지는 아래 "비밀 취급" 절에 적었다.
+- `LlmOriginRequestPolicy`(`AWS::CloudFront::OriginRequestPolicy`, `HasLlm` 조건):
+  **허용목록이고 거부가 기본**이다. 헤더는 `content-type`, `accept` 둘만, 쿠키 없음,
+  쿼리 문자열 없음. Ollama 호출에 필요한 것만 평문 구간을 건넌다.
+- 행동 `/api/llm/*`: `https-only`, `CachingDisabled`, 원본 요청 정책은 위의
+  `LlmOriginRequestPolicy`(**`AllViewer` 가 아니다**), POST/PUT/PATCH/DELETE 허용.
 
 ### AWS-1 이 실물로 확인할 것
 
@@ -81,6 +87,25 @@ PowerShell 5.1 에서:
 `probeLlm()` 이 먼저 돌면 401 을 받고 "모델 없음" 으로 읽힌다.** 정적 페이지가 먼저 인증을
 통과한 뒤에 프로브가 도는 순서라 실제로는 문제가 없어야 하지만, 확인 목록 5번이 이것을
 실물로 확인한다.
+
+## 비밀 취급 - 무엇이 비밀이고 무엇이 아닌가
+
+`/api/llm/*` 오리진 구간은 도메인도 ACM 인증서도 없어서 **평문 http** 다. 그 구간을 무엇이
+건너가는지가 이 절의 주제다.
+
+- **뷰어의 basic auth 자격은 그 구간을 건너지 않는다.** 뷰어 함수가 검사 직후
+  `authorization` 헤더를 지우고, `/api/llm/*` 의 원본 요청 정책이 허용목록이라
+  두 겹 모두에서 막힌다. "`AllViewer` 가 `Authorization` 을 어떻게 취급하는가"라는
+  기억에 의존하는 사실에 이 성질을 걸어 두지 않는다.
+- **직접 접속에 대한 실제 통제는 보안 그룹이다.** 80/tcp 를 CloudFront 관리 프리픽스 목록
+  (`com.amazonaws.global.cloudfront.origin-facing`)에서만 받는다. AWS-1 이 만든다.
+- **`X-Demo-Origin` 은 두 번째 겹이다.** 프리픽스 목록 안의 다른 CloudFront 배포가 이
+  오리진을 때리는 경우를 막는다. 평문 구간의 도청자는 이 헤더를 읽어 그대로 재생할 수
+  있으므로 **그 사람에게는 비밀이 아니다.**
+- **`BasicAuthBase64` 는 시연 관문이지 비밀이 아니다.** `NoEcho` 라 스택 파라미터 조회에서는
+  가려지지만 배포된 함수 코드에 박혀 있어서, **계정 읽기 권한이 있는 사람은
+  `aws cloudfront get-function` 으로 꺼내 볼 수 있다.** 다른 곳에서 쓰는 비밀번호를 넣지 않는다.
+- **도메인을 확보하면 오리진을 https 로 바꾸는 것이 이 절 전체를 없애는 방법이다.**
 
 ## 검증
 
@@ -97,7 +122,8 @@ PowerShell 5.1 에서:
 
 ### 의도한 informational 지적 하나
 
-`--include-checks I` 를 켜면 하나가 남는다.
+informational 등급까지 켜면(`-c I -- infra\demo-static.yaml`; `--` 가 없으면 argparse 가
+템플릿 경로를 규칙 목록으로 삼켜서 usage 를 뱉는다) 하나가 남는다.
 
 ```
 I3042: ARN in Resource BucketPolicy contains hardcoded Partition in ARN
@@ -107,7 +133,7 @@ I3042: ARN in Resource BucketPolicy contains hardcoded Partition in ARN
 로 쓴 것을 가리킨다. `${AWS::Partition}` 을 쓰라는 제안인데, **이 시연 사본은 상용 파티션
 (`aws`) 한 곳에만 올린다.** 중국(`aws-cn`)이나 GovCloud(`aws-us-gov`)로 옮길 계획이 없고,
 CloudFront 배포 ARN 형식을 리터럴로 두는 편이 읽는 사람에게 분명하다. 기본 실행
-(`--include-checks` 없이)에서는 나오지 않는 informational 등급이라 그대로 둔다.
+(`-c` 없이)에서는 나오지 않는 informational 등급이라 그대로 둔다.
 파티션을 옮기게 되면 이 한 줄을 `${AWS::Partition}` 으로 바꾼다.
 
 ## 올리지 않는 것

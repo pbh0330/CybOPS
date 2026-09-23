@@ -48,11 +48,16 @@ CloudFront distribution
 
 - **S3**: 퍼블릭 액세스 전면 차단. CloudFront OAC 로만 읽는다.
 - **인증은 CloudFront 에서** 한다. 뷰어 요청 함수가 `Authorization` 헤더를 상수와 비교하고
-  없으면 401 + `WWW-Authenticate`. 도메인이 없어도 되고, 비밀번호는 CloudFront 까지
-  TLS 안에서만 흐른다.
+  없으면 401 + `WWW-Authenticate`. 도메인이 없어도 된다. 비밀번호가 CloudFront 까지만
+  흐르는 것은 저절로 그렇게 되는 것이 아니라 **함수가 검사 직후 `authorization` 헤더를
+  지우기 때문**이다. 거기에 더해 `/api/llm/*` 의 원본 요청 정책을 허용목록(`content-type`,
+  `accept` 만)으로 두어 `AllViewer` 가 무엇을 통과시키는지에 의존하지 않게 한다.
 - **CloudFront -> GPU 오리진은 http** 다. ACM 인증서를 받으려면 도메인이 필요한데 시연
-  사본에는 없다. 대신 오리진은 **비밀 헤더가 있는 요청만** 받는다(직접 접속 차단).
-  도메인을 사는 순간 오리진을 https 로 바꾸는 것이 낫다 - 그때 한 줄 바뀐다.
+  사본에는 없다. 직접 접속에 대한 **실제 통제는 보안 그룹**이다 - 80/tcp 를 CloudFront
+  관리 프리픽스 목록에서만 받는다(5절). 비밀 헤더 `X-Demo-Origin` 은 **두 번째 겹**이고,
+  프리픽스 목록 안의 다른 CloudFront 배포를 막는 용도다. 평문 구간의 도청자는 이 헤더를
+  읽어 재생할 수 있으므로 그 사람에게는 비밀이 아니다. 도메인을 사는 순간 오리진을
+  https 로 바꾸는 것이 낫다 - 그때 이 문단이 통째로 없어진다.
 - **`/api/llm/*` 는 캐시 없음**(`CachingDisabled`), POST 허용, 오리진 응답 시간 60초.
 
 ## 3. 캐시 정책
