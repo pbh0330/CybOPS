@@ -179,16 +179,32 @@ export function serviceFacts(g, s) {
   return out
 }
 
+// How many ranked rows a fact list carries when the caller does not say. The
+// cut lives here, not at the call sites, so a query that wants a different k
+// passes it instead of slicing a list of sentences it did not build.
+export const TOP_N = 5
+
+function cutAt(k) {
+  const n = Number(k)
+  return Number.isFinite(n) && n >= 1 ? Math.floor(n) : TOP_N
+}
+
 // game.js staffTable rows, phrased. The order is the table's own (rank); this
 // never reorders it (ADR-0003). `g` is optional - without it a row is named by
-// its id alone.
-export function containmentFacts(rows, g) {
+// its id alone. `blocks`/`gainBlocked` are null in the observe mode, where
+// there is no attacker to block: the sentence then says so rather than
+// printing a zero that would read as "blocks nothing".
+export function containmentFacts(rows, g, k = TOP_N) {
   const list = (rows || []).slice().sort((a, b) => (num(a.rank) - num(b.rank)) || String(a.id).localeCompare(String(b.id)))
-  return list.slice(0, 5).map((r) => {
+  return list.slice(0, cutAt(k)).map((r) => {
     const name = g ? nameOf(g, r.id) : r.id
     const cost = num(r.cost)
+    const head = `${name} 격리 - 임무 비용 ${cost >= 0 ? '+' : ''}${pp(cost)}`
+    const scored = r.blocks !== null && r.blocks !== undefined
     return fact(
-      `${name} 격리 - 임무 비용 ${cost >= 0 ? '+' : ''}${pp(cost)}, 막는 공격 수 ${num(r.blocks)}개, 차단하는 최대 이득 ${pct(num(r.gainBlocked))}, 순위 ${num(r.rank)}.`,
+      scored
+        ? `${head}, 막는 공격 수 ${num(r.blocks)}개, 차단하는 최대 이득 ${pct(num(r.gainBlocked))}, 순위 ${num(r.rank)}.`
+        : `${head}, 순위 ${num(r.rank)} (관측 모드 - 막는 공격 수는 계산하지 않는다).`,
       refOf('asset', r.id), cost, '%p',
     )
   })
@@ -262,7 +278,7 @@ export function readinessFacts(g, r) {
   for (const id of unreachable.slice().sort()) {
     out.push(fact(`${taskName(g, id)} 작업의 수행 자산이 필요한 서비스에 링크로 닿지 않는다.`, refOf('task', id)))
   }
-  for (const id of rd.isolated.slice().sort().slice(0, 5)) {
+  for (const id of rd.isolated.slice().sort().slice(0, TOP_N)) {
     out.push(fact(`${nameOf(g, id)} 은 어떤 링크에도 연결되지 않았다.`, refOf('asset', id)))
   }
   return out
