@@ -64,6 +64,10 @@ export default function App() {
   // the wargame is a value (game.js); App owns it so the pictures can read it
   const [game, setGame] = useState(null)
   const [onboard, setOnboard] = useState(false)
+  // The topbar's `⋯` panel, once it exists (compact only). Controls that live
+  // in other components are parented INTO this node rather than rebuilt in
+  // it - one node per control, same rule as railEl below.
+  const [menuNode, setMenuNode] = useState(null)
   const [toast, setToast] = useState(null)
   const [geoCam, setGeoCam] = useState({ mode: '2d', az: 35, pitch: 55, zScale: 12, terrain: true })
   // sandbox (ADR-0027): the link rule table, and the saved plans in localStorage
@@ -455,6 +459,8 @@ export default function App() {
         step={step}
         game={mode === 'wargame' ? game : null}
         sandbox={isSandbox}
+        compact={compact}
+        onMenuNode={setMenuNode}
       />
 
       <div className={`main${mode === 'edit' ? ' is-editing' : ''}`}>
@@ -493,6 +499,7 @@ export default function App() {
               : (edited ? '편집됨 · 수치는 로컬 엔진이 계산한다' : '')}
             sandbox={isSandbox} plans={plans}
             onSavePlan={onSavePlan} onLoadPlan={onLoadPlan} onDeletePlan={onDeletePlan} onImport={onImport}
+            menuNode={compact ? menuNode : null}
           />
           <div className="canvas-wrap">
             <GraphCanvas
@@ -524,6 +531,7 @@ export default function App() {
         graph={graph} payload={payload} idx={idx} step={step}
         playing={playing} onPlay={() => setPlaying((p) => !p)} onSeek={onSeek}
         speed={speed} onSpeed={setSpeed} locked={locked} lockedLabel={lockedLabel}
+        menuNode={compact ? menuNode : null}
         onStep={(d) => setIdx((i) => Math.max(0, Math.min((payload?.steps.length || 1) - 1, i + d)))}
       />
 

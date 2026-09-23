@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react' 
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { CAUSE_COLOR } from '../graph.js'
 import { clockOf } from '../derive.js'
 import { techniqueLine } from '../labels.js'
@@ -14,7 +15,7 @@ const PAD_R = 4
 const LANE_H = 14
 const H = 64
 
-export default function Timeline({ graph, payload, idx, step, playing, onPlay, onSeek, speed, onSpeed, onStep, locked = false, lockedLabel = '교전 중 · 시점 고정' }) {
+export default function Timeline({ graph, payload, idx, step, playing, onPlay, onSeek, speed, onSpeed, onStep, locked = false, lockedLabel = '교전 중 · 시점 고정', menuNode = null }) {
   const [w, setW] = useState(0)
   const roRef = useRef(null)
 
@@ -94,6 +95,17 @@ export default function Timeline({ graph, payload, idx, step, playing, onPlay, o
   const headX = x(Number(payload?.steps?.[idx]?.t ?? 0))
   const clock = clockOf(step)
 
+  // The speed control belongs to the transport on a desktop and to the
+  // topbar's `⋯` panel on a phone. It is the same element either way - moved,
+  // not copied, and never removed, so the desktop strip is untouched.
+  const speedSeg = (
+    <div className="seg speed" role="group" aria-label="배속">
+      {[1, 4, 16].map((s) => (
+        <button key={s} type="button" disabled={locked} className={speed === s ? 'on' : ''} onClick={() => onSpeed(s)}>{s}×</button>
+      ))}
+    </div>
+  )
+
   const seek = (evt) => {
     if (locked) return
     const r = evt.currentTarget.getBoundingClientRect()
@@ -109,11 +121,7 @@ export default function Timeline({ graph, payload, idx, step, playing, onPlay, o
           {playing ? '❚❚' : '▶'}
         </button>
         <button type="button" className="step-btn" disabled={locked} onClick={() => onStep(1)} title="다음 (→)">▶</button>
-        <div className="seg speed" role="group" aria-label="배속">
-          {[1, 4, 16].map((s) => (
-            <button key={s} type="button" disabled={locked} className={speed === s ? 'on' : ''} onClick={() => onSpeed(s)}>{s}×</button>
-          ))}
-        </div>
+        {menuNode ? createPortal(speedSeg, menuNode) : speedSeg}
         {locked && <span className="tl-locked">{lockedLabel}</span>}
       </div>
 
