@@ -154,7 +154,7 @@ LLM 공격자만은 예외다: 시드를 모델 서버에 넘기지만 서버가
 
 ```powershell
 cd ui
-npm test                       # vitest 43개: georef 8, derive 10, mapLayers 7, attack 5, game 13
+npm test                       # vitest 90개: sandbox 23, game 18, derive 15, attack 10, georef 8, mapLayers 7, editor 5, sheet 4
 node tools\parity.mjs          # attack.js 기본 경로(isolated 없음)가 PowerShell 참조와 같은가
 ```
 
