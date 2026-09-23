@@ -1,4 +1,0 @@
-[     499ms] [INFO] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold @ http://localhost:5179/node_modules/.vite/deps/chunk-ZFBEYDM4.js?v=1bef958e:21550
-[     511ms] [INFO] milsymbol.js 3.0.4 - Copyright (c) 2024 Måns Beckman  http://www.spatialillusions.com @ http://localhost:5179/node_modules/.vite/deps/milsymbol.js?v=1bef958e:2562
-[     605ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5179/favicon.ico:0
-[     943ms] [WARNING] You have set a custom wheel sensitivity.  This will make your app zoom unnaturally when using mainstream mice.  You should change this value from the default only if you can guarantee that all your users will use the same hardware and OS configuration as your current machine. @ http://localhost:5179/node_modules/.vite/deps/cytoscape.js?v=1bef958e:1091
