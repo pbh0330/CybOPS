@@ -574,3 +574,36 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
   -webkit-overflow-scrolling: touch;
 }
 [data-compact="1"] .sheet[data-state="peek"] .sheet-body { display: none; }
+
+/* ----------------------------------------------- compact: single column */
+
+@media (max-width: 860px) {
+  /* 100vh is left in place above: a browser that does not know dvh keeps the
+     value it understands rather than collapsing to nothing. */
+  .app { height: 100dvh; }
+  .main { grid-template-columns: 1fr; }
+  .main.is-editing { grid-template-columns: 1fr; }
+  /* The rail's CONTENT moved into the sheet - the same React node, in the
+     other parent. This hides the empty grid column only; scoping it to a
+     direct child of .main matters because what is inside the sheet is also
+     an <aside class="rail">. */
+  .main > .rail { display: none; }
+  .board { min-width: 0; }
+  /* Reserve the sheet's 56px peek on .app, not on .main: the timeline is a
+     sibling of .main and would otherwise sit underneath the fixed sheet.
+     Padding here keeps the stage AND the timeline above it, which is the
+     stacking the compact spec draws. */
+  .app { padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px)); }
+  /* inside the sheet the rail is the whole panel: no left edge, no second
+     surface colour on top of the sheet's own */
+  .sheet .rail { border-left: none; background: none; }
+  .sheet .rail-body { overflow: visible; }
+  /* The geo footer is a horizontally scrolling strip by construction
+     (overflow-x: auto). At 390px .geo-warn still carried white-space: normal
+     and margin-left: auto, so it was squeezed to ~42px wide and wrapped into a
+     511px-tall column; the footer is flex: none, so that column ate the stage
+     and left the map canvas 17px high. Let the strip scroll sideways, which is
+     what it was built to do. */
+  .geo-foot > * { flex: none; }
+  .geo-warn { white-space: nowrap; margin-left: 0; }
+}
