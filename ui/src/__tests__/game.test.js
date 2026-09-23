@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import payload from '../../public/data/tacnet-01.replay.json'
 import { runStep } from '../engine.js'
-import { footholds } from '../attack.js'
+import { footholds, greedyChooser } from '../attack.js'
 import {
   startGame, defaultFoothold, legalFor, isolationCost, defend, pass, attackerTurn,
   evaluate, staffTable, compromiseOf,
@@ -129,6 +129,21 @@ describe('evaluate: jewel', () => {
     let G = startGame(g, { ...base, mode: 'jewel', turns: 8 })
     G = { ...G, turn: 1, attacker: { 'TOC-SRV': 1 }, isolated: ['TOC-SRV'], history: [] }
     expect(evaluate(g, G).result).toBe(null)
+  })
+})
+
+describe('legalFor is the attacker order, not the panel own order', () => {
+  it('its head is the move greedy plays, at a flat-gain time too', () => {
+    // t=0 from a 0.5 foothold: every move scores gain 0. The panel used to
+    // sort gain -> p -> id, so it listed recon (p 0.95) first while the
+    // engine played something else (2026-09-23, ADR-0019 amendment).
+    const G = startGame(g, { ...base, t: 0, foothold: { id: 'CO2-VEH', level: 0.5 } })
+    const rows = legalFor(g, G)
+    expect(rows.length).toBeGreaterThan(1)
+    expect(Math.max(...rows.map((m) => m.gain))).toBe(0)   // the flat premise
+    expect(rows[0].action).not.toBe('recon')
+    expect(rows[rows.length - 1].action).toBe('recon')     // last resort, last row
+    expect(rows[0].id).toBe(greedyChooser(rows, { g, state: G.attacker, t: G.cfg.t }).move.id)
   })
 })
 
