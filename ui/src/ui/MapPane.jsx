@@ -310,8 +310,28 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
         el.className = 'map-mark'
         el.innerHTML = `<div class="map-mark-sym"><img alt="" /></div><div class="map-mark-label"></div>`
         // a drag ends with a click on the same element; that click must not
-        // reselect (or, in link mode, wire) what was only being moved
+        // reselect (or, in link mode, wire) what was only being moved.
+        //
+        // The flag is cleared when the NEXT contact starts, not on a timer.
+        // It used to be cleared from a setTimeout(0) in `dragend`, which
+        // holds for a mouse - there the trailing click follows mouseup in the
+        // same task - but not for a finger: the browser synthesises the click
+        // a task (historically up to 300 ms) after touchend, by which time
+        // the 0 ms timer had long since run and every touch drag ended by
+        // selecting what it had just moved. Measured at 390px: drag RELAY-1
+        // with pointerType touch while CO1-VEH is selected and the selection
+        // jumped to RELAY-1.
+        //
+        // `pointerdown` is the one event that means "a new contact started"
+        // for mouse, pen and finger alike; the compatibility mousedown the
+        // browser fires after a touch does NOT produce one, which is exactly
+        // why the reset cannot live on mousedown. touchstart is the fallback
+        // for a browser without pointer events, and is equally never a
+        // compatibility event.
         let dragged = false
+        const armTap = () => { dragged = false }
+        el.addEventListener('pointerdown', armTap)
+        el.addEventListener('touchstart', armTap, { passive: true })
         el.addEventListener('click', (e) => {
           e.stopPropagation()
           if (dragged) { dragged = false; return }
@@ -326,8 +346,9 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
         m = new maplibregl.Marker({ element: el, anchor: 'center', draggable: !!editable }).setLngLat([r.lon, r.lat]).addTo(map)
         m.on('dragstart', () => { dragged = true })
         m.on('dragend', () => {
-          // the trailing click (if any) is dispatched before this timer runs
-          setTimeout(() => { dragged = false }, 0)
+          // no reset here: a drag that ends without a trailing click (which
+          // happens) leaves the flag set, and the next contact's pointerdown
+          // clears it before its own click can be swallowed
           const { lng, lat } = m.getLngLat()
           const gr = georefRef.current
           if (!gr || !moveRef.current) return
