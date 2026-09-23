@@ -274,13 +274,95 @@ export function playTurn(g, state, t, opts = {}) {
   }
 }
 
-// The control. Picks the move that costs the defender the most right now
-// (ties broken by cheaper action, then by id, so it is deterministic).
-// Without this there is no way to tell whether an LLM attacker is any good
-// (ADR-0019 section 5).
-export function greedyChooser(legal) {
-  const sorted = [...legal].sort((a, b) => (b.gain - a.gain) || (b.p - a.p) || a.id.localeCompare(b.id))
-  return { move: sorted[0], rationale: 'greedy: 임무 저하도 증가분이 가장 큰 수' }
+// How far each asset is from the nearest crown jewel, in hops over the link
+// graph. Undirected and bearer-agnostic on purpose: the attacker is choosing a
+// direction, not planning a route, and which radio carries the hop does not
+// change which way is "toward the objective". Outages are not subtracted here
+// either - legalMoves() has already decided what is reachable.
+function jewelDistances(g) {
+  const adj = {}
+  const touch = (id) => { if (!adj[id]) adj[id] = [] ; return adj[id] }
+  for (const a of g.assets || []) touch(a.id)
+  for (const l of g.links || []) {
+    if (!l || !l.a || !l.b) continue
+    touch(l.a).push(l.b)
+    touch(l.b).push(l.a)
+  }
+  // sorted neighbours: BFS order must not depend on link order in the file
+  for (const id of Object.keys(adj)) adj[id] = [...new Set(adj[id])].sort()
+  const dist = {}
+  const queue = [...(g.crown_jewels || [])].filter((id) => !!id).sort()
+  for (const id of queue) dist[id] = 0
+  for (let i = 0; i < queue.length; i++) {
+    const n = queue[i]
+    for (const m of adj[n] || []) {
+      if (dist[m] !== undefined) continue
+      dist[m] = dist[n] + 1
+      queue.push(m)
+    }
+  }
+  return dist
+}
+
+const FAR = Number.MAX_SAFE_INTEGER   // unknown or unreachable target sorts last
+
+// How much compromise a move actually pushes into the graph, assuming it
+// lands. `gain` is what the defender loses; this is what the attacker gains
+// even when the mission number has not moved yet.
+function advanceOf(g, state, move) {
+  const before = state || {}
+  const after = applyEffect(g, before, move, true).state
+  let sum = 0
+  for (const id of Object.keys(after).sort()) {
+    const d = Number(after[id] || 0) - Number(before[id] || 0)
+    if (d > 0) sum += d
+  }
+  return Number(sum.toFixed(6))
+}
+
+// The control. Picks the move that costs the defender the most right now.
+//
+// Two rules keep it from standing still. First, recon is a last resort: it
+// changes no state, so choosing it when anything else is legal means facing
+// the identical position next turn - a livelock, not caution. Second, when
+// `gain` ties (at a time when the operation has not started, or when P1 is
+// already fully degraded, every move scores 0), the tie is broken by things
+// that mean progress: how much compromise the move pushes into the graph, and
+// then how close its target sits to a crown jewel. Only after that does the
+// cheaper action win, so the order is still total and deterministic:
+// gain desc -> advance desc -> jewel distance asc -> p desc -> id asc.
+// (ADR-0019 section 5)
+export function greedyChooser(legal, ctx = {}) {
+  const all = legal || []
+  if (!all.length) return { move: undefined, rationale: 'greedy: 둘 수 있는 수가 없다' }
+  const g = (ctx && ctx.g) || {}
+  const state = (ctx && ctx.state) || {}
+
+  const viable = all.filter((m) => m.action !== 'recon')
+  const pool = viable.length ? viable : all
+
+  const dist = jewelDistances(g)
+  const adv = new Map()
+  const near = new Map()
+  for (const m of pool) {
+    adv.set(m.id, advanceOf(g, state, m))
+    const d = m.target === null || m.target === undefined ? undefined : dist[m.target]
+    near.set(m.id, d === undefined ? FAR : d)
+  }
+
+  const sorted = [...pool].sort((a, b) =>
+    (b.gain - a.gain)
+    || (adv.get(b.id) - adv.get(a.id))
+    || (near.get(a.id) - near.get(b.id))
+    || (b.p - a.p)
+    || a.id.localeCompare(b.id))
+
+  const move = sorted[0]
+  let rationale
+  if (!viable.length) rationale = 'greedy: 둘 수 있는 수가 정찰뿐이다'
+  else if (move.gain > 0) rationale = 'greedy: 임무 저하도 증가분이 가장 큰 수'
+  else rationale = 'greedy: 이득이 평평해 전진량과 crown jewel 근접으로 고른 수'
+  return { move, rationale }
 }
 
 // Picks at random among the legal moves. Useful as a floor: an attacker model

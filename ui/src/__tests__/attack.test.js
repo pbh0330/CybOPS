@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import payload from '../../public/data/tacnet-01.replay.json'
-import { footholds, legalMoves, playTurn, greedyChooser } from '../attack.js'
+import { footholds, legalMoves, scoreMoves, playTurn, greedyChooser } from '../attack.js'
 
 const g = payload.graph
 const t = 150
@@ -42,5 +42,75 @@ describe('isolated assets are invisible to the attacker', () => {
       const r = playTurn(g, state, t, { seed: 3, turn, chooser: greedyChooser, isolated: ['RELAY-1', 'BN-SRV'] })
       if (r.move) expect(['RELAY-1', 'BN-SRV']).not.toContain(r.move.target)
     }
+  })
+})
+
+// greedyChooser: recon is a last resort, and a flat gain is broken by progress.
+// recon changes no state, so choosing it while anything else is legal means
+// facing the identical position next turn - a livelock, not caution.
+describe('greedyChooser does not stand still', () => {
+  const flatT = 0   // the operation has not started: every move scores gain 0
+
+  it('never picks recon while another legal move exists', () => {
+    for (const tt of [0, 150, 300]) {
+      const state = { 'CO2-VEH': 0.5 }
+      const legal = scoreMoves(g, state, tt, legalMoves(g, state, tt), 'weighted')
+      expect(legal.some((m) => m.action === 'recon')).toBe(true)
+      expect(legal.some((m) => m.action !== 'recon')).toBe(true)
+      expect(greedyChooser(legal, { g, state, t: tt }).move.action).not.toBe('recon')
+    }
+  })
+
+  it('picks recon when it is the only legal move', () => {
+    const only = [{ id: 'recon', action: 'recon', target: null, from: null, p: 0.95, gain: 0 }]
+    expect(greedyChooser(only, { g, state: {}, t: flatT }).move.id).toBe('recon')
+  })
+
+  it('from a flat-gain start the attacker still advances over six turns', () => {
+    const start = { 'CO2-VEH': 0.5 }
+    const legal = scoreMoves(g, start, flatT, legalMoves(g, start, flatT), 'weighted')
+    expect(Math.max(...legal.map((m) => m.gain))).toBe(0)   // the flat premise
+    let state = start
+    const chosen = []
+    for (let turn = 0; turn < 6; turn++) {
+      const r = playTurn(g, state, flatT, { seed: 20260906, turn, chooser: greedyChooser })
+      chosen.push(r.move ? r.move.action : null)
+      state = r.state
+    }
+    expect(chosen.every((a) => a === 'recon')).toBe(false)
+    // the compromise picture actually moved: some asset sits higher than it did
+    expect(Object.keys(state).some((id) => Number(state[id] || 0) > Number(start[id] || 0))).toBe(true)
+  })
+
+  it('is deterministic: the same inputs give the same move id', () => {
+    const state = { 'CO2-VEH': 0.5 }
+    const legal = scoreMoves(g, state, flatT, legalMoves(g, state, flatT), 'weighted')
+    const a = greedyChooser(legal, { g, state, t: flatT }).move.id
+    const b = greedyChooser(legal, { g, state, t: flatT }).move.id
+    const c = greedyChooser([...legal].reverse(), { g, state, t: flatT }).move.id
+    expect(b).toBe(a)
+    expect(c).toBe(a)   // input order must not decide it either
+  })
+
+  it('with gain and advance tied, the target nearer a crown jewel wins', () => {
+    // fixture: HOME reaches FAR and NEAR directly; JEWEL hangs off NEAR, which
+    // is a terminal, so JEWEL itself is not a legal target. No missions, so
+    // every gain is 0. Both lateral moves are the same action (same p) and
+    // raise their target 0 -> 0.5 (the same advance). The only thing left is
+    // which one points at the jewel - and FAR is the one that would win on id.
+    const fx = {
+      assets: [{ id: 'HOME', transit: false }, { id: 'FAR' }, { id: 'NEAR', transit: false }, { id: 'JEWEL', transit: false }],
+      links: [{ id: 'l1', a: 'HOME', b: 'FAR' }, { id: 'l2', a: 'HOME', b: 'NEAR' }, { id: 'l3', a: 'NEAR', b: 'JEWEL' }],
+      crown_jewels: ['JEWEL'], missions: [], tasks: [], services: [],
+    }
+    const state = { HOME: 0.8 }
+    const legal = scoreMoves(fx, state, 0, legalMoves(fx, state, 0), 'weighted')
+    const far = legal.find((m) => m.id === 'lateral_move:HOME->FAR')
+    const near = legal.find((m) => m.id === 'lateral_move:HOME->NEAR')
+    expect(far && near).toBeTruthy()
+    expect(far.gain).toBe(near.gain)
+    expect(far.p).toBe(near.p)
+    expect('lateral_move:HOME->FAR' < 'lateral_move:HOME->NEAR').toBe(true)   // id order would pick FAR
+    expect(greedyChooser(legal, { g: fx, state, t: 0 }).move.id).toBe('lateral_move:HOME->NEAR')
   })
 })
