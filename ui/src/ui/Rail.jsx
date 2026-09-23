@@ -611,7 +611,7 @@ const TABS = [
 
 export default function Rail({
   graph, step, scenarioId, edited, when, tab, onTab,
-  requests, onRequest, selectedData, onToast, mode, wargameSlot, editor,
+  requests, onRequest, selectedData, onToast, mode, wargameSlot, staffSlot, editor,
   payload, idx, onSeekIdx, rules, sandbox, stack, onPick, onDeselect, compact,
 }) {
   const cuts = cutRows(graph, step).length
@@ -623,6 +623,15 @@ export default function Rail({
   // live asset list and gating on compact here, at the one place that
   // renders it, means neither caller has to get both right.
   const liveStack = compact ? (stack || []).filter((id) => (graph?.assets || []).some((a) => a.id === id)) : []
+  // The staff panel is a TAB here, never a second drawer: on a phone the rail
+  // already lives inside M1's sheet, and a second fixed drawer would fight it
+  // for the bottom edge. App decides which parent gets the one StaffDock node
+  // (App.jsx staffEl); this only says where it lands when the parent is us.
+  // Rotating to desktop takes the slot away, so an active 참모 tab has to fall
+  // back rather than leave the body empty.
+  const hasStaff = !!staffSlot
+  const active = tab === 'staff' && !hasStaff ? 'actions' : tab
+  const tabList = hasStaff ? [...TABS, ['staff', '참모']] : TABS
 
   return (
     <aside className="rail">
@@ -632,17 +641,34 @@ export default function Rail({
 
       {mode === 'wargame' ? (
         <>
-          <div className="tabs"><button type="button" className="on">교전</button></div>
-          <div className="rail-body">{wargameSlot}</div>
+          <div className="tabs" role="tablist">
+            <button
+              type="button" role="tab" aria-selected={active !== 'staff'}
+              className={active !== 'staff' ? 'on' : ''}
+              onClick={() => onTab('actions')}
+            >
+              교전
+            </button>
+            {hasStaff && (
+              <button
+                type="button" role="tab" aria-selected={active === 'staff'}
+                className={active === 'staff' ? 'on' : ''}
+                onClick={() => onTab('staff')}
+              >
+                참모
+              </button>
+            )}
+          </div>
+          <div className="rail-body">{active === 'staff' ? staffSlot : wargameSlot}</div>
         </>
       ) : (
         <>
           <div className="tabs" role="tablist">
-            {TABS.map(([id, label]) => (
+            {tabList.map(([id, label]) => (
               <button
                 key={id} type="button" role="tab"
-                aria-selected={tab === id}
-                className={tab === id ? 'on' : ''}
+                aria-selected={active === id}
+                className={active === id ? 'on' : ''}
                 onClick={() => onTab(id)}
               >
                 {label}
@@ -670,9 +696,10 @@ export default function Rail({
                 ))}
               </div>
             )}
-            {tab === 'cuts' && <Cuts graph={graph} step={step} compact={compact} />}
-            {tab === 'actions' && <Actions graph={graph} step={step} requests={requests} onRequest={onRequest} />}
-            {tab === 'inspect' && <Inspect graph={graph} step={step} data={selectedData} mode={mode} editor={editor} rules={rules} onDeselect={onDeselect} />}
+            {active === 'cuts' && <Cuts graph={graph} step={step} compact={compact} />}
+            {active === 'actions' && <Actions graph={graph} step={step} requests={requests} onRequest={onRequest} />}
+            {active === 'inspect' && <Inspect graph={graph} step={step} data={selectedData} mode={mode} editor={editor} rules={rules} onDeselect={onDeselect} />}
+            {active === 'staff' && staffSlot}
           </div>
         </>
       )}

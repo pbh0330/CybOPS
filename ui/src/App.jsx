@@ -16,6 +16,7 @@ import Timeline from './ui/Timeline.jsx'
 import Onboard from './ui/Onboard.jsx'
 import Wargame from './ui/Wargame.jsx'
 import Sheet from './ui/Sheet.jsx'
+import StaffDock from './ui/StaffDock.jsx'
 
 // The sandbox is not a file: it is derived in the browser from the template
 // replay (ADR-0027), so it is always listed and never HEAD-checked.
@@ -86,6 +87,17 @@ export default function App() {
   const hist = useRef({ past: [], future: [], last: null })
 
   graphRef.current = graph
+
+  // The rail's 참모 tab exists only when App hands it a staffSlot, which only
+  // happens on a phone (`staffSlot={compact ? staffEl : null}` below). Rail
+  // derives its own fallback from that (`active = tab === 'staff' && !hasStaff
+  // ? 'actions' : tab`), but `tab` itself - the state App owns and would put
+  // back into a `?tab=` link - never gets told. Left alone, a phone-to-desktop
+  // rotate leaves `tab` pointing at 'staff' while the rail visibly shows 대응:
+  // this keeps the one stored value in step with what Rail can actually show.
+  useEffect(() => {
+    if (!compact && tab === 'staff') setTab('actions')
+  }, [compact, tab])
 
   // --- boot -------------------------------------------------------------
   useEffect(() => {
@@ -364,7 +376,10 @@ export default function App() {
   // (the parameter is not called `stack`: that is the state variable this
   // very callback sets, and shadowing it here is how you end up setting a
   // value to itself.)
-  const onSelect = useCallback((id, hits) => {
+  // `opts.keepTab` is the staff dock's: inside the sheet the dock IS a rail
+  // tab, so switching to 선택 under it would throw the answer off screen the
+  // moment a fact was pressed. Every other caller wants the inspector.
+  const onSelect = useCallback((id, hits, opts) => {
     const cy = cyRef.current
     if (!id || !cy) { setStack(null); setSelectedData(null); return }
     const n = cy.$id(id)
@@ -373,7 +388,7 @@ export default function App() {
     n.select()
     setSelectedData(n.data())
     setStack(compact && Array.isArray(hits) && hits.length > 1 ? hits : null)
-    setTab('inspect')
+    if (!opts || !opts.keepTab) setTab('inspect')
   }, [compact])
 
   // ?select=<node id>: select once the graph (and the cytoscape instance,
@@ -434,6 +449,19 @@ export default function App() {
   const isGeo = view === 'geo'
   const hasGeoref = !!(graph && graph.geo && graph.geo.georef)
 
+  // ONE staff dock, same rule as the rail below: built here and handed to
+  // exactly one parent - the rail's 참모 tab on a phone, a bottom drawer on a
+  // desktop. Two instances would mean two query logs and two writers for
+  // `mccycop:staff:<scenarioId>`.
+  const staffEl = graph ? (
+    <StaffDock
+      graph={graph} step={step} game={mode === 'wargame' ? game : null}
+      sandbox={isSandbox} method={payload?.method} scenarioId={scenarioId}
+      compact={compact}
+      onSelect={(id) => onSelect(id, null, { keepTab: compact })}
+    />
+  ) : null
+
   // ONE rail. It is built here and handed to exactly one parent below - the
   // grid column on a desktop, the bottom sheet on a phone. Rendering <Rail>
   // inside both branches would give the screen two tab states, two briefing
@@ -447,6 +475,7 @@ export default function App() {
       stack={stack} onPick={(id) => onSelect(id, stack)}
       onDeselect={() => onSelect(null)} compact={compact}
       editor={editorRef} rules={rules} sandbox={isSandbox}
+      staffSlot={compact ? staffEl : null}
       payload={payload} idx={idx} onSeekIdx={(i) => setIdx(i)}
       wargameSlot={mode === 'wargame' ? (
         // keyed on the scenario so a switch unmounts the panel: its
@@ -557,6 +586,8 @@ export default function App() {
           {railEl}
         </Sheet>
       )}
+
+      {!compact && staffEl}
 
       {onboard && <Onboard onClose={() => setOnboard(false)} />}
       {toast && <div className="toast">{toast}</div>}

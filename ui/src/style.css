@@ -575,6 +575,123 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
 }
 [data-compact="1"] .sheet[data-state="peek"] .sheet-body { display: none; }
 
+/* --------------------------------------------------------------- 참모 */
+/* The staff panel. New chrome, so it gets its own rules and edits none of the
+   rail's: on a desktop it is a drawer on the bottom edge of .app, on a phone
+   it is the rail's 참모 tab (see the compact block). ONE component either way
+   - App.jsx builds the node once and picks the parent.
+
+   Achromatic by rule (ADR-0024): a fact number separates itself with the mono
+   face, a tie says 동률 in words, and nothing in here reaches for a hue. Red
+   stays attack-only. */
+.staff-dock {
+  flex: none; display: flex; flex-direction: column; min-height: 0;
+  border-top: 1px solid var(--line-strong); background: var(--surface-chrome);
+}
+.staff-dock.is-open { height: 40dvh; }
+.staff-toggle {
+  flex: none; width: 100%; height: 32px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 14px; background: none; border: none; border-radius: 0;
+  color: var(--text-secondary); font-size: 12px; text-align: left;
+}
+.staff-toggle:hover { background: var(--surface-hover); }
+.staff-toggle .staff-title { font-weight: 500; color: var(--text-primary); }
+.staff-toggle .staff-sub { color: var(--text-muted); }
+.staff-toggle .staff-last {
+  margin-left: auto; color: var(--text-muted);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 46%;
+}
+.staff-toggle .staff-chev { flex: none; font-size: 9px; color: var(--text-muted); }
+
+.staff { flex: 1 1 auto; min-height: 0; display: flex; }
+.staff-queries {
+  flex: none; width: 264px; min-height: 0; overflow-y: auto; scrollbar-width: thin;
+  padding: 10px 12px 14px; border-right: 1px solid var(--line-strong);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.staff-queries-head { margin: 0 0 2px; font-size: 11px; color: var(--text-muted); }
+.staff-q { display: flex; flex-direction: column; gap: 4px; }
+.staff-q-run {
+  width: 100%; text-align: left; padding: 7px 10px; font-size: 12px;
+  background: var(--surface-raised); border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm); color: var(--text-primary);
+}
+.staff-q-run:hover { background: var(--surface-hover); }
+.staff-args { display: flex; flex-wrap: wrap; gap: 4px 8px; padding-left: 2px; }
+.staff-arg { display: flex; align-items: center; gap: 5px; min-width: 0; font-size: 11px; color: var(--text-muted); }
+.staff-arg > span { font-family: "IBM Plex Mono", ui-monospace, Consolas, monospace; flex: none; }
+.staff-arg select {
+  min-width: 0; max-width: 158px; padding: 3px 6px; font-size: 11px;
+  background: var(--surface-app); color: var(--text-secondary);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+}
+.staff-clear {
+  margin-top: auto; padding: 5px 9px; font-size: 11px; align-self: flex-start;
+  background: none; color: var(--text-muted); border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+}
+
+.staff-answers { flex: 1 1 auto; min-width: 0; min-height: 0; overflow-y: auto; scrollbar-width: thin; padding: 10px 14px 14px; }
+.staff-empty, .staff-err { margin: 0 0 10px; font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+.staff-err { color: var(--text-secondary); border-left: 2px solid var(--line-strong); padding-left: 10px; }
+
+.staff-ans { padding: 0 0 12px; margin-bottom: 12px; border-bottom: 1px solid var(--line-soft); }
+.staff-ans:last-child { border-bottom: none; margin-bottom: 0; }
+.staff-run { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 8px; }
+.staff-badge {
+  font-size: 10px; padding: 1px 6px; border-radius: 4px;
+  border: 1px solid var(--line-strong); color: var(--text-secondary);
+}
+.staff-run-label { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+.staff-qid, .staff-argchip {
+  font-family: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  font-size: 10px; color: var(--text-muted);
+  border: 1px solid var(--line-soft); border-radius: 3px; padding: 0 4px;
+}
+.staff-when { margin-left: auto; font-size: 10px; color: var(--text-muted); font-family: "IBM Plex Mono", ui-monospace, Consolas, monospace; }
+
+.staff-facts { list-style: none; margin: 0 0 10px; padding: 0; }
+.staff-facts li { display: flex; align-items: baseline; gap: 8px; padding: 2px 0; }
+.staff-fn {
+  flex: none; width: 26px;
+  font-family: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  font-size: 11px; color: var(--text-muted);
+}
+.staff-fact {
+  flex: 1 1 auto; min-width: 0; font-size: 12px; line-height: 1.6;
+  color: var(--text-secondary); text-align: left;
+}
+button.staff-fact {
+  background: none; border: none; border-radius: 0; padding: 0;
+  border-bottom: 1px dotted var(--line-strong); cursor: pointer;
+}
+button.staff-fact:hover { color: var(--text-primary); border-bottom-color: var(--text-primary); }
+
+/* A card whose basis (staff.js ctxT + graphFingerprint) no longer matches the
+   screen - the timeline moved, the graph was edited, or both. Reduced emphasis
+   on the whole card plus a caption line that names WHICH of the two changed,
+   never a colour (ADR-0024): red stays attack-only, and "stale" is not an
+   attack. The reason leads the caption upright so it reads as a label against
+   the italic sentence, which is the only weight difference in the block. */
+.staff-ans.is-stale { opacity: 0.72; }
+.staff-stale {
+  margin: 0 0 8px; font-size: 11px; font-style: italic; line-height: 1.5;
+  color: var(--text-muted); border-left: 2px dashed var(--line-strong); padding-left: 8px;
+}
+.staff-stale-why { font-style: normal; font-weight: 500; color: var(--text-secondary); }
+.staff-tie { margin: 0 0 6px; font-size: 11px; color: var(--text-muted); }
+.staff-table-wrap { overflow-x: auto; scrollbar-width: thin; }
+.staff-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.staff-table th, .staff-table td {
+  text-align: left; padding: 4px 8px 4px 0; white-space: nowrap;
+  border-bottom: 1px solid var(--line-soft); color: var(--text-secondary);
+}
+.staff-table th { color: var(--text-muted); font-weight: 400; }
+.staff-table td.is-tie { color: var(--text-primary); }
+.staff-tie-mark { font-style: normal; margin-left: 6px; font-size: 10px; color: var(--text-muted); }
+.staff-note { margin: 8px 0 0; font-size: 11px; line-height: 1.6; color: var(--text-muted); }
+
 /* ----------------------------------------------- compact: single column */
 
 @media (max-width: 860px) {
@@ -764,6 +881,37 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
   /* align-content, because .ev is a grid whose one row is baseline-aligned:
      without it the spare height all lands under the text. */
   .stream-body .ev { min-height: 34px; align-content: center; }
+
+  /* ------------------------------------------ compact: 참모 is a rail tab */
+  /* The bottom edge is already M1's sheet. A second fixed drawer would fight
+     it for that edge and for the thumb, so App hands the ONE StaffDock node
+     to Rail instead of to .app: `.staff-dock` does not exist at this width at
+     all, and the same panel opens inside the sheet under the 참모 tab. Two
+     instances would be two query logs writing one localStorage key. */
+  .staff { flex-direction: column; }
+  .staff-queries {
+    width: auto; min-height: 0; overflow: visible;
+    padding: 0 0 10px; margin-bottom: 12px;
+    border-right: none; border-bottom: 1px solid var(--line-strong);
+  }
+  /* the blanket 44px rule above already sizes these; the selects are not
+     buttons, so they say it themselves */
+  .staff-arg { width: 100%; }
+  .staff-arg select { flex: 1 1 auto; max-width: none; min-height: 32px; font-size: 12px; }
+  .staff-clear { margin-top: 4px; align-self: stretch; text-align: center; }
+  .staff-answers { overflow: visible; padding: 0; }
+  /* A fact is a full-width tap target here, so the dotted rule under it would
+     run the width of the sheet: the ref marks itself by being raised. */
+  button.staff-fact {
+    border-bottom: none; padding: 6px 8px; margin: -6px -8px;
+    background: var(--surface-raised); border-radius: var(--radius-sm);
+  }
+  .staff-facts li { align-items: flex-start; }
+  /* The caption can carry two reasons at once (clock AND graph), so at this
+     width it wraps into a short paragraph rather than a line - give it room
+     to breathe instead of letting it crowd the first fact. */
+  .staff-stale { line-height: 1.6; padding: 4px 0 4px 8px; }
+  .staff-when { display: none; }
 }
 
 /* --------------------------------------------- compact: no sparkline */

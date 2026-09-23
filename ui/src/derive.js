@@ -167,7 +167,9 @@ export function attackHops(steps, idx) {
   return { order, hops }
 }
 
-const CAUSE_KO_ROW = { attack: '공격', mobility: '기동', terrain: '지형', maintenance: '정비', unknown: '미상' }
+// One word per cause, shared by the event log and the staff query layer so a
+// sentence and a row never name the same cause differently.
+export const CAUSE_KO_ROW = { attack: '공격', mobility: '기동', terrain: '지형', maintenance: '정비', unknown: '미상' }
 
 // Wall clock for an offset in minutes, or the offset itself when the
 // scenario has no t0 (defnet-01's chain clock).
