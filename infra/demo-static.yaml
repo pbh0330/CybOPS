@@ -1,0 +1,226 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  MC-CyCOP demo copy - static stack. Private S3 bundle bucket read through a
+  CloudFront Origin Access Control, basic auth enforced by a CloudFront viewer
+  request function, standard access logs expiring after 90 days, and an
+  optional second origin for the model path that stays off until
+  LlmOriginDomain is set (AWS-1).
+
+Parameters:
+
+  BucketName:
+    Type: String
+    Description: >-
+      Globally unique name for the bundle bucket. The log bucket is named after
+      it with a -logs suffix.
+    MinLength: 3
+    MaxLength: 56
+    AllowedPattern: '^[a-z0-9][a-z0-9.-]*[a-z0-9]$'
+    ConstraintDescription: >-
+      Lowercase letters, digits, dots and hyphens only; must start and end with
+      a letter or digit. Max 56 characters so that the -logs suffix fits.
+
+  BasicAuthBase64:
+    Type: String
+    NoEcho: true
+    Description: >-
+      base64 of "user:pass". The operator generates this and passes it at stack
+      create time; it is never stored in the repository.
+    MinLength: 8
+    AllowedPattern: '^[A-Za-z0-9+/]+={0,2}$'
+    ConstraintDescription: Must be base64 of user:pass with no whitespace.
+
+  LlmOriginDomain:
+    Type: String
+    Default: ''
+    Description: >-
+      DNS name of the GPU origin. Empty means the model path is not created at
+      all - no second origin, no /api/llm/* cache behavior. AWS-1 fills this in.
+
+  LlmOriginSecret:
+    Type: String
+    NoEcho: true
+    Default: ''
+    Description: >-
+      Value of the secret header CloudFront attaches to requests it sends to
+      the GPU origin, so the origin can refuse anything that did not come
+      through CloudFront. Only meaningful when LlmOriginDomain is set.
+
+Conditions:
+
+  HasLlm: !Not [!Equals [!Ref LlmOriginDomain, '']]
+
+Resources:
+
+  BundleBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref BucketName
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  LogBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${BucketName}-logs'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      # CloudFront standard logging writes with an ACL, so the log bucket
+      # cannot be BucketOwnerEnforced the way the bundle bucket is.
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerPreferred
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          - Id: expire-access-logs
+            Status: Enabled
+            ExpirationInDays: 90
+
+  Oac:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub '${AWS::StackName}-oac'
+        Description: Read the demo bundle bucket from CloudFront only.
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  AuthFunction:
+    Type: AWS::CloudFront::Function
+    Properties:
+      Name: !Sub '${AWS::StackName}-basic-auth'
+      AutoPublish: true
+      FunctionConfig:
+        Comment: Basic auth gate for the MC-CyCOP demo copy.
+        Runtime: cloudfront-js-2.0
+      FunctionCode: !Sub |
+        function handler(event) {
+          var h = event.request.headers;
+          var want = 'Basic ${BasicAuthBase64}';
+          if (!h.authorization || h.authorization.value !== want) {
+            return {
+              statusCode: 401, statusDescription: 'Unauthorized',
+              headers: { 'www-authenticate': { value: 'Basic realm="MC-CyCOP demo"' } }
+            };
+          }
+          return event.request;
+        }
+
+  Distribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Comment: !Sub 'MC-CyCOP demo copy (${AWS::StackName})'
+        Enabled: true
+        HttpVersion: http2and3
+        IPV6Enabled: true
+        DefaultRootObject: index.html
+        Logging:
+          Bucket: !GetAtt LogBucket.DomainName
+          Prefix: cf/
+          IncludeCookies: false
+        # Origins is a list, so the conditional second origin is an !If over
+        # the whole list - it cannot sit inside the list.
+        Origins: !If
+          - HasLlm
+          - - Id: bundle
+              DomainName: !GetAtt BundleBucket.RegionalDomainName
+              OriginAccessControlId: !GetAtt Oac.Id
+              S3OriginConfig:
+                OriginAccessIdentity: ''
+            - Id: llm
+              DomainName: !Ref LlmOriginDomain
+              CustomOriginConfig:
+                OriginProtocolPolicy: http-only
+                HTTPPort: 80
+                OriginReadTimeout: 60
+              OriginCustomHeaders:
+                - HeaderName: X-Demo-Origin
+                  HeaderValue: !Ref LlmOriginSecret
+          - - Id: bundle
+              DomainName: !GetAtt BundleBucket.RegionalDomainName
+              OriginAccessControlId: !GetAtt Oac.Id
+              S3OriginConfig:
+                OriginAccessIdentity: ''
+        DefaultCacheBehavior:
+          TargetOriginId: bundle
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods: [GET, HEAD]
+          CachedMethods: [GET, HEAD]
+          Compress: true
+          # CachingOptimized
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+          FunctionAssociations:
+            - EventType: viewer-request
+              FunctionARN: !GetAtt AuthFunction.FunctionMetadata.FunctionARN
+        CacheBehaviors: !If
+          - HasLlm
+          - - PathPattern: /api/llm/*
+              TargetOriginId: llm
+              ViewerProtocolPolicy: https-only
+              AllowedMethods: [GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE]
+              CachedMethods: [GET, HEAD]
+              Compress: false
+              # CachingDisabled
+              CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+              # AllViewer
+              OriginRequestPolicyId: 216adef6-5c7f-47e4-b989-5492eb8d9cf2
+              FunctionAssociations:
+                - EventType: viewer-request
+                  FunctionARN: !GetAtt AuthFunction.FunctionMetadata.FunctionARN
+          - !Ref AWS::NoValue
+
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref BundleBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: AllowCloudFrontRead
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub '${BundleBucket.Arn}/*'
+            Condition:
+              StringEquals:
+                'AWS:SourceArn': !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${Distribution}'
+
+Outputs:
+
+  BucketName:
+    Description: Bundle bucket the deploy script syncs into.
+    Value: !Ref BundleBucket
+    Export:
+      Name: !Sub '${AWS::StackName}-BucketName'
+
+  DistributionId:
+    Description: Distribution the deploy script invalidates.
+    Value: !Ref Distribution
+    Export:
+      Name: !Sub '${AWS::StackName}-DistributionId'
+
+  DomainName:
+    Description: Hostname the reviewer opens.
+    Value: !GetAtt Distribution.DomainName
+    Export:
+      Name: !Sub '${AWS::StackName}-DomainName'
