@@ -56,6 +56,7 @@ $gates = @(
      args = @{ Bundle = (Join-Path $root 'ui\dist') } },
   @{ name = 'bundle: hosted';     tier = 'offline'; script = 'Test-BundleConfig.ps1';
      args = @{ Bundle = (Join-Path $root 'ui\dist-hosted') } },
+  @{ name = 'proxy allowlist';    tier = 'offline'; script = 'Test-ProxyAllowlist.ps1';   args = @{} },
   @{ name = 'optc manifest';      tier = 'data';    script = 'Write-OptcManifestLog.ps1'; args = @{ Check = $true } },
   @{ name = 'briefing citations'; tier = 'model';   script = 'Test-BriefingCitations.ps1'; args = @{} }
 )
