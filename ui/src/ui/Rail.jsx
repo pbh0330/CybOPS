@@ -617,6 +617,12 @@ export default function Rail({
   const cuts = cutRows(graph, step).length
   const acts = actionRows(graph, step).length
   const counts = { cuts, actions: acts }
+  // A stack survives a delete (App only clears it from the inspector's own
+  // delete button, not the eraser tool) and it survives a rotate to desktop
+  // (App never clears it when compact goes false). Filtering against the
+  // live asset list and gating on compact here, at the one place that
+  // renders it, means neither caller has to get both right.
+  const liveStack = compact ? (stack || []).filter((id) => (graph?.assets || []).some((a) => a.id === id)) : []
 
   return (
     <aside className="rail">
@@ -649,10 +655,10 @@ export default function Rail({
                 it hands the ambiguity up instead of guessing: this is the list
                 of everything that shared the tap. App only ever fills it on a
                 narrow screen - a mouse does not need it. */}
-            {stack && stack.length > 1 && (
+            {liveStack.length > 1 && (
               <div className="stack-pick">
-                <div className="stack-pick-head">이 위치에 자산 {stack.length}</div>
-                {stack.map((id) => (
+                <div className="stack-pick-head">이 위치에 자산 {liveStack.length}</div>
+                {liveStack.map((id) => (
                   <button
                     key={id} type="button"
                     className={id === selectedData?.id ? 'on' : ''}

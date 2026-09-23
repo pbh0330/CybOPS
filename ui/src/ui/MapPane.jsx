@@ -338,6 +338,15 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
           // compact only: a tap toggles the same text the desktop `title`
           // shows on hover, since a touch never opens a native tooltip
           if (compactRef.current) {
+            // Only one label open at a time: a second tap on an already-open
+            // marker must not leave a stale label lit on some other marker
+            // it never revisits (and, without this, hides its own label
+            // while re-selecting it - the toggle below still runs after).
+            for (const [otherId, om] of markers.current) {
+              if (otherId === r.id) continue
+              const oinfo = om.getElement().querySelector('.map-mark-info')
+              if (oinfo) oinfo.hidden = true
+            }
             const info = el.querySelector('.map-mark-info')
             if (info) info.hidden = !info.hidden
           }
@@ -387,7 +396,7 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
           Object.assign(info.style, {
             position: 'absolute', left: '50%', top: '64px', transform: 'translateX(-50%)',
             whiteSpace: 'nowrap', background: 'rgba(7,10,16,.85)', padding: '2px 6px',
-            borderRadius: '3px', margin: '0', zIndex: '1',
+            borderRadius: '3px', margin: '0', zIndex: '1', pointerEvents: 'none',
           })
           el.appendChild(info)
         }

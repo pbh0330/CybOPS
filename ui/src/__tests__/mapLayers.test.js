@@ -91,4 +91,11 @@ describe('stackAt', () => {
   it('is symmetric: B sees A too', () => {
     expect(stackAt(pts, 'B', 22)).toEqual(['A', 'B'])
   })
+  it('sorts the ids rather than returning input order', () => {
+    const unsorted = [
+      { id: 'Z', x: 100, y: 100 },
+      { id: 'A', x: 108, y: 104 },   // 9px 거리
+    ]
+    expect(stackAt(unsorted, 'Z', 22)).toEqual(['A', 'Z'])
+  })
 })
