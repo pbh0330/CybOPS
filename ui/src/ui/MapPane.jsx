@@ -33,7 +33,7 @@ function firstSymbolLayer(style) {
 // Everything else - lines, fills, DOM markers - draws fine without glyphs.
 const FALLBACK_STYLE = { version: 8, sources: {}, layers: [{ id: 'background', type: 'background', paint: { 'background-color': '#070a10' } }] }
 
-export default function MapPane({ graph, step, steps, idx, selected, onSelect, hidden, overlay, editable, onMove }) {
+export default function MapPane({ graph, step, steps, idx, selected, onSelect, hidden, overlay, editable, onMove, compact }) {
   const boxRef = useRef(null)
   const mapRef = useRef(null)
   const markers = useRef(new Map())
@@ -50,6 +50,12 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
   // than the closure it was born in (which would be the first render's).
   const moveRef = useRef(onMove)
   moveRef.current = onMove
+  // The marker's `title` is a hover tooltip - a tap never opens it. The click
+  // handler is registered once, at creation, so this has to be a ref like
+  // moveRef/selectRef: read fresh at tap time, not the value the marker was
+  // born with.
+  const compactRef = useRef(compact)
+  compactRef.current = compact
   // Same reason as moveRef: the marker click handler is registered once, at
   // creation, so it must not keep the onSelect it was born with - App's
   // onSelect now closes over `compact`, which changes on a rotate.
@@ -306,7 +312,17 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
         // a drag ends with a click on the same element; that click must not
         // reselect (or, in link mode, wire) what was only being moved
         let dragged = false
-        el.addEventListener('click', (e) => { e.stopPropagation(); if (dragged) { dragged = false; return } selectRef.current(r.id, stackForTap(r.id)) })
+        el.addEventListener('click', (e) => {
+          e.stopPropagation()
+          if (dragged) { dragged = false; return }
+          // compact only: a tap toggles the same text the desktop `title`
+          // shows on hover, since a touch never opens a native tooltip
+          if (compactRef.current) {
+            const info = el.querySelector('.map-mark-info')
+            if (info) info.hidden = !info.hidden
+          }
+          selectRef.current(r.id, stackForTap(r.id))
+        })
         m = new maplibregl.Marker({ element: el, anchor: 'center', draggable: !!editable }).setLngLat([r.lon, r.lat]).addTo(map)
         m.on('dragstart', () => { dragged = true })
         m.on('dragend', () => {
@@ -336,10 +352,32 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
       if (uri && img.src !== uri) img.src = uri
       const n = assetName(graph, r.id)
       el.querySelector('.map-mark-label').textContent = n.ko
-      el.title = `${n.ko} · ${r.id} · ${Math.round(r.z)} m`
+      const infoText = `${n.ko} · ${r.id} · ${Math.round(r.z)} m`
+      el.title = infoText
+      // desktop reads infoText through the native `title` above and gets no
+      // extra DOM; compact only, so a phone never renders a node the tap
+      // handler could not reach otherwise (reuses .rail-caption's type scale)
+      if (compact) {
+        let info = el.querySelector('.map-mark-info')
+        if (!info) {
+          info = document.createElement('div')
+          info.className = 'map-mark-info rail-caption'
+          info.hidden = true
+          Object.assign(info.style, {
+            position: 'absolute', left: '50%', top: '64px', transform: 'translateX(-50%)',
+            whiteSpace: 'nowrap', background: 'rgba(7,10,16,.85)', padding: '2px 6px',
+            borderRadius: '3px', margin: '0', zIndex: '1',
+          })
+          el.appendChild(info)
+        }
+        info.textContent = infoText
+      } else {
+        const info = el.querySelector('.map-mark-info')
+        if (info) info.remove()
+      }
     }
     for (const [id, m] of markers.current) if (!seen.has(id)) { m.remove(); markers.current.delete(id) }
-  }, [graph, step, steps, idx, t, georef, ready, selected, onSelect, overlay, editable])
+  }, [graph, step, steps, idx, t, georef, ready, selected, onSelect, overlay, editable, compact])
 
   // One flash per adjudicated turn, on the target's marker. Declared after the
   // marker effect so the markers exist when it runs. The turn is recorded

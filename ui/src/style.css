@@ -709,6 +709,17 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
   .timeline { height: 84px; gap: 12px; padding: 0 12px; }
   .clock { min-width: 96px; }
   .clock-time { font-size: 22px; }
+
+  /* ---------------------------------------------- compact: 44px targets */
+  /* Measured before touching anything (390x844, DevTools): the rail's own
+     tabs were 42.4px, action/build req-btn ran 25-33px, and the event
+     stream's log rows - buttons too, each one seeks the replay - were the
+     worst at 22.66px. None of that matches "already 44px"; only
+     .tb-menu/.stack-pick had an explicit min-height already. One rule
+     across the whole rail/sheet/inspect surface, not case by case. */
+  .rail button, .sheet button, .stack-pick button, .inspect button {
+    min-height: 44px;
+  }
 }
 
 /* --------------------------------------------- compact: no sparkline */

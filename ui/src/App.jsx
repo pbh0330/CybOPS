@@ -445,6 +445,7 @@ export default function App() {
       requests={requests} onRequest={onRequest}
       selectedData={selectedData} onToast={setToast} mode={mode}
       stack={stack} onPick={(id) => onSelect(id, stack)}
+      onDeselect={() => onSelect(null)} compact={compact}
       editor={editorRef} rules={rules} sandbox={isSandbox}
       payload={payload} idx={idx} onSeekIdx={(i) => setIdx(i)}
       wargameSlot={mode === 'wargame' ? (
@@ -528,6 +529,7 @@ export default function App() {
                 selected={selectedData?.id || null} onSelect={onSelect} hidden={!isGeo}
                 overlay={overlay}
                 editable={mode === 'edit'}
+                compact={compact}
                 onMove={(id, x, y) => editorRef.current && editorRef.current.moveAsset(id, x, y)}
               />
             ) : (
