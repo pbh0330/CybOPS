@@ -1,14 +1,17 @@
 import { describe, it, expect } from 'vitest'
 import replay from '../../public/data/tacnet-01.replay.json'
 import { computeStep } from '../derive.js'
-import { ask } from '../staff.js'
+import { ask, graphFingerprint } from '../staff.js'
 import {
   LOG_MAX, storeKey, tieRuns, selectableIds, optionsOf, initialArgs, pushLog, readLog,
+  staleOf, staleWhy, staleText,
 } from '../ui/StaffDock.jsx'
 
 const g = replay.graph
 const s = computeStep({ payload: replay, graph: g, idx: 12 })
 const observe = { graph: g, step: s, method: replay.method || 'weighted' }
+// 시계를 건드리지 않는 그래프 편집 - 교전장에서 사람이 실제로 하는 일이다.
+const cutTocSrv = { ...g, links: g.links.filter((l) => l.a !== 'TOC-SRV' && l.b !== 'TOC-SRV') }
 
 describe('storeKey', () => {
   it('is per scenario and not part of the engagement history', () => {
@@ -123,7 +126,74 @@ describe('the log', () => {
     expect(readLog('not json')).toEqual([])
     expect(readLog('{"query":"x"}')).toEqual([])
     expect(readLog(JSON.stringify([{ query: 'state_summary' }, null, 7]))).toEqual([])
-    const ok = JSON.stringify([{ query: 'state_summary', facts: [] }])
+    const ok = JSON.stringify([{ query: 'state_summary', facts: [], at: 1 }])
     expect(readLog(ok).length).toBe(1)
+  })
+
+  // `at` 은 카드의 React key 이자 목록의 유일한 순서다. 숫자가 아니면 그런
+  // 카드가 전부 key={undefined} 로 그려진다 - 예전 빌드가 쓴 기록이 그랬다.
+  it('requires a numeric at, so no card ends up without a key', () => {
+    const noAt = JSON.stringify([{ query: 'state_summary', facts: [] }])
+    expect(readLog(noAt)).toEqual([])
+    expect(readLog(JSON.stringify([{ query: 'state_summary', facts: [], at: '1' }]))).toEqual([])
+    expect(readLog(JSON.stringify([{ query: 'state_summary', facts: [], at: null }]))).toEqual([])
+    const mixed = JSON.stringify([
+      { query: 'state_summary', facts: [], at: 2 },
+      { query: 'state_summary', facts: [] },
+      { query: 'state_summary', facts: [], at: 1 },
+    ])
+    expect(readLog(mixed).map((a) => a.at)).toEqual([2, 1])
+  })
+})
+
+// 카드가 아직 화면과 같은 기준인가. 시각과 그래프 둘 다 봐야 한다 - 시각만
+// 보던 구현은 교전장에서 흔한 실패를 통째로 놓쳤다.
+describe('staleOf', () => {
+  const fp = graphFingerprint(g)
+  const fresh = ask(observe, 'state_summary', {})
+
+  it('says nothing when both the clock and the graph still match', () => {
+    expect(staleOf(fresh, fresh.t, fp)).toEqual({ time: false, graph: false, unknown: false, stale: false })
+  })
+
+  it('marks a seek and names the clock as what moved', () => {
+    const st = staleOf(fresh, fresh.t + 60, fp)
+    expect(st.stale).toBe(true)
+    expect(st.time).toBe(true)
+    expect(st.graph).toBe(false)
+    expect(staleWhy(st)).toBe('기준 시각이 다름')
+    expect(staleText(st, 't+180', 't+240')).toContain('t+240')
+  })
+
+  it('marks a graph edit at an UNCHANGED clock - the case t alone could not see', () => {
+    const edited = ask({ graph: cutTocSrv, step: s }, 'state_summary', {})
+    expect(edited.t).toBe(fresh.t)                    // 시계는 그대로였다
+    const st = staleOf(fresh, fresh.t, graphFingerprint(cutTocSrv))
+    expect(st.stale).toBe(true)
+    expect(st.time).toBe(false)
+    expect(st.graph).toBe(true)
+    expect(staleWhy(st)).toBe('기준 그래프가 다름')
+    expect(staleText(st, 't+180', 't+180')).toContain('편집')
+  })
+
+  it('names both when both moved', () => {
+    const st = staleOf(fresh, fresh.t + 60, graphFingerprint(cutTocSrv))
+    expect(st).toEqual({ time: true, graph: true, unknown: false, stale: true })
+    expect(staleWhy(st)).toBe('기준 시각과 그래프가 모두 다름')
+    const text = staleText(st, 't+180', 't+240')
+    expect(text).toContain('t+240')
+    expect(text).toContain('편집')
+  })
+
+  it('does not trust a card from an older build, and says it cannot check rather than claiming a change', () => {
+    const legacy = { query: 'state_summary', facts: [], at: 1 }
+    for (const a of [legacy, { ...legacy, t: fresh.t }, { ...legacy, gfp: fp }]) {
+      const st = staleOf(a, fresh.t, fp)
+      expect(st.stale).toBe(true)
+      expect(st.unknown).toBe(true)
+      expect(staleWhy(st)).toBe('기준을 확인할 수 없음')
+      expect(staleText(st, '알 수 없는 시각', 't+180')).toContain('확인할 수 없다')
+    }
+    expect(staleOf(null, fresh.t, fp).stale).toBe(true)
   })
 })

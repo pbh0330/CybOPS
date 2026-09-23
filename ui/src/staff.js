@@ -73,6 +73,47 @@ export function ctxT(ctx) {
   return s.t === undefined || s.t === null ? -1 : Number(s.t)
 }
 
+// --- what graph is it -----------------------------------------------------
+//
+// The clock is only half of an answer's basis. On the sandbox board the graph
+// itself is edited under the panel (ADR-0027), and an edit at a FIXED t moves
+// every number: cutting the links on TOC-SRV takes M-C2 from 32.1% to 89.3%
+// with t unchanged at 180. A card stamped with t alone cannot see that, so it
+// kept reading 32.1% and looked current - exactly the confident-but-stale
+// claim ADR-0009 exists to prevent.
+//
+// So `ask` stamps a second thing: a fingerprint of the structure the engine's
+// numbers actually depend on. Counts are not enough - moving one end of a link
+// leaves 13 assets and 12 links - so the digest is built from identity, not
+// size: sorted asset ids, sorted `a|b|bearer` link triples, and the sorted
+// provided_by / requires edge pairs. Attributes that no engine path reads
+// (names, sites, coordinates) are left out on purpose; renaming an asset does
+// not make an answer wrong.
+//
+// FNV-1a over the joined string. The graph is ~13 assets, so this is free and
+// runs on every render of the dock.
+function strHash(s) {
+  let h = 0x811c9dc5
+  for (let i = 0; i < s.length; i += 1) {
+    h ^= s.charCodeAt(i)
+    h = Math.imul(h, 0x01000193)
+  }
+  return (h >>> 0).toString(36)
+}
+
+export function graphFingerprint(graph) {
+  const g = graph || {}
+  const ids = (g.assets || []).map((a) => (a && a.id) || '').slice().sort()
+  const links = (g.links || [])
+    .map((l) => `${(l && l.a) || ''}|${(l && l.b) || ''}|${(l && l.bearer) || ''}`)
+    .slice().sort()
+  const edge = (key) => ((g.edges && g.edges[key]) || [])
+    .map((e) => `${(e && e.from) || ''}>${(e && e.to) || ''}`)
+    .slice().sort()
+  const parts = [ids, links, edge('provided_by'), edge('requires')]
+  return strHash(parts.map((p) => p.join(',')).join(';'))
+}
+
 function baseOf(ctx) {
   const G = ctx && ctx.game
   const t = ctxT(ctx)
@@ -338,7 +379,17 @@ export const QUERIES = [
       } else {
         const { compromise, t, method } = baseOf(ctx)
         const cost = costFn(g, compromise, t, method)
-        pair = ids.map((id, i) => ({ id, cost: cost(id), blocks: null, gainBlocked: null, net: null, rank: i + 1 }))
+        // 순위 is cost ascending, the same thing it means in containment_top's
+        // observe branch - NOT the order the two arguments arrived in. It used
+        // to be `i + 1`, which labelled whichever asset was passed as `aId`
+        // "순위 1" even when it was the expensive one (TOC-SRV +27.7%p over
+        // BN-SRV +0.0%p), and flipped when the arguments were swapped. A rank
+        // that depends on how the question was typed is not a rank.
+        const priced = ids.map((id) => ({ id, cost: cost(id), blocks: null, gainBlocked: null, net: null }))
+        // A tie keeps argument order so the number is stable; the table then
+        // shows it as 동률 rather than as a winner (StaffDock `tieRuns`).
+        const order = priced.slice().sort((x, y) => (x.cost - y.cost) || (ids.indexOf(x.id) - ids.indexOf(y.id)))
+        pair = priced.map((r) => ({ ...r, rank: order.findIndex((o) => o.id === r.id) + 1 }))
       }
 
       const facts = containmentFacts(pair, g, pair.length)
@@ -353,7 +404,7 @@ export const QUERIES = [
       const note = [
         scored
           ? '두 값 모두 game.staffTable 의 행이다 - 비용 정의는 game.js isolationCost 하나뿐이다.'
-          : '관측 모드 - 공격자가 없어 막는 공격 수와 순이득은 없고, 비교 기준은 임무 비용뿐이다.',
+          : '관측 모드 - 공격자가 없어 막는 공격 수와 순이득은 없고, 비교 기준은 임무 비용뿐이다. 순위는 임무 비용 오름차순이지 인자 순서가 아니다 - A 로 넣었다고 1위가 되지 않는다.',
         missing.length ? `${missing.join(', ')} 은 이미 격리돼 있어 추가 비용이 없다.` : '',
       ].filter(Boolean).join(' ')
 
@@ -477,9 +528,12 @@ export function ask(ctx, queryId, args) {
     // wargame panel, never from here (ADR-0004); S3 wires that up.
     actions: [],
     note: r.note || null,
-    // The scenario clock this answer's numbers were computed at (ctxT), so a
-    // logged card can be checked against the screen later, not just timestamped
-    // in wall-clock time.
+    // The basis of this answer's numbers, so a logged card can be checked
+    // against the screen later rather than just timestamped in wall-clock
+    // time: the scenario clock it was computed at (ctxT) AND the shape of the
+    // graph it was computed on (graphFingerprint). Either one moving is enough
+    // to make the card's figures ones the engine would no longer produce.
     t: ctxT(ctx),
+    gfp: graphFingerprint(ctx.graph),
   }
 }

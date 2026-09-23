@@ -2,10 +2,10 @@ import { describe, it, expect } from 'vitest'
 import replay from '../../public/data/tacnet-01.replay.json'
 import { computeStep, pct } from '../derive.js'
 import { runChain } from '../engine.js'
-import { startGame, staffTable, weightedOf } from '../game.js'
+import { startGame, staffTable, weightedOf, compromiseOf } from '../game.js'
 import { readiness } from '../sandbox.js'
 import { readinessFacts } from '../facts.js'
-import { QUERIES, catalog, needsMet, validate, ask } from '../staff.js'
+import { QUERIES, catalog, needsMet, validate, ask, ctxT, graphFingerprint } from '../staff.js'
 
 const g = replay.graph
 // idx 12: t=180, CO2-VEH 침해 0.5, L-VHF-CO1 지형 단절. 관측 모드이므로
@@ -22,10 +22,20 @@ const chainOf = (comp) => runChain(g, comp, { t: T, method: METHOD, causes: 'all
 const base = weightedOf(g, chainOf(s.compromise).mission)
 const observeCost = (id) => Number((weightedOf(g, chainOf({ ...s.compromise, [id]: 1 }).mission) - base).toFixed(6))
 
+// 편집기가 실제로 하는 두 가지 그래프 편집. 둘 다 시계는 건드리지 않는다.
+// cutTocSrv - TOC-SRV 에 붙은 링크를 전부 끊는다 (자산 수는 그대로, 링크 수는 준다).
+// movedLink - 링크 한 개의 끝만 옮긴다 (자산 수도 링크 수도 그대로다).
+const cutTocSrv = { ...g, links: g.links.filter((l) => l.a !== 'TOC-SRV' && l.b !== 'TOC-SRV') }
+const movedLink = { ...g, links: g.links.map((l, i) => (i === 0 ? { ...l, b: 'TOC-ESX' } : l)) }
+const missionValue = (a, id) => a.facts.find((f) => f.ref && f.ref.kind === 'mission' && f.ref.id === id && f.unit === '%').value
+
 describe('catalog', () => {
   it('leaves out a game-only query when there is no game, and admits it when there is', () => {
     // S1 의 6종에는 needs:'game' 이 아직 없다. 게이트 자체가 도는지를 본다 -
     // S3 의 counterfactual/autoplay 가 이 문 뒤에 선다.
+    // 그래서 아래 마지막 단언은 지금 구조적으로 `0 === 0` 이다. 실질 검사가
+    // 아니라는 것을 알고 남겨 둔다 - S3 가 교전 전용 질의를 넣는 순간 저절로
+    // 실질 검사가 되고, 그때 이 줄을 새로 쓰지 않아도 된다.
     expect(needsMet(observe, 'game')).toBe(false)
     expect(needsMet(inGame, 'game')).toBe(true)
     expect(catalog(observe).some((q) => q.needs === 'game')).toBe(false)
@@ -187,6 +197,24 @@ describe('ask - compare_defense', () => {
     expect(fb.value).toBeCloseTo(observeCost('BN-SRV'), 9)
     expect(a.table.rows.map((r) => r.id)).toEqual(['TOC-SRV', 'BN-SRV'])
   })
+  // 결함이었다: 관측 모드의 순위가 `i + 1` 이라 aId 로 넣은 쪽이 무조건 1위였다.
+  // TOC-SRV(+27.7%p) 를 A 로 넣으면 비싼 쪽이 "순위 1" 로 나왔고, 인자를 바꾸면
+  // 순위도 따라 뒤집혔다. 타이핑 순서에 따라 바뀌는 것은 순위가 아니다.
+  it('ranks the observe-mode pair by cost, not by which argument it arrived in', () => {
+    expect(observeCost('TOC-SRV')).toBeGreaterThan(observeCost('BN-SRV'))
+    const rankOf = (a, id) => a.table.rows.find((r) => r.id === id).cells[0]
+    for (const a of [
+      ask(observe, 'compare_defense', { aId: 'TOC-SRV', bId: 'BN-SRV' }),
+      ask(observe, 'compare_defense', { aId: 'BN-SRV', bId: 'TOC-SRV' }),
+    ]) {
+      expect(rankOf(a, 'BN-SRV')).toBe(1)
+      expect(rankOf(a, 'TOC-SRV')).toBe(2)
+      expect(a.facts.find((f) => f.ref && f.ref.id === 'BN-SRV' && f.unit === '%p').text).toContain('순위 1')
+    }
+    // 표는 물어본 순서 그대로 둔다 - 순위만 비용이 정한다.
+    expect(ask(observe, 'compare_defense', { aId: 'TOC-SRV', bId: 'BN-SRV' }).table.rows.map((r) => r.id))
+      .toEqual(['TOC-SRV', 'BN-SRV'])
+  })
   it('reads the verdict off game.staffTable in a game', () => {
     const rows = staffTable(g, G)
     const a = ask(inGame, 'compare_defense', { aId: rows[0].id, bId: rows[rows.length - 1].id })
@@ -206,6 +234,108 @@ describe('ask - readiness_gap', () => {
     const broken = { ...g, edges: { ...g.edges, provided_by: g.edges.provided_by.filter((e) => e.from !== 'S-BFT') } }
     const a = ask({ graph: broken, step: s, sandbox: true }, 'readiness_gap', {})
     expect(a.table.rows.some((r) => r.id === 'S-BFT')).toBe(true)
+  })
+})
+
+// 어느 ctx 에서 숫자를 뽑는가. 셋 다 "리플레이 스텝을 그대로 읽지 않는다"는
+// 같은 규칙의 세 지점이고, 셋 다 돌연변이 검사에서 살아남았던 가지다.
+describe('what the engine is asked about', () => {
+  it('takes the clock from the game, not from the step it was handed (ctxT)', () => {
+    expect(G.cfg.t).not.toBe(s.t)              // 150 vs 180
+    expect(ctxT(inGame)).toBe(G.cfg.t)
+    expect(ctxT(observe)).toBe(s.t)
+    expect(ctxT({ graph: g })).toBe(-1)
+    // 스탬프도 같은 값이어야 한다 - 교전 중 카드를 리플레이 시계로 검사하면
+    // 안 낡은 카드가 낡았다고 나온다.
+    expect(ask(inGame, 'state_summary', {}).t).toBe(G.cfg.t)
+    expect(ask(observe, 'state_summary', {}).t).toBe(s.t)
+  })
+
+  it('takes the compromise map from the game state, not from the step (baseOf)', () => {
+    // 같은 t=150 에서 둘을 돌린다 - 시계를 맞춰 두면 남는 차이는 침해 지도뿐이고,
+    // 그 차이가 답에 실리는지만 본다. 교전은 CO2-VEH 0.8, 리플레이 스텝은 0.5 다.
+    const atGameT = (comp) => runChain(g, comp, { t: G.cfg.t, method: G.cfg.method || 'weighted', causes: 'all' }).mission
+    const fromGame = atGameT(compromiseOf(G))
+    const fromStep = atGameT(s.compromise)
+    expect(fromGame['M-C2']).not.toBeCloseTo(fromStep['M-C2'], 6)   // 0.386 vs 0.321
+
+    const a = ask(inGame, 'mission_why', { missionId: 'M-C2' })
+    expect(missionValue(a, 'M-C2')).toBeCloseTo(fromGame['M-C2'], 9)
+    expect(missionValue(a, 'M-C2')).not.toBeCloseTo(fromStep['M-C2'], 6)
+
+    // 격리 what-if 도 같은 기준 위에서 돈다.
+    const after = ask(inGame, 'asset_impact', { assetId: 'TOC-SRV' })
+    const isoGame = atGameT({ ...compromiseOf(G), 'TOC-SRV': 1 })
+    const now = after.facts.find((x) => x.ref && x.ref.kind === 'mission' && x.ref.id === 'M-C2' && x.unit === '%p')
+    expect(now.value).toBeCloseTo(isoGame['M-C2'] - fromGame['M-C2'], 9)
+    expect(after.table.rows.find((r) => r.id === 'M-C2').cells).toContain(pct(fromGame['M-C2']))
+  })
+
+  it('recomputes the view instead of reading the step it was handed (viewOf)', () => {
+    // 스텝의 compromise 는 그대로 두고 파생 숫자만 거짓으로 채운다. 숫자를
+    // 스텝에서 읽는 구현이면 0.999 가 그대로 답에 실린다.
+    const poisoned = {
+      ...s,
+      mission: Object.fromEntries(g.missions.map((m) => [m.id, 0.999])),
+      task: Object.fromEntries(g.tasks.map((t) => [t.id, 0.999])),
+      service: Object.fromEntries(g.services.map((x) => [x.id, 0.999])),
+    }
+    const a = ask({ graph: g, step: poisoned }, 'state_summary', {})
+    for (const m of g.missions) {
+      expect(missionValue(a, m.id)).toBeCloseTo(chainOf(s.compromise).mission[m.id], 9)
+      expect(missionValue(a, m.id)).not.toBeCloseTo(0.999, 3)
+    }
+    // 같은 compromise 에서는 오염된 스텝이든 원본 스텝이든 답이 같다.
+    expect(a.facts).toEqual(ask(observe, 'state_summary', {}).facts)
+  })
+})
+
+// 낡음은 시각만이 아니다. 교전장에서는 시계를 그대로 둔 채 그래프를 고치는
+// 것이 일상이고, 그때 모든 숫자가 움직인다 (ADR-0027, ADR-0009).
+describe('graphFingerprint', () => {
+  it('is stable for the same graph, and ignores what no engine path reads', () => {
+    expect(graphFingerprint(g)).toBe(graphFingerprint(g))
+    expect(graphFingerprint({ ...g, links: g.links.slice().reverse() })).toBe(graphFingerprint(g))
+    expect(graphFingerprint({ ...g, assets: g.assets.slice().reverse() })).toBe(graphFingerprint(g))
+    expect(graphFingerprint({ ...g, assets: g.assets.map((a) => ({ ...a, site: '다른 곳' })) })).toBe(graphFingerprint(g))
+    expect(graphFingerprint({ ...g, name: '다른 이름' })).toBe(graphFingerprint(g))
+  })
+
+  it('changes when one link moves, though every count stays the same', () => {
+    expect(movedLink.assets.length).toBe(g.assets.length)
+    expect(movedLink.links.length).toBe(g.links.length)
+    expect(graphFingerprint(movedLink)).not.toBe(graphFingerprint(g))
+  })
+
+  it('changes when a link is cut, an asset is removed, or a dependency edge is dropped', () => {
+    expect(graphFingerprint(cutTocSrv)).not.toBe(graphFingerprint(g))
+    expect(graphFingerprint({ ...g, assets: g.assets.slice(1) })).not.toBe(graphFingerprint(g))
+    expect(graphFingerprint({ ...g, links: g.links.map((l, i) => (i === 0 ? { ...l, bearer: 'vhf' } : l)) })).not.toBe(graphFingerprint(g))
+    expect(graphFingerprint({ ...g, edges: { ...g.edges, provided_by: g.edges.provided_by.slice(1) } })).not.toBe(graphFingerprint(g))
+    expect(graphFingerprint({ ...g, edges: { ...g.edges, requires: g.edges.requires.slice(1) } })).not.toBe(graphFingerprint(g))
+  })
+
+  it('is a short string for an empty or absent graph rather than a throw', () => {
+    expect(typeof graphFingerprint(null)).toBe('string')
+    expect(graphFingerprint(undefined)).toBe(graphFingerprint({}))
+    expect(graphFingerprint({})).toBe(graphFingerprint({ assets: [], links: [], edges: {} }))
+  })
+})
+
+describe('ask - the basis it stamps on every answer', () => {
+  it('stamps both the clock and the graph', () => {
+    const a = ask(observe, 'mission_why', { missionId: 'M-C2' })
+    expect(a.t).toBe(s.t)
+    expect(a.gfp).toBe(graphFingerprint(g))
+    expect(ask(inSandbox, 'readiness_gap', {}).gfp).toBe(graphFingerprint(g))
+  })
+
+  it('moves the graph stamp when an edit moves the numbers at an unchanged clock', () => {
+    const before = ask(observe, 'mission_why', { missionId: 'M-C2' })
+    const after = ask({ graph: cutTocSrv, step: s }, 'mission_why', { missionId: 'M-C2' })
+    expect(after.t).toBe(before.t)                       // 시계는 180 그대로
+    expect(missionValue(after, 'M-C2')).toBeGreaterThan(missionValue(before, 'M-C2') + 0.1)
+    expect(after.gfp).not.toBe(before.gfp)               // 그래서 이것이 유일한 단서다
   })
 })
 

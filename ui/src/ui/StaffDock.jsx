@@ -21,7 +21,7 @@
 // writers for the same localStorage key.
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { catalog, ask, ctxT } from '../staff.js'
+import { catalog, ask, ctxT, graphFingerprint } from '../staff.js'
 import { timeLabel } from '../derive.js'
 import { assetName } from '../labels.js'
 
@@ -132,8 +132,55 @@ export function readLog(raw) {
   try { parsed = JSON.parse(raw) } catch { return [] }
   if (!Array.isArray(parsed)) return []
   return parsed
-    .filter((a) => a && typeof a.query === 'string' && Array.isArray(a.facts))
+    // `at` is the React key for the card AND the only thing that orders the
+    // list, so an entry without a numeric one is not an Answer this component
+    // can render - it would give every such card key={undefined}.
+    .filter((a) => a && typeof a.query === 'string' && Array.isArray(a.facts) && typeof a.at === 'number')
     .slice(0, LOG_MAX)
+}
+
+// --- is this card still current? -----------------------------------------
+//
+// An answer carries the basis its numbers were computed on: `t` (staff.js
+// `ctxT`) and `gfp` (staff.js `graphFingerprint`). `curT`/`curFp` are those
+// same two readings taken live, right now, off the ctx the dock is rendering
+// with - one definition each, so the two readings cannot drift apart.
+//
+// BOTH have to match. The clock alone was the old check and it missed the case
+// the sandbox makes routine: edit the graph without touching the timeline and
+// every number moves while `t` sits still (ADR-0027, ADR-0009).
+//
+// A card missing either stamp (written by an older build) has no checkable
+// basis, so it reads as stale rather than being quietly trusted - and says
+// that is why, instead of claiming a change it cannot actually see.
+export function staleOf(answer, curT, curFp) {
+  const a = answer || {}
+  const hasT = a.t !== undefined && a.t !== null
+  const hasFp = typeof a.gfp === 'string' && a.gfp !== ''
+  return {
+    time: !hasT || Number(a.t) !== curT,
+    graph: !hasFp || a.gfp !== curFp,
+    unknown: !hasT || !hasFp,
+    stale: !hasT || !hasFp || Number(a.t) !== curT || a.gfp !== curFp,
+  }
+}
+
+// "이 답은 낡았다" without a reason is barely better than nothing: the reader
+// cannot tell whether to seek the timeline back or to re-run the query.
+export function staleWhy(st) {
+  if (st.unknown) return '기준을 확인할 수 없음'
+  if (st.time && st.graph) return '기준 시각과 그래프가 모두 다름'
+  return st.time ? '기준 시각이 다름' : '기준 그래프가 다름'
+}
+
+export function staleText(st, ansLabel, curLabel) {
+  if (st.unknown) {
+    return `이 카드는 기준 시각·그래프를 남기지 않은 예전 기록이라, 지금 화면(${curLabel})과 같은 기준으로 계산됐는지 확인할 수 없다.`
+  }
+  const out = []
+  if (st.time) out.push(`이 답은 ${ansLabel} 기준이고, 화면은 지금 ${curLabel} 이다.`)
+  if (st.graph) out.push('이 답이 나온 뒤 그래프가 편집됐다. 같은 시각이라도 지금 다시 물으면 다른 숫자가 나온다.')
+  return out.join(' ')
 }
 
 function ArgControl({ spec, value, onChange, graph }) {
@@ -200,22 +247,18 @@ function AnswerTable({ table }) {
   )
 }
 
-// A card's numbers were computed at `answer.t` (staff.js `ctxT`, stamped by
-// `ask`). `curT` is the same reading taken live, right now, off the ctx the
-// dock is rendering with. They agree until the timeline seeks or the graph is
-// edited out from under the card - at which point the card is showing a
-// figure the engine would no longer produce, and ADR-0009 says that has to be
-// visible, not just timestamped. A card with no `t` at all (written by a
-// build before this fix) has no checkable basis either, so it reads as stale
-// too rather than being quietly trusted.
-function Answer({ answer, graph, curT, onSelect }) {
+// A card is drawn with `staleOf` above: its stamped basis against the live
+// one. When they differ the card is showing a figure the engine would no
+// longer produce, and ADR-0009 says that has to be visible - and, since there
+// are two ways to fall out of date, visible with its reason.
+function Answer({ answer, graph, curT, curFp, onSelect }) {
   const ids = useMemo(() => selectableIds(graph), [graph])
   const args = Object.entries(answer.args || {})
   const hasT = answer.t !== undefined && answer.t !== null
   const ansLabel = hasT ? timeLabel(graph, answer.t) : null
-  const stale = !hasT || Number(answer.t) !== curT
+  const st = staleOf(answer, curT, curFp)
   return (
-    <article className={`staff-ans${stale ? ' is-stale' : ''}`}>
+    <article className={`staff-ans${st.stale ? ' is-stale' : ''}`}>
       <div className="staff-run">
         <span className="staff-badge">실행{ansLabel ? ` · ${ansLabel}` : ''}</span>
         <span className="staff-run-label">{answer.label}</span>
@@ -223,9 +266,11 @@ function Answer({ answer, graph, curT, onSelect }) {
         {args.map(([k, v]) => <code key={k} className="staff-argchip">{k}={String(v)}</code>)}
         {answer.when && <span className="staff-when">{answer.when}</span>}
       </div>
-      {stale && (
+      {st.stale && (
         <p className="staff-stale">
-          기준 시각이 다름 - 이 답은 {ansLabel || '알 수 없는 시각'} 기준이고, 화면은 지금 {timeLabel(graph, curT)} 이다.
+          <b className="staff-stale-why">{staleWhy(st)}</b>
+          {' - '}
+          {staleText(st, ansLabel || '알 수 없는 시각', timeLabel(graph, curT))}
         </p>
       )}
 
@@ -271,8 +316,11 @@ export default function StaffDock({
   )
   const queries = useMemo(() => catalog(ctx), [ctx])
   // What "now" reads as for a logged card's staleness check - the identical
-  // definition `ask` stamps every new answer with (staff.js `ctxT`).
+  // two definitions `ask` stamps every new answer with (staff.js `ctxT` and
+  // `graphFingerprint`). The fingerprint is keyed on `graph`, so an edit in
+  // the sandbox recomputes it on the same render that redraws the board.
   const curT = useMemo(() => ctxT(ctx), [ctx])
+  const curFp = useMemo(() => graphFingerprint(graph), [graph])
 
   const [open, setOpen] = useState(false)
   const [log, setLog] = useState([])
@@ -361,7 +409,7 @@ export default function StaffDock({
           </p>
         )}
         {log.map((a) => (
-          <Answer key={a.at} answer={a} graph={graph} curT={curT} onSelect={onSelect} />
+          <Answer key={a.at} answer={a} graph={graph} curT={curT} curFp={curFp} onSelect={onSelect} />
         ))}
       </div>
     </div>

@@ -109,7 +109,7 @@ accuracy 는 쓰지 않는다(ADR-0008). **이 절은 S2 의 결정이며 지금
 | 질의 카탈로그 6종 (`state_summary`, `mission_why`, `asset_impact`, `containment_top`, `compare_defense`, `readiness_gap`) | **구현** | `ui/src/staff.js` |
 | `catalog(ctx)` 의 `needs` 필터, `validate` 의 거부, 단일 실행 경로 `ask` | **구현** | `ui/src/staff.js` |
 | 데스크톱 하단 드로어 / 폰 레일 탭, 사실 목록·표·인용 참조 선택, 시나리오별 기록 10건 | **구현** | `ui/src/ui/StaffDock.jsx` |
-| 답변이 계산된 시나리오 시각(`t`) 기록과 시각 불일치 표시 | **구현** | `staff.js` `ctxT`, `StaffDock` `is-stale` |
+| 답변이 계산된 기준(시나리오 시각 `t` + 그래프 지문 `gfp`) 기록과 불일치 표시 - 시각·그래프·양쪽 중 무엇이 달라졌는지까지 | **구현** | `staff.js` `ctxT`/`graphFingerprint`, `StaffDock` `staleOf`/`is-stale` |
 | 모델 없이 전 경로 동작 | **구현·확인** | 브라우저 확인 전부 모델 서버 없이 |
 | 자연어 라우팅 `routeQuestion` | **미구현 (S2)** | - |
 | 서술 `narrate`, `[F#]` 칩, `미검증` 배지 | **미구현 (S2)** | - |
