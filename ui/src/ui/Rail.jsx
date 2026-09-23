@@ -78,7 +78,7 @@ function MissionState({ graph, step, when }) {
 // number comes from eval/results via tools/pull-detection.mjs, with the file
 // and the date it was pulled - nothing here is typed in. It is evidence in the
 // ADR-0009 sense: a claim with its source attached, or no claim.
-function DetectionEvidence() {
+function DetectionEvidence({ compact }) {
   const d = detection
   const fmt = (x, n = 2) => Number(x).toFixed(n)
   return (
@@ -107,7 +107,16 @@ function DetectionEvidence() {
         <div className="ev-row" key={sg.name}>
           <span>{sg.name}</span>
           <b>{sg.attack_cells}/{sg.cells}</b>
-          <em className="ref" title={techniqueMeaning(sg.technique)}>{sg.technique} {techniqueKo(sg.technique)}</em>
+          {compact ? (
+            // a `title` never opens on a tap - the same string gets a tap path
+            // instead of a second tooltip component (M2 task 2)
+            <details className="ev-ref-details">
+              <summary className="ref">{sg.technique} {techniqueKo(sg.technique)}</summary>
+              {techniqueMeaning(sg.technique) && <p className="rail-caption">{techniqueMeaning(sg.technique)}</p>}
+            </details>
+          ) : (
+            <em className="ref" title={techniqueMeaning(sg.technique)}>{sg.technique} {techniqueKo(sg.technique)}</em>
+          )}
         </div>
       ))}
       <div className="ev-foot">
@@ -117,7 +126,7 @@ function DetectionEvidence() {
   )
 }
 
-function Cuts({ graph, step }) {
+function Cuts({ graph, step, compact }) {
   const rows = cutRows(graph, step)
   if (!rows.length) return <div className="none">현재 단절·침해 없음</div>
   const anyAttack = rows.some((r) => r.cause === 'attack')
@@ -151,7 +160,7 @@ function Cuts({ graph, step }) {
           <span className="note">{r.note}</span>
         </div>
       ))}
-      {anyAttack && <DetectionEvidence />}
+      {anyAttack && <DetectionEvidence compact={compact} />}
     </>
   )
 }
@@ -456,7 +465,7 @@ function Linkage({ graph, assetId, mode, editor, rules }) {
 // the board stays the person's, the flag is the table's opinion.
 const WHY_KO = { site: '같은 위치', unit: '같은 부대', transit: '중계 노드', bearer: '베어러 일치' }
 
-function Build({ graph, assetId, editor, rules }) {
+function Build({ graph, assetId, editor, rules, onDeselect }) {
   const ed = editor.current
   const asset = (graph.assets || []).find((a) => a.id === assetId)
   // the site input is committed on blur / Enter, not per keystroke: setSite
@@ -465,6 +474,11 @@ function Build({ graph, assetId, editor, rules }) {
   const liveSite = asset ? asset.site || '' : ''
   const [siteDraft, setSiteDraft] = useState(liveSite)
   useEffect(() => { setSiteDraft(liveSite) }, [assetId, liveSite])
+  // deletion asks in place, not with window.confirm (a modal has no place on
+  // a phone mid-edit); switching selection cancels a pending confirm rather
+  // than leaving it armed against whatever gets selected next
+  const [confirmDel, setConfirmDel] = useState(false)
+  useEffect(() => { setConfirmDel(false) }, [assetId])
   if (!asset) return null
   const commitSite = () => { if (siteDraft !== liveSite) ed.setSite(assetId, siteDraft) }
   const cands = linkCandidates(graph, rules, assetId)
@@ -520,11 +534,25 @@ function Build({ graph, assetId, editor, rules }) {
           <button type="button" className="req-btn" onClick={() => ed.removeLink(l.id)}>끊기</button>
         </div>
       ))}
+
+      {/* removal is the eraser tool + a tap on desktop (editor.js handleTap);
+          this is the same call, reached without switching tools (M2 task 2) */}
+      <div className="build-row build-del">
+        {confirmDel ? (
+          <>
+            <span>정말 지울까</span>
+            <button type="button" className="danger" onClick={() => { ed.removeAsset(assetId); onDeselect && onDeselect() }}>지운다</button>
+            <button type="button" onClick={() => setConfirmDel(false)}>취소</button>
+          </>
+        ) : (
+          <button type="button" className="danger" onClick={() => setConfirmDel(true)}>자산 삭제</button>
+        )}
+      </div>
     </div>
   )
 }
 
-function Inspect({ graph, step, data, mode, editor, rules }) {
+function Inspect({ graph, step, data, mode, editor, rules, onDeselect }) {
   if (!data) return <div className="inspect-empty">노드를 클릭하면 기여 경로가 나온다.</div>
   const rows = []
   const add = (k, v) => rows.push([k, v])
@@ -568,7 +596,7 @@ function Inspect({ graph, step, data, mode, editor, rules }) {
       </div>
       <dl>{rows.map(([k, v]) => <div key={k} style={{ display: 'contents' }}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
       {data.kind === 'asset' && mode === 'edit' && editor && editor.current && (
-        <Build graph={graph} assetId={data.id} editor={editor} rules={rules} />
+        <Build graph={graph} assetId={data.id} editor={editor} rules={rules} onDeselect={onDeselect} />
       )}
       {data.kind === 'asset' && <Linkage graph={graph} assetId={data.id} mode={mode} editor={editor} rules={rules} />}
     </div>
@@ -584,11 +612,17 @@ const TABS = [
 export default function Rail({
   graph, step, scenarioId, edited, when, tab, onTab,
   requests, onRequest, selectedData, onToast, mode, wargameSlot, editor,
-  payload, idx, onSeekIdx, rules, sandbox,
+  payload, idx, onSeekIdx, rules, sandbox, stack, onPick, onDeselect, compact,
 }) {
   const cuts = cutRows(graph, step).length
   const acts = actionRows(graph, step).length
   const counts = { cuts, actions: acts }
+  // A stack survives a delete (App only clears it from the inspector's own
+  // delete button, not the eraser tool) and it survives a rotate to desktop
+  // (App never clears it when compact goes false). Filtering against the
+  // live asset list and gating on compact here, at the one place that
+  // renders it, means neither caller has to get both right.
+  const liveStack = compact ? (stack || []).filter((id) => (graph?.assets || []).some((a) => a.id === id)) : []
 
   return (
     <aside className="rail">
@@ -617,9 +651,28 @@ export default function Rail({
             ))}
           </div>
           <div className="rail-body">
-            {tab === 'cuts' && <Cuts graph={graph} step={step} />}
+            {/* The map cannot separate markers that land on the same pixel, so
+                it hands the ambiguity up instead of guessing: this is the list
+                of everything that shared the tap. App only ever fills it on a
+                narrow screen - a mouse does not need it. */}
+            {liveStack.length > 1 && (
+              <div className="stack-pick">
+                <div className="stack-pick-head">이 위치에 자산 {liveStack.length}</div>
+                {liveStack.map((id) => (
+                  <button
+                    key={id} type="button"
+                    className={id === selectedData?.id ? 'on' : ''}
+                    aria-pressed={id === selectedData?.id}
+                    onClick={() => onPick && onPick(id)}
+                  >
+                    {assetName(graph, id).ko}<em className="ref">{id}</em>
+                  </button>
+                ))}
+              </div>
+            )}
+            {tab === 'cuts' && <Cuts graph={graph} step={step} compact={compact} />}
             {tab === 'actions' && <Actions graph={graph} step={step} requests={requests} onRequest={onRequest} />}
-            {tab === 'inspect' && <Inspect graph={graph} step={step} data={selectedData} mode={mode} editor={editor} rules={rules} />}
+            {tab === 'inspect' && <Inspect graph={graph} step={step} data={selectedData} mode={mode} editor={editor} rules={rules} onDeselect={onDeselect} />}
           </div>
         </>
       )}

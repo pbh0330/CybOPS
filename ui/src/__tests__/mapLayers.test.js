@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { markerRows, linkFeatures, trackFeatures, attackArcFeatures, gridFeatures, aoFeature } from '../mapLayers.js'
+import { markerRows, linkFeatures, trackFeatures, attackArcFeatures, gridFeatures, aoFeature, stackAt } from '../mapLayers.js'
 
 const georef = { anchor: { x: 0, y: 0, lat: 38.02, lon: 128.08 } }
 const extent = { x: [0, 24000], y: [0, 18000] }
@@ -70,5 +70,32 @@ describe('gridFeatures / aoFeature', () => {
     const ring = aoFeature(georef, extent).geometry.coordinates[0]
     expect(ring.length).toBe(5)
     expect(ring[0]).toEqual(ring[4])
+  })
+})
+
+describe('stackAt', () => {
+  const pts = [
+    { id: 'A', x: 100, y: 100 },
+    { id: 'B', x: 108, y: 104 },   // 9px 거리
+    { id: 'C', x: 160, y: 100 },   // 60px 거리
+  ]
+  it('collects what is within the radius, including itself, sorted', () => {
+    expect(stackAt(pts, 'A', 22)).toEqual(['A', 'B'])
+  })
+  it('a lone marker returns just itself', () => {
+    expect(stackAt(pts, 'C', 22)).toEqual(['C'])
+  })
+  it('an unknown id returns an empty array rather than throwing', () => {
+    expect(stackAt(pts, 'ZZZ', 22)).toEqual([])
+  })
+  it('is symmetric: B sees A too', () => {
+    expect(stackAt(pts, 'B', 22)).toEqual(['A', 'B'])
+  })
+  it('sorts the ids rather than returning input order', () => {
+    const unsorted = [
+      { id: 'Z', x: 100, y: 100 },
+      { id: 'A', x: 108, y: 104 },   // 9px 거리
+    ]
+    expect(stackAt(unsorted, 'Z', 22)).toEqual(['A', 'Z'])
   })
 })

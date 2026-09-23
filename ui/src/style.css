@@ -585,18 +585,52 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
   /* One column means two ROWS, and `auto auto` gave the palette its full
      content height (527px) and the board whatever was left (71px), which made
      .canvas-wrap 0px - the stage this breakpoint exists to keep. The palette
-     takes what it asks for up to a third of the viewport, the board takes the
-     rest. minmax(0, 1fr) and not 1fr: a 1fr row floors at its content's
-     min-content height, which the canvas would push past the screen.
-     (Turning the palette into a horizontal strip is M2.) */
+     asks for its own (now one-item-tall) height, the board takes the rest.
+     minmax(0, 1fr) and not 1fr: a 1fr row floors at its content's
+     min-content height, which the canvas would push past the screen. */
   .main.is-editing {
     grid-template-columns: 1fr;
     grid-template-rows: auto minmax(0, 1fr);
   }
+  /* M1 capped this at 30dvh and scrolled it vertically - a stopgap that cost
+     the stage 253px to show two rows of a four-row column. It is one
+     horizontal strip now: the same buttons in the same order, scrolled with a
+     thumb flick instead. `max-height` is gone, the height is the content's,
+     and what it no longer takes goes to .canvas-wrap. */
   .main.is-editing .palette {
-    max-height: 30dvh; min-height: 0;
+    display: flex; flex-direction: row; align-items: center;
+    gap: 10px; padding: 8px 12px;
+    min-height: 0; overflow-x: auto; overflow-y: hidden;
+    scroll-snap-type: x proximity; scroll-padding-left: 12px;
+    -webkit-overflow-scrolling: touch;
     border-right: none; border-bottom: 1px solid var(--line);
   }
+  .main.is-editing .palette > * { flex: none; }
+  /* Two paragraphs of prose cannot ride in a strip one item tall: on one line
+     they are ~2000px of text to scroll past before the first asset, and
+     wrapped they give back exactly the height this change is taking. The
+     headings stay - they say what the strip is and group it - the prose does
+     not. Nothing here is the only copy of anything: adding is what the
+     buttons do, and the 연결 tool names itself in the toolbar. */
+  .main.is-editing .palette-head p,
+  .main.is-editing .palette-note { display: none; }
+  .main.is-editing .palette-head h2 { margin: 0; white-space: nowrap; }
+  /* The snap targets are the GROUPS, not the items: a flick should land on
+     "통신" or "서버", which is how the column was read. Aligning every item
+     instead made the strip snap one item in the moment it was laid out -
+     proximity snapping resolves at scrollLeft 0 too - so it opened at 127px,
+     with its own heading and the first group's name already scrolled off. */
+  .main.is-editing .palette-head,
+  .main.is-editing .palette-group { scroll-snap-align: start; }
+  .main.is-editing .palette-group {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 0;
+  }
+  .main.is-editing .palette-group-name { margin-bottom: 0; white-space: nowrap; }
+  .main.is-editing .palette-items { display: flex; gap: 6px; }
+  .main.is-editing .palette-item { flex: none; min-width: 60px; }
+  /* one line each: a label that wraps makes every item in the strip two lines
+     tall, and the strip is the stage's height */
+  .main.is-editing .palette-label { white-space: nowrap; }
   /* The rail's CONTENT moved into the sheet - the same React node, in the
      other parent. This hides the empty grid column only; scoping it to a
      direct child of .main matters because what is inside the sheet is also
@@ -620,6 +654,33 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
      what it was built to do. */
   .geo-foot > * { flex: none; }
   .geo-warn { white-space: nowrap; margin-left: 0; }
+
+  /* ------------------------------ compact: the sheet takes the ambiguity */
+  /* Markers that overlap are not spread out on the map - moving a symbol off
+     its grid square would be a lie about where the asset is. The tap reports
+     everything under it and the list says what was there, which is the one
+     place a phone has room to ask. Achromatic by rule: the row that is
+     selected is raised and heavier, never coloured. */
+  .stack-pick {
+    display: flex; flex-direction: column; gap: 4px;
+    margin: 0 0 12px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .stack-pick-head {
+    font-size: 11px; letter-spacing: .04em; color: var(--text-muted);
+    text-transform: none; padding: 2px 0 4px;
+  }
+  .stack-pick button {
+    display: flex; align-items: center; justify-content: flex-start;
+    min-height: 44px; width: 100%; padding: 0 12px;
+    font-size: 14px; text-align: left; color: var(--text-secondary);
+    background: none; border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+  }
+  .stack-pick button.on {
+    background: var(--surface-raised); color: var(--text-primary); font-weight: 600;
+  }
+  .stack-pick button .ref { margin-left: auto; }
 
   /* ------------------------------------- compact: topbar is one line */
   /* The strip WRAPS, it is not rebuilt: row 1 is the 56px bar (brand,
@@ -682,6 +743,27 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
   .timeline { height: 84px; gap: 12px; padding: 0 12px; }
   .clock { min-width: 96px; }
   .clock-time { font-size: 22px; }
+
+  /* ---------------------------------------------- compact: 44px targets */
+  /* Measured before touching anything (390x844, DevTools): the rail's own
+     tabs were 42.4px, action/build req-btn ran 25-33px, and the event
+     stream's log rows - buttons too, each one seeks the replay - were the
+     worst at 22.66px. None of that matches "already 44px"; only
+     .tb-menu/.stack-pick had an explicit min-height already. One rule
+     across the whole rail/sheet/inspect surface, not case by case. */
+  .rail button, .sheet button, .stack-pick button, .inspect button {
+    min-height: 44px;
+  }
+  /* ...except the event stream's log rows, which the blanket rule took from
+     ~23px to 44px and so nearly doubled the scroll length of a 48-row list
+     inside a 190px window (4.3 rows visible instead of 8.4). The stream is
+     read, not operated: a row is a full-width band, the only thing a tap does
+     is seek the replay, and a mis-seek costs a second tap on the right row.
+     34px is still a deliberate target - wide, and taller than the 23px the
+     rows had - without turning the log into a list of buttons. */
+  /* align-content, because .ev is a grid whose one row is baseline-aligned:
+     without it the spare height all lands under the text. */
+  .stream-body .ev { min-height: 34px; align-content: center; }
 }
 
 /* --------------------------------------------- compact: no sparkline */

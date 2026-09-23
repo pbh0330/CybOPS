@@ -5,7 +5,7 @@ import { config } from '../config.js'
 import { CAUSE_COLOR } from '../graph.js'
 import { attackHops } from '../derive.js'
 import { toLonLat, fromLonLat, toMgrs } from '../georef.js'
-import { markerRows, linkFeatures, trackFeatures, attackArcFeatures, gridFeatures, aoFeature } from '../mapLayers.js'
+import { markerRows, linkFeatures, trackFeatures, attackArcFeatures, gridFeatures, aoFeature, stackAt } from '../mapLayers.js'
 import { deviceIconDataUri } from '../icons.js'
 import { assetName } from '../labels.js'
 
@@ -18,6 +18,10 @@ import { assetName } from '../labels.js'
 // throw the overlays away.
 
 const BASES = [['dark', '다크'], ['satellite', '위성'], ['terrain', '지형']]
+// A thumb is about this wide on a marker, and markers are drawn at 30px. Two
+// assets inside this radius of each other on SCREEN are one tap target, so
+// the tap has to report both and let the caller decide what that means.
+const TAP_RADIUS_PX = 22
 const EMPTY = { type: 'FeatureCollection', features: [] }
 
 function firstSymbolLayer(style) {
@@ -29,7 +33,7 @@ function firstSymbolLayer(style) {
 // Everything else - lines, fills, DOM markers - draws fine without glyphs.
 const FALLBACK_STYLE = { version: 8, sources: {}, layers: [{ id: 'background', type: 'background', paint: { 'background-color': '#070a10' } }] }
 
-export default function MapPane({ graph, step, steps, idx, selected, onSelect, hidden, overlay, editable, onMove }) {
+export default function MapPane({ graph, step, steps, idx, selected, onSelect, hidden, overlay, editable, onMove, compact }) {
   const boxRef = useRef(null)
   const mapRef = useRef(null)
   const markers = useRef(new Map())
@@ -46,11 +50,40 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
   // than the closure it was born in (which would be the first render's).
   const moveRef = useRef(onMove)
   moveRef.current = onMove
+  // The marker's `title` is a hover tooltip - a tap never opens it. The click
+  // handler is registered once, at creation, so this has to be a ref like
+  // moveRef/selectRef: read fresh at tap time, not the value the marker was
+  // born with.
+  const compactRef = useRef(compact)
+  compactRef.current = compact
+  // Same reason as moveRef: the marker click handler is registered once, at
+  // creation, so it must not keep the onSelect it was born with - App's
+  // onSelect now closes over `compact`, which changes on a rotate.
+  const selectRef = useRef(onSelect)
+  selectRef.current = onSelect
+  // The marker rows of the last draw, so a tap can project every asset and
+  // ask which of them share the pixel it landed on.
+  const rowsRef = useRef([])
   const georefRef = useRef(null)
   const [ready, setReady] = useState(false)
   const [base, setBase] = useState('satellite')
   const [is3d, setIs3d] = useState(true)
   const [tileError, setTileError] = useState(false)
+
+  // Every asset a tap on `id` could have meant. The projection is done at tap
+  // time, not at draw time: pan, zoom and pitch all move markers relative to
+  // each other, so yesterday's pixels are the wrong answer. Always at least
+  // [id] - the caller's contract is "what you tapped, plus whatever it hid".
+  function stackForTap(id) {
+    const map = mapRef.current
+    if (!map) return [id]
+    const pts = rowsRef.current.map((row) => {
+      const p = map.project([row.lon, row.lat])
+      return { id: row.id, x: p.x, y: p.y }
+    })
+    const s = stackAt(pts, id, TAP_RADIUS_PX)
+    return s.length ? s : [id]
+  }
 
   const georef = graph?.geo?.georef
   georefRef.current = georef
@@ -122,7 +155,7 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
       })
       // map.on('click') is suppressed after a drag; a DOM onClick on the box is
       // not, and would deselect on every pan
-      map.on('click', () => onSelect(null))
+      map.on('click', () => selectRef.current(null))
 
       map.on('load', () => {
         const style = map.getStyle()
@@ -260,6 +293,7 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
     const threats = overlay ? new Set(overlay.nodeThreats.map((n) => n.id)) : new Set()
 
     const rows = markerRows(graph, step, t, georef)
+    rowsRef.current = rows
     const seen = new Set()
     for (const r of rows) {
       seen.add(r.id)
@@ -276,14 +310,54 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
         el.className = 'map-mark'
         el.innerHTML = `<div class="map-mark-sym"><img alt="" /></div><div class="map-mark-label"></div>`
         // a drag ends with a click on the same element; that click must not
-        // reselect (or, in link mode, wire) what was only being moved
+        // reselect (or, in link mode, wire) what was only being moved.
+        //
+        // The flag is cleared when the NEXT contact starts, not on a timer.
+        // It used to be cleared from a setTimeout(0) in `dragend`, which
+        // holds for a mouse - there the trailing click follows mouseup in the
+        // same task - but not for a finger: the browser synthesises the click
+        // a task (historically up to 300 ms) after touchend, by which time
+        // the 0 ms timer had long since run and every touch drag ended by
+        // selecting what it had just moved. Measured at 390px: drag RELAY-1
+        // with pointerType touch while CO1-VEH is selected and the selection
+        // jumped to RELAY-1.
+        //
+        // `pointerdown` is the one event that means "a new contact started"
+        // for mouse, pen and finger alike; the compatibility mousedown the
+        // browser fires after a touch does NOT produce one, which is exactly
+        // why the reset cannot live on mousedown. touchstart is the fallback
+        // for a browser without pointer events, and is equally never a
+        // compatibility event.
         let dragged = false
-        el.addEventListener('click', (e) => { e.stopPropagation(); if (dragged) { dragged = false; return } onSelect(r.id) })
+        const armTap = () => { dragged = false }
+        el.addEventListener('pointerdown', armTap)
+        el.addEventListener('touchstart', armTap, { passive: true })
+        el.addEventListener('click', (e) => {
+          e.stopPropagation()
+          if (dragged) { dragged = false; return }
+          // compact only: a tap toggles the same text the desktop `title`
+          // shows on hover, since a touch never opens a native tooltip
+          if (compactRef.current) {
+            // Only one label open at a time: a second tap on an already-open
+            // marker must not leave a stale label lit on some other marker
+            // it never revisits (and, without this, hides its own label
+            // while re-selecting it - the toggle below still runs after).
+            for (const [otherId, om] of markers.current) {
+              if (otherId === r.id) continue
+              const oinfo = om.getElement().querySelector('.map-mark-info')
+              if (oinfo) oinfo.hidden = true
+            }
+            const info = el.querySelector('.map-mark-info')
+            if (info) info.hidden = !info.hidden
+          }
+          selectRef.current(r.id, stackForTap(r.id))
+        })
         m = new maplibregl.Marker({ element: el, anchor: 'center', draggable: !!editable }).setLngLat([r.lon, r.lat]).addTo(map)
         m.on('dragstart', () => { dragged = true })
         m.on('dragend', () => {
-          // the trailing click (if any) is dispatched before this timer runs
-          setTimeout(() => { dragged = false }, 0)
+          // no reset here: a drag that ends without a trailing click (which
+          // happens) leaves the flag set, and the next contact's pointerdown
+          // clears it before its own click can be swallowed
           const { lng, lat } = m.getLngLat()
           const gr = georefRef.current
           if (!gr || !moveRef.current) return
@@ -308,10 +382,32 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
       if (uri && img.src !== uri) img.src = uri
       const n = assetName(graph, r.id)
       el.querySelector('.map-mark-label').textContent = n.ko
-      el.title = `${n.ko} · ${r.id} · ${Math.round(r.z)} m`
+      const infoText = `${n.ko} · ${r.id} · ${Math.round(r.z)} m`
+      el.title = infoText
+      // desktop reads infoText through the native `title` above and gets no
+      // extra DOM; compact only, so a phone never renders a node the tap
+      // handler could not reach otherwise (reuses .rail-caption's type scale)
+      if (compact) {
+        let info = el.querySelector('.map-mark-info')
+        if (!info) {
+          info = document.createElement('div')
+          info.className = 'map-mark-info rail-caption'
+          info.hidden = true
+          Object.assign(info.style, {
+            position: 'absolute', left: '50%', top: '64px', transform: 'translateX(-50%)',
+            whiteSpace: 'nowrap', background: 'rgba(7,10,16,.85)', padding: '2px 6px',
+            borderRadius: '3px', margin: '0', zIndex: '1', pointerEvents: 'none',
+          })
+          el.appendChild(info)
+        }
+        info.textContent = infoText
+      } else {
+        const info = el.querySelector('.map-mark-info')
+        if (info) info.remove()
+      }
     }
     for (const [id, m] of markers.current) if (!seen.has(id)) { m.remove(); markers.current.delete(id) }
-  }, [graph, step, steps, idx, t, georef, ready, selected, onSelect, overlay, editable])
+  }, [graph, step, steps, idx, t, georef, ready, selected, onSelect, overlay, editable, compact])
 
   // One flash per adjudicated turn, on the target's marker. Declared after the
   // marker effect so the markers exist when it runs. The turn is recorded

@@ -57,6 +57,11 @@ export default function App() {
   const [playing, setPlaying] = useState(false)
   const [speed, setSpeed] = useState(1)
   const [selectedData, setSelectedData] = useState(null)
+  // The assets that shared the last tap, when there was more than one and the
+  // screen is too small to pull them apart. The ONLY place that decides a
+  // stack matters: MapPane always reports what overlapped, and a desktop
+  // mouse is precise enough that the report is thrown away here.
+  const [stack, setStack] = useState(null)
   const [requests, setRequests] = useState([])
   const [edited, setEdited] = useState(false)
   const [tool, setTool] = useState('select')
@@ -169,6 +174,7 @@ export default function App() {
         setIdx(start)
         setGame(null)   // a game belongs to the graph it started on
         setSelectedData(null)
+        setStack(null)
         setHistVer((v) => v + 1)
       } catch (e) {
         if (alive) setError(e.message)
@@ -351,16 +357,24 @@ export default function App() {
   }, [payload, undo, redo, locked, mode, game])
 
   // --- selection --------------------------------------------------------
-  const onSelect = useCallback((id) => {
+  // `stack` is what the map found under the tap (see MapPane). Every other
+  // caller - the graph canvas, a ?select= link, the stack list itself when it
+  // wants the list gone - passes nothing, which reads as "one thing, no
+  // ambiguity" and clears the list.
+  // (the parameter is not called `stack`: that is the state variable this
+  // very callback sets, and shadowing it here is how you end up setting a
+  // value to itself.)
+  const onSelect = useCallback((id, hits) => {
     const cy = cyRef.current
-    if (!id || !cy) { setSelectedData(null); return }
+    if (!id || !cy) { setStack(null); setSelectedData(null); return }
     const n = cy.$id(id)
-    if (!n.length) { setSelectedData(null); return }
+    if (!n.length) { setStack(null); setSelectedData(null); return }
     cy.$(':selected').unselect()
     n.select()
     setSelectedData(n.data())
+    setStack(compact && Array.isArray(hits) && hits.length > 1 ? hits : null)
     setTab('inspect')
-  }, [])
+  }, [compact])
 
   // ?select=<node id>: select once the graph (and the cytoscape instance,
   // built in the child's effect, which runs before this one) exists
@@ -430,6 +444,8 @@ export default function App() {
       when={when} tab={tab} onTab={setTab}
       requests={requests} onRequest={onRequest}
       selectedData={selectedData} onToast={setToast} mode={mode}
+      stack={stack} onPick={(id) => onSelect(id, stack)}
+      onDeselect={() => onSelect(null)} compact={compact}
       editor={editorRef} rules={rules} sandbox={isSandbox}
       payload={payload} idx={idx} onSeekIdx={(i) => setIdx(i)}
       wargameSlot={mode === 'wargame' ? (
@@ -513,6 +529,7 @@ export default function App() {
                 selected={selectedData?.id || null} onSelect={onSelect} hidden={!isGeo}
                 overlay={overlay}
                 editable={mode === 'edit'}
+                compact={compact}
                 onMove={(id, x, y) => editorRef.current && editorRef.current.moveAsset(id, x, y)}
               />
             ) : (
