@@ -118,3 +118,18 @@ export function aoFeature(georef, extent) {
   const ring = [[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]].map(([x, y]) => toLonLat(georef, x, y))
   return { type: 'Feature', geometry: { type: 'Polygon', coordinates: [ring] }, properties: {} }
 }
+
+// Which markers share a tap. Screen-space, because overlap is a screen
+// problem: the same two assets are distinct at z15 and one blob at z11.
+export function stackAt(points, id, radiusPx) {
+  const self = (points || []).find((p) => p.id === id)
+  if (!self) return []
+  const r2 = Number(radiusPx) * Number(radiusPx)
+  return (points || [])
+    .filter((p) => {
+      const dx = p.x - self.x, dy = p.y - self.y
+      return dx * dx + dy * dy <= r2
+    })
+    .map((p) => p.id)
+    .sort()
+}

@@ -584,7 +584,7 @@ const TABS = [
 export default function Rail({
   graph, step, scenarioId, edited, when, tab, onTab,
   requests, onRequest, selectedData, onToast, mode, wargameSlot, editor,
-  payload, idx, onSeekIdx, rules, sandbox,
+  payload, idx, onSeekIdx, rules, sandbox, stack, onPick,
 }) {
   const cuts = cutRows(graph, step).length
   const acts = actionRows(graph, step).length
@@ -617,6 +617,25 @@ export default function Rail({
             ))}
           </div>
           <div className="rail-body">
+            {/* The map cannot separate markers that land on the same pixel, so
+                it hands the ambiguity up instead of guessing: this is the list
+                of everything that shared the tap. App only ever fills it on a
+                narrow screen - a mouse does not need it. */}
+            {stack && stack.length > 1 && (
+              <div className="stack-pick">
+                <div className="stack-pick-head">이 위치에 자산 {stack.length}</div>
+                {stack.map((id) => (
+                  <button
+                    key={id} type="button"
+                    className={id === selectedData?.id ? 'on' : ''}
+                    aria-pressed={id === selectedData?.id}
+                    onClick={() => onPick && onPick(id)}
+                  >
+                    {assetName(graph, id).ko}<em className="ref">{id}</em>
+                  </button>
+                ))}
+              </div>
+            )}
             {tab === 'cuts' && <Cuts graph={graph} step={step} />}
             {tab === 'actions' && <Actions graph={graph} step={step} requests={requests} onRequest={onRequest} />}
             {tab === 'inspect' && <Inspect graph={graph} step={step} data={selectedData} mode={mode} editor={editor} rules={rules} />}

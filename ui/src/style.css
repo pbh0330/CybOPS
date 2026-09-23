@@ -621,6 +621,33 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
   .geo-foot > * { flex: none; }
   .geo-warn { white-space: nowrap; margin-left: 0; }
 
+  /* ------------------------------ compact: the sheet takes the ambiguity */
+  /* Markers that overlap are not spread out on the map - moving a symbol off
+     its grid square would be a lie about where the asset is. The tap reports
+     everything under it and the list says what was there, which is the one
+     place a phone has room to ask. Achromatic by rule: the row that is
+     selected is raised and heavier, never coloured. */
+  .stack-pick {
+    display: flex; flex-direction: column; gap: 4px;
+    margin: 0 0 12px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .stack-pick-head {
+    font-size: 11px; letter-spacing: .04em; color: var(--text-muted);
+    text-transform: none; padding: 2px 0 4px;
+  }
+  .stack-pick button {
+    display: flex; align-items: center; justify-content: flex-start;
+    min-height: 44px; width: 100%; padding: 0 12px;
+    font-size: 14px; text-align: left; color: var(--text-secondary);
+    background: none; border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+  }
+  .stack-pick button.on {
+    background: var(--surface-raised); color: var(--text-primary); font-weight: 600;
+  }
+  .stack-pick button .ref { margin-left: auto; }
+
   /* ------------------------------------- compact: topbar is one line */
   /* The strip WRAPS, it is not rebuilt: row 1 is the 56px bar (brand,
      scenario, ?, ⋯) and row 2 is the KPI ribbon, which is the "KPI 띠를

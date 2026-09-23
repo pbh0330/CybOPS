@@ -5,7 +5,7 @@ import { config } from '../config.js'
 import { CAUSE_COLOR } from '../graph.js'
 import { attackHops } from '../derive.js'
 import { toLonLat, fromLonLat, toMgrs } from '../georef.js'
-import { markerRows, linkFeatures, trackFeatures, attackArcFeatures, gridFeatures, aoFeature } from '../mapLayers.js'
+import { markerRows, linkFeatures, trackFeatures, attackArcFeatures, gridFeatures, aoFeature, stackAt } from '../mapLayers.js'
 import { deviceIconDataUri } from '../icons.js'
 import { assetName } from '../labels.js'
 
@@ -18,6 +18,10 @@ import { assetName } from '../labels.js'
 // throw the overlays away.
 
 const BASES = [['dark', '다크'], ['satellite', '위성'], ['terrain', '지형']]
+// A thumb is about this wide on a marker, and markers are drawn at 30px. Two
+// assets inside this radius of each other on SCREEN are one tap target, so
+// the tap has to report both and let the caller decide what that means.
+const TAP_RADIUS_PX = 22
 const EMPTY = { type: 'FeatureCollection', features: [] }
 
 function firstSymbolLayer(style) {
@@ -46,11 +50,34 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
   // than the closure it was born in (which would be the first render's).
   const moveRef = useRef(onMove)
   moveRef.current = onMove
+  // Same reason as moveRef: the marker click handler is registered once, at
+  // creation, so it must not keep the onSelect it was born with - App's
+  // onSelect now closes over `compact`, which changes on a rotate.
+  const selectRef = useRef(onSelect)
+  selectRef.current = onSelect
+  // The marker rows of the last draw, so a tap can project every asset and
+  // ask which of them share the pixel it landed on.
+  const rowsRef = useRef([])
   const georefRef = useRef(null)
   const [ready, setReady] = useState(false)
   const [base, setBase] = useState('satellite')
   const [is3d, setIs3d] = useState(true)
   const [tileError, setTileError] = useState(false)
+
+  // Every asset a tap on `id` could have meant. The projection is done at tap
+  // time, not at draw time: pan, zoom and pitch all move markers relative to
+  // each other, so yesterday's pixels are the wrong answer. Always at least
+  // [id] - the caller's contract is "what you tapped, plus whatever it hid".
+  function stackForTap(id) {
+    const map = mapRef.current
+    if (!map) return [id]
+    const pts = rowsRef.current.map((row) => {
+      const p = map.project([row.lon, row.lat])
+      return { id: row.id, x: p.x, y: p.y }
+    })
+    const s = stackAt(pts, id, TAP_RADIUS_PX)
+    return s.length ? s : [id]
+  }
 
   const georef = graph?.geo?.georef
   georefRef.current = georef
@@ -122,7 +149,7 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
       })
       // map.on('click') is suppressed after a drag; a DOM onClick on the box is
       // not, and would deselect on every pan
-      map.on('click', () => onSelect(null))
+      map.on('click', () => selectRef.current(null))
 
       map.on('load', () => {
         const style = map.getStyle()
@@ -260,6 +287,7 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
     const threats = overlay ? new Set(overlay.nodeThreats.map((n) => n.id)) : new Set()
 
     const rows = markerRows(graph, step, t, georef)
+    rowsRef.current = rows
     const seen = new Set()
     for (const r of rows) {
       seen.add(r.id)
@@ -278,7 +306,7 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
         // a drag ends with a click on the same element; that click must not
         // reselect (or, in link mode, wire) what was only being moved
         let dragged = false
-        el.addEventListener('click', (e) => { e.stopPropagation(); if (dragged) { dragged = false; return } onSelect(r.id) })
+        el.addEventListener('click', (e) => { e.stopPropagation(); if (dragged) { dragged = false; return } selectRef.current(r.id, stackForTap(r.id)) })
         m = new maplibregl.Marker({ element: el, anchor: 'center', draggable: !!editable }).setLngLat([r.lon, r.lat]).addTo(map)
         m.on('dragstart', () => { dragged = true })
         m.on('dragend', () => {
