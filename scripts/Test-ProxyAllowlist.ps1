@@ -17,7 +17,10 @@ $conf = @(
 $wanted = New-Object System.Collections.Generic.HashSet[string]
 Get-ChildItem -Path $src -Recurse -Include *.js, *.mjs | ForEach-Object {
   $text = Get-Content -Raw -Encoding utf8 $_.FullName
-  foreach ($m in [regex]::Matches($text, '\$\{(?:cfg\.)?endpoint\}(/api/[a-z]+)')) {
+  # Any interpolated identifier followed by an upstream path, not just a
+  # variable literally named `endpoint`: config.js builds its probe URL from a
+  # local `base`, and a regex that only knew `endpoint` would not see it.
+  foreach ($m in [regex]::Matches($text, '\$\{[A-Za-z_$][\w.$]*\}(/api/[a-z]+)')) {
     [void]$wanted.Add($m.Groups[1].Value)
   }
 }
