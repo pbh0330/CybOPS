@@ -95,10 +95,10 @@ EIP 를 쓰는 이유: 인스턴스를 켤 때마다 공개 DNS 가 바뀌면 Cl
 
 - **Ollama API 는 추론 API 이자 모델 관리 API 다**(`docs/21` 3.1절). 프록시에서
   `/api/chat`, `/api/tags` 만 통과시키고 `/api/pull`, `/api/delete`, `/api/create`,
-  `/api/push` 는 404 로 막는다. 안 막으면 접근한 사람이 그 GPU 에 임의의 모델을 올린다.
+  `/api/push` 는 403 으로 막는다. 안 막으면 접근한 사람이 그 GPU 에 임의의 모델을 올린다.
 - 보안 그룹은 80/tcp 만, 소스는 CloudFront 관리 프리픽스 목록
   (`com.amazonaws.global.cloudfront.origin-facing`). 22 는 열지 않는다 - 관리는 SSM 으로 한다.
-- 유량 제한은 사람 속도에 맞춘다(`docs/21` 3.2절): IP 당 분당 20건.
+- 유량 제한은 사람 속도에 맞춘다(`docs/21` 3.2절): IP 당 분당 6건.
 - 올리는 데이터는 **합성·저작 시나리오뿐**이다. OpTC 파생물, `data/`, `eval/results/` 는
   올리지 않는다(라이선스·크기, ADR-0010).
 - 워터마크 "가상 훈련 시나리오 · 실제 부대 배치 아님" 은 끌 수 없다(ADR-0025). 공개 사본에도

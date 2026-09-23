@@ -72,8 +72,13 @@ PowerShell 5.1 에서:
 모델 경로가 켜진다.** 템플릿을 고칠 필요가 없다. 그때 붙는 것은
 
 - 오리진 `llm`: `http-only` / 80포트 / 오리진 응답 대기 60초,
-  요청에 `X-Demo-Origin: <LlmOriginSecret>` 헤더가 붙는다. GPU 쪽 프록시가 이 헤더를
-  검사한다. 이것이 무엇을 막고 무엇을 못 막는지는 아래 "비밀 취급" 절에 적었다.
+  요청에 `X-Demo-Origin: <LlmOriginSecret>` 헤더가 붙는다. **GPU 쪽 프록시는 이 헤더만
+  검사한다 - basic auth 가 아니다.** 사람에 대한 인증은 CloudFront 뷰어 요청 함수가 이미
+  끝냈고 `authorization` 헤더는 엣지에서 지워지므로, user-data 는 `deploy/nginx.example.conf`
+  / `deploy/Caddyfile.example` 에서 `auth_basic` / `basicauth` 블록만 빼고 나머지(경로
+  허용목록, 유량 제한, catch-all 403)를 그대로 쓴다. 그 블록을 그대로 두면 오리진이 모든
+  모델 호출에 401 을 돌려준다. 이것이 무엇을 막고 무엇을 못 막는지는 아래 "비밀 취급" 절에
+  적었다.
 - `LlmOriginRequestPolicy`(`AWS::CloudFront::OriginRequestPolicy`, `HasLlm` 조건):
   **허용목록이고 거부가 기본**이다. 헤더는 `content-type`, `accept` 둘만, 쿠키 없음,
   쿼리 문자열 없음. Ollama 호출에 필요한 것만 평문 구간을 건넌다.

@@ -109,8 +109,10 @@ cd F:\F\other_class\CybOPS
 .\scripts\Export-ReplayData.ps1
 
 # 1) 무엇이 올라갈지 먼저 읽는다. 로컬 단계(자세 config, 번들 게이트)는 실제로 돌고
-#    AWS 를 건드리는 단계는 명령만 출력된다.
-.\scripts\Deploy-Aws.ps1 -Bucket <bucket> -DistributionId <id> -DryRun
+#    AWS 를 건드리는 단계는 명령만 출력된다. ui\dist 가 이미 있어야 한다 -
+#    -DryRun 은 빌드를 실행하지 않고 명령만 찍으므로, -SkipBuild 없이 ui\dist 가
+#    없으면 3단계(자세 config)에서 멈춘다.
+.\scripts\Deploy-Aws.ps1 -Bucket <bucket> -DistributionId <id> -SkipBuild -DryRun
 
 # 2) 실제 배포
 .\scripts\Deploy-Aws.ps1 -Bucket <bucket> -DistributionId <id>
@@ -132,6 +134,11 @@ cd F:\F\other_class\CybOPS
 바꾼다. 엔드포인트는 두 경우 모두 같은 오리진의 `/api/llm` 이다.
 
 **게이트에서 멈추면 아무것도 올라가지 않았다.** 출력이 시키는 것을 고치고 다시 돌린다.
+
+**`-DryRun` 도 `ui\dist\config.json` 은 실제로 고쳐 쓴다.** 3단계(자세 config)는 파일 하나만
+바꾸는 되돌릴 수 있는 단계라 드라이런에서도 그대로 실행되기 때문이다(스크립트 안 주석
+"WHAT -DryRun DOES AND DOES NOT DO" 참고). 빌드 산출물이라 무해하고 다음 `npm run build`
+가 되돌린다.
 
 ---
 
@@ -214,7 +221,9 @@ $1 이 안 된다. 그 돈으로 심사를 걸지 않는다.
    `config.json` 의 `llm.unavailable_note` 다. **이 화면은 고장이 아니다.**
 6. **캐시 헤더가 둘로 갈린다.** `assets/*` 는 `max-age=31536000, immutable` 이고
    `index.html` 은 아니다.
-   `curl -sI <주소>/index.html` 과 `curl -sI <주소>/assets/<파일 하나>` 를 나란히 본다.
+   `curl.exe -sI <주소>/index.html` 과 `curl.exe -sI <주소>/assets/<파일 하나>` 를 나란히 본다.
+   (PowerShell 5.1 에서 `curl` 은 `Invoke-WebRequest` 별칭이라 `-sI` 를 모른다. `curl.exe` 로
+   불러야 한다.)
 
 ### 7.2 AWS-1 에서 확인할 것 (GPU 오리진이 생긴 뒤)
 
@@ -223,14 +232,20 @@ $1 이 안 된다. 그 돈으로 심사를 걸지 않는다.
    같이 볼 것: 정적 페이지 인증을 통과하기 전에 `probeLlm()` 이 먼저 돌면 401 을 받아
    "모델 없음" 으로 읽힌다. 순서상 그럴 일이 없어야 하지만 여기서 실물로 확인한다.
 8. **`/api/llm/api/pull` 이 403 이다.**
-   `curl -u demo:<password> -X POST https://<주소>/api/llm/api/pull`
+   `curl.exe -u demo:<password> -X POST https://<주소>/api/llm/api/pull`
+   (여기도 `curl.exe` 다 - PowerShell 5.1 별칭 `curl` 은 `-u`/`-X` 를 모른다.)
    **200 이 나오면 그 시연 사본은 지금 공개 모델 관리 API 다**(`docs/21-deployment.md` 5절).
    설계 문서 8절은 이 칸을 404 라고 적었지만, 저장소의 프록시 예시
    (`deploy/Caddyfile.example`, `deploy/nginx.example.conf`)는 허용목록 밖을 **403** 으로
-   돌려주고 AWS-1 의 user-data 는 그 예시를 따른다. **어느 쪽이든 중요한 것은 200 이
+   돌려주고 AWS-1 의 user-data 는 그 예시에서 `auth_basic` / `basicauth` 블록만 뺀 나머지
+   (경로 허용목록, 유량 제한, catch-all 403)를 따른다. **GPU 프록시의 인증은
+   `X-Demo-Origin` 헤더 검사뿐이다** - 사람에 대한 인증은 CloudFront 뷰어 요청 함수가 이미
+   끝냈고 `authorization` 헤더는 엣지에서 지워지므로, 예시의 basic auth 블록을 그대로 두면
+   시연 당일 모든 모델 호출이 오리진에서 401 이 난다. **어느 쪽이든 중요한 것은 200 이
    아니라는 것이다.**
 9. **오리진에 직접(비밀 헤더 없이) 치면 403 이다.**
-   `curl -v http://<eip>/api/chat` - `X-Demo-Origin` 이 없으므로 프록시가 거절한다.
+   `curl.exe -v http://<eip>/api/chat` - `X-Demo-Origin` 이 없으므로 프록시가 거절한다.
+   (`curl.exe` 다 - PowerShell 5.1 의 `curl` 별칭은 `-v` 를 모른다.)
    다만 **직접 접속에 대한 실제 통제는 보안 그룹**이다 - 80/tcp 를 CloudFront 관리 프리픽스
    목록(`com.amazonaws.global.cloudfront.origin-facing`)에서만 받는다. 이 curl 은 그 목록
    **안**에서 온 요청을 가정한 두 번째 겹을 시험하는 것이고, 목록 밖에서는 애초에 TCP 가

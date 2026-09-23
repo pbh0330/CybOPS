@@ -277,11 +277,20 @@ Write-Output '      3. the situation picture draws and the time slider runs. Tha
 Write-Output '         that the engine runs in the browser: dragging it adds no network requests'
 Write-Output '      4. in the sandbox (sandbox-01), placing assets and linking them fills the'
 Write-Output '         readiness card (providers, performers, reachability)'
-Write-Output '      5. with no model at all: a briefing renders with its citations and the wargame'
-Write-Output '         staff ranking table appears. Only the LLM attacker is disabled, WITH its'
-Write-Output '         reason (config.json llm.unavailable_note), and greedy / random still run'
+if ($Posture -eq 'proxied') {
+  Write-Output '      5. posture is proxied: if the GPU origin (AWS-1) is up, the LLM attacker'
+  Write-Output '         option is enabled and staff sentences end with [F#] citations. If the'
+  Write-Output '         origin is not up yet, this reads the same as the off-posture check below -'
+  Write-Output '         a briefing with citations, the wargame staff ranking table, and the LLM'
+  Write-Output '         attacker disabled WITH its reason (config.json llm.unavailable_note)'
+} else {
+  Write-Output '      5. with no model at all: a briefing renders with its citations and the wargame'
+  Write-Output '         staff ranking table appears. Only the LLM attacker is disabled, WITH its'
+  Write-Output '         reason (config.json llm.unavailable_note), and greedy / random still run'
+}
 Write-Output '      6. assets/* come back with max-age=31536000 and index.html does not'
-Write-Output '         curl -sI <url>/index.html   and   curl -sI <url>/assets/<one file>'
+Write-Output '         curl.exe -sI <url>/index.html   and   curl.exe -sI <url>/assets/<one file>'
+Write-Output '         (curl.exe, not the curl alias - PS 5.1 curl is Invoke-WebRequest and does not know -sI)'
 
 Write-Output ''
 Write-Output ('=' * 74)

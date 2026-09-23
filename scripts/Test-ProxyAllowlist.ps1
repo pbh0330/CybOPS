@@ -5,6 +5,12 @@
 # is also a model management API. That only holds while the two lists agree.
 # They did not: the client moved to /api/chat and the examples still allowed
 # /api/generate, so the proxied posture answered 403 to every call.
+#
+# A gate named "allowlist" that only checks the allowed paths is half a gate:
+# it stays green even if someone deletes the catch-all refusal at the bottom
+# of each example, which is the line that makes everything NOT on the list a
+# 403 instead of a silent pass-through to Ollama. So this also checks that
+# each example still has that catch-all block.
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
@@ -34,6 +40,25 @@ foreach ($file in $conf) {
     if ($text -notmatch [regex]::Escape("/api/llm$path")) {
       $bad += "$(Split-Path -Leaf $file) is missing /api/llm$path"
     }
+  }
+}
+
+# Deny-by-default check. Each example refuses everything under /api/llm/ that
+# is not one of the allowed locations above; that refusal is what turns a
+# missing entry above into a 403 instead of an open proxy to Ollama.
+$catchAllPattern = @{
+  'nginx.example.conf' = 'location\s+/api/llm/\s*\{[^{}]*return\s+403'
+  'Caddyfile.example'  = 'handle\s+/api/llm/\*\s*\{[^{}]*respond[^{}]*403'
+}
+
+foreach ($file in $conf) {
+  $name = Split-Path -Leaf $file
+  $text = Get-Content -Raw -Encoding utf8 $file
+  $pattern = $catchAllPattern[$name]
+  if (-not $pattern) { continue }
+  $found = [regex]::Match($text, $pattern, 'Singleline')
+  if (-not $found.Success) {
+    $bad += "$name has no catch-all refusal for /api/llm/"
   }
 }
 
