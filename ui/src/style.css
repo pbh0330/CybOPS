@@ -540,3 +540,157 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
 @keyframes flash-hit { 0% { box-shadow: 0 0 0 0 rgba(255,77,94,.7); } 100% { box-shadow: 0 0 0 26px rgba(255,77,94,0); } }
 @keyframes flash-miss { 0% { box-shadow: 0 0 0 0 rgba(154,165,177,.6); } 100% { box-shadow: 0 0 0 20px rgba(154,165,177,0); } }
 @keyframes mark-pulse { 0%, 100% { box-shadow: 0 0 0 4px rgba(255,77,94,.22), 0 0 18px rgba(255,77,94,.55); } 50% { box-shadow: 0 0 0 9px rgba(255,77,94,.08), 0 0 26px rgba(255,77,94,.75); } }
+
+/* ------------------------------------------------------- compact: sheet */
+
+.sheet { display: none; }
+
+[data-compact="1"] .sheet {
+  display: flex; flex-direction: column;
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+  background: var(--surface-chrome);
+  border-top: 1px solid var(--line-strong);
+  border-radius: 12px 12px 0 0;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  transition: height .18s ease;
+}
+[data-compact="1"] .sheet[data-state="peek"] { height: 56px; }
+[data-compact="1"] .sheet[data-state="half"] { height: 50dvh; }
+[data-compact="1"] .sheet[data-state="full"] { height: 86dvh; }
+
+.sheet-grip {
+  flex: none; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  background: none; border: none; border-radius: 12px 12px 0 0;
+  padding: 8px 12px 6px; width: 100%; min-height: 44px;
+  touch-action: none;                 /* the grip drags; the page must not */
+}
+.sheet-bar { width: 36px; height: 4px; border-radius: 2px; background: var(--line-strong); }
+.sheet-peek {
+  font-size: 12px; color: var(--text-secondary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+.sheet-body {
+  flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+[data-compact="1"] .sheet[data-state="peek"] .sheet-body { display: none; }
+
+/* ----------------------------------------------- compact: single column */
+
+@media (max-width: 860px) {
+  /* 100vh is left in place above: a browser that does not know dvh keeps the
+     value it understands rather than collapsing to nothing. */
+  .app { height: 100dvh; }
+  .main { grid-template-columns: 1fr; }
+  /* One column means two ROWS, and `auto auto` gave the palette its full
+     content height (527px) and the board whatever was left (71px), which made
+     .canvas-wrap 0px - the stage this breakpoint exists to keep. The palette
+     takes what it asks for up to a third of the viewport, the board takes the
+     rest. minmax(0, 1fr) and not 1fr: a 1fr row floors at its content's
+     min-content height, which the canvas would push past the screen.
+     (Turning the palette into a horizontal strip is M2.) */
+  .main.is-editing {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .main.is-editing .palette {
+    max-height: 30dvh; min-height: 0;
+    border-right: none; border-bottom: 1px solid var(--line);
+  }
+  /* The rail's CONTENT moved into the sheet - the same React node, in the
+     other parent. This hides the empty grid column only; scoping it to a
+     direct child of .main matters because what is inside the sheet is also
+     an <aside class="rail">. */
+  .main > .rail { display: none; }
+  .board { min-width: 0; }
+  /* Reserve the sheet's 56px peek on .app, not on .main: the timeline is a
+     sibling of .main and would otherwise sit underneath the fixed sheet.
+     Padding here keeps the stage AND the timeline above it, which is the
+     stacking the compact spec draws. */
+  .app { padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px)); }
+  /* inside the sheet the rail is the whole panel: no left edge, no second
+     surface colour on top of the sheet's own */
+  .sheet .rail { border-left: none; background: none; }
+  .sheet .rail-body { overflow: visible; }
+  /* The geo footer is a horizontally scrolling strip by construction
+     (overflow-x: auto). At 390px .geo-warn still carried white-space: normal
+     and margin-left: auto, so it was squeezed to ~42px wide and wrapped into a
+     511px-tall column; the footer is flex: none, so that column ate the stage
+     and left the map canvas 17px high. Let the strip scroll sideways, which is
+     what it was built to do. */
+  .geo-foot > * { flex: none; }
+  .geo-warn { white-space: nowrap; margin-left: 0; }
+
+  /* ------------------------------------- compact: topbar is one line */
+  /* The strip WRAPS, it is not rebuilt: row 1 is the 56px bar (brand,
+     scenario, ?, ⋯) and row 2 is the KPI ribbon, which is the "KPI 띠를
+     상단바 밖 한 줄로" of the spec without a second DOM. Everything that
+     left the bar went into the ⋯ panel as the same node, not a copy. */
+  .topbar {
+    position: relative;
+    height: auto; flex-wrap: wrap; align-content: flex-start;
+    gap: 0 10px; padding: 0 12px; padding-top: env(safe-area-inset-top, 0px);
+  }
+  .topbar .brand { min-height: 56px; align-items: center; }
+  .brand-mark { white-space: nowrap; }
+  .topbar .tb-rule { display: none; }
+  .topbar .tb-phase, .topbar .tb-clock { display: none; }
+  .tb-field { flex: 0 1 auto; min-width: 0; min-height: 56px; }
+  /* At 390px the word 시나리오 next to the select had nowhere to go and broke
+     one character per line, which is what made the bar two rows tall. The
+     label is taken off the picture only: it keeps its `for`, so the select is
+     still named for a screen reader. */
+  .tb-field label {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
+  .tb-field select { min-width: 0; max-width: 46vw; }
+  .kpis {
+    order: 9; flex: 0 0 100%; width: 100%; align-items: center;
+    padding-bottom: 8px;
+    overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+  }
+  .kpi { scroll-snap-align: start; flex: none; }
+
+  .tb-menu-btn {
+    width: 44px; height: 44px; padding: 0; flex: none;
+    display: grid; place-items: center; font-size: 18px; line-height: 1;
+  }
+  /* The panel is always in the DOM while the screen is narrow - the controls
+     that moved here are parented into it - so "closed" is display:none and
+     not an unmount. */
+  .tb-menu {
+    display: none;
+    position: absolute; top: 100%; left: 0; right: 0; z-index: 35;
+    flex-direction: column; align-items: stretch; gap: 10px;
+    padding: 12px; background: var(--surface-chrome);
+    border-bottom: 1px solid var(--line-strong);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, .45);
+    max-height: 70dvh; overflow-y: auto;
+  }
+  .tb-menu[data-open="1"] { display: flex; }
+  .tb-menu .tb-rule { display: none; }
+  /* a thumb needs 44px, and everything in here is meant for a thumb */
+  .tb-menu .seg { width: 100%; }
+  .tb-menu .seg button { flex: 1; min-height: 44px; font-size: 14px; }
+  .tb-menu > button, .tb-menu select, .tb-menu .tb-file { min-height: 44px; width: 100%; }
+  .tb-menu .chk { min-height: 44px; font-size: 14px; }
+  /* what stayed behind (fit, the edit tools) scrolls sideways rather than
+     pushing the page wider than the screen */
+  .board-toolbar { overflow-x: auto; padding: 8px 12px; }
+
+  .timeline { height: 84px; gap: 12px; padding: 0 12px; }
+  .clock { min-width: 96px; }
+  .clock-time { font-size: 22px; }
+}
+
+/* --------------------------------------------- compact: no sparkline */
+/* Under ~560px the ribbon is too short to read a 6-hour axis off, and the
+   transport is what a thumb actually reaches for. The SVG is hidden, never
+   removed: the desktop timeline is the same component. */
+@media (max-width: 560px) {
+  .timeline { height: 64px; }
+  .ribbon-wrap { display: none; }
+  .clock { margin-left: auto; min-width: 0; }
+  .clock-time { font-size: 20px; }
+}

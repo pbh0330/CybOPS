@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { kpiOf, clockOf, pct } from '../derive.js'
 import { CAUSE_COLOR } from '../graph.js'
 import { SANDBOX_ID } from '../sandbox.js'
@@ -21,7 +22,47 @@ function Ring({ value }) {
 
 const scenarioLabel = (id) => (id === SANDBOX_ID ? `${id} · 교전장` : id)
 
-export default function Topbar({ scenarios, scenarioId, onScenario, mode, onMode, phases, onHelp, graph, step, game, sandbox = false }) {
+export default function Topbar({ scenarios, scenarioId, onScenario, mode, onMode, phases, onHelp, graph, step, game, sandbox = false, compact = false, onMenuNode }) {
+  // The `⋯` panel exists only on a narrow screen, and it is a PLACE, not a
+  // second set of controls: the mode switch below moves into it, and the view
+  // switch, the label toggle, the sandbox tools and the speed control are
+  // portaled into it by the components that own them (App hands them this
+  // node). One control, one node, wherever it happens to be parented.
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef(null)
+  const btnRef = useRef(null)
+
+  const setMenuEl = useCallback((node) => {
+    menuRef.current = node
+    if (onMenuNode) onMenuNode(node)
+  }, [onMenuNode])
+
+  // widening the window takes the panel away; it must not stay "open"
+  useEffect(() => { if (!compact) setMenuOpen(false) }, [compact])
+
+  useEffect(() => {
+    if (!menuOpen) return
+    // DOM containment, not React containment: what is inside the panel
+    // arrives through a portal, so a React-tree test would call a tap on the
+    // view switch an outside tap and close the panel under the finger.
+    const onDown = (e) => {
+      if (menuRef.current && menuRef.current.contains(e.target)) return
+      if (btnRef.current && btnRef.current.contains(e.target)) return
+      setMenuOpen(false)
+    }
+    const onKey = (e) => {
+      if (e.key !== 'Escape') return
+      setMenuOpen(false)
+      if (btnRef.current) btnRef.current.focus()
+    }
+    document.addEventListener('pointerdown', onDown)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('pointerdown', onDown)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [menuOpen])
+
   const k = kpiOf(graph, step)
   // The sandbox has no time axis, so every phase is active at once; listing
   // every name overflows the strip, so say so in two words instead.
@@ -33,6 +74,15 @@ export default function Topbar({ scenarios, scenarioId, onScenario, mode, onMode
   // it separately.
   const isolated = game ? game.isolated.length : 0
   const compromised = Math.max(0, k.compromised.n - isolated)
+  // built once, parented once: in the strip on a desktop, in the panel on a
+  // phone. Never both.
+  const modeSeg = (
+    <div className="seg" role="group" aria-label="모드">
+      {MODES.map(([id, label]) => (
+        <button key={id} type="button" className={mode === id ? 'on' : ''} aria-pressed={mode === id} onClick={() => onMode(id)}>{label}</button>
+      ))}
+    </div>
+  )
   return (
     <header className="topbar">
       <div className="brand">
@@ -46,11 +96,7 @@ export default function Topbar({ scenarios, scenarioId, onScenario, mode, onMode
           {scenarios.map((id) => <option key={id} value={id}>{scenarioLabel(id)}</option>)}
         </select>
       </div>
-      <div className="seg" role="group" aria-label="모드">
-        {MODES.map(([id, label]) => (
-          <button key={id} type="button" className={mode === id ? 'on' : ''} aria-pressed={mode === id} onClick={() => onMode(id)}>{label}</button>
-        ))}
-      </div>
+      {!compact && modeSeg}
       <span className="tb-rule" />
 
       <div className="kpis">
@@ -99,6 +145,23 @@ export default function Topbar({ scenarios, scenarioId, onScenario, mode, onMode
       <div className="tb-phase">{phases.length ? <>활성 단계 <b>{phaseText}</b></> : '활성 단계 없음'}</div>
       <div className="tb-clock"><b>{clock.time}</b><span>{clock.off}</span></div>
       <button type="button" className="help-btn" title="이 화면 읽는 법" onClick={onHelp}>?</button>
+      {compact && (
+        <button
+          ref={btnRef} type="button" className="tb-menu-btn"
+          aria-expanded={menuOpen} aria-controls="tb-menu"
+          aria-label="기타 컨트롤" title="기타 컨트롤"
+          onClick={() => setMenuOpen((o) => !o)}
+        >⋯</button>
+      )}
+      {compact && (
+        <div
+          id="tb-menu" className="tb-menu" ref={setMenuEl}
+          data-open={menuOpen ? '1' : undefined}
+          role="group" aria-label="기타 컨트롤"
+        >
+          {modeSeg}
+        </div>
+      )}
     </header>
   )
 }

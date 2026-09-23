@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import replay from '../../public/data/tacnet-01.replay.json'
 import { startGame, defend, pass, attackerTurn } from '../game.js'
-import { eventRows, kpiOf, timeLabel, BAND_LABELS, gameOverlay } from '../derive.js'
+import { eventRows, kpiOf, timeLabel, BAND_LABELS, gameOverlay, peekLine } from '../derive.js'
 
 const graph = {
   timeline: { t0_iso: '2026-09-10T06:00:00+09:00', horizon: 420, step: 15 },
@@ -93,5 +93,30 @@ describe('gameOverlay', () => {
     const o2 = gameOverlay(g, G)
     expect(o2.turn).toBe(1)
     if (G.history[0].attacker && G.history[0].attacker.move.target) expect(o2.last).toMatchObject({ turn: 0 })
+  })
+})
+
+describe('peekLine', () => {
+  const s = { ...steps[2], mission: { 'M-C2': 0.72, 'M-FIRE': 0.1 }, mission_active: { 'M-C2': true, 'M-FIRE': true } }
+  it('headlines the top-priority mission and its degradation', () => {
+    expect(peekLine(graph, s, null)).toBe('지휘통제 P1 72.0%')
+  })
+  it('skips a mission the current phase has switched off', () => {
+    const off = { ...s, mission_active: { 'M-C2': false, 'M-FIRE': true } }
+    expect(peekLine(graph, off, null)).toBe('화력지원 P2 10.0%')
+  })
+  it('reads zero before anything has happened', () => {
+    expect(peekLine(graph, steps[0], null)).toBe('지휘통제 P1 0.0%')
+  })
+  it('a running game replaces it with the turn and the score', () => {
+    const g = replay.graph
+    let G = startGame(g, { mode: 'hold', turns: 8, t: 150, foothold: { id: 'CO2-VEH', level: 0.8 }, seed: 11, strategy: 'greedy' })
+    expect(peekLine(g, s, G)).toBe(`턴 1/8 · 점수 ${G.score.total.toFixed(2)}`)
+    G = pass(G)
+    G = attackerTurn(g, G)
+    expect(peekLine(g, s, G)).toBe(`턴 2/8 · 점수 ${G.score.total.toFixed(2)}`)
+  })
+  it('survives a graph with no missions at all', () => {
+    expect(peekLine({ missions: [] }, {}, null)).toBe('임무 없음')
   })
 })

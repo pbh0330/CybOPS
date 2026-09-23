@@ -95,3 +95,8 @@ analysis/**/*.v1.summary.json
 
 # 피어 IP 를 host_key 로 바꾸는 표(88 KB). 이것 없이는 흐름 엣지를 셀에 조인할 수 없다. docs/19 17절.
 !analysis/optc/ecar-host-ip.csv
+
+# Claude Code local artifacts - dev scratch, never part of the product
+.playwright-mcp/
+.claude/settings.json
+.claude/worktrees/

@@ -256,6 +256,25 @@ export function kpiOf(graph, s) {
   return { missions, compromised: { n: compromised, total: assets.length }, cuts: { n: cuts, byCause }, band: { level, label: BAND_LABELS[level] } }
 }
 
+// The single line the collapsed sheet shows on a phone. It reports, it never
+// computes: the degradation comes out of kpiOf, which reads the same step the
+// rail reads, so the peek and the panel behind it can never disagree. During
+// an engagement the turn and the score replace it - that is what the operator
+// is tracking while the clock is frozen.
+export function peekLine(graph, step, game) {
+  if (game && game.cfg) {
+    const t = num(game.score?.total)
+    const score = game.cfg.mode === 'hold' ? t.toFixed(2) : t
+    return `턴 ${num(game.turn) + 1}/${game.cfg.turns} · 점수 ${score}`
+  }
+  const { missions } = kpiOf(graph, step)
+  // missions is already priority-sorted; a phase-inactive mission has no
+  // number to show, so the top ACTIVE one is the headline
+  const m = missions.find((x) => x.active) || missions[0]
+  if (!m) return '임무 없음'
+  return `${m.name} P${m.priority} ${pct(m.total)}`
+}
+
 // What the pictures draw during a wargame. Candidates are the attacker's top
 // six legal moves as the engine scores them - read from the same list the
 // panel shows, never inferred. Lateral moves become edges, self-targeted

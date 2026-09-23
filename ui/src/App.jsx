@@ -3,8 +3,9 @@ import { loadConfig } from './config.js'
 import { loadSymbology, unmappedTypes } from './symbols.js'
 import { createEditor } from './editor.js'
 import { compromiseOf } from './game.js'
-import { computeStep, activePhaseNames, clockOf, gameOverlay } from './derive.js'
+import { computeStep, activePhaseNames, clockOf, gameOverlay, peekLine } from './derive.js'
 import { makeSandbox, loadRules, validateImport, listPlans, savePlan, loadPlan, deletePlan, SANDBOX_ID, TEMPLATE_ID } from './sandbox.js'
+import { useCompact } from './useCompact.js'
 import Topbar from './ui/Topbar.jsx'
 import BoardToolbar from './ui/BoardToolbar.jsx'
 import GraphCanvas from './ui/GraphCanvas.jsx'
@@ -14,6 +15,7 @@ import Rail from './ui/Rail.jsx'
 import Timeline from './ui/Timeline.jsx'
 import Onboard from './ui/Onboard.jsx'
 import Wargame from './ui/Wargame.jsx'
+import Sheet from './ui/Sheet.jsx'
 
 // The sandbox is not a file: it is derived in the browser from the template
 // replay (ADR-0027), so it is always listed and never HEAD-checked.
@@ -32,6 +34,7 @@ function Mount({ make, deps = [], className }) {
 }
 
 export default function App() {
+  const compact = useCompact()
   const [error, setError] = useState(null)
   const [scenarios, setScenarios] = useState(SCENARIOS)
   const [scenarioId, setScenarioId] = useState(null)
@@ -44,6 +47,10 @@ export default function App() {
   const link = useRef(new URLSearchParams(window.location.search))
   const pick = (key, allowed, dflt) => (allowed.includes(link.current.get(key)) ? link.current.get(key) : dflt)
   const [view, setView] = useState(pick('view', ['dependency', 'transport', 'geo'], 'dependency'))
+  // Once the operator has picked a view, nothing picks for them again. A
+  // ?view= deep link counts as a pick: whoever wrote that URL already chose.
+  const viewChosen = useRef(link.current.get('view') !== null)
+  const onView = useCallback((v) => { viewChosen.current = true; setView(v) }, [])
   const [mode, setMode] = useState('observe')
   const [tab, setTab] = useState(pick('tab', ['cuts', 'actions', 'inspect'], 'actions'))
   const [labels, setLabels] = useState(true)
@@ -57,6 +64,10 @@ export default function App() {
   // the wargame is a value (game.js); App owns it so the pictures can read it
   const [game, setGame] = useState(null)
   const [onboard, setOnboard] = useState(false)
+  // The topbar's `⋯` panel, once it exists (compact only). Controls that live
+  // in other components are parented INTO this node rather than rebuilt in
+  // it - one node per control, same rule as railEl below.
+  const [menuNode, setMenuNode] = useState(null)
   const [toast, setToast] = useState(null)
   const [geoCam, setGeoCam] = useState({ mode: '2d', az: 35, pitch: 55, zScale: 12, terrain: true })
   // sandbox (ADR-0027): the link rule table, and the saved plans in localStorage
@@ -165,6 +176,20 @@ export default function App() {
     })()
     return () => { alive = false }
   }, [scenarioId, storageKey])
+
+  // --- compact default view (ADR-0001 mobile exception) ------------------
+  // On a phone the map opens first, because that is the picture a thumb can
+  // read without zooming. Two conditions and no more: compact, and the
+  // scenario actually HAS a georef - defnet-01 has none, so it opens on the
+  // graph. This is a default, never a correction: the moment the operator
+  // touches the view control (or arrived by a ?view= link) it stops firing
+  // for good. It re-evaluates per scenario load because "which view exists"
+  // is a property of the scenario, not of the session.
+  useEffect(() => {
+    if (viewChosen.current) return
+    if (!compact || !graph) return
+    setView(graph.geo && graph.geo.georef ? 'geo' : 'dependency')
+  }, [compact, graph])
 
   // --- derived ----------------------------------------------------------
   // A running game replaces the replay's compromise state. If the graph is
@@ -395,8 +420,33 @@ export default function App() {
   const isGeo = view === 'geo'
   const hasGeoref = !!(graph && graph.geo && graph.geo.georef)
 
+  // ONE rail. It is built here and handed to exactly one parent below - the
+  // grid column on a desktop, the bottom sheet on a phone. Rendering <Rail>
+  // inside both branches would give the screen two tab states, two briefing
+  // fetches and two wargame panels that disagree with each other.
+  const railEl = (
+    <Rail
+      graph={graph} step={step} scenarioId={scenarioId} edited={edited}
+      when={when} tab={tab} onTab={setTab}
+      requests={requests} onRequest={onRequest}
+      selectedData={selectedData} onToast={setToast} mode={mode}
+      editor={editorRef} rules={rules} sandbox={isSandbox}
+      payload={payload} idx={idx} onSeekIdx={(i) => setIdx(i)}
+      wargameSlot={mode === 'wargame' ? (
+        // keyed on the scenario so a switch unmounts the panel: its
+        // in-flight model call is then discarded, not written back
+        <Wargame
+          key={scenarioId}
+          graph={graph} payload={payload} idx={idx} game={game} onGame={setGame}
+          onSeekIdx={(i) => setIdx(i)} onToast={setToast} onMode={setMode}
+          sandbox={isSandbox}
+        />
+      ) : null}
+    />
+  )
+
   return (
-    <div className="app">
+    <div className="app" data-compact={compact ? '1' : undefined}>
       <Topbar
         scenarios={scenarios}
         scenarioId={scenarioId}
@@ -409,6 +459,8 @@ export default function App() {
         step={step}
         game={mode === 'wargame' ? game : null}
         sandbox={isSandbox}
+        compact={compact}
+        onMenuNode={setMenuNode}
       />
 
       <div className={`main${mode === 'edit' ? ' is-editing' : ''}`}>
@@ -433,7 +485,7 @@ export default function App() {
 
         <section className="board">
           <BoardToolbar
-            view={view} onView={setView} mode={mode}
+            view={view} onView={onView} mode={mode}
             labels={labels} onLabels={setLabels}
             onFit={() => cyRef.current && cyRef.current.fit(undefined, 16)}
             tool={tool}
@@ -447,6 +499,7 @@ export default function App() {
               : (edited ? '편집됨 · 수치는 로컬 엔진이 계산한다' : '')}
             sandbox={isSandbox} plans={plans}
             onSavePlan={onSavePlan} onLoadPlan={onLoadPlan} onDeletePlan={onDeletePlan} onImport={onImport}
+            menuNode={compact ? menuNode : null}
           />
           <div className="canvas-wrap">
             <GraphCanvas
@@ -471,32 +524,22 @@ export default function App() {
           </div>
         </section>
 
-        <Rail
-          graph={graph} step={step} scenarioId={scenarioId} edited={edited}
-          when={when} tab={tab} onTab={setTab}
-          requests={requests} onRequest={onRequest}
-          selectedData={selectedData} onToast={setToast} mode={mode}
-          editor={editorRef} rules={rules} sandbox={isSandbox}
-          payload={payload} idx={idx} onSeekIdx={(i) => setIdx(i)}
-          wargameSlot={mode === 'wargame' ? (
-            // keyed on the scenario so a switch unmounts the panel: its
-            // in-flight model call is then discarded, not written back
-            <Wargame
-              key={scenarioId}
-              graph={graph} payload={payload} idx={idx} game={game} onGame={setGame}
-              onSeekIdx={(i) => setIdx(i)} onToast={setToast} onMode={setMode}
-              sandbox={isSandbox}
-            />
-          ) : null}
-        />
+        {!compact && railEl}
       </div>
 
       <Timeline
         graph={graph} payload={payload} idx={idx} step={step}
         playing={playing} onPlay={() => setPlaying((p) => !p)} onSeek={onSeek}
         speed={speed} onSpeed={setSpeed} locked={locked} lockedLabel={lockedLabel}
+        menuNode={compact ? menuNode : null}
         onStep={(d) => setIdx((i) => Math.max(0, Math.min((payload?.steps.length || 1) - 1, i + d)))}
       />
+
+      {compact && (
+        <Sheet peek={peekLine(graph, step, mode === 'wargame' ? game : null)} raised={selectedData?.id ?? null}>
+          {railEl}
+        </Sheet>
+      )}
 
       {onboard && <Onboard onClose={() => setOnboard(false)} />}
       {toast && <div className="toast">{toast}</div>}
