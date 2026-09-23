@@ -320,46 +320,64 @@ function advanceOf(g, state, move) {
   return Number(sum.toFixed(6))
 }
 
-// The control. Picks the move that costs the defender the most right now.
+// THE order of scored moves. One definition, used by the control below and by
+// anything that shows the attacker's options - two orders would let the panel
+// list one move at the top while the engine plays another.
 //
-// Two rules keep it from standing still. First, recon is a last resort: it
-// changes no state, so choosing it when anything else is legal means facing
-// the identical position next turn - a livelock, not caution. Second, when
-// `gain` ties (at a time when the operation has not started, or when P1 is
-// already fully degraded, every move scores 0), the tie is broken by things
-// that mean progress: how much compromise the move pushes into the graph, and
-// then how close its target sits to a crown jewel. Only after that does the
-// cheaper action win, so the order is still total and deterministic:
-// gain desc -> advance desc -> jewel distance asc -> p desc -> id asc.
-// (ADR-0019 section 5)
-export function greedyChooser(legal, ctx = {}) {
-  const all = legal || []
-  if (!all.length) return { move: undefined, rationale: 'greedy: 둘 수 있는 수가 없다' }
+// Two rules keep the attacker from standing still. First, recon is a last
+// resort: it changes no state, so choosing it when anything else is legal
+// means facing the identical position next turn - a livelock, not caution.
+// Second, when `gain` ties (at a time when the operation has not started, or
+// when P1 is already fully degraded, every move scores 0), the tie is broken
+// by things that mean progress: how much compromise the move pushes into the
+// graph, and then how close its target sits to a crown jewel. Only after that
+// does the cheaper action win, so the order is total and deterministic:
+//
+//   recon last -> gain desc -> advance desc -> jewel distance asc
+//              -> p desc -> id asc
+//
+// recon's gain is always exactly 0 (it has no effect), so putting it last
+// never breaks the "gain descending" reading of the list. (ADR-0019 section 5
+// and its 2026-09-23 amendment.)
+export function orderMoves(moves, ctx = {}) {
+  const all = moves || []
+  if (all.length < 2) return [...all]
   const g = (ctx && ctx.g) || {}
   const state = (ctx && ctx.state) || {}
 
-  const viable = all.filter((m) => m.action !== 'recon')
-  const pool = viable.length ? viable : all
-
   const dist = jewelDistances(g)
-  const adv = new Map()
-  const near = new Map()
-  for (const m of pool) {
-    adv.set(m.id, advanceOf(g, state, m))
+  const key = new Map()   // keyed by the move object: ids are unique, objects are safer
+  for (const m of all) {
     const d = m.target === null || m.target === undefined ? undefined : dist[m.target]
-    near.set(m.id, d === undefined ? FAR : d)
+    key.set(m, {
+      last: m.action === 'recon' ? 1 : 0,
+      adv: advanceOf(g, state, m),
+      near: d === undefined ? FAR : d,
+    })
   }
 
-  const sorted = [...pool].sort((a, b) =>
-    (b.gain - a.gain)
-    || (adv.get(b.id) - adv.get(a.id))
-    || (near.get(a.id) - near.get(b.id))
-    || (b.p - a.p)
-    || a.id.localeCompare(b.id))
+  return [...all].sort((a, b) => {
+    const ka = key.get(a), kb = key.get(b)
+    return (ka.last - kb.last)
+      || (b.gain - a.gain)
+      || (kb.adv - ka.adv)
+      || (ka.near - kb.near)
+      || (b.p - a.p)
+      || a.id.localeCompare(b.id)
+  })
+}
 
-  const move = sorted[0]
+// The control. Picks the head of that order: the move that costs the defender
+// the most right now, and when nothing costs anything, the move that carries
+// the attack furthest toward a crown jewel. Without this there is no way to
+// tell whether an LLM attacker is any good (ADR-0019 section 5).
+export function greedyChooser(legal, ctx = {}) {
+  const all = legal || []
+  if (!all.length) return { move: undefined, rationale: 'greedy: 둘 수 있는 수가 없다' }
+
+  const move = orderMoves(all, ctx)[0]
   let rationale
-  if (!viable.length) rationale = 'greedy: 둘 수 있는 수가 정찰뿐이다'
+  if (!all.some((m) => m.action !== 'recon')) rationale = 'greedy: 둘 수 있는 수가 정찰뿐이다'
   else if (move.gain > 0) rationale = 'greedy: 임무 저하도 증가분이 가장 큰 수'
   else rationale = 'greedy: 이득이 평평해 전진량과 crown jewel 근접으로 고른 수'
   return { move, rationale }

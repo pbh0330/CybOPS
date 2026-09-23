@@ -10,7 +10,7 @@
 // (attack.js `isolated`). Isolating a fully compromised asset costs the
 // mission nothing and stops the spread - that choice is the game.
 
-import { legalMoves, scoreMoves, playTurn, footholds, greedyChooser, randomChooser } from './attack.js'
+import { legalMoves, scoreMoves, playTurn, footholds, greedyChooser, randomChooser, orderMoves } from './attack.js'
 import { runChain } from './engine.js'
 
 const DEFAULTS = { mode: 'hold', turns: 8, t: 0, foothold: null, seed: 20260906, strategy: 'greedy', method: 'weighted' }
@@ -59,10 +59,16 @@ export function startGame(g, cfg = {}) {
   }
 }
 
+// The attacker's options, in the attacker's own order (attack.js orderMoves).
+// The panel must not rank them its own way: the head of this list is the move
+// greedy will actually play. `orderMoves` gets G.attacker, the same state
+// playTurn hands the chooser - isolated assets are excluded from the moves
+// themselves, so the compromise-merged state used for scoring would give the
+// same answer, but there is no reason for the two to differ.
 export function legalFor(g, G) {
   const legal = legalMoves(g, G.attacker, G.cfg.t, { isolated: G.isolated })
-  return scoreMoves(g, compromiseOf(G), G.cfg.t, legal, G.cfg.method)
-    .sort((a, b) => (b.gain - a.gain) || (b.p - a.p) || a.id.localeCompare(b.id))
+  const scored = scoreMoves(g, compromiseOf(G), G.cfg.t, legal, G.cfg.method)
+  return orderMoves(scored, { g, state: G.attacker, t: G.cfg.t })
 }
 
 export function isolationCost(g, G, id) {

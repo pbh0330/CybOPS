@@ -344,12 +344,16 @@ export function createLLMChooser(opts = {}) {
     // unreported fallback would let a broken model score as greedy.
     stats.fallback_greedy++
     rec.fallback = true
-    const g = greedyChooser(legal)
-    rec.chosen = g.move.id
-    rec.rationale = `FALLBACK->greedy: ${g.rationale}`
+    // ctx is passed on purpose: greedyChooser breaks a tie on how much the
+    // move advances the compromise from THIS state. Calling it bare would
+    // measure against an empty state and pick a different move than the
+    // greedy baseline this row is logged as.
+    const fb = greedyChooser(legal, ctx)
+    rec.chosen = fb.move.id
+    rec.rationale = `FALLBACK->greedy: ${fb.rationale}`
     stats.turns.push(rec)
-    if (cfg.verbose) console.error(`  [llm] turn ${ctx.turn}: 2회 실패, greedy 폴백 -> ${g.move.id}`)
-    return { move: g.move, rationale: rec.rationale, cited: { source: 'fallback:greedy', model: cfg.model } }
+    if (cfg.verbose) console.error(`  [llm] turn ${ctx.turn}: 2회 실패, greedy 폴백 -> ${fb.move.id}`)
+    return { move: fb.move, rationale: rec.rationale, cited: { source: 'fallback:greedy', model: cfg.model } }
   }
 
   chooser.stats = stats

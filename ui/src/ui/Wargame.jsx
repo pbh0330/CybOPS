@@ -78,13 +78,15 @@ function StartCard({ graph, payload, idx, llmOk, llmNote, onStart, readyState })
   // at all - the operation has not started yet, or P1 is already fully
   // degraded. 버티기 then wins by arithmetic rather than by defending, so the
   // card says so instead of letting the player find out after eight turns.
-  const seedKey = (activePreset ? activePreset.seeds : (footSel ? [{ id: footSel, level }] : [])).map((f) => `${f.id}:${f.level}`).join(',')
+  const seeds = activePreset ? activePreset.seeds : (footSel ? [{ id: footSel, level }] : [])
+  // seedKey is the dependency only - the seeds themselves are never rebuilt
+  // from it, so an asset id containing the separator cannot corrupt them
+  const seedKey = seeds.map((f) => `${f.id}:${f.level}`).join('|')
   const flat = useMemo(() => {
-    const seeds = seedKey ? seedKey.split(',').map((s) => ({ id: s.slice(0, s.lastIndexOf(':')), level: Number(s.slice(s.lastIndexOf(':') + 1)) })) : []
     if (!seeds.length) return false
     const moves = legalFor(graph, startGame(graph, { t, foothold: null, footholds: seeds, method: 'weighted' }))
     return !moves.length || Number(moves[0].gain || 0) <= 0
-  }, [graph, t, seedKey])
+  }, [graph, t, seedKey])   // seeds is covered by seedKey
   return (
     <div className="wg-start">
       <div className="wg-sub">교전 시작 - 조건을 고른다</div>
@@ -131,9 +133,12 @@ function StartCard({ graph, payload, idx, llmOk, llmNote, onStart, readyState })
       </div>
       {!llmOk && llmNote && <div className="wg-llm-note">LLM 공격자 사용 불가<span>{llmNote}</span></div>}
       <p className="rail-caption">{mode === 'hold' ? `${turns}턴 동안 P1 임무 저하도를 50% 미만으로 지키면 승. 점수는 턴별 가중 저하도의 합(낮을수록 좋음).` : `${turns}턴 동안 crown jewel 이 장악되지 않으면 승. 점수 = 버틴 턴×100 − 격리 비용.`}</p>
-      {flat && <p className="wg-lock">이 시점은 여유가 없다 - 어떤 수도 임무 저하도를 올리지 못해 버티기는 무의미하다. 더 이른 시점이나 보석 방어를 고른다.</p>}
       <button type="button" className="wg-start-go" disabled={!ready} onClick={() => onStart({ mode, turns, t, foothold: { id: footSel, level }, ...(activePreset ? { footholds: activePreset.seeds } : {}), seed, strategy, method: 'weighted' }, stepIdx)}>시작</button>
-      {!ready && <p className="wg-lock">{lockText}</p>}
+      {/* one caption line: the readiness lock wins, since it is the one that
+          disables the button. The headroom note is about 버티기 only - in
+          jewel mode it would be advising the mode already chosen. */}
+      {(!ready || (flat && mode === 'hold')) && <p className="wg-lock">{!ready ? lockText
+        : '이 시점은 여유가 없다 - 어떤 수도 임무 저하도를 올리지 못해 버티기는 무의미하다. 더 이른 시점이나 보석 방어를 고른다.'}</p>}
     </div>
   )
 }
