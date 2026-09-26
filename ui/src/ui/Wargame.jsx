@@ -6,6 +6,7 @@ import { staffFacts, narrateStaff } from '../staff-llm.mjs'
 import { runChain } from '../engine.js'
 import { readiness } from '../sandbox.js'
 import { PRESETS } from '../presets.js'
+import { CitedText, factText } from './cite.jsx'
 
 // The wargame panel (ADR-0026). Every number on it comes from game.js; this
 // file only draws and forwards clicks. The three boundaries of the old
@@ -143,23 +144,14 @@ function StartCard({ graph, payload, idx, llmOk, llmNote, onStart, readyState })
   )
 }
 
-// Split on sentence ends, keep the [F#] chips, mark the uncited (ADR-0009).
-function CitedText({ text, facts, onToast }) {
-  const map = new Map(facts.map((f) => [f.id, f.text]))
-  const sentences = String(text).split(/(?<=[.!?。])\s+|(?<=\])\s+/).filter((x) => x.trim())
-  return sentences.map((raw, i) => {
-    const cites = [...new Set([...raw.matchAll(/\[(F\d+)\]/g)].map((m) => m[1]))]
-    const body = raw.replace(/\[(F\d+)\]/g, '').replace(/\s+([.,])/g, '$1').trim()
-    return (
-      <p className="brief-s" key={i}>{body}{' '}
-        {cites.map((c) => (
-          <button key={c} type="button" className={`cite-chip${map.has(c) ? '' : ' is-bad'}`} title={map.get(c) || '근거 없음'} onClick={() => onToast(`${c} — ${map.get(c) || '근거 없음'}`)}>{c}</button>
-        ))}
-        {cites.length === 0 && <span className="unverified">미검증</span>}
-      </p>
-    )
-  })
-}
+// 문장 분해·칩·미검증 배지는 cite.jsx 한 벌이다 (ADR-0009). 여기 있던 지역
+// 구현은 레일의 것과 이미 규칙이 조금씩 달랐다 - 그래서 셋을 하나로 모았다.
+const CitedNarration = ({ text, facts, onToast }) => (
+  <CitedText
+    text={text} facts={facts}
+    onCite={(c, hit) => onToast(`${c} — ${factText(hit) || '근거 없음'}`)}
+  />
+)
 
 function StaffCard({ graph, game, rows, p1, llmOk, onIsolate, onToast }) {
   const [narr, setNarr] = useState(null)   // { text } | { error } | null
@@ -193,7 +185,7 @@ function StaffCard({ graph, game, rows, p1, llmOk, onIsolate, onToast }) {
           <button type="button" className="req-btn" disabled={none || game.phase !== 'defend'} onClick={() => onIsolate(r.id)}>{none ? '참고 (순이득 ≤ 0)' : '이 행동 선택'}</button>
         </div>
       ))}
-      {narr && narr.text && <div className="wg-staff-text"><CitedText text={narr.text} facts={facts} onToast={onToast} /><span className="brief-meta">{narr.ms} ms · 표를 읽은 것이지 표를 만든 것이 아니다</span></div>}
+      {narr && narr.text && <div className="wg-staff-text"><CitedNarration text={narr.text} facts={facts} onToast={onToast} /><span className="brief-meta">{narr.ms} ms · 표를 읽은 것이지 표를 만든 것이 아니다</span></div>}
       {narr && narr.error && <div className="wg-result is-bad">참모 모델 호출 실패: {narr.error}</div>}
     </div>
   )

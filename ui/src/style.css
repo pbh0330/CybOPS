@@ -610,6 +610,32 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
   padding: 10px 12px 14px; border-right: 1px solid var(--line-strong);
   display: flex; flex-direction: column; gap: 8px;
 }
+/* The question box. One line above the catalogue, and the ONLY control in
+   this panel that needs a model - when there is none it goes flat and says
+   why, while every button under it keeps working (ADR-0018 static bundle:
+   the demo runs on a laptop with no GPU). No hue here either: a disabled
+   input is disabled by weight, not by colour (ADR-0024). */
+.staff-askbox { display: flex; gap: 6px; align-items: stretch; }
+.staff-ask-input {
+  flex: 1 1 auto; min-width: 0; padding: 6px 8px; font-size: 12px;
+  background: var(--surface-app); color: var(--text-primary);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+}
+.staff-ask-input::placeholder { color: var(--text-muted); }
+.staff-ask-input:focus { outline: none; border-color: var(--text-muted); }
+.staff-ask-input:disabled { opacity: .5; }
+.staff-ask-go {
+  flex: none; padding: 6px 10px; font-size: 12px;
+  background: var(--surface-raised); color: var(--text-primary);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+}
+.staff-ask-go:hover:enabled { background: var(--surface-hover); }
+.staff-llm-note {
+  margin: 0; font-size: 11px; line-height: 1.6; color: var(--text-muted);
+  border-left: 2px dashed var(--line-strong); padding-left: 8px;
+}
+.staff-llm-note b { color: var(--text-secondary); font-weight: 500; }
+
 .staff-queries-head { margin: 0 0 2px; font-size: 11px; color: var(--text-muted); }
 .staff-q { display: flex; flex-direction: column; gap: 4px; }
 .staff-q-run {
@@ -691,6 +717,40 @@ button.staff-fact:hover { color: var(--text-primary); border-bottom-color: var(-
 .staff-table td.is-tie { color: var(--text-primary); }
 .staff-tie-mark { font-style: normal; margin-left: 6px; font-size: 10px; color: var(--text-muted); }
 .staff-note { margin: 8px 0 0; font-size: 11px; line-height: 1.6; color: var(--text-muted); }
+
+/* --- what came back from the model --------------------------------------
+   Abstention and failure are DIFFERENT outcomes and look different, but
+   neither is red: an abstention is the model working correctly, and a dead
+   endpoint is not an attack (ADR-0024 keeps red for the attack layer). The
+   solid rule is the abstention - it is an answer; the dashed one is the
+   failure - nothing was computed. */
+.staff-asking { margin: 0 0 10px; font-size: 12px; color: var(--text-muted); }
+.staff-outcome {
+  margin: 0 0 12px; padding: 8px 10px; border-radius: var(--radius-sm);
+  background: var(--surface-raised); border: 1px solid var(--line-soft);
+}
+.staff-outcome.is-abstain { border-left: 2px solid var(--line-strong); }
+.staff-outcome.is-fail { border-left: 2px dashed var(--line-strong); }
+.staff-outcome-head {
+  margin: 0 0 4px; font-size: 12px; color: var(--text-primary);
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px;
+}
+.staff-outcome-q { color: var(--text-muted); font-size: 11px; min-width: 0; overflow-wrap: anywhere; }
+.staff-outcome-why { margin: 0 0 4px; font-size: 12px; line-height: 1.6; color: var(--text-secondary); overflow-wrap: anywhere; }
+.staff-outcome-note { margin: 0; font-size: 11px; line-height: 1.6; color: var(--text-muted); }
+
+/* The question, and the one paragraph a model wrote. `.brief-s` and
+   `.cite-chip` come from cite.jsx, the same renderer the rail's briefing
+   uses - one citation renderer, so the 미검증 rule cannot drift (ADR-0009). */
+.staff-asked { margin: 0 0 6px; font-size: 12px; line-height: 1.6; color: var(--text-secondary); }
+.staff-asked b { font-weight: 500; color: var(--text-muted); margin-right: 5px; }
+.staff-say { margin: 0 0 10px; }
+.staff-say .brief-s { margin-bottom: 6px; font-size: 12.5px; }
+.staff-caption { margin: 0 0 6px; font-size: 10.5px; color: var(--text-muted); }
+.staff-cite-meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 10.5px; color: var(--text-muted); }
+/* Where a citation chip landed. Held by a background, not a hue, and it
+   stays until the next chip is pressed - the reader looks away and back. */
+.staff-facts li.is-hl { background: var(--surface-hover); border-radius: var(--radius-sm); }
 
 /* ----------------------------------------------- compact: single column */
 
@@ -907,6 +967,18 @@ button.staff-fact:hover { color: var(--text-primary); border-bottom-color: var(-
     background: var(--surface-raised); border-radius: var(--radius-sm);
   }
   .staff-facts li { align-items: flex-start; }
+  /* The question box is a thumb target: the input gets the blanket 44px and
+     the send button stops being a 34px sliver next to it. It wraps rather
+     than squeezing the input to nothing at 320px. */
+  .staff-askbox { flex-wrap: wrap; }
+  .staff-ask-input { flex: 1 1 60%; min-height: 40px; font-size: 13px; }
+  .staff-ask-go { flex: 0 0 auto; min-height: 40px; padding: 6px 14px; }
+  .staff-outcome { padding: 8px; }
+  .staff-outcome-q { flex-basis: 100%; }
+  /* Chips are tapped here, not clicked: the sentence gets line height to
+     keep them from overlapping the line above. */
+  .staff-say .brief-s { line-height: 1.9; padding-left: 8px; }
+  .staff-facts li.is-hl { padding: 2px 6px; margin: 0 -6px; }
   /* The caption can carry two reasons at once (clock AND graph), so at this
      width it wraps into a short paragraph rather than a line - give it room
      to breathe instead of letting it crowd the first fact. */

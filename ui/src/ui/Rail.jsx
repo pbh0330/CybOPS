@@ -5,6 +5,7 @@ import detection from '../detection.json'
 import { techniqueKo, techniqueMeaning, tacticKo, assetName, typeKo } from '../labels.js'
 import { linkCandidates, missionCandidates, siteOf, ruleGap, BEARER_ORDER } from '../sandbox.js'
 import Readiness from './Readiness.jsx'
+import { CitedText, citeStats, splitSentences, stripCites } from './cite.jsx'
 
 // The rail. Six stacked panels became one fixed block plus tabs (ADR-0024):
 // mission state is always visible because it is the answer to "how bad is it",
@@ -246,34 +247,21 @@ function Brief({ scenarioId, step, edited, onToast }) {
   if (edited) return <div className="none">편집된 그래프에는 해당 브리핑이 없다</div>
   if (!data || !data.brief || !data.brief.text) return <div className="none">이 시각의 브리핑이 없다</div>
 
+  // 칩도 배지도 cite.jsx 가 그린다 - 참모 답변과 같은 렌더러다 (ADR-0009).
   const facts = new Map((data.pack?.facts || []).map((f) => [f.id, f.text]))
-  const sentences = String(data.brief.text).split(/(?<=[.!?])\s+/).filter((x) => x.trim())
+  const stats = citeStats(data.brief.text)
 
   return (
     <>
       <p className="rail-caption">이 문단만 LLM 이 썼다. 숫자는 결정론 계층이 만든 것이다 (ADR-0003)</p>
-      {sentences.map((raw, i) => {
-        const cites = [...raw.matchAll(/\[(F\d+)\]/g)].map((m) => m[1])
-        const text = raw.replace(/\[(F\d+)\]/g, '').replace(/\s+([.,])/g, '$1').trim()
-        return (
-          <p className="brief-s" key={i}>
-            {text}{' '}
-            {cites.map((c) => (
-              <button
-                key={c} type="button"
-                className={`cite-chip${facts.has(c) ? '' : ' is-bad'}`}
-                title={facts.get(c) || '근거를 찾지 못했다'}
-                onClick={() => onToast(`${c} — ${facts.get(c) || '근거 없음'}`)}
-              >{c}</button>
-            ))}
-            {cites.length === 0 && <span className="unverified">미검증</span>}
-          </p>
-        )
-      })}
+      <CitedText
+        text={data.brief.text} facts={facts}
+        onCite={(c, hit) => onToast(`${c} — ${hit || '근거 없음'}`)}
+      />
       <div className="brief-meta">
         <span>{data.brief.model || ''}</span>
         <span>{data.brief.prompt_version || ''}</span>
-        <span>{sentences.length}문장 · 인용 {sentences.filter((x) => /\[F\d+\]/.test(x)).length}건</span>
+        <span>{stats.sentences}문장 · 인용 {stats.cited}건</span>
       </div>
     </>
   )
@@ -293,9 +281,8 @@ function BriefCard({ scenarioId, step, edited, onToast }) {
     return () => { alive = false }
   }, [scenarioId, t, edited])
   const text = data?.brief?.text ? String(data.brief.text) : ''
-  const sentences = text.split(/(?<=[.!?])\s+/).filter((x) => x.trim())
-  const cited = sentences.filter((x) => /\[F\d+\]/.test(x)).length
-  const unverified = sentences.length - cited
+  const sentences = splitSentences(text)
+  const { cited, unverified } = citeStats(text)
   return (
     <div className="brief-card">
       <div className="brief-card-head">
@@ -309,7 +296,7 @@ function BriefCard({ scenarioId, step, edited, onToast }) {
       </div>
       {!sentences.length && <div className="none">{edited ? '편집된 그래프에는 브리핑이 없다' : '이 시점 브리핑 없음'}</div>}
       {sentences.length > 0 && !open && (
-        <p className="brief-first">{sentences[0].replace(/\[(F\d+)\]/g, '').trim()}</p>
+        <p className="brief-first">{stripCites(sentences[0])}</p>
       )}
       {open && <Brief scenarioId={scenarioId} step={step} edited={edited} onToast={onToast} />}
       {sentences.length > 0 && (
