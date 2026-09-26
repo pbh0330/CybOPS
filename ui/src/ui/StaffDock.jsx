@@ -1,10 +1,22 @@
-// The staff officer, on screen and without a model (참모 S1, Task 3).
+// The staff officer on screen (참모 S1 Task 3, + S2 Task 2's question box).
 //
-// Everything here is a renderer for what `staff.js` already decided. There is
-// NO LLM in this file and none is needed: the buttons call `ask` directly, so
-// the panel keeps its full function on a machine with no GPU at all. S2 adds
-// sentences on top of these same answers; the citation chips it will draw are
-// the fact rows below, which is why a fact with a `ref` is already a button.
+// The buttons below still call `ask` directly and no model is involved in
+// them: on a machine with no GPU the panel keeps its FULL function, which is
+// the property the GPU-less demo stands on. S2 adds one line above them - a
+// question in Korean - and that line is the only part that needs a model. It
+// disables itself with a reason when there is none.
+//
+// What the question box does NOT do is decide anything (ADR-0003). The model
+// picks a query id out of the catalogue and phrases the answer; between those
+// two the deterministic engine runs, and the numbers on screen are its. The
+// pipeline, in order:
+//
+//   질문 -> routeQuestion -> staff.validate -> staff.ask -> narrate
+//
+// `staff.validate` is in that list on purpose. routeQuestion only guarantees
+// the id came from the catalogue it was handed; it never looked at whether
+// `assetId` names an asset that exists. Nothing the model produced reaches the
+// engine without passing the same gate a button press passes.
 //
 // Three rules it inherits:
 //   1. Read-only (ADR-0004). `Answer.actions` is [] in S1 and this component
@@ -20,10 +32,13 @@
 // Rendering it in both branches would give the screen two query logs and two
 // writers for the same localStorage key.
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { catalog, ask, ctxT, graphFingerprint } from '../staff.js'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { catalog, ask, validate, ctxT, graphFingerprint, QUERIES } from '../staff.js'
+import { routeQuestion, narrate } from '../staff-llm.mjs'
+import { config, probeLlm } from '../config.js'
 import { timeLabel } from '../derive.js'
 import { assetName } from '../labels.js'
+import { CitedText, citeStats } from './cite.jsx'
 
 // A raw argument name is what `staff.js` rejects by (the message says
 // `assetId`, `aId`, ...), so the control keeps that name in its `title` even
@@ -183,6 +198,163 @@ export function staleText(st, ansLabel, curLabel) {
   return out.join(' ')
 }
 
+// --- the question box's controller ---------------------------------------
+//
+// Everything below is pure except the two injected calls, which is why it can
+// be tested on this machine: there is no Ollama here and there will not be
+// one on the demo laptop's worst day either.
+
+// Where a routing failure lands. Not a random choice: state_summary takes no
+// arguments and needs nothing but a graph, so it is the one query that cannot
+// itself fail for the same reason the routing just did.
+export const FALLBACK_QUERY = 'state_summary'
+
+// routeQuestion's error codes, read out loud. The code stays visible next to
+// them - it is what a bug report needs.
+export const ROUTE_ERR_KO = {
+  unparsable: '응답을 JSON 으로 읽지 못함',
+  bad_shape: '응답 형식이 틀림',
+  bad_args: '인자 형식이 틀림',
+  unknown_query: '없는 질의를 고름',
+  timeout: '제한 시간 초과',
+  transport: '모델 호출 실패',
+  empty: '빈 응답',
+  validate: '인자 검증 거부',
+  engine: '엔진이 질의를 거부함',
+}
+
+export const errKo = (code) => ROUTE_ERR_KO[code] || code || '알 수 없는 오류'
+
+// Is the question box usable, and if not, why in a sentence the reader can
+// act on. `unavailable_note` is the deployment's own words (config.json), so
+// a build that ships deliberately without a model says so rather than looking
+// broken. The probe's own reason follows in parentheses - except 'disabled',
+// which the note already explains.
+export function llmNoteOf(probe, cfg) {
+  if (!probe || probe.ok) return ''
+  const note = ((cfg || {}).llm || {}).unavailable_note || ''
+  const why = probe.why && probe.why !== 'disabled' ? `(${probe.why})` : ''
+  return [note, why].filter(Boolean).join(' ')
+}
+
+// A model that cannot pick has an answer anyway - the summary - and the card
+// has to say that is what happened. Silence here is the failure mode this
+// sentence exists to prevent: a summary shown for a question about one asset
+// reads as an answer to that question.
+export function fallbackNote(fb) {
+  if (!fb) return null
+  const head = '질의를 고르지 못해 요약으로 답했다'
+  const why = fb.why ? ` - ${fb.why}` : ''
+  if (fb.from) return `${head} (${errKo(fb.error)}: 모델이 고른 ${fb.from} 의 인자가 검증을 통과하지 못했다)${why}`
+  return `${head} (${errKo(fb.error)})${why}`
+}
+
+// The fallback sentence leads; the engine's own note keeps its text after it.
+export function noteWith(fb, engineNote) {
+  return [fallbackNote(fb), engineNote || null].filter(Boolean).join(' · ') || null
+}
+
+// 질문 -> routeQuestion -> validate -> ask -> narrate.
+//
+// Returns exactly one of three kinds:
+//
+//   { kind:'abstain', why, ms, attempts }   the model declined. Correct
+//                                           behaviour, not an error, and the
+//                                           engine is NOT run.
+//   { kind:'error', error, why, ... }       transport, timeout, or an engine
+//                                           refusal. Nothing to show but the
+//                                           reason and the buttons.
+//   { kind:'answer', answer, fallback, text, narrateErr, ... }
+//                                           an Answer from staff.ask, with a
+//                                           narration when one came back.
+//
+// The retry is NOT here. routeQuestion already retries a malformed answer
+// once (its own `retries`), and deliberately does not retry a timeout or a
+// dead endpoint - a second call to a closed port is a second wait for the same
+// answer. What this layer owes instead is the fallback, and saying so.
+export async function runQuestion(ctx, question, opts = {}) {
+  const spec = opts.spec || catalog(ctx)
+  const cfg = opts.cfg || {}
+  const route = opts.route || routeQuestion
+  const tell = opts.narrate || narrate
+  const askFn = opts.ask || ask
+  const validateFn = opts.validate || validate
+
+  const r = await route(cfg, question, spec, opts.routeOpts || {})
+  const attempts = r.attempts || 0
+
+  if (r.abstain) return { kind: 'abstain', why: r.why, ms: r.ms || 0, attempts }
+  // A dead endpoint and a timeout end here: there is no answer to narrate and
+  // running the engine anyway would put a summary on screen that the person
+  // did not ask for.
+  if (r.error && (r.error === 'transport' || r.error === 'timeout')) {
+    return { kind: 'error', error: r.error, why: r.why, ms: r.ms || 0, attempts }
+  }
+
+  let query = r.query
+  let args = r.args || {}
+  let fallback = null
+  if (r.error) {
+    fallback = { from: null, error: r.error, why: r.why }
+    query = FALLBACK_QUERY
+    args = {}
+  } else {
+    // THE GATE. routeQuestion checked the id against the catalogue; it never
+    // checked that "BN-SRV-2" is an asset in THIS graph (ADR-0003).
+    const v = validateFn(ctx, query, args)
+    if (!v.ok) {
+      fallback = { from: query, error: 'validate', why: v.reason }
+      query = FALLBACK_QUERY
+      args = {}
+    }
+  }
+
+  let answer
+  try {
+    answer = askFn(ctx, query, args)
+  } catch (e) {
+    // The fallback itself was refused - no graph, or a catalogue without
+    // state_summary. Nothing left to show but why.
+    return { kind: 'error', error: 'engine', why: (e && e.message) || String(e), ms: r.ms || 0, attempts }
+  }
+
+  const n = await tell(cfg, answer.facts, question, opts.narrateOpts || {})
+  return {
+    kind: 'answer',
+    answer,
+    fallback,
+    // A narration that failed costs the sentences and nothing else: the
+    // facts, the table and the citations are the engine's and are already in
+    // hand. The card says the sentences are missing rather than hiding it.
+    text: n && n.text ? n.text : null,
+    narrateErr: n && n.error ? { error: n.error, why: n.why } : null,
+    routeMs: r.ms || 0,
+    narrateMs: (n && n.ms) || 0,
+    ms: (r.ms || 0) + ((n && n.ms) || 0),
+    attempts,
+  }
+}
+
+// An answered question becomes a log card like any other, plus what the model
+// contributed. The extra keys are additive on purpose: `readLog` accepts the
+// same shape it always did, so a card written by S1 and a card written here
+// render through one component.
+export function entryOf(res, question, at) {
+  const a = res.answer
+  return {
+    ...a,
+    note: noteWith(res.fallback, a.note),
+    at,
+    when: new Date(at).toLocaleTimeString('ko-KR', { hour12: false }),
+    asked: question,
+    text: res.text || null,
+    narrateErr: res.narrateErr || null,
+    fallback: res.fallback || null,
+    ms: res.ms || 0,
+    attempts: res.attempts || 0,
+  }
+}
+
 function ArgControl({ spec, value, onChange, graph }) {
   if (spec.kind === 'int') {
     const opts = K_CHOICES.includes(spec.default) ? K_CHOICES : [spec.default, ...K_CHOICES]
@@ -247,16 +419,51 @@ function AnswerTable({ table }) {
   )
 }
 
+// Argument chips in the catalogue's order, not the order the keys happen to
+// arrive in. `Object.entries` gives insertion order, and the same query has two
+// of those: the button path builds args in catalogue order, while the routed
+// path carries whatever key order the model wrote its JSON in. compare_defense
+// would show `aId bId` or `bId aId` depending on how the answer was asked for,
+// which reads as a difference in the answer when there is none. A key the
+// catalogue does not know (validate would have rejected it, so this is
+// belt-and-braces) goes last, by name.
+export function argChips(queryId, args) {
+  const src = args || {}
+  const keys = Object.keys(src)
+  const spec = QUERIES.find((q) => q.id === queryId)
+  const order = spec ? spec.args.map((a) => a.name) : []
+  const head = order.filter((n) => keys.includes(n))
+  const tail = keys.filter((k) => !order.includes(k)).sort()
+  return [...head, ...tail].map((k) => [k, src[k]])
+}
+
 // A card is drawn with `staleOf` above: its stamped basis against the live
 // one. When they differ the card is showing a figure the engine would no
 // longer produce, and ADR-0009 says that has to be visible - and, since there
 // are two ways to fall out of date, visible with its reason.
 function Answer({ answer, graph, curT, curFp, onSelect }) {
   const ids = useMemo(() => selectableIds(graph), [graph])
-  const args = Object.entries(answer.args || {})
+  const args = argChips(answer.query, answer.args)
   const hasT = answer.t !== undefined && answer.t !== null
   const ansLabel = hasT ? timeLabel(graph, answer.t) : null
   const st = staleOf(answer, curT, curFp)
+  const stats = answer.text ? citeStats(answer.text) : null
+  const [hl, setHl] = useState(null)
+
+  // A citation chip goes to the fact it cites, and from there to the node -
+  // the same selection path a fact row has had since S1, not a second one.
+  const factDomId = (fid) => `staff-f-${answer.at}-${fid}`
+  const onCite = useCallback((cid) => {
+    setHl(cid)
+    try {
+      const el = typeof document === 'undefined' ? null : document.getElementById(factDomId(cid))
+      if (el && el.scrollIntoView) el.scrollIntoView({ block: 'nearest' })
+    } catch { /* no layout in a test renderer */ }
+    const f = (answer.facts || []).find((x) => x.id === cid)
+    const ref = f && f.ref && f.ref.id ? f.ref : null
+    if (ref && ids.has(ref.id) && onSelect) onSelect(ref.id)
+  }, [answer, ids, onSelect])
+
   return (
     <article className={`staff-ans${st.stale ? ' is-stale' : ''}`}>
       <div className="staff-run">
@@ -274,12 +481,34 @@ function Answer({ answer, graph, curT, curFp, onSelect }) {
         </p>
       )}
 
+      {answer.asked && <p className="staff-asked"><b>질문</b> {answer.asked}</p>}
+
+      {/* The one paragraph on this card a model wrote. Everything under it -
+          every number, every ranking - is the engine's (ADR-0003), and every
+          sentence has to point at the fact it came from (ADR-0009). */}
+      {answer.text && (
+        <div className="staff-say">
+          <p className="staff-caption">이 문단만 모델이 썼다. 숫자는 결정론 엔진이 계산한 것이다 (ADR-0003)</p>
+          <CitedText text={answer.text} facts={answer.facts} onCite={onCite} />
+          <div className="staff-cite-meta">
+            <span>{stats.sentences}문장 · 인용 {stats.cited}건</span>
+            {stats.unverified > 0 && <span className="unverified">미검증 {stats.unverified}</span>}
+            {answer.ms ? <span>{answer.ms} ms</span> : null}
+          </div>
+        </div>
+      )}
+      {answer.narrateErr && (
+        <p className="staff-note">
+          서술 실패({errKo(answer.narrateErr.error)}): {answer.narrateErr.why} - 아래 사실과 표는 엔진이 계산한 그대로다.
+        </p>
+      )}
+
       <ol className="staff-facts">
         {answer.facts.map((fact) => {
           const ref = fact.ref && fact.ref.id ? fact.ref : null
           const can = !!(ref && ids.has(ref.id) && onSelect)
           return (
-            <li key={fact.id}>
+            <li key={fact.id} id={factDomId(fact.id)} className={hl === fact.id ? 'is-hl' : undefined}>
               <code className="staff-fn">{fact.id}</code>
               {can ? (
                 <button
@@ -326,6 +555,47 @@ export default function StaffDock({
   const [log, setLog] = useState([])
   const [err, setErr] = useState(null)
   const [args, setArgs] = useState(() => initialArgs(graph))
+  // The question box. `probe` is null until the probe answers - the box stays
+  // disabled meanwhile, because "unknown" is not "reachable".
+  const [probe, setProbe] = useState(null)
+  const [question, setQuestion] = useState('')
+  const [busy, setBusy] = useState(false)
+  // Abstention and failure are NOT log entries: nothing was computed, so
+  // there is no answer to keep. They sit above the log until the next ask.
+  const [outcome, setOutcome] = useState(null)
+
+  // One probe per mount, same call the wargame's LLM attacker uses. Its
+  // result only ever disables one input; the buttons never consult it.
+  // Set on the way IN as well as cleared on the way out. StrictMode mounts,
+  // unmounts and remounts in dev, and a ref that is only cleared stays false
+  // through the remount - which left the re-check button stuck on '확인 중'
+  // forever, because the .finally() that clears it was gated on this.
+  const mounted = useRef(true)
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false } }, [])
+  useEffect(() => {
+    let alive = true
+    probeLlm().then((p) => { if (alive) setProbe(p) }).catch(() => { if (alive) setProbe({ ok: false, why: 'probe failed' }) })
+    return () => { alive = false }
+  }, [])
+  // ...but once per mount is the wrong number for the deployment we actually
+  // have. The AWS copy's GPU is started for the demo and stopped after
+  // (docs/24-aws-demo.md), so the model coming up mid-session is the normal
+  // case, not the odd one - and without this the box stays dead until someone
+  // reloads the page mid-demo. The probe is one GET with a 2.5s timeout, so
+  // asking again is cheap; nothing here caches, so a second call really does
+  // re-ask. Manual only: a poll would hammer an endpoint that is deliberately
+  // absent for the whole run.
+  const [recheck, setRecheck] = useState(false)
+  const probeAgain = useCallback(() => {
+    if (recheck) return
+    setRecheck(true)
+    probeLlm()
+      .then((p) => { if (mounted.current) setProbe(p) })
+      .catch(() => { if (mounted.current) setProbe({ ok: false, why: 'probe failed' }) })
+      .finally(() => { if (mounted.current) setRecheck(false) })
+  }, [recheck])
+  const llmOk = !!(probe && probe.ok)
+  const llmNote = llmNoteOf(probe, config())
 
   useEffect(() => { setArgs(initialArgs(graph)) }, [graph])
 
@@ -348,6 +618,16 @@ export default function StaffDock({
     try { localStorage.setItem(storeKey(scenarioId), JSON.stringify(next)) } catch { /* quota */ }
   }, [scenarioId])
 
+  // The ask is async and the log moves under it: a button pressed while the
+  // model is thinking would otherwise be overwritten by the answer, which was
+  // built from the list as it stood when the question was sent. The ref is
+  // the same fix the edit-mode tap handler needed - read the latest, do not
+  // close over a snapshot.
+  const logRef = useRef(log)
+  useEffect(() => { logRef.current = log }, [log])
+  const ctxRef = useRef(ctx)
+  useEffect(() => { ctxRef.current = ctx }, [ctx])
+
   const run = useCallback((q) => {
     const sent = {}
     for (const spec of q.args) {
@@ -363,6 +643,7 @@ export default function StaffDock({
       // message, shown as written.
       const a = ask(ctx, q.id, sent)
       setErr(null)
+      setOutcome(null)
       write(pushLog(log, {
         ...a,
         at: Date.now(),
@@ -374,9 +655,73 @@ export default function StaffDock({
     }
   }, [args, ctx, log, write])
 
+  // 질문 -> routeQuestion -> validate -> ask -> narrate, with the three
+  // outcomes kept apart on screen: an answer is logged, an abstention is
+  // reported as correct behaviour, a failure names itself and points at the
+  // buttons. None of the three is silent.
+  const submit = useCallback(async (e) => {
+    if (e && e.preventDefault) e.preventDefault()
+    const q = question.trim()
+    if (!q || busy || !llmOk) return
+    setBusy(true)
+    setErr(null)
+    setOutcome(null)
+    setOpen(true)
+    let res
+    try {
+      res = await runQuestion(ctxRef.current, q, { cfg: config().llm || {}, spec: queries })
+    } catch (ex) {
+      // runQuestion catches what it expects; anything left is still shown.
+      res = { kind: 'error', error: 'transport', why: (ex && ex.message) || String(ex) }
+    }
+    setBusy(false)
+    if (res.kind === 'answer') {
+      setQuestion('')
+      write(pushLog(logRef.current, entryOf(res, q, Date.now())))
+      return
+    }
+    setOutcome({ ...res, question: q })
+  }, [question, busy, llmOk, queries, write])
+
   const body = (
     <div className="staff">
       <div className="staff-queries">
+        {/* The box is the only part of this panel that needs a model. The
+            buttons under it are unaffected by every branch here - that is
+            what makes the demo whole on a laptop with no GPU. */}
+        {/* The example is the whole point of the placeholder - it is where a
+            reader learns that this box takes a sentence, not a keyword - so
+            it is the "질문을 쓴다" prefix that goes, not the question. The
+            field holds 211px of text at 12px and the example measures 208px;
+            with the prefix it was 275px and the tail was cut off. */}
+        <form className="staff-askbox" onSubmit={submit}>
+          <input
+            type="text" className="staff-ask-input"
+            value={question} disabled={!llmOk || busy}
+            placeholder={llmOk ? '예: TOC-SRV 가 끊기면 어떤 임무가 상하나' : '모델이 없어 질의창을 쓸 수 없다'}
+            aria-label="참모에게 묻는다"
+            onChange={(ev) => setQuestion(ev.target.value)}
+          />
+          {llmOk ? (
+            <button type="submit" className="staff-ask-go" disabled={busy || !question.trim()}>
+              {busy ? '묻는 중' : '묻기'}
+            </button>
+          ) : (
+            /* The disabled 묻기 button would be a second dead control next to a
+               dead input. The one thing a person can usefully do here is ask
+               again, so that is the button that occupies the slot. */
+            <button type="button" className="staff-ask-go" onClick={probeAgain} disabled={recheck}>
+              {recheck ? '확인 중' : '다시 확인'}
+            </button>
+          )}
+        </form>
+        {!llmOk && (
+          <p className="staff-llm-note">
+            <b>질의창 사용 불가</b> {llmNote || (probe ? '모델 서버에 닿지 못했다.' : '모델 서버를 확인하는 중이다.')}
+            {' '}아래 질의 버튼은 모델 없이 그대로 동작한다. 모델을 지금 켰다면 <b>다시 확인</b>을 누른다.
+          </p>
+        )}
+
         <p className="staff-queries-head">질의 {queries.length}종 · 읽기 전용</p>
         {queries.map((q) => (
           <div className="staff-q" key={q.id}>
@@ -395,7 +740,7 @@ export default function StaffDock({
           </div>
         ))}
         {log.length > 0 && (
-          <button type="button" className="staff-clear" onClick={() => { write([]); setErr(null) }}>
+          <button type="button" className="staff-clear" onClick={() => { write([]); setErr(null); setOutcome(null) }}>
             기록 지우기 ({log.length})
           </button>
         )}
@@ -403,9 +748,41 @@ export default function StaffDock({
 
       <div className="staff-answers">
         {err && <p className="staff-err" role="status">거부: {err}</p>}
-        {!log.length && !err && (
+        {busy && <p className="staff-asking" role="status">모델에 묻는 중이다 - 질의를 고르고 사실을 읽어 준다.</p>}
+
+        {/* 기권. The model declining is the model working: it was told not to
+            invent a query, and it did not. The engine was NOT run, and the
+            wording says that without calling it an error. */}
+        {outcome && outcome.kind === 'abstain' && (
+          <div className="staff-outcome is-abstain" role="status">
+            <p className="staff-outcome-head"><b>답할 수 없다 (기권)</b> <span className="staff-outcome-q">{outcome.question}</span></p>
+            <p className="staff-outcome-why">{outcome.why}</p>
+            <p className="staff-outcome-note">
+              기권은 정상 동작이지 오류가 아니다. 카탈로그에 맞는 질의가 없다고 판단해 엔진을 돌리지 않았다.
+              아래 질의 버튼으로 직접 고를 수 있다.
+            </p>
+          </div>
+        )}
+
+        {/* Transport, timeout, or an engine refusal. There is nothing to
+            show but the reason - and the buttons, which still work. */}
+        {outcome && outcome.kind === 'error' && (
+          <div className="staff-outcome is-fail" role="status">
+            <p className="staff-outcome-head">
+              <b>묻지 못했다 · {errKo(outcome.error)}</b> <code className="staff-qid">{outcome.error}</code>
+              <span className="staff-outcome-q">{outcome.question}</span>
+            </p>
+            <p className="staff-outcome-why">{outcome.why}</p>
+            <p className="staff-outcome-note">
+              모델 없이도 답이 나온다 - 아래 질의 버튼은 결정론 엔진을 직접 부른다.
+            </p>
+          </div>
+        )}
+
+        {!log.length && !err && !outcome && !busy && (
           <p className="staff-empty">
-            질의를 누르면 결정론적 엔진이 계산한 사실이 번호와 함께 나온다. 모델은 쓰지 않는다.
+            질의를 누르면 결정론적 엔진이 계산한 사실이 번호와 함께 나온다 - 이 경로에 모델은 없다.
+            질의창은 질문을 그 질의 중 하나로 옮기고, 나온 사실을 문장으로 읽어 줄 뿐이다.
           </p>
         )}
         {log.map((a) => (

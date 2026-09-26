@@ -1,10 +1,12 @@
 {
   "_note": "배포 시점 설정이다. 빌드에 들어가지 않으므로 이 파일만 고치면 된다. 기본값과 세 가지 배치 형태는 ui/src/config.js 주석 참조.",
+  "_attacker_note": "attacker_enabled 는 ADR-0019 의 LLM 공격자 선택지를 시작 카드에 그릴지 정한다. 기본값은 false 이고, 코드는 그대로 남아 있으므로 되돌리는 비용은 이 한 줄이다(ADR-0028 1절).",
   "llm": {
     "enabled": true,
     "endpoint": "http://127.0.0.1:11434",
     "model": "qwen2.5:7b-instruct-q4_K_M",
-    "unavailable_note": "이 배포본에는 모델 서버가 없다. greedy 와 random 은 그대로 동작한다."
+    "attacker_enabled": false,
+    "unavailable_note": "이 배포본에는 모델 서버가 없다. 참모의 질의 버튼·사실·표와 미리 생성된 브리핑, greedy/random 교전은 그대로 동작한다. 빠지는 것은 서술 문장과 자연어 질문뿐이다."
   },
   "map": {
     "style": "https://tiles.openfreemap.org/styles/dark",
