@@ -615,9 +615,15 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
    why, while every button under it keeps working (ADR-0018 static bundle:
    the demo runs on a laptop with no GPU). No hue here either: a disabled
    input is disabled by weight, not by colour (ADR-0024). */
-.staff-askbox { display: flex; gap: 6px; align-items: stretch; }
+/* The input takes the whole column and the button drops under it, right
+   aligned. Sharing one 264px row with 묻기 left the field 180px, which cut the
+   placeholder - the one line that tells a first-time reader what may be typed
+   here - at "질문을 쓴다 (예: TOC-SR". A wrapped row costs ~30px of height
+   once, at the top of a scrolling column, and buys the field the column:
+   measured 229px with the scrollbar, 211px of that being text. */
+.staff-askbox { display: flex; flex-wrap: wrap; gap: 6px; align-items: stretch; }
 .staff-ask-input {
-  flex: 1 1 auto; min-width: 0; padding: 6px 8px; font-size: 12px;
+  flex: 1 1 100%; min-width: 0; padding: 6px 8px; font-size: 12px;
   background: var(--surface-app); color: var(--text-primary);
   border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
 }
@@ -625,7 +631,7 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
 .staff-ask-input:focus { outline: none; border-color: var(--text-muted); }
 .staff-ask-input:disabled { opacity: .5; }
 .staff-ask-go {
-  flex: none; padding: 6px 10px; font-size: 12px;
+  flex: none; margin-left: auto; padding: 6px 10px; font-size: 12px;
   background: var(--surface-raised); color: var(--text-primary);
   border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
 }
@@ -967,12 +973,15 @@ button.staff-fact:hover { color: var(--text-primary); border-bottom-color: var(-
     background: var(--surface-raised); border-radius: var(--radius-sm);
   }
   .staff-facts li { align-items: flex-start; }
-  /* The question box is a thumb target: the input gets the blanket 44px and
-     the send button stops being a 34px sliver next to it. It wraps rather
-     than squeezing the input to nothing at 320px. */
+  /* The question box is a thumb target. The blanket rule above reaches the
+     buttons (묻기, and 다시 확인 in its place when there is no model) because
+     they are `.rail button`; the input is not a button, so it says 44px
+     itself rather than sitting 4px short of the rule next to it. The row is
+     wide enough here to keep field and button side by side, and it wraps
+     rather than squeezing the input to nothing at 320px. */
   .staff-askbox { flex-wrap: wrap; }
-  .staff-ask-input { flex: 1 1 60%; min-height: 40px; font-size: 13px; }
-  .staff-ask-go { flex: 0 0 auto; min-height: 40px; padding: 6px 14px; }
+  .staff-ask-input { flex: 1 1 60%; min-height: 44px; font-size: 13px; }
+  .staff-ask-go { flex: 0 0 auto; min-height: 44px; padding: 6px 14px; margin-left: 0; }
   .staff-outcome { padding: 8px; }
   .staff-outcome-q { flex-basis: 100%; }
   /* Chips are tapped here, not clicked: the sentence gets line height to

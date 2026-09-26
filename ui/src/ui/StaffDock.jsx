@@ -548,11 +548,34 @@ export default function StaffDock({
 
   // One probe per mount, same call the wargame's LLM attacker uses. Its
   // result only ever disables one input; the buttons never consult it.
+  // Set on the way IN as well as cleared on the way out. StrictMode mounts,
+  // unmounts and remounts in dev, and a ref that is only cleared stays false
+  // through the remount - which left the re-check button stuck on '확인 중'
+  // forever, because the .finally() that clears it was gated on this.
+  const mounted = useRef(true)
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false } }, [])
   useEffect(() => {
     let alive = true
     probeLlm().then((p) => { if (alive) setProbe(p) }).catch(() => { if (alive) setProbe({ ok: false, why: 'probe failed' }) })
     return () => { alive = false }
   }, [])
+  // ...but once per mount is the wrong number for the deployment we actually
+  // have. The AWS copy's GPU is started for the demo and stopped after
+  // (docs/24-aws-demo.md), so the model coming up mid-session is the normal
+  // case, not the odd one - and without this the box stays dead until someone
+  // reloads the page mid-demo. The probe is one GET with a 2.5s timeout, so
+  // asking again is cheap; nothing here caches, so a second call really does
+  // re-ask. Manual only: a poll would hammer an endpoint that is deliberately
+  // absent for the whole run.
+  const [recheck, setRecheck] = useState(false)
+  const probeAgain = useCallback(() => {
+    if (recheck) return
+    setRecheck(true)
+    probeLlm()
+      .then((p) => { if (mounted.current) setProbe(p) })
+      .catch(() => { if (mounted.current) setProbe({ ok: false, why: 'probe failed' }) })
+      .finally(() => { if (mounted.current) setRecheck(false) })
+  }, [recheck])
   const llmOk = !!(probe && probe.ok)
   const llmNote = llmNoteOf(probe, config())
 
@@ -648,22 +671,36 @@ export default function StaffDock({
         {/* The box is the only part of this panel that needs a model. The
             buttons under it are unaffected by every branch here - that is
             what makes the demo whole on a laptop with no GPU. */}
+        {/* The example is the whole point of the placeholder - it is where a
+            reader learns that this box takes a sentence, not a keyword - so
+            it is the "질문을 쓴다" prefix that goes, not the question. The
+            field holds 211px of text at 12px and the example measures 208px;
+            with the prefix it was 275px and the tail was cut off. */}
         <form className="staff-askbox" onSubmit={submit}>
           <input
             type="text" className="staff-ask-input"
             value={question} disabled={!llmOk || busy}
-            placeholder={llmOk ? '질문을 쓴다 (예: TOC-SRV 가 끊기면 어떤 임무가 상하나)' : '모델이 없어 질의창을 쓸 수 없다'}
+            placeholder={llmOk ? '예: TOC-SRV 가 끊기면 어떤 임무가 상하나' : '모델이 없어 질의창을 쓸 수 없다'}
             aria-label="참모에게 묻는다"
             onChange={(ev) => setQuestion(ev.target.value)}
           />
-          <button type="submit" className="staff-ask-go" disabled={!llmOk || busy || !question.trim()}>
-            {busy ? '묻는 중' : '묻기'}
-          </button>
+          {llmOk ? (
+            <button type="submit" className="staff-ask-go" disabled={busy || !question.trim()}>
+              {busy ? '묻는 중' : '묻기'}
+            </button>
+          ) : (
+            /* The disabled 묻기 button would be a second dead control next to a
+               dead input. The one thing a person can usefully do here is ask
+               again, so that is the button that occupies the slot. */
+            <button type="button" className="staff-ask-go" onClick={probeAgain} disabled={recheck}>
+              {recheck ? '확인 중' : '다시 확인'}
+            </button>
+          )}
         </form>
         {!llmOk && (
           <p className="staff-llm-note">
             <b>질의창 사용 불가</b> {llmNote || (probe ? '모델 서버에 닿지 못했다.' : '모델 서버를 확인하는 중이다.')}
-            {' '}아래 질의 버튼은 모델 없이 그대로 동작한다.
+            {' '}아래 질의 버튼은 모델 없이 그대로 동작한다. 모델을 지금 켰다면 <b>다시 확인</b>을 누른다.
           </p>
         )}
 

@@ -102,7 +102,7 @@ if ($cfg) {
 
   if ($Posture -eq 'hosted') {
     if (-not $enabled) {
-      Add-Ok 'llm.enabled is false: the off posture. The wargame keeps greedy and random, and briefings are pre-generated'
+      Add-Ok 'llm.enabled is false: the off posture. The staff query buttons still answer with facts and tables, the wargame keeps greedy and random, and briefings are pre-generated'
       if ($isLoopback) {
         Add-Warn 'endpoint still points at loopback. Harmless while enabled is false, but it is a live trap for whoever flips that flag next'
       }
@@ -117,7 +117,7 @@ if ($cfg) {
     }
   } else {
     if ($enabled -and $isLoopback) { Add-Ok 'local posture: loopback endpoint, as intended' }
-    elseif (-not $enabled)         { Add-Warn 'local posture but llm.enabled is false: the wargame LLM attacker will be off on this machine too' }
+    elseif (-not $enabled)         { Add-Warn 'local posture but llm.enabled is false: the staff question box (and the attacker, if llm.attacker_enabled is on) will be off on this machine too' }
     else                           { Add-Warn ("local posture with a non-loopback endpoint: {0}" -f $endpoint) }
   }
 

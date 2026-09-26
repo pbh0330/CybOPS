@@ -30,8 +30,17 @@ async function getLlmChooser(seed) {
   return llmChooser
 }
 
+// The LLM attacker (ADR-0019) is behind `llm.attacker_enabled`, default false
+// (ADR-0028 §1). Nothing is deleted - attack-llm.mjs, the prompt and the
+// chooser above are untouched and the strategy string still works - the start
+// card just does not offer the option, and with the option gone the "사용 불가"
+// note under it would be advertising something the reader cannot pick, so it
+// goes too. Turning the experiment back on is the one flag.
+const attackerEnabled = () => !!((config().llm || {}).attacker_enabled)
+
 function StartCard({ graph, payload, idx, llmOk, llmNote, onStart, readyState }) {
   const steps = payload?.steps || []
+  const attackerOn = attackerEnabled()
   const foot = defaultFoothold(payload)
   // the select lists graph.assets; with an edited graph the scenario's
   // default foothold may not be in it, and a foothold outside the graph
@@ -127,12 +136,12 @@ function StartCard({ graph, payload, idx, llmOk, llmNote, onStart, readyState })
           <select value={strategy} onChange={(e) => setStrategy(e.target.value)}>
             <option value="greedy">greedy (대조군)</option>
             <option value="random">random (하한)</option>
-            <option value="llm" disabled={!llmOk}>LLM{llmOk ? '' : ' - 사용 불가'}</option>
+            {attackerOn && <option value="llm" disabled={!llmOk}>LLM{llmOk ? '' : ' - 사용 불가'}</option>}
           </select></label>
         <label className="wg-pick"><span>시드</span>
           <input type="number" value={seed} step="1" onChange={(e) => setSeed(Number(e.target.value) || 0)} /></label>
       </div>
-      {!llmOk && llmNote && <div className="wg-llm-note">LLM 공격자 사용 불가<span>{llmNote}</span></div>}
+      {attackerOn && !llmOk && llmNote && <div className="wg-llm-note">LLM 공격자 사용 불가<span>{llmNote}</span></div>}
       <p className="rail-caption">{mode === 'hold' ? `${turns}턴 동안 P1 임무 저하도를 50% 미만으로 지키면 승. 점수는 턴별 가중 저하도의 합(낮을수록 좋음).` : `${turns}턴 동안 crown jewel 이 장악되지 않으면 승. 점수 = 버틴 턴×100 − 격리 비용.`}</p>
       <button type="button" className="wg-start-go" disabled={!ready} onClick={() => onStart({ mode, turns, t, foothold: { id: footSel, level }, ...(activePreset ? { footholds: activePreset.seeds } : {}), seed, strategy, method: 'weighted' }, stepIdx)}>시작</button>
       {/* one caption line: the readiness lock wins, since it is the one that
