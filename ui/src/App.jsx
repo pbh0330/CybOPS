@@ -512,7 +512,14 @@ export default function App() {
         {mode === 'edit' && (
           <Mount
             className="palette"
-            deps={[graph, mode]}
+            // Deliberately NOT keyed on `graph`. The editor never reads a
+            // captured graph - getGraph/getCy are getters - so rebuilding it
+            // on every edit bought nothing and cost the active tool: each
+            // rebuild ran `ed.setTool('select')` while React's `tool` state
+            // stayed put, so the toolbar went on showing 삭제 while the
+            // editor had quietly gone back to 선택. `commitEdit` is here
+            // because it IS captured, and it changes with the scenario.
+            deps={[mode, commitEdit]}
             make={(el) => {
               const ed = createEditor({
                 paletteEl: el,

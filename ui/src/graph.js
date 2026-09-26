@@ -320,6 +320,28 @@ export function stylesheet() {
   ]
 }
 
+// Tap wiring for a cytoscape instance.
+//
+// These handlers are registered exactly once, when the instance is created,
+// and the instance is deliberately NOT rebuilt when a callback changes -
+// rebuilding on every mode switch would throw the layout and the viewport
+// away. So they must not keep the callbacks that happened to be in scope at
+// creation: App's `onTap` closes over `mode`, and entering edit mode makes a
+// new one. Reading the refs at tap time is the same shape MapPane already
+// uses for its marker handlers (moveRef/selectRef).
+//
+// `onTap` returning true means an edit tool consumed the tap; a consumed tap
+// must not also change the selection.
+export function bindTaps(cy, tapRef, selectRef) {
+  cy.on('tap', 'node', (evt) => {
+    const onTap = tapRef.current
+    if (onTap && onTap(evt.target)) return
+    selectRef.current(evt.target.id())
+  })
+  cy.on('tap', 'edge', (evt) => { if (tapRef.current) tapRef.current(evt.target) })
+  cy.on('tap', (evt) => { if (evt.target === cy) selectRef.current(null) })
+}
+
 export const LAYOUTS = {
   dependency: {
     name: 'dagre',
