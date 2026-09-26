@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import cytoscape from 'cytoscape'
 import dagre from 'cytoscape-dagre'
-import { buildElements, stylesheet, LAYOUTS, CAUSE_COLOR, degColor } from '../graph.js'
+import { buildElements, stylesheet, bindTaps, LAYOUTS, CAUSE_COLOR, degColor } from '../graph.js'
 import { deviceIconDataUri } from '../icons.js'
 import { num, linkageOf, attackHops } from '../derive.js'
 import { techniqueKo } from '../labels.js'
@@ -54,6 +54,17 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
   // Effects run in declaration order, so this one fires before the instance
   // below exists. cyReady is the signal that it now does.
   const [cyReady, setCyReady] = useState(0)
+  // The cy instance is rebuilt only when `graph` changes, and its tap
+  // handlers are registered with it. Adding the callbacks to that effect's
+  // dependencies would rebuild cytoscape on every mode switch and lose the
+  // layout and the viewport, so the handlers read the current callbacks out
+  // of refs instead - same fix as MapPane's moveRef/selectRef. Without this,
+  // the first tap after entering edit mode still ran the observe-mode
+  // `onTap` and did nothing.
+  const tapRef = useRef(onTap)
+  tapRef.current = onTap
+  const selectRef = useRef(onSelect)
+  selectRef.current = onSelect
 
   flowRef.current.view = view
   flowRef.current.hidden = hidden
@@ -134,12 +145,7 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
       wheelSensitivity: 0.2,
     })
     cyRef.current = cy
-    cy.on('tap', 'node', (evt) => {
-      if (onTap && onTap(evt.target)) return
-      onSelect(evt.target.id())
-    })
-    cy.on('tap', 'edge', (evt) => { if (onTap) onTap(evt.target) })
-    cy.on('tap', (evt) => { if (evt.target === cy) onSelect(null) })
+    bindTaps(cy, tapRef, selectRef)
     if (import.meta.env && import.meta.env.DEV) window.__cy = cy
     setCyReady((v) => v + 1)
     return () => { cy.destroy(); cyRef.current = null }
