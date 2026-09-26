@@ -6,9 +6,10 @@ import { catalog } from '../staff.js'
 import {
   LOG_MAX, storeKey, tieRuns, selectableIds, optionsOf, initialArgs, pushLog, readLog,
   staleOf, staleWhy, staleText,
-  FALLBACK_QUERY, errKo, llmNoteOf, fallbackNote, noteWith, runQuestion, entryOf,
+  FALLBACK_QUERY, errKo, llmNoteOf, fallbackNote, noteWith, runQuestion, entryOf, argChips,
 } from '../ui/StaffDock.jsx'
 import { splitSentences, citesOf, stripCites, citeStats, factMap, factText } from '../ui/cite.jsx'
+import { splitSentences as runnerSplit, citationStats } from '../../tools/staff-eval.mjs'
 
 const g = replay.graph
 const s = computeStep({ payload: replay, graph: g, idx: 12 })
@@ -242,6 +243,77 @@ describe('인용 분해 (cite.jsx)', () => {
 
   it('빈 서술은 0문장이지 미검증 1문장이 아니다', () => {
     expect(citeStats('')).toEqual({ sentences: 0, cited: 0, unverified: 0 })
+  })
+
+  // 인용을 문장 가운데 놓은 서술. 7B 가 흔히 이렇게 쓴다.
+  //
+  // 예전 화면 규칙은 [F#] 뒤에서 무조건 끊어서 이 한 문장을
+  // "M-C2 는 [F2]" + "때문에 저하됐다." 로 갈랐다 - 칩만 있는 문장 하나와
+  // 미검증 하나가 없는 데서 생겼다. 근거는 댔다. 배지는 근거 부재를 고발하는
+  // 것이지 인용 위치를 고발하는 것이 아니다.
+  it('인용이 문장 가운데 있어도 한 문장이고 미검증이 아니다', () => {
+    const text = 'M-C2 는 [F2] 때문에 저하됐다.'
+    expect(splitSentences(text)).toEqual(['M-C2 는 [F2] 때문에 저하됐다.'])
+    expect(citeStats(text)).toEqual({ sentences: 1, cited: 1, unverified: 0 })
+  })
+
+  it('인용을 문장 앞에 놓은 두 문장은 두 문장이다 - 네 문장이 아니라', () => {
+    const text = '[F1] 현재 시각은 11:00 이다. [F2] 저하도는 100% 다.'
+    expect(citeStats(text)).toEqual({ sentences: 2, cited: 2, unverified: 0 })
+  })
+})
+
+// 같은 서술에 두 개의 인용률이 있으면 어느 쪽도 인용할 수 없다 (ADR-0009).
+// 화면과 러너는 cite-core.mjs 한 파일을 읽는다. 이 검사는 그 사실을 문장 수와
+// 분자 양쪽에서 붙든다 - 한쪽에서 규칙을 바꾸면 여기가 먼저 깨진다.
+describe('화면과 러너의 인용 산수 (cite-core.mjs 한 벌)', () => {
+  const samples = [
+    'M-C2 는 [F2] 때문에 저하됐다.',
+    '[F1] 현재 시각은 11:00 이다. [F2] 저하도는 100% 다.',
+    'TOC-SRV 가 끊겼다 [F1] 임무 M-C2 가 100% 저하됐다 [F2] 이건 근거가 없다',
+    '임무 M-C2의 저하도는 100%다 [F2]{확신}.\n격리 비용은 +71.4%p 다 [F15]{확신}.',
+    '근거가 하나도 없는 문장이다.',
+    '',
+  ]
+
+  it('문장 수가 같다', () => {
+    for (const t of samples) expect(splitSentences(t)).toEqual(runnerSplit(t))
+  })
+
+  // 화면의 "인용 N건" 은 러너의 loose 다. 헤드라인 citation_rate 는 문장이
+  // [F#] 로 끝나기를 요구하는 더 엄격한 수치이고, 그것은 형식 준수를 재므로
+  // 화면에 배지로 내보내지 않는다 (docs/04-evaluation.md 2.3.3).
+  it('화면의 인용 건수는 러너의 loose 와 같은 값이다', () => {
+    for (const t of samples) {
+      const screen = citeStats(t)
+      const runner = citationStats(t, [])
+      expect(screen.sentences).toBe(runner.sentences)
+      expect(screen.cited).toBe(runner.loose)
+      expect(screen.unverified).toBe(runner.sentences - runner.loose)
+    }
+  })
+
+  it('헤드라인은 더 엄격하다 - 가운데 인용은 loose 에만 든다', () => {
+    const st = citationStats('M-C2 는 [F2] 때문에 저하됐다.', [{ id: 'F2' }])
+    expect(st).toMatchObject({ sentences: 1, cited: 0, loose: 1 })
+  })
+})
+
+// 인자 칩 순서는 카탈로그 순서다. 버튼으로 실행한 답은 카탈로그 순서로 args 를
+// 만들고, 라우팅된 답은 모델이 쓴 JSON 키 순서를 그대로 들고 온다. 같은 질의가
+// 두 모양으로 보이면 읽는 사람은 답이 다른 줄 안다.
+describe('argChips', () => {
+  it('모델이 bId 를 먼저 써도 칩은 aId, bId 순이다', () => {
+    expect(argChips('compare_defense', { bId: 'BN-SRV-2', aId: 'TOC-SRV' }))
+      .toEqual([['aId', 'TOC-SRV'], ['bId', 'BN-SRV-2']])
+    expect(argChips('compare_defense', { aId: 'TOC-SRV', bId: 'BN-SRV-2' }))
+      .toEqual([['aId', 'TOC-SRV'], ['bId', 'BN-SRV-2']])
+  })
+
+  it('인자가 없거나 카탈로그에 없는 질의면 빈 목록이거나 있는 것만 그린다', () => {
+    expect(argChips('state_summary', {})).toEqual([])
+    expect(argChips('state_summary', null)).toEqual([])
+    expect(argChips('없는질의', { z: 1, a: 2 })).toEqual([['a', 2], ['z', 1]])
   })
 })
 

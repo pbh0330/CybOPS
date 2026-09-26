@@ -33,7 +33,7 @@
 // writers for the same localStorage key.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { catalog, ask, validate, ctxT, graphFingerprint } from '../staff.js'
+import { catalog, ask, validate, ctxT, graphFingerprint, QUERIES } from '../staff.js'
 import { routeQuestion, narrate } from '../staff-llm.mjs'
 import { config, probeLlm } from '../config.js'
 import { timeLabel } from '../derive.js'
@@ -419,13 +419,31 @@ function AnswerTable({ table }) {
   )
 }
 
+// Argument chips in the catalogue's order, not the order the keys happen to
+// arrive in. `Object.entries` gives insertion order, and the same query has two
+// of those: the button path builds args in catalogue order, while the routed
+// path carries whatever key order the model wrote its JSON in. compare_defense
+// would show `aId bId` or `bId aId` depending on how the answer was asked for,
+// which reads as a difference in the answer when there is none. A key the
+// catalogue does not know (validate would have rejected it, so this is
+// belt-and-braces) goes last, by name.
+export function argChips(queryId, args) {
+  const src = args || {}
+  const keys = Object.keys(src)
+  const spec = QUERIES.find((q) => q.id === queryId)
+  const order = spec ? spec.args.map((a) => a.name) : []
+  const head = order.filter((n) => keys.includes(n))
+  const tail = keys.filter((k) => !order.includes(k)).sort()
+  return [...head, ...tail].map((k) => [k, src[k]])
+}
+
 // A card is drawn with `staleOf` above: its stamped basis against the live
 // one. When they differ the card is showing a figure the engine would no
 // longer produce, and ADR-0009 says that has to be visible - and, since there
 // are two ways to fall out of date, visible with its reason.
 function Answer({ answer, graph, curT, curFp, onSelect }) {
   const ids = useMemo(() => selectableIds(graph), [graph])
-  const args = Object.entries(answer.args || {})
+  const args = argChips(answer.query, answer.args)
   const hasT = answer.t !== undefined && answer.t !== null
   const ansLabel = hasT ? timeLabel(graph, answer.t) : null
   const st = staleOf(answer, curT, curFp)

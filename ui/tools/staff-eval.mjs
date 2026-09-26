@@ -41,6 +41,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { execFileSync } from 'node:child_process'
+import { splitSentences, citesIn, endsWithCite } from '../src/cite-core.mjs'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(here, '..', '..')
@@ -81,6 +82,12 @@ export function parseArgs(argv) {
   const out = {
     model: '', endpoint: '', golden: '', out: '', scenario: 'tacnet-01',
     limit: 0, retries: 1, seed: 1, timeoutMs: 60000, narrate: true, probeMs: 4000,
+    // Routing runs at 0 because staff-llm's normCfg defaults it there for the
+    // 'route' kind. Narration's own default in that file is 0.2 - fine for a
+    // person reading one answer, wrong for a number that goes in a result file.
+    // So this tool pins it, rather than inheriting whatever the app wants,
+    // and writes the value it used next to the figures it produced.
+    narrateTemp: 0,
   }
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i]
@@ -95,6 +102,7 @@ export function parseArgs(argv) {
     else if (a === '--seed') out.seed = Number(next() || 1)
     else if (a === '--timeout') out.timeoutMs = Number(next() || 60000)
     else if (a === '--probe-timeout') out.probeMs = Number(next() || 4000)
+    else if (a === '--narrate-temp') out.narrateTemp = Number(next() || 0)
     else if (a === '--no-narrate') out.narrate = false
     else throw new Error(`unknown option: ${a}`)
   }
@@ -142,33 +150,29 @@ export function sameArgs(a, b) {
     === JSON.stringify(B[k] === undefined ? null : B[k]))
 }
 
-// Korean prose split on sentence-final punctuation. A trailing "[F3]" with no
-// full stop is still a sentence - small models drop the period - so a chunk
-// that carries TWO OR MORE citations and no punctuation between them is split
-// after each one as well.
-//
-// The two-citation condition is the whole trick. Splitting after every [F#]
-// unconditionally cuts "[F1] 때문에 저하됐다." into two, inventing an
-// uncited sentence out of a sentence that merely put its citation first, and
-// the unverified rate then counts a formatting choice as a missing basis.
-export function splitSentences(text) {
-  const s = String(text == null ? '' : text).replace(/\s+/g, ' ').trim()
-  if (!s) return []
-  const chunks = s.split(/(?<=[.!?。])\s+/).map((x) => x.trim()).filter(Boolean)
-  const out = []
-  for (const c of chunks) {
-    const n = (c.match(/\[F\d+\]/g) || []).length
-    if (n >= 2) out.push(...c.split(/(?<=\[F\d+\])\s+(?=\S)/).map((x) => x.trim()).filter(Boolean))
-    else out.push(c)
-  }
-  return out
-}
+// The sentence split and the two citation predicates live in
+// ../src/cite-core.mjs, which the screen (src/ui/cite.jsx) imports as well.
+// They used to be two implementations and they diverged: the screen cut after
+// every [F#] and this file only cut a chunk that carried two or more, so the
+// same narration had two sentence counts and two citation rates. ADR-0009 makes
+// the citation rate a headline number; two of them means neither can be quoted.
+// Re-exported here because the unit tests and the result file both reach for it
+// by this name.
+export { splitSentences }
 
-// ADR-0009. `cited` is the prompt's own rule - the sentence ENDS in a [F#].
-// `loose` counts a citation anywhere in the sentence, reported beside it so a
-// low strict rate cannot be read as "no citations at all" when the model is
-// only putting them in the wrong place. `invalid` is a citation of a fact id
-// that was never handed to the model: that is fabrication, not a format slip.
+// ADR-0009, and the reason this returns TWO counters.
+//
+//   cited  the prompt's own rule - the sentence ENDS in a [F#]. This is the
+//          headline citation_rate (docs/04-evaluation.md 2.3.3) and it measures
+//          format compliance as much as basis.
+//   loose  a citation anywhere in the sentence. Reported beside it so a low
+//          strict rate cannot be read as "no citations at all" when the model is
+//          only putting them in the wrong place. **This is the number the screen
+//          shows**, because the 미검증 badge accuses a sentence of having no
+//          basis, and a mid-sentence [F2] is a basis.
+//
+// `invalid` is a citation of a fact id that was never handed to the model: that
+// is fabrication, not a format slip.
 export function citationStats(text, facts) {
   const known = new Set((facts || []).map((f) => String(f && f.id)))
   const sentences = splitSentences(text)
@@ -177,8 +181,8 @@ export function citationStats(text, facts) {
   let invalid = 0
   const rows = []
   for (const s of sentences) {
-    const all = [...s.matchAll(/\[F(\d+)\]/g)].map((m) => `F${m[1]}`)
-    const endsWith = /\[F\d+\]\s*[.!?。]?\s*$/.test(s)
+    const all = citesIn(s)
+    const endsWith = endsWithCite(s)
     const bad = all.filter((id) => !known.has(id))
     if (endsWith) cited += 1
     if (all.length) loose += 1
@@ -463,7 +467,9 @@ export async function runWithModel(S, LLM, payload, items, cfg, opts) {
           const ans = S.ask(ctx, r.query, gotV.args)
           rec.executed = true
           if (opts.narrate) {
-            const n = await LLM.narrate(cfg, ans.facts, it.question, {})
+            // Narration gets its own cfg so its temperature is a decision this
+            // tool made and recorded, not one it inherited (see parseArgs).
+            const n = await LLM.narrate(opts.narrateCfg || cfg, ans.facts, it.question, {})
             rec.narrate_ms = Number(n.ms) || 0
             if (n.error) {
               rec.narration = { error: n.error, why: n.why }
@@ -540,12 +546,14 @@ export async function main(argv) {
   }
   if (opts.limit > 0) items = items.slice(0, opts.limit)
 
-  const cfg = LLM.normCfg({
+  const cfgIn = {
     model: opts.model || undefined,
     endpoint: opts.endpoint || undefined,
     seed: opts.seed,
     timeoutMs: opts.timeoutMs,
-  }, 'route')
+  }
+  const cfg = LLM.normCfg(cfgIn, 'route')
+  const narrateCfg = LLM.normCfg({ ...cfgIn, temperature: opts.narrateTemp }, 'narrate')
 
   const reg = catalogRegression(S, payload, items)
   console.log(`catalogue regression: ${reg.pass}/${reg.cases} pass, covers ${reg.queries_covered.length}/${QUERY_IDS.length} queries`)
@@ -599,7 +607,7 @@ export async function main(argv) {
     console.log('ROUTING WAS NOT MEASURED. routing / narration / abstention / latency are null, not zero.')
   } else {
     console.log(`model: ${cfg.model} at ${cfg.endpoint}`)
-    const records = await runWithModel(S, LLM, payload, items, cfg, opts)
+    const records = await runWithModel(S, LLM, payload, items, cfg, { ...opts, narrateCfg })
     const routing = routingMetrics(records)
     const narration = narrationBlock(records)
     const abst = abstentionMetrics(records)
@@ -607,7 +615,19 @@ export async function main(argv) {
       ...base,
       model: cfg.model,
       model_skip: null,
-      config: { temperature: cfg.temperature, seed: cfg.seed, num_ctx: cfg.numCtx, timeout_ms: cfg.timeoutMs, retries: opts.retries, narrate: opts.narrate },
+      config: {
+        // Two temperatures because there are two calls. Both are written even
+        // when they are equal: a reader of this file should not have to know
+        // staff-llm's defaults to know what produced the citation figures.
+        temperature: cfg.temperature,
+        route_temperature: cfg.temperature,
+        narrate_temperature: opts.narrate ? narrateCfg.temperature : null,
+        seed: cfg.seed,
+        num_ctx: cfg.numCtx,
+        timeout_ms: cfg.timeoutMs,
+        retries: opts.retries,
+        narrate: opts.narrate,
+      },
       measured: ['catalog_regression', 'routing_precision_at_1', 'citation_rate', 'abstention', 'latency'],
       not_measured: [],
       note: [
