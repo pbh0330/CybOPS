@@ -8,7 +8,7 @@
     "lte":    { "label": "LTE" }
   },
   "types": {
-    "c2-server":           { "bearers": ["wired", "satcom"],        "provides": ["messaging", "intel"], "performs": ["T-ORDER", "T-SITREP"] },
+    "c2-server":           { "bearers": ["wired", "vhf", "satcom"], "provides": ["messaging", "intel"], "performs": ["T-ORDER", "T-SITREP"] },
     "c2-terminal":         { "bearers": ["wired", "vhf", "lte"],    "performs": ["T-BFT", "T-CTRL", "T-CO1REP", "T-CO2REP"] },
     "workstation":         { "bearers": ["wired"],                  "performs": ["T-ORDER", "T-SITREP"] },
     "terminal":            { "bearers": ["wired", "lte"],           "performs": ["T-CFF"] },
