@@ -34,12 +34,31 @@
 :root[data-theme-skin="apple"] {
   /* Surfaces. Apple dark is near-black and lifts by LIGHTNESS, not by a
      border, so the ramp below is the elevation system and the border rules
-     further down mostly take borders away. */
-  --surface-app: #000000;      /* surface/base */
+     further down mostly take borders away.
+   *
+   * The card sits at elevated-1, one step LOWER than the first draft put it.
+   * That draft used elevated-2 (#2C2C2E) and the measurement in section 4 of
+   * docs/design/tokens-apple.md said it cost the three dimmest cause colours
+   * their small-text contrast: maintenance 3.85, attack 4.30, env 4.40. The
+   * card is where `.tag-hot` (10px, attack red) and the cause chips live, so
+   * that is not a rounding error. Nothing about the cause palette changed to
+   * fix it - the surface under it came down.
+   *
+   * The step-down costs one thing and the rules below pay it. Base CSS uses
+   * `--surface-raised` for TWO roles, the card and the control at rest, and
+   * at elevated-1 a control standing on the elevated-1 top bar would be
+   * invisible. So the card keeps the token and every CONTROL is moved up to
+   * elevated-2 by name, and the panels that HOLD cards (rail, sheet, staff
+   * dock, palette) come down to base so the cards still read as lifted.
+   * Bars - the top strip and the timeline - stay at elevated-1. That split
+   * is Apple's own: a grouped list sits on the base colour with elevated
+   * cells, while a bar sits one step up. */
+  --surface-app: #000000;      /* surface/base - app, stage, card-holding panels */
   --surface-board: #000000;    /* surface/base - the stage is the deepest plane */
-  --surface-chrome: #1c1c1e;   /* surface/elevated-1 - top bar, rail, timeline */
-  --surface-raised: #2c2c2e;   /* surface/elevated-2 - cards, controls at rest */
-  --surface-hover: #3a3a3c;    /* surface/elevated-3 - hover, selected segment */
+  --surface-chrome: #1c1c1e;   /* surface/elevated-1 - bars (top strip, timeline) */
+  --surface-raised: #1c1c1e;   /* surface/elevated-1 - CARDS */
+  --surface-hover: #2c2c2e;    /* surface/elevated-2 - controls at rest, chips */
+  --surface-active: #3a3a3c;   /* surface/elevated-3 - hover, selected segment */
 
   /* Separator. ONE colour at two opacities: a hairline that needs to recede
      gets fainter, never darker, so it still reads as a hairline over #000 and
@@ -222,14 +241,14 @@
 
 :where([data-theme-skin="apple"]) button,
 :where([data-theme-skin="apple"]) select {
-  background: var(--surface-raised);
+  background: var(--surface-hover);
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
   padding: 7px 14px;
   transition: background .2s cubic-bezier(.4, 0, .2, 1), color .2s cubic-bezier(.4, 0, .2, 1);
 }
 :where([data-theme-skin="apple"]) button:hover,
-:where([data-theme-skin="apple"]) select:hover { background: var(--surface-hover); }
+:where([data-theme-skin="apple"]) select:hover { background: var(--surface-active); }
 /* the base hover rule paints a navy hairline (#3a4656) that belongs to the
    other theme. Taking it off needs the full-specificity scope, and the two
    marked states are excluded by name: `.danger` and `.is-armed` set a border
@@ -237,7 +256,7 @@
    the mark vanish under the pointer - which is the one moment it matters. */
 [data-theme-skin="apple"] button:hover:not(.danger):not(.is-armed),
 [data-theme-skin="apple"] select:hover { border-color: transparent; }
-:where([data-theme-skin="apple"]) button:disabled:hover { background: var(--surface-raised); border-color: transparent; }
+:where([data-theme-skin="apple"]) button:disabled:hover { background: var(--surface-hover); border-color: transparent; }
 [data-theme-skin="apple"] :focus-visible { outline: 2px solid var(--text-primary); outline-offset: 2px; }
 
 /* the round transport buttons keep their own geometry; what they take from
@@ -246,7 +265,21 @@
 [data-theme-skin="apple"] .play-btn:hover { background: #fff; }
 [data-theme-skin="apple"] .play-btn:active,
 [data-theme-skin="apple"] .step-btn:active { transform: scale(.94); }
-[data-theme-skin="apple"] .step-btn { width: 30px; height: 30px; background: var(--surface-raised); }
+[data-theme-skin="apple"] .step-btn { width: 30px; height: 30px; background: var(--surface-hover); }
+/* Base CSS paints these with `--surface-raised` too, but they are CONTROLS,
+   not cards: at elevated-1 they would disappear into the bar or the panel
+   behind them. One step up, by name. */
+[data-theme-skin="apple"] .tb-file,
+[data-theme-skin="apple"] .staff-ask-go,
+[data-theme-skin="apple"] .staff-q-run,
+[data-theme-skin="apple"] .wg-pick input { background: var(--surface-hover); }
+[data-theme-skin="apple"] .staff-ask-go:hover:enabled,
+[data-theme-skin="apple"] .staff-q-run:hover { background: var(--surface-active); }
+/* the situation band is a luminance ramp and needs three distinct steps above
+   the elevated-1 bar it sits on; lv1 and lv2 both landed on elevated-2 once
+   the ramp moved */
+[data-theme-skin="apple"] .kpi-band.lv1 .kpi-v { background: var(--surface-hover); }
+[data-theme-skin="apple"] .kpi-band.lv2 .kpi-v { background: var(--surface-active); }
 [data-theme-skin="apple"] .help-btn:hover,
 [data-theme-skin="apple"] .tb-menu-btn:hover { background: var(--surface-raised); }
 
@@ -255,7 +288,7 @@
 [data-theme-skin="apple"] .seg {
   border: none;
   border-radius: 10px;
-  background: var(--surface-raised);
+  background: var(--surface-hover);
   padding: 2px;
   gap: 2px;
 }
@@ -268,7 +301,7 @@
 }
 [data-theme-skin="apple"] .seg button + button { border-left: none; }
 [data-theme-skin="apple"] .seg button.on {
-  background: var(--surface-hover);
+  background: var(--surface-active);
   color: var(--text-primary);
   font-weight: 600;
 }
@@ -286,7 +319,7 @@
 [data-theme-skin="apple"] .build-row select,
 [data-theme-skin="apple"] .wg-pick input,
 [data-theme-skin="apple"] .staff-ask-input {
-  background: var(--surface-raised);
+  background: var(--surface-hover);
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
   padding: 6px 10px;
@@ -344,6 +377,13 @@
 }
 [data-theme-skin="apple"] .board-toolbar::-webkit-scrollbar { height: 0; }
 
+/* A panel that HOLDS cards comes down to base so the cards read as lifted.
+   The hairline on its edge is what separates it from the stage now, which is
+   the Apple grouped-list arrangement rather than a second grey. The bars
+   above (.topbar) and below (.timeline) keep elevated-1. */
+[data-theme-skin="apple"] .rail,
+[data-theme-skin="apple"] .staff-dock,
+[data-theme-skin="apple"] .palette { background: var(--surface-app); }
 [data-theme-skin="apple"] .rail { border-left-color: var(--line-strong); }
 [data-theme-skin="apple"] .rail-fixed { padding: var(--sp-4) var(--sp-4) var(--sp-5); border-bottom-color: var(--line-strong); }
 [data-theme-skin="apple"] .rail-body { padding: var(--sp-4); }
@@ -376,7 +416,7 @@
 [data-theme-skin="apple"] .mission .edge { width: 3px; border-radius: 0 var(--radius-pill) var(--radius-pill) 0; }
 [data-theme-skin="apple"] .mission.inactive { background: var(--surface-raised); border: none; padding: 14px; }
 [data-theme-skin="apple"] .action { padding: var(--sp-3) var(--sp-4); }
-[data-theme-skin="apple"] .action .req-btn { background: var(--surface-hover); border-radius: var(--radius-pill); padding: 6px 14px; }
+[data-theme-skin="apple"] .action .req-btn { background: var(--surface-active); border-radius: var(--radius-pill); padding: 6px 14px; }
 [data-theme-skin="apple"] .step-note { padding: var(--sp-3); }
 [data-theme-skin="apple"] .ev { border-radius: var(--radius-sm); padding: 4px 10px; }
 [data-theme-skin="apple"] .ev:hover, [data-theme-skin="apple"] .ev.is-now { background: var(--surface-raised); }
@@ -458,11 +498,16 @@
    list but gets the thickest material of the set, because it has to stay
    readable over satellite tiles and it is not allowed to be switched off. */
 
+/* The floating materials come down with the ramp. This is not only taste:
+   `.legend-bar` carries the eight cause SWATCHES, so it is one of the
+   surfaces section 4 of the token doc has to measure, and at elevated-2 over
+   the black stage it composited to about #202022. At elevated-1 it lands
+   near #141416 and the swatches gain about 0.7 of a ratio point. */
 [data-theme-skin="apple"] .legend-bar,
 [data-theme-skin="apple"] .geo-controls,
 [data-theme-skin="apple"] .map-tile-error,
 [data-theme-skin="apple"] .toast {
-  background: rgba(44, 44, 46, .72);
+  background: rgba(28, 28, 30, .72);
   border-color: transparent;
   border-radius: var(--radius-md);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
@@ -490,7 +535,7 @@
 
 /* the base rules for these two use `!important`, so these have to as well */
 [data-theme-skin="apple"] .maplibregl-ctrl-group {
-  background: rgba(44, 44, 46, .8) !important;
+  background: rgba(28, 28, 30, .8) !important;
   border-color: transparent;
   border-radius: var(--radius-sm);
   -webkit-backdrop-filter: blur(20px);
@@ -505,7 +550,9 @@
 [data-theme-skin="apple"] .sheet {
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   border-top-color: transparent;
-  background: rgba(28, 28, 30, .92);
+  /* the sheet IS the rail on a phone, so its material sits at base: the
+     elevated-1 cards inside it have to have something to be lifted off */
+  background: rgba(0, 0, 0, .86);
   -webkit-backdrop-filter: saturate(180%) blur(24px);
   backdrop-filter: saturate(180%) blur(24px);
   box-shadow: 0 -8px 32px rgba(0, 0, 0, .5);
@@ -513,7 +560,7 @@
 [data-theme-skin="apple"] .sheet-grip { border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
 
 [data-theme-skin="apple"] .tb-menu {
-  background: rgba(44, 44, 46, .88);
+  background: rgba(28, 28, 30, .9);
   border-bottom-color: transparent;
   border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   padding: var(--sp-3) var(--sp-4) var(--sp-4);
@@ -523,6 +570,7 @@
 }
 [data-theme-skin="apple"] .tb-menu .seg button { border-radius: 8px; }
 [data-theme-skin="apple"] .stack-pick button { border-radius: var(--radius-sm); }
+[data-theme-skin="apple"] .stack-pick button.on { background: var(--surface-hover); }
 [data-theme-skin="apple"] button.staff-fact { border-radius: var(--radius-sm); }
 
 @media (max-width: 860px) {
