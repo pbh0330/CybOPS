@@ -244,6 +244,20 @@ body .geo-canvas:active { cursor: grabbing; }
 .wg-aar-why { display: block; color: var(--fg-dim); font-size: 10px; margin-top: 1px; }
 .wg-aar-btns { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
 
+/* 운용자 지표 (U4). Achromatic throughout: these are readings about the
+   person, and nothing about them is an attack, so no hue appears here. A
+   figure we cannot honestly give is dimmed and spelled out in words rather
+   than drawn as a zero. */
+.wg-aar-op { margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--line-soft); }
+.wg-aar-op-row { display: grid; grid-template-columns: 104px 1fr; gap: 2px 8px; padding: 5px 0; border-top: 1px solid var(--line-soft); }
+.wg-aar-op-row:first-of-type { border-top: 0; }
+.wg-aar-op-k { font-size: 11px; color: var(--fg-dim); }
+.wg-aar-op-v { font-size: 12px; color: var(--fg); }
+.wg-aar-op-v b { font-size: 16px; font-family: "IBM Plex Mono", ui-monospace, monospace; margin-right: 2px; }
+.wg-aar-op-v.is-null { color: var(--fg-dim); }
+.wg-aar-op-v.is-invariant { font-size: 11.5px; }
+.wg-aar-op-n { grid-column: 2; font-size: 10px; color: var(--fg-dim); line-height: 1.45; }
+
 /* Facility layout (defnet-01). Assets indoors, so the map draws buildings
    rather than terrain: what matters is which block a redundant pair sits in. */
 .fac-wall { fill: rgba(44,58,76,.55); stroke: rgba(120,150,185,.35); stroke-width: .8; }

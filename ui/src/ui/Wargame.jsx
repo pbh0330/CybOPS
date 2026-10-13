@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { config, probeLlm } from '../config.js'
 import { assetName, techniqueLine } from '../labels.js'
 import { startGame, defaultFoothold, legalFor, defend, pass, attackerTurn, staffTable, compromiseOf } from '../game.js'
+import { aarMetrics } from '../aar.js'
 import { staffFacts, narrateStaff } from '../staff-llm.mjs'
 import { runChain } from '../engine.js'
 import { readiness } from '../sandbox.js'
@@ -215,6 +216,78 @@ function StaffCard({ graph, game, rows, facts, llmOk, onIsolate, onToast }) {
   )
 }
 
+// U4: the AAR looks at the operator, not only at the board.
+//
+// Every number here is aar.js over the history game.js already wrote, and
+// every number is drawn with its denominator next to it - three isolations in
+// an eight-turn game is three and this card says three. The mandate is
+// ADR-0015, which dropped the expert evaluation and named 순위 불일치도 as the
+// replacement; see the header of aar.js.
+//
+// Two things are absent on purpose. There is no elapsed-time figure: the
+// scenario time is fixed and the replay has a speed control, so real seconds
+// measure nothing about the operator. And approval is written as a sentence,
+// not a percentage - isolation is the only write-like action and ADR-0004
+// leaves no other way in, so a ratio there would be 100% by construction and
+// would read as a measurement.
+function AarOperator({ graph, game }) {
+  const m = useMemo(() => aarMetrics(game), [game])
+  const a = m.agreement
+  const fe = m.firstEffective
+  return (
+    <div className="wg-aar-op">
+      <div className="wg-sub">운용자 지표 <em className="ref">격리 {a.isolations}건 · {m.turns}턴 중 생략 {m.passes}턴</em></div>
+      {a.isolations === 0 ? (
+        <div className="wg-aar-op-row"><span className="wg-aar-op-k">참모 순위 일치도</span>
+          <span className="wg-aar-op-v is-null">낼 수 없다</span>
+          <small className="wg-aar-op-n">격리 0건 - 비교할 결심이 없다.</small></div>
+      ) : (
+        <>
+          <div className="wg-aar-op-row"><span className="wg-aar-op-k">참모 순위 일치도</span>
+            {/* The tie is the whole decision (aar.js `classify`). At the early
+                steps every candidate's 순이득 is the same, so 1위 and 9위 are
+                one recommendation and the number between them is a sort order.
+                A pick at the top 순이득 is agreement whatever its rank, ties
+                are shown as their own count, and the headline is only over the
+                decisions the staff actually had a preference about. */}
+            {a.allTied
+              ? <span className="wg-aar-op-v is-null">참모가 선호를 갖지 않은 판</span>
+              : <span className="wg-aar-op-v"><b>{pct(a.rate)}</b> {a.agreed}/{a.decided}건</span>}
+            <small className="wg-aar-op-n">{a.allTied
+              ? `격리 ${a.tied}건 전부 고른 것의 순이득이 참모 1위와 같았다 - 참모에게 선호가 없었으므로 일치도 수치를 내지 않는다.`
+              : `참모에게 선호가 있던 ${a.decided}건 기준. 순이득이 1위와 같으면 순위가 몇이든 일치로 센다.`}</small></div>
+          {a.tied > 0 && (
+            <div className="wg-aar-op-row"><span className="wg-aar-op-k">동률</span>
+              <span className="wg-aar-op-v">{a.tied}/{a.isolations}건</span>
+              <small className="wg-aar-op-n">고른 것과 참모 1위의 순이득이 같았다 - 순위는 막는 공격 수로 갈린 정렬 순서일 뿐 우열이 아니므로 분모에서 뺀다.</small></div>
+          )}
+          {a.ranked > 0 && (
+            <div className="wg-aar-op-row"><span className="wg-aar-op-k">중앙값 순위</span>
+              <span className="wg-aar-op-v">{a.medianRank}위</span>
+              <small className="wg-aar-op-n">상위 3 안 {a.top3}/{a.ranked}건. 선호가 있던 결심만 센다.</small></div>
+          )}
+          <div className="wg-aar-op-row"><span className="wg-aar-op-k">첫 유효 격리 턴</span>
+            {fe.turn === null
+              ? <span className="wg-aar-op-v is-null">없음</span>
+              : <span className="wg-aar-op-v"><b>{fe.turn + 1}</b>턴</span>}
+            <small className="wg-aar-op-n">{fe.turn === null
+              ? `격리 ${fe.measured}건 중 공격자의 합법수를 실제로 줄인 것이 없다.`
+              : `${assetName(graph, fe.id).ko} 격리가 공격자 합법수 ${fe.blocks}개를 없앴다 - 합법수를 줄인 격리 ${fe.effective}/${fe.measured}건.`}</small></div>
+          <div className="wg-aar-op-row"><span className="wg-aar-op-k">승인</span>
+            <span className="wg-aar-op-v is-invariant">{m.approval.holds ? '모든 격리는 사람의 탭에서 왔다' : `사람이 아닌 기록 ${m.approval.other}건`}</span>
+            <small className="wg-aar-op-n">불변식이고 지표가 아니다 - 격리가 유일한 write 성 행동이어서 분모가 1종이고, 백분율로 쓰면 측정처럼 읽힌다 (ADR-0004).</small></div>
+          {a.unrecorded > 0 && (
+            <div className="wg-aar-op-row"><span className="wg-aar-op-k">참모 표 미기록</span>
+              <span className="wg-aar-op-v">{a.unrecorded}/{a.isolations}건</span>
+              <small className="wg-aar-op-n">결심 기록이 생기기 전 행이다 - 순위 집계에서 뺐다.</small></div>
+          )}
+        </>
+      )}
+      <p className="rail-caption">표본은 한 판의 격리 몇 건이고 건수를 같이 적는다. 경과 실시간은 재지 않는다 - 시나리오 시점이 고정되고 배속이 있어 무의미하다. 순위 일치도는 ADR-0015 가 전문가 평가 대신 택한 순위 불일치도다.</p>
+    </div>
+  )
+}
+
 function Aar({ graph, game, onAgain, onNewSeed, onObserve }) {
   const r = game.result
   return (
@@ -238,6 +311,7 @@ function Aar({ graph, game, onAgain, onNewSeed, onObserve }) {
             <td>{pct(h.p1)}</td>
           </tr>))}
       </tbody></table>
+      <AarOperator graph={graph} game={game} />
       <div className="wg-aar-btns">
         <button type="button" onClick={onAgain}>같은 시드로 다시</button>
         <button type="button" onClick={onNewSeed}>새 시드</button>

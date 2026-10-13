@@ -154,6 +154,20 @@ const staffRow = (r) => (r ? {
   id: r.id, rank: r.rank, cost: r.cost, blocks: r.blocks, gainBlocked: r.gainBlocked, net: r.net,
 } : null)
 
+// How many candidates shared the top `net` in that turn's table. staffTable
+// breaks a net tie on blocks and then on id, so rank 1 and rank 9 can be the
+// same net with the sort order the only thing between them - at tacnet-01's
+// early steps every candidate's net is 0 and twelve of thirteen rows tie. U4
+// needs that count to tell "the operator went against the staff" from "the
+// staff had no preference", and the table is gone by the time anyone asks, so
+// it is written here with the rest of the record. One integer off a table
+// already in hand; nothing existing changes meaning.
+const tiedTopOf = (rows) => {
+  if (!rows.length) return 0
+  const top = rows[0].net
+  return rows.filter((r) => Math.abs(r.net - top) < 1e-9).length
+}
+
 export function defend(g, G, act) {
   if (!G || G.phase !== 'defend' || G.result) return G
   if (!act || act.type !== 'isolate' || !act.id) return G
@@ -177,7 +191,10 @@ export function defend(g, G, act) {
         basis: basisOf(act.basis),
         rank: chosen ? chosen.rank : null,
         rationale: rationaleOf(act.rationale),
-        staff: { rows: table.length, chosen: staffRow(chosen), top: staffRow(table[0] || null) },
+        staff: {
+          rows: table.length, chosen: staffRow(chosen), top: staffRow(table[0] || null),
+          tiedTop: tiedTopOf(table),
+        },
       },
     },
   }
