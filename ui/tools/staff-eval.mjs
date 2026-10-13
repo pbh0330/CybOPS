@@ -11,14 +11,18 @@
 // be wrong there, so they are scored separately:
 //
 // QUERY_IDS below is the golden set's class list, NOT the catalogue. It is
-// six, and the catalogue is eight: `mission_attribution` (U1) and
-// `decision_why` (U2) were added after this golden set was written and have no
-// questions in it, so nothing here measures how well a model routes to either.
-// That is a gap in the measurement, and it is said here rather than papered
-// over by counting the classes as covered. `decision_why` has a second reason
-// to stay out for now: it is the first needs:'game' query, and every item in
-// this set is asked in the observe or sandbox ctx, where the catalogue gate
-// correctly refuses it.
+// seven, and the catalogue is eight. `mission_attribution` (U1) and
+// `decision_why` (U2) were both added after this golden set was first written;
+// U8 then wrote three questions for `mission_attribution` (items 39~41), so it
+// is now scored like the other six. `decision_why` is still not: nothing here
+// measures how well a model routes to it, and that is a gap in the
+// measurement, said here rather than papered over by counting the class as
+// covered. The reason it stays out is mechanical, not an oversight - it is the
+// first needs:'game' query, every item in this set is asked in the observe or
+// sandbox ctx where the catalogue gate correctly refuses it, and `ctxFor()`
+// below builds ctx from a replay step and puts no `ctx.game` in it, which is
+// what `decision_why.run` reads. Covering it means the golden set declaring a
+// deterministic engagement history and the harness replaying it.
 //
 //   routing   did the model pick the query id (and the arguments) the golden
 //             set says the question meant? Reported as precision@1 PER CLASS
@@ -87,7 +91,7 @@ async function ensureJsonLoader() {
 // header. Adding an id here without adding at least three questions for it
 // makes checkGolden fail, which is the intended order.
 export const QUERY_IDS = [
-  'state_summary', 'mission_why', 'asset_impact',
+  'state_summary', 'mission_why', 'mission_attribution', 'asset_impact',
   'containment_top', 'compare_defense', 'readiness_gap',
 ]
 

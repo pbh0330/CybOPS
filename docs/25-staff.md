@@ -141,6 +141,12 @@ Fact = { id: 'F3', text: '...', ref: { kind, id } | null, value: 0.8, unit: '%' 
   `runChain` 2회이므로 성능을 먼저 재야 한다.
 - **`needs:'game'` 게이트는 아직 실질 검사가 아니다.** S1 6종에 교전 전용 질의가 없어서다.
   S3 가 `counterfactual`/`autoplay` 를 문 뒤에 넣는 순간 실질 검사가 된다.
+  > **해소됨 (2026-10-14).** 위 두 줄은 2026-09-23 당시 사실의 기록이고 그대로 둔다.
+  > `decision_why` 가 `needs:'game'` 인 **첫 질의**로 카탈로그에 들어갔으므로
+  > (`ui/src/staff.js`) 게이트는 이제 실질 검사다. 관측·교전장 ctx 에서 이 질의는
+  > 목록에 뜨지 않고 `validate` 가 거부한다. 다만 **골든셋은 이 클래스를 아직 덮지
+  > 못한다** - 하네스의 `ctxFor()` 가 `ctx.game` 을 만들지 않기 때문이고,
+  > `docs/04-evaluation.md` 2.3.4 절이 닫히는 조건을 적는다.
 - **S2 는 끝났다**: 자연어 라우팅(`staff-llm.mjs` `routeQuestion`), 서술과 `[F#]` 칩,
   미검증 배지(`ui/src/ui/cite.jsx` 한 벌), 기권·1회 재시도·`state_summary` 폴백, 골든셋
   38문항(`eval/golden/staff/tacnet-01.jsonl`)과 러너(`ui/tools/staff-eval.mjs`),
@@ -176,6 +182,13 @@ node ui/tools/staff-eval.mjs --model qwen2.5:7b-instruct-q4_K_M --endpoint http:
 ```
 
 `eval/results/staff-<model>-<date>.json` 이 나온다. 그 파일이 나오기 전까지 **로컬 7B 가
-6종 카탈로그를 정확히 고르는지는 열린 질문이다.** ADR-0028 의 재검토 조건도 그 수치를
+8종 카탈로그를 정확히 고르는지는 열린 질문이다.** ADR-0028 의 재검토 조건도 그 수치를
 기다리고 있다 - precision@1 이 낮으면 질의 라벨이 모호한 것인지 모델이 약한 것인지부터
 가른다.
+
+**ADR-0028 의 다른 재검토 조건 하나는 숫자가 가까워졌다 (2026-10-14).** 그 조건은
+"카탈로그가 **열 종**을 넘어가면 라우팅 난이도가 달라진다" 이고, 이 문서가 6종이던
+시점에 쓰였다. 카탈로그는 이제 **8종**이므로 **남은 여유는 두 종**이다. 즉 그 조건은
+이제 "다음에 질의를 둘 더 넣으면 그때 ADR-0028 을 다시 연다" 를 뜻한다. ADR 본문은
+고치지 않는다. 그리고 **라우팅 측정은 8종 중 7종만 덮는다** - `decision_why` 에는
+문항이 없다(`docs/04-evaluation.md` 2.3.4 절).
