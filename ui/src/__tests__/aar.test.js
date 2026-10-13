@@ -275,15 +275,37 @@ describe('동률 엡실론은 한 벌이다 (tie-core.mjs)', () => {
     expect(sameNet(undefined, 1)).toBe(false)
   })
 
+  // The form this consolidation DELETED was a named local constant:
+  // `const EPS = 1e-9` on its own line, with the comparison two lines down.
+  // The first version of this guard only looked for `1e-9` and `net` on ONE
+  // line, so it would have waved that exact code straight back in - a checker
+  // that misses the thing it was written for. Both forms are banned now, and
+  // the ban was negative-tested by putting `const EPS = 1e-9` back into
+  // aar.js and watching this fail.
+  const LOCAL_EPS = /(?:const|let|var)\s+\w+\s*=\s*1e-9\b/   // 지역 상수로 베껴 둔 형태
+  const INLINE_NET = /net[^\n]*1e-9|1e-9[^\n]*net/           // net 비교에 바로 적은 형태
+
   it('is imported by all three consumers and copied by none of them', () => {
     for (const f of ['game.js', 'aar.js', 'facts.js']) {
       const src = read(f)
       expect(src).toContain("from './tie-core.mjs'")
+      expect(src).not.toMatch(LOCAL_EPS)
       // the comparison itself, not every 1e-9 in the file: facts.js uses the
       // same magnitude for "is this %p worth a sentence", which is a
       // different question and stays where it is
-      expect(src).not.toMatch(/net[^\n]*1e-9|1e-9[^\n]*net/)
+      expect(src).not.toMatch(INLINE_NET)
     }
+  })
+
+  it('would catch the form that was removed, and leaves the ones that stay alone', () => {
+    // the deleted shape, exactly as it stood in aar.js before tie-core.mjs
+    expect('const EPS = 1e-9\\nconst sameNet = (a, b) => Math.abs(a - b) < EPS').toMatch(LOCAL_EPS)
+    expect('  let eps = 1e-9').toMatch(LOCAL_EPS)
+    // and the legitimate residents of these three files, which ask a
+    // different question and must not trip it
+    expect('  if (a.floor > 1e-9) {').not.toMatch(LOCAL_EPS)
+    expect('  if (Math.abs(imp - comp) > 1e-9) {').not.toMatch(LOCAL_EPS)
+    expect('  if (a.floor > 1e-9) {').not.toMatch(INLINE_NET)
   })
 
   it('agrees with the three consumers on one real tied turn', () => {

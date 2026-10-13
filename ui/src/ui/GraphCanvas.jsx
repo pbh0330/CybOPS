@@ -448,6 +448,9 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
     return () => cancelAnimationFrame(flowRef.current.raf)
   }, [])
 
+  const drawnCands = ghostLines.filter((l) => l.kind === 'cand').length
+  const drawnOffRule = ghostLines.filter((l) => l.kind === 'off').length
+
   return (
     <>
       <div id="cy" ref={boxRef} hidden={hidden} />
@@ -533,21 +536,33 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
               >
                 <span className="legend-thick" />
                 선 굵기 = {contrib.missionName} 저하 기여 · 자산 간 비교이고 저하도의 몫이 아니다
+                {contrib.dropped > 0 ? ` · 음수 기여 ${contrib.dropped}개는 굵기로 못 그린다` : ''}
               </span>
             </>
           )}
-          {ghosts && ghostLines.length > 0 && (
+          {/* The numerator is what measureGhosts actually put on screen, not
+              what linkGhosts offered: a candidate whose ends are too close
+              together, or whose far end is hidden in this view, is dropped
+              there. A caption that counts the offer would claim more lines
+              than the picture contains. `total` after the slash is the
+              unclipped candidate count, so the gap is stated rather than
+              hidden. */}
+          {ghosts && drawnCands > 0 && (
             <>
               <span className="lg-rule" />
-              <span className="legend-item legend-ghost" title="규칙표(data/link-rules.json)가 고른 후보다. 선이나 끝의 점을 누르면 인스펙터의 연결 버튼과 같은 경로로 이어진다.">
-                <span className="legend-dash" />유령 선 = 연결 가능 후보 {ghosts.cands.length}
-                {ghosts.total > ghosts.cands.length ? `/${ghosts.total}` : ''}
+              <span className="legend-item legend-ghost" title="규칙표(data/link-rules.json)가 고른 후보다. 선이나 끝의 점을 누르면 인스펙터의 연결 버튼과 같은 경로로 이어진다. 앞 숫자는 지금 화면에 그린 선의 수다.">
+                <span className="legend-dash" />유령 선 = 연결 가능 후보 {drawnCands}
+                {ghosts.total > drawnCands ? `/${ghosts.total}` : ''}
               </span>
-              {ghosts.offRule.length > 0 && (
-                <span className="legend-item legend-ghost" title="지금 걸려 있지만 규칙표에 맞지 않는 링크다. 끊지 않는다 - 표시만 한다.">
-                  <span className="legend-dot" />점선 = 규칙 밖 링크 {ghosts.offRule.length}
-                </span>
-              )}
+            </>
+          )}
+          {ghosts && drawnOffRule > 0 && (
+            <>
+              <span className="lg-rule" />
+              <span className="legend-item legend-ghost" title="지금 걸려 있지만 규칙표에 맞지 않는 링크다. 끊지 않는다 - 표시만 한다.">
+                <span className="legend-dot" />점선 = 규칙 밖 링크 {drawnOffRule}
+                {ghosts.offRule.length > drawnOffRule ? `/${ghosts.offRule.length}` : ''}
+              </span>
             </>
           )}
         </div>

@@ -14,7 +14,7 @@ import { legalMoves, scoreMoves, playTurn, footholds, greedyChooser, randomChoos
 import { runChain } from './engine.js'
 import { sameNet } from './tie-core.mjs'
 
-const DEFAULTS ={ mode: 'hold', turns: 8, t: 0, foothold: null, seed: 20260906, strategy: 'greedy', method: 'weighted' }
+const DEFAULTS = { mode: 'hold', turns: 8, t: 0, foothold: null, seed: 20260906, strategy: 'greedy', method: 'weighted' }
 
 export function compromiseOf(G) {
   const s = { ...(G.attacker || {}) }

@@ -8,7 +8,7 @@ import { runStep, containmentCandidates } from './engine.js'
 import { assetName, linkName, techniqueKo } from './labels.js'
 import { legalFor } from './game.js'
 import { footholds } from './attack.js'
-import { linkCandidates, linkFitsRules, ruleGap } from './sandbox.js'
+import { linkCandidates, linkFitsRules } from './sandbox.js'
 
 export function num(v) { return typeof v === 'number' ? v : Number(v || 0) }
 export function pct(v) { return `${(num(v) * 100).toFixed(1)}%` }
@@ -318,9 +318,33 @@ export function gameOverlay(g, game) {
 //
 // So the weight is a RANK-FREE COMPARISON BETWEEN ASSETS and nothing else.
 // The legend has to say that, because thickness invites being read as a share.
+//
+// WHAT HAPPENS TO A NEGATIVE CONTRIBUTION, AND WHY THE TWO LAYERS AGREE.
+//
+// `contribution` is `total - after`, so it goes negative when clearing one
+// asset's compromise makes the mission WORSE. The engine is monotone in
+// compromise today, so that does not happen: a leave-one-out sweep over every
+// asset of tacnet-01 finds no negative, and the test below pins that premise
+// rather than assuming it. `attribution()` still prints the sign (facts.js
+// sgnPp) for the day the engine stops being monotone, and `attributionFacts`
+// narrates such a row through `Math.abs`.
+//
+// If that day comes, the two layers must not say different things about the
+// same asset. Thickness cannot carry a sign - the only honest encodings left
+// would be hue, and hue is the adversary's (ADR-0012, ADR-0024). So the
+// drawing DROPS a negative row rather than drawing its magnitude as if it
+// were a contribution, and reports `dropped` so the legend can say the
+// picture is not showing everything the fact layer is saying. Silence there
+// would be the one state the fact card and the situation picture could
+// contradict each other in.
+//
+// A contribution of exactly 0 is dropped the same way and for a plainer
+// reason: 0 is not a thin line, it is no line.
 export function contribLayer(attr, mission) {
   if (!attr || attr.active === false) return null
-  const rows = (attr.rows || []).filter((r) => num(r.contribution) > 0)
+  const all = attr.rows || []
+  const rows = all.filter((r) => num(r.contribution) > 0)
+  const dropped = all.filter((r) => num(r.contribution) < 0).length
   if (!rows.length) return null
   const max = Math.max(...rows.map((r) => num(r.contribution)))
   if (!(max > 0)) return null
@@ -329,6 +353,7 @@ export function contribLayer(attr, mission) {
     missionName: (mission && (mission.name || mission.id)) || attr.mission,
     total: num(attr.total),
     max,
+    dropped,
     // w is contribution / max(contribution): 1 for the heaviest asset in the
     // set, proportional below it, and never a fraction of `total`.
     rows: rows
@@ -368,6 +393,14 @@ export function contribMission(graph, s) {
 //            (the inspector's 규칙 밖 mark, same predicate), drawn dotted and
 //            inert - there is nothing to connect, the point is that the flag
 //            now has a place on screen
+//
+// Nothing to draw returns null, and the overlay then says NOTHING - it does
+// not carry a reason. The reason belongs to the inspector, which already
+// prints it beside its own count (`연결 가능 (n)` or `- 규칙표 없음` /
+// `- 규칙표에 없는 유형`, from sandbox.ruleGap). This used to return that
+// string as a `gap` field, which no caller read and which was unreachable
+// anyway: every case that makes `ruleGap` non-null also empties both lists,
+// so the `return null` above fires first.
 const GHOST_MAX = 8
 
 export function linkGhosts(graph, rules, assetId) {
@@ -390,5 +423,5 @@ export function linkGhosts(graph, rules, assetId) {
     .filter((l) => !linkFitsRules(graph, rules, l))
     .map((l) => ({ id: l.id, to: l.a === assetId ? l.b : l.a, bearer: l.bearer || '', w: 2 }))
   if (!shown.length && !offRule.length) return null
-  return { from: assetId, gap: ruleGap(rules, me.type), total: cands.length, cands: shown, offRule }
+  return { from: assetId, total: cands.length, cands: shown, offRule }
 }

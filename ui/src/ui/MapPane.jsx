@@ -332,13 +332,17 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
       // attackArcFeatures drops hops whose ends are unplaced, so the rank has
       // to ride on the feature itself rather than be re-read by index
       const cands = overlay.candidates.map((c) => ({ from: c.from, to: c.to, t: overlay.turn, technique: null, rank: c.rank }))
-      const ghosts = attackArcFeatures(graph, cands, t, georef)
-      for (const f of ghosts.features) {
+      // NOT `ghosts`: that is the U9 prop this component takes, and a local
+      // of the same name inside this block shadowed it. Block scope made it
+      // harmless today, which is exactly how the last two of CLAUDE.md's six
+      // name collisions got written by somebody who had just read about them.
+      const threatArcs = attackArcFeatures(graph, cands, t, georef)
+      for (const f of threatArcs.features) {
         const c = cands.find((x) => x.from === f.properties.from && x.to === f.properties.to)
         f.properties.w = Math.max(1.5, 4 - (c ? c.rank : 6) * 0.4)
         f.properties.label = ''
       }
-      map.getSource('threat').setData(ghosts)
+      map.getSource('threat').setData(threatArcs)
     } else {
       map.getSource('threat').setData(EMPTY)
     }

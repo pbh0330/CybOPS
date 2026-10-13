@@ -99,6 +99,13 @@ export function linkCandidates(g, rules, assetId) {
 //
 // True when the table cannot say: no table, or either end's type absent from
 // it. Silence is not an accusation.
+//
+// A link with NO bearer is out of rule, not 'wired'. The table answers about
+// the bearer a link declares, and a link that declares none has not been
+// answered about - defaulting it would invent a declaration the scenario did
+// not make, and would silently flip the inspector's verdict on exactly the
+// links a person is most likely to have left half-built. This is the reading
+// the inline predicate in Rail.jsx had before it moved here.
 export function linkFitsRules(g, rules, l) {
   if (!l) return true
   const a = byId(g, l.a)
@@ -107,7 +114,7 @@ export function linkFitsRules(g, rules, l) {
   const ra = rules.types[a.type]
   const rb = rules.types[b.type]
   if (!ra || !rb) return true
-  const bearer = l.bearer || 'wired'
+  const bearer = l.bearer
   const both = (ra.bearers || []).includes(bearer) && (rb.bearers || []).includes(bearer)
   const r = (rules.bearers || {})[bearer] || {}
   // '신규' is not a place: siteOf reads it as no site, same as linkCandidates

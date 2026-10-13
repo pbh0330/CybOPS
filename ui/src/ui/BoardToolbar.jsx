@@ -10,7 +10,10 @@ export default function BoardToolbar({
   view, onView, mode, labels, onLabels, onFit,
   // U3: the contribution layer. Off by default - it costs one engine run per
   // compromised asset and it is an analysis layer, not part of the picture.
-  contrib = false, onContrib,
+  // `contribOk` is false in the geo view, which has no dependency edges to
+  // thicken: the box is then disabled rather than left as a control that
+  // accepts a click and does nothing.
+  contrib = false, onContrib, contribOk = true,
   tool, onTool, canUndo, canRedo, onUndo, onRedo, onExport, onReset, editState,
   // sandbox (ADR-0027): named plans in localStorage and a JSON import
   sandbox = false, plans = [], onSavePlan, onLoadPlan, onDeletePlan, onImport,
@@ -62,8 +65,16 @@ export default function BoardToolbar({
   )
 
   const contribChk = (
-    <label className="chk" title="자산별 임무 저하 기여를 선 굵기로 그린다. 굵기는 자산 간 비교이고 임무 저하도의 몫이 아니다.">
-      <input type="checkbox" checked={contrib} onChange={(e) => onContrib && onContrib(e.target.checked)} /> 기여 굵기
+    <label
+      className={`chk${contribOk ? '' : ' is-off'}`}
+      title={contribOk
+        ? '자산별 임무 저하 기여를 선 굵기로 그린다. 굵기는 자산 간 비교이고 임무 저하도의 몫이 아니다.'
+        : '지리 뷰에는 굵게 할 의존 간선이 없다. 임무 의존이나 전송로 뷰에서 켠다.'}
+    >
+      <input
+        type="checkbox" checked={contrib} disabled={!contribOk}
+        onChange={(e) => onContrib && onContrib(e.target.checked)}
+      /> 기여 굵기
     </label>
   )
 

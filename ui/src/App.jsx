@@ -233,12 +233,18 @@ export default function App() {
   // that total (engine.js serviceDegFor multiplies the providers of a
   // redundancy_group), so a share would be a false statement about a loss two
   // assets share. The legend carries that sentence.
+  //
+  // `view` is in the condition, not only in GraphCanvas: the geo view draws no
+  // dependency edges, so without it the toggle paid (N + 2) runChain calls for
+  // a picture nobody gets. The toggle's own state survives the trip through
+  // the map - BoardToolbar disables the checkbox there and says why, so the
+  // control and what it can do agree.
   const contrib = useMemo(() => {
-    if (!contribOn || !graph || !step) return null
+    if (!contribOn || view === 'geo' || !graph || !step) return null
     const m = contribMission(graph, step)
     if (!m) return null
     return contribLayer(attribution(graph, step, m.id, payload?.method), m)
-  }, [contribOn, graph, step, payload])
+  }, [contribOn, view, graph, step, payload])
   // U9: the selected asset's link candidates, as geometry. Edit mode only -
   // in observe mode there is nothing to build.
   const ghosts = useMemo(() => (
@@ -569,7 +575,7 @@ export default function App() {
           <BoardToolbar
             view={view} onView={onView} mode={mode}
             labels={labels} onLabels={setLabels}
-            contrib={contribOn} onContrib={setContribOn}
+            contrib={contribOn} onContrib={setContribOn} contribOk={view !== 'geo'}
             onFit={() => cyRef.current && cyRef.current.fit(undefined, 16)}
             tool={tool}
             onTool={(t) => { setTool(t); editorRef.current?.setTool(t) }}

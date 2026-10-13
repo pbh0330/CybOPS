@@ -311,6 +311,24 @@ describe('linkFitsRules', () => {
     const l = { id: 'L', a: 'A', b: 'B', bearer: 'vhf' }
     expect(linkFitsRules(g(a({ type: 'radio-relay' }), b({ type: 'workstation' }), l), rules, l)).toBe(false)
   })
+  // A link with no bearer is out of rule, not 'wired'. The predicate used to
+  // default it while being moved out of Rail.jsx, which flipped the
+  // inspector's verdict on a half-built link from 규칙 밖 to fine. Every link
+  // in tacnet-01 carries a bearer so nothing on screen moved, which is
+  // exactly why this needs a test rather than an eye.
+  it('flags a link that declares no bearer instead of assuming wired', () => {
+    const x = a({ site: '본부' })
+    const y = b({ site: '본부' })
+    const none = { id: 'L', a: 'A', b: 'B' }
+    expect(linkFitsRules(g(x, y, none), rules, none)).toBe(false)
+    const empty = { id: 'L', a: 'A', b: 'B', bearer: '' }
+    expect(linkFitsRules(g(x, y, empty), rules, empty)).toBe(false)
+    // and the same pair WITH the bearer spelled out is fine, so the rejection
+    // is about the missing declaration and not about the pair
+    const wired = { id: 'L', a: 'A', b: 'B', bearer: 'wired' }
+    expect(linkFitsRules(g(x, y, wired), rules, wired)).toBe(true)
+  })
+
   it('stays silent when the table cannot say', () => {
     const l = { id: 'L', a: 'A', b: 'B', bearer: 'wired' }
     expect(linkFitsRules(g(a(), b(), l), null, l)).toBe(true)

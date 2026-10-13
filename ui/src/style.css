@@ -167,6 +167,10 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
 .tb-file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 .chk { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text-secondary); cursor: pointer; }
 .chk input { accent-color: var(--text-secondary); }
+/* a control that cannot do anything here says so before it is clicked; the
+   `title` carries the reason (BoardToolbar) */
+.chk.is-off { opacity: .45; cursor: not-allowed; }
+.chk.is-off input { cursor: not-allowed; }
 
 .canvas-wrap { position: relative; flex: 1; min-height: 0; }
 #cy { position: absolute; inset: 0; }
@@ -870,8 +874,12 @@ button.staff-fact:hover { color: var(--text-primary); border-bottom-color: var(-
   .ghost-hit { stroke-width: 26; }
   .ghost-end { r: 10; stroke-width: 1.8; }
   /* :hover does not exist on a touch screen, and a sticky hover state left the
-     last-tapped candidate lit after the link was made */
-  .ghost-cand:hover .ghost-line, .ghost-cand:hover .ghost-end { stroke-opacity: .5; }
+     last-tapped candidate lit after the link was made. Each element goes back
+     to ITS OWN base: one blanket value put the handle (.7) below where it
+     started, so the one a finger had just pressed read fainter than the ones
+     it had not. */
+  .ghost-cand:hover .ghost-line { stroke-opacity: .5; }
+  .ghost-cand:hover .ghost-end { stroke-opacity: .7; }
 
   /* ------------------------------ compact: the sheet takes the ambiguity */
   /* Markers that overlap are not spread out on the map - moving a symbol off

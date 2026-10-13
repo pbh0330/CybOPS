@@ -193,6 +193,45 @@ describe('contribLayer', () => {
     expect(ws).toEqual([...ws].sort((x, y) => y - x))
   })
 
+  // The engine is monotone in compromise, so clearing one asset's compromise
+  // never makes the mission worse and `contribution` is never negative. That
+  // is a premise, not an assumption: it is measured here against the engine,
+  // so the day it stops being true this breaks instead of the picture quietly
+  // drifting away from the fact layer.
+  it('has no negative contribution to draw, because the engine is monotone', () => {
+    const every = Object.fromEntries(tg.assets.map((x, i) => [x.id, 0.3 + (i % 5) / 20]))
+    for (const mid of ['M-C2', 'M-FIRE']) {
+      const a = attribution(tg, at(23, every), mid)
+      for (const r of a.rows) expect(r.contribution).toBeGreaterThanOrEqual(0)
+      expect(contribLayer(a, null).dropped).toBe(0)
+    }
+  })
+
+  // If that premise ever fails, the drawing and the fact layer must not say
+  // different things about the same asset. attributionFacts narrates a
+  // negative row through Math.abs with its sign printed; thickness cannot
+  // carry a sign without hue, and hue is the adversary's (ADR-0024). So the
+  // row is dropped from the drawing AND counted, and GraphCanvas appends the
+  // count to the legend. The picture is then short of the fact card but says
+  // so, which is the only version of this that is not a contradiction.
+  it('drops a negative contribution, counts it, and keeps it out of the scale', () => {
+    const layer = contribLayer({
+      active: true, mission: 'M', total: 0.2,
+      rows: [{ id: 'A', contribution: 0.1 }, { id: 'B', contribution: -0.4 }, { id: 'C', contribution: 0.05 }],
+    }, null)
+    expect(layer.rows.map((r) => r.id)).toEqual(['A', 'C'])
+    expect(layer.dropped).toBe(1)
+    // -0.4 is the largest magnitude in the set and must NOT become the scale:
+    // every drawn line would then be a sliver of a row that is not drawn
+    expect(layer.max).toBeCloseTo(0.1, 9)
+    expect(layer.rows[0].w).toBeCloseTo(1, 9)
+  })
+
+  it('reports no drop when every contribution is positive', () => {
+    const layer = contribLayer({ active: true, mission: 'M', total: 0.2, rows: [{ id: 'A', contribution: 0.1 }] }, null)
+    expect(layer.dropped).toBe(0)
+  })
+
   it('draws nothing when there is nothing to compare', () => {
     expect(contribLayer(null, null)).toBe(null)
     expect(contribLayer({ active: false, rows: [{ id: 'A', contribution: 1 }] }, null)).toBe(null)
@@ -281,9 +320,20 @@ describe('linkGhosts', () => {
     expect(linkGhosts(lone, rules, 'A')).toBe(null)
   })
 
-  it('says why the table is silent, so the overlay can repeat the inspector', () => {
+  // This used to be named for a `gap` field that carried the rule table's
+  // reason for silence. The field was unreachable - every case that makes
+  // ruleGap non-null also empties both lists, so the `return null` fires
+  // first - no caller read it, and the test named for it asserted only that
+  // it was null. It is deleted. What is true is below: when the table cannot
+  // speak the overlay draws nothing and says nothing, and the reason stays
+  // with the inspector, which prints it beside its own count.
+  it('says nothing at all when the rule table cannot speak, reason included', () => {
     const odd = { assets: [{ id: 'A', type: 'tent', site: '본부' }, { id: 'B', type: 'switch', site: '본부' }], links: [] }
-    expect(linkGhosts(odd, rules, 'A')).toBe(null)
-    expect(linkGhosts(tg, rules, 'BN-SRV').gap).toBe(null)
+    expect(linkGhosts(odd, rules, 'A')).toBe(null)          // type absent from the table
+    expect(linkGhosts(tg, null, 'BN-SRV')).toBe(null)       // no table at all
+    // and a live overlay carries geometry only - no reason field for a
+    // caller to render, because none of the three callers wants one
+    expect(Object.keys(linkGhosts(tg, rules, 'BN-SRV')).sort())
+      .toEqual(['cands', 'from', 'offRule', 'total'])
   })
 })
