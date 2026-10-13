@@ -42,9 +42,9 @@ describe('golden set: eval/golden/staff/tacnet-01.jsonl', () => {
     }
   })
 
-  it('is 35~40 items with about a fifth of them unanswerable', () => {
-    expect(items.length).toBeGreaterThanOrEqual(35)
-    expect(items.length).toBeLessThanOrEqual(40)
+  it('is 38~45 items with about a fifth of them unanswerable', () => {
+    expect(items.length).toBeGreaterThanOrEqual(38)
+    expect(items.length).toBeLessThanOrEqual(45)
     const abstains = items.filter((x) => x.abstain).length
     expect(abstains / items.length).toBeGreaterThanOrEqual(0.15)
     expect(abstains / items.length).toBeLessThanOrEqual(0.25)
@@ -56,7 +56,7 @@ describe('golden set: eval/golden/staff/tacnet-01.jsonl', () => {
     expect(report.ok).toBe(true)
   })
 
-  it('gives every one of the six queries at least three questions', () => {
+  it('gives every class in QUERY_IDS at least three questions', () => {
     const report = checkGolden(items, payload.graph)
     for (const q of QUERY_IDS) expect(report.per_class[q]).toBeGreaterThanOrEqual(3)
   })
@@ -84,7 +84,7 @@ describe('catalogue regression (the half with no model in it)', () => {
     expect(reg.cases).toBe(items.filter((x) => !x.abstain).length)
   })
 
-  it('covers all six catalogue queries', () => {
+  it('covers every class in QUERY_IDS', () => {
     expect(reg.queries_uncovered).toEqual([])
     expect(reg.queries_covered).toEqual([...QUERY_IDS].sort())
   })
@@ -182,15 +182,20 @@ describe('routing precision@1 (ADR-0008 - no accuracy)', () => {
 
   it('exposes the one-answer-for-everything model that micro precision flatters', () => {
     // 6 state_summary questions, 3 of everything else, all answered
-    // "state_summary". Micro looks like 0.4; the macro over predicted classes
-    // is the same single number, and five classes are named as unmeasured.
+    // "state_summary". Micro reads as one small fraction; the macro over
+    // predicted classes is that same single number, and every other class is
+    // named as unmeasured. The expectations are written off QUERY_IDS.length
+    // rather than pasted in, so adding a class to the golden set does not turn
+    // this into an arithmetic puzzle that gets "fixed" by editing the number.
+    const others = QUERY_IDS.slice(1)
+    const total = 6 + others.length * 3
     const recs = []
     for (let i = 0; i < 6; i += 1) recs.push(rec('state_summary', 'state_summary'))
-    for (const q of QUERY_IDS.slice(1)) for (let i = 0; i < 3; i += 1) recs.push(rec(q, 'state_summary'))
+    for (const q of others) for (let i = 0; i < 3; i += 1) recs.push(rec(q, 'state_summary'))
     const m = routingMetrics(recs)
-    expect(m.classes.state_summary.precision).toBeCloseTo(6 / 21, 6)
-    expect(m.undefined_classes).toHaveLength(5)
-    expect(m.macro_precision_strict).toBeCloseTo((6 / 21) / 6, 6)
+    expect(m.classes.state_summary.precision).toBeCloseTo(6 / total, 6)
+    expect(m.undefined_classes).toHaveLength(others.length)
+    expect(m.macro_precision_strict).toBeCloseTo((6 / total) / QUERY_IDS.length, 6)
   })
 
   it('counts an abstention as neither a right nor a wrong prediction', () => {
