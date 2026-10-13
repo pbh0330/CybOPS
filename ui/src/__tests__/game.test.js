@@ -4,7 +4,7 @@ import { runStep } from '../engine.js'
 import { footholds, greedyChooser } from '../attack.js'
 import {
   startGame, defaultFoothold, legalFor, isolationCost, defend, pass, attackerTurn,
-  evaluate, staffTable, compromiseOf,
+  evaluate, staffTable, compromiseOf, strategyOf,
 } from '../game.js'
 
 const g = payload.graph
@@ -160,5 +160,129 @@ describe('staffTable', () => {
     // isolating the attacker's only foothold blocks every move
     const co2 = rows.find((r) => r.id === 'CO2-VEH')
     expect(co2.blocks).toBe(legalFor(g, G).length)
+  })
+})
+
+// --- the decision record (ADR-0004, U2) ----------------------------------
+//
+// ADR-0004 demands a human approval and we were keeping no record of it. These
+// check the record, not the isolation: who pressed, what was on screen, where
+// the staff table had the asset, and what the operator typed. `rank` is the
+// load-bearing one - U4's agreement metric is computed from it.
+
+describe('defend writes a decision record', () => {
+  const G0 = startGame(g, base)
+  const table = staffTable(g, G0)
+  const third = table[2]
+
+  it('records the actor, the basis, the rank and the one line', () => {
+    const d = defend(g, G0, {
+      type: 'isolate', id: third.id, actor: 'human',
+      basis: ['F1', 'F2'], rationale: '  단일 경로라서\n ',
+    }).pending.defender
+    // the three fields that were here before U2 keep their meaning
+    expect(d).toMatchObject({ type: 'isolate', id: third.id })
+    expect(d.cost).toBeCloseTo(isolationCost(g, G0, third.id), 6)
+    expect(d.actor).toBe('human')
+    expect(d.basis).toEqual(['F1', 'F2'])
+    expect(d.rank).toBe(3)
+    expect(d.rationale).toBe('단일 경로라서')
+  })
+
+  it('keeps the two staffTable rows a later question cannot recompute', () => {
+    const d = defend(g, G0, { type: 'isolate', id: third.id }).pending.defender
+    expect(d.staff.rows).toBe(table.length)
+    expect(d.staff.chosen).toEqual({
+      id: third.id, rank: third.rank, cost: third.cost,
+      blocks: third.blocks, gainBlocked: third.gainBlocked, net: third.net,
+    })
+    expect(d.staff.top.id).toBe(table[0].id)
+    expect(d.staff.top.rank).toBe(1)
+  })
+
+  it('reads the rank off the engine, so a caller cannot assert one', () => {
+    const d = defend(g, G0, { type: 'isolate', id: third.id, rank: 1 }).pending.defender
+    expect(d.rank).toBe(3)
+    expect(d.rank).toBe(table.find((r) => r.id === third.id).rank)
+  })
+
+  it('isolating the staff first choice records rank 1', () => {
+    const d = defend(g, G0, { type: 'isolate', id: table[0].id }).pending.defender
+    expect(d.rank).toBe(1)
+    expect(d.staff.top.id).toBe(d.id)
+  })
+
+  it('takes only well-formed fact ids as the basis, deduped and in order', () => {
+    const d = (basis) => defend(g, G0, { type: 'isolate', id: third.id, basis }).pending.defender.basis
+    expect(d(['F2', 'junk', 'F2', 'F10', null, 3, ' F1 '])).toEqual(['F2', 'F10', 'F1'])
+    expect(d('F1')).toEqual([])
+    expect(d(undefined)).toEqual([])
+    expect(d(Array.from({ length: 30 }, (_, i) => `F${i + 1}`)).length).toBe(12)
+  })
+
+  it('defaults the actor to human and admits nothing but system beside it', () => {
+    const actor = (v) => defend(g, G0, { type: 'isolate', id: third.id, actor: v }).pending.defender.actor
+    expect(actor(undefined)).toBe('human')
+    expect(actor('robot')).toBe('human')
+    expect(actor('greedy')).toBe('human')
+    expect(actor('system')).toBe('system')
+  })
+
+  it('treats an empty rationale as none, and clamps a long one', () => {
+    const why = (v) => defend(g, G0, { type: 'isolate', id: third.id, rationale: v }).pending.defender.rationale
+    expect(why(undefined)).toBe(null)
+    expect(why('   ')).toBe(null)
+    expect(why('a\u0000b')).toBe('a b')
+    expect(why('x'.repeat(400)).length).toBe(140)
+  })
+
+  it('carries the record into history and leaves the score arithmetic alone', () => {
+    let G = defend(g, G0, { type: 'isolate', id: third.id, basis: ['F1'], rationale: '시험' })
+    G = attackerTurn(g, G)
+    const d = G.history[0].defender
+    expect(d.rank).toBe(3)
+    expect(d.basis).toEqual(['F1'])
+    expect(d.actor).toBe('human')
+    expect(G.score.isolationCost).toBeCloseTo(d.cost, 6)
+  })
+
+  it('records nothing for a pass - there was no decision to record', () => {
+    expect(pass(G0).pending.defender).toBe(null)
+  })
+
+  it('is deterministic, record and all', () => {
+    const play = () => {
+      let G = startGame(g, base)
+      G = attackerTurn(g, defend(g, G, { type: 'isolate', id: 'RELAY-1', basis: ['F1', 'F3'], rationale: '같은 입력' }))
+      return attackerTurn(g, pass(G))
+    }
+    expect(play().history).toEqual(play().history)
+  })
+})
+
+describe('an attack row says what played it', () => {
+  it('names the strategy per row instead of leaving it in cfg', () => {
+    const G = attackerTurn(g, pass(startGame(g, base)))
+    expect(G.history[0].attacker.by).toBe('greedy')
+    const R = attackerTurn(g, pass(startGame(g, { ...base, strategy: 'random' })))
+    expect(R.history[0].attacker.by).toBe('random')
+  })
+  it('does not write llm on a row no model chose', () => {
+    // strategy 'llm' with no chooser handed in falls back to greedyChooser
+    // (chooserFor has no llm branch), so the row must not name a model.
+    const G = attackerTurn(g, pass(startGame(g, { ...base, strategy: 'llm' })))
+    expect(G.history[0].attacker.by).toBe('greedy')
+    const L = attackerTurn(g, pass(startGame(g, { ...base, strategy: 'llm' })), greedyChooser)
+    expect(L.history[0].attacker.by).toBe('llm')
+  })
+  it('strategyOf is that rule on its own', () => {
+    const of = (strategy, injected) => strategyOf({ cfg: { strategy } }, injected)
+    expect(of('greedy', false)).toBe('greedy')
+    expect(of('greedy', true)).toBe('greedy')
+    expect(of('random', false)).toBe('random')
+    expect(of('llm', false)).toBe('greedy')
+    expect(of('llm', true)).toBe('llm')
+    expect(of('', false)).toBe('greedy')
+    expect(strategyOf(null, false)).toBe('greedy')
   })
 })

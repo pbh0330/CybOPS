@@ -40,7 +40,7 @@ import { assetName } from './labels.js'
 import {
   numbered, missionFacts, assetFacts, serviceFacts,
   containmentFacts, gameFacts, readinessFacts, TOP_N,
-  attribution, attributionFacts,
+  attribution, attributionFacts, decisionFacts,
 } from './facts.js'
 
 const f = (text, ref = null, value = null, unit = null) => ({ text, ref, value, unit })
@@ -246,6 +246,69 @@ function attributionTable(g, a) {
   rows.push(line('__floor', '단절·환경 바닥 (자산별로 가를 수 없음)', pct(a.floor)))
   rows.push(line('__total', '전체 저하도 (침해 몫 + 바닥)', pct(a.total)))
   return { cols: ['자산 / 항목', 'ID', '침해', '값', '0 으로 되돌린 뒤'], rows }
+}
+
+// --- the decision record --------------------------------------------------
+//
+// The first `needs: 'game'` query in the catalogue. Its subject is not the
+// board, it is the operator: what was isolated at a given turn, where the
+// staff table had ranked it, what was ranked first, and how the two compared.
+// ADR-0004 makes a person approve containment; this is the question that makes
+// that approval answerable afterwards.
+//
+// Read-only like every other query here. `actions` is still [] - recording a
+// decision happened in game.js when a person pressed the button, and nothing
+// in this file can press anything (ADR-0004).
+//
+// The argument is a 1-BASED turn number, the number the panel prints ("턴 3"),
+// not the 0-based index history stores. `validate` holds the gate: a turn the
+// game never recorded is refused with the list of the ones it did, rather than
+// answered with nulls.
+
+// The turns a decision can be asked about, 1-based and ascending.
+export function recordedTurns(ctx) {
+  const G = ctx && ctx.game
+  if (!G || !G.cfg) return []
+  return ((G.history) || [])
+    .map((h) => Number(h && h.turn) + 1)
+    .filter((n) => Number.isFinite(n))
+    .sort((a, b) => a - b)
+}
+
+// Where an absent argument lands, and where the panel's select opens: the most
+// recent turn that recorded a decision. A game whose every turn was a pass
+// still has an answer - "생략" - so it falls back to the most recent recorded
+// turn rather than refusing.
+export function latestDecisionTurn(ctx) {
+  const G = ctx && ctx.game
+  const rows = (G && G.cfg && G.history) || []
+  for (let i = rows.length - 1; i >= 0; i -= 1) {
+    if (rows[i] && rows[i].defender) return Number(rows[i].turn) + 1
+  }
+  return rows.length ? Number(rows[rows.length - 1].turn) + 1 : null
+}
+
+const DECISION_NOTE = [
+  '결심 기록은 기록이지 명령이 아니다 - 이 질의는 읽기 전용이고, 격리를 실행하는 경로는 어디에도 없다 (ADR-0004).',
+  '순위·임무 비용·막는 공격 수는 그 턴 game.staffTable 의 행을 결심 시점에 적어 둔 것이다. 교전이 진행되면 공격자 상태가 바뀌어 그 표를 다시 만들 수 없으므로, 고른 행과 1위 행을 그때 기록한다.',
+  '근거 사실 번호는 결심 당시 참모 카드의 번호이고 이 답의 F# 와 다른 체계다 - 같은 번호가 같은 사실을 가리키지 않는다.',
+  '순위 하나로 운용자를 평가하지 않는다. 표본이 작고(한 판의 격리 몇 건), 순위 일치도는 U4 에서 건수를 같이 적어 집계한다.',
+].join(' ')
+
+const DECISION_COLS = ['구분', '자산', 'ID', '순위', '임무 비용', '막는 공격 수', '최대 차단 이득', '순이득']
+
+function decisionTable(g, h) {
+  const d = h && h.defender
+  const st = (d && d.staff) || null
+  if (!st || !st.chosen) return null
+  const row = (what, r) => ({
+    id: r.id,
+    cells: [what, assetName(g, r.id).ko, r.id, r.rank, signed(r.cost), r.blocks, pct(r.gainBlocked), signed(r.net)],
+  })
+  const same = st.top && st.top.id === st.chosen.id
+  const rows = [row(same ? '고른 것 = 참모 1위' : '고른 것', st.chosen)]
+  if (st.top && !same) rows.push(row('참모 1위', st.top))
+  return { cols: DECISION_COLS, rows }
 }
 
 // --- the catalogue --------------------------------------------------------
@@ -473,6 +536,30 @@ export const QUERIES = [
     },
   },
   {
+    id: 'decision_why',
+    label: '그 턴에 무엇을 왜 격리했나',
+    args: [{ name: 'turn', kind: 'turn' }],
+    needs: 'game',
+    run(ctx, args) {
+      const g = ctx.graph
+      const G = ctx.game
+      // validate resolved an absent argument to a recorded turn, so this is
+      // always a turn history has.
+      const turn = Number(args.turn) - 1
+      const h = (G.history || []).find((x) => Number(x.turn) === turn)
+      const d = h && h.defender
+      const what = d ? `${assetLabel(g, d.id)} 격리` : '생략'
+      return {
+        label: `결심 기록 - 턴 ${args.turn} · ${what}`,
+        facts: decisionFacts(g, G, turn),
+        table: decisionTable(g, h),
+        note: d
+          ? DECISION_NOTE
+          : `그 턴은 생략이었다 - 격리가 없어 순위도 근거도 기록되지 않았고, 비교할 표가 없다. ${DECISION_NOTE}`,
+      }
+    },
+  },
+  {
     id: 'readiness_gap',
     label: '교전장 구성이 왜 안 찼나',
     args: [],
@@ -546,6 +633,34 @@ export function validate(ctx, queryId, args) {
       if (v === undefined) { out[spec.name] = spec.default; continue }
       if (typeof v !== 'number' || !Number.isInteger(v) || v < (spec.min || 1)) {
         return { ok: false, reason: `인자 ${spec.name} 는 ${spec.min || 1} 이상의 정수여야 한다. 받은 값: ${JSON.stringify(v)}` }
+      }
+      out[spec.name] = v
+      continue
+    }
+    // A 1-based turn number, checked against what the game actually recorded.
+    // Absent takes the latest recorded decision; a turn that was never played
+    // is REFUSED with the list of the ones that were, rather than answered
+    // with nulls (rule 4 - the catalogue is the gate).
+    if (spec.kind === 'turn') {
+      const turns = recordedTurns(ctx)
+      if (v === undefined || v === null || v === '') {
+        const d = latestDecisionTurn(ctx)
+        if (d === null) {
+          return { ok: false, reason: '아직 기록된 턴이 없다 - 공격 턴이 한 번이라도 진행된 뒤에 결심을 물을 수 있다.' }
+        }
+        out[spec.name] = d
+        continue
+      }
+      if (typeof v !== 'number' || !Number.isInteger(v)) {
+        return { ok: false, reason: `인자 ${spec.name} 는 턴 번호(1 이상의 정수)여야 한다. 받은 값: ${JSON.stringify(v)}` }
+      }
+      if (!turns.includes(v)) {
+        return {
+          ok: false,
+          reason: turns.length
+            ? `턴 ${v} 에는 기록된 행이 없다. 기록된 턴: ${turns.join(', ')}`
+            : `턴 ${v} 에는 기록된 행이 없다 - 아직 진행된 턴이 없다.`,
+        }
       }
       out[spec.name] = v
       continue

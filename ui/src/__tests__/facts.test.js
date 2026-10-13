@@ -2,12 +2,12 @@ import { describe, it, expect } from 'vitest'
 import replay from '../../public/data/tacnet-01.replay.json'
 import { computeStep, splitBar, pct } from '../derive.js'
 import { runChain } from '../engine.js'
-import { startGame, defend, attackerTurn, staffTable } from '../game.js'
+import { startGame, defend, pass, attackerTurn, staffTable } from '../game.js'
 import { readiness } from '../sandbox.js'
 import {
   numbered, missionFacts, assetFacts, serviceFacts,
   containmentFacts, gameFacts, readinessFacts,
-  attribution, attributionFacts,
+  attribution, attributionFacts, decisionFacts,
 } from '../facts.js'
 
 const g = replay.graph
@@ -318,5 +318,121 @@ describe('readinessFacts', () => {
   })
   it('reads the graph itself when no readiness result is handed in', () => {
     expect(readinessFacts(g)).toEqual(readinessFacts(g, readiness(g)))
+  })
+})
+
+// --- decisionFacts -------------------------------------------------------
+//
+// One history row read back out. Everything asserted here was written by
+// game.js at the time of the decision: these tests check the phrasing against
+// the RECORD, never against a number recomputed on the present state, because
+// the present state is a different turn.
+
+describe('decisionFacts', () => {
+  const cfg = { mode: 'hold', turns: 8, t: 150, foothold: { id: 'CO2-VEH', level: 0.8 }, seed: 11, strategy: 'greedy' }
+  const G0 = startGame(g, cfg)
+  const table = staffTable(g, G0)
+  const third = table[2]
+  const played = (() => {
+    let G = defend(g, G0, { type: 'isolate', id: third.id, basis: ['F1', 'F2', 'F3'], rationale: '단일 경로라서' })
+    G = attackerTurn(g, G)
+    return attackerTurn(g, pass(G))
+  })()
+  const facts = decisionFacts(g, played, 0)
+  const txt = facts.map((f) => f.text).join(' ')
+
+  it('names what was isolated, by whom, and what it cost', () => {
+    const f = facts[0]
+    expect(f.ref).toEqual({ kind: 'asset', id: third.id })
+    expect(f.value).toBeCloseTo(played.history[0].defender.cost, 6)
+    expect(f.unit).toBe('%p')
+    expect(f.text).toContain('턴 1')
+    expect(f.text).toContain(third.id)
+    expect(f.text).toContain('사람(운용자)')
+  })
+
+  it('says where the staff table had it, out of how many candidates', () => {
+    const f = facts.find((x) => x.value === 3 && x.ref.id === third.id)
+    expect(f).toBeTruthy()
+    expect(f.text).toContain('3위')
+    expect(f.text).toContain(`${table.length}개`)
+  })
+
+  it('names the rank-1 row and compares the two on cost and on moves blocked', () => {
+    const top = facts.find((x) => x.ref && x.ref.id === table[0].id && x.text.includes('1위는'))
+    expect(top).toBeTruthy()
+    expect(top.value).toBeCloseTo(table[0].net, 6)
+    const cmp = facts.find((x) => x.text.includes('고른 것과 1위의 비교'))
+    expect(cmp.value).toBeCloseTo(third.cost - table[0].cost, 6)
+    expect(cmp.text).toContain(`${third.blocks}개 대 ${table[0].blocks}개`)
+  })
+
+  it('says so when the rank gap is only the net tiebreak', () => {
+    // RELAY-1 and SAT-TERM both score net +25.0%p here, so 3위 is the blocks
+    // tiebreak and not a worse option.
+    expect(third.net).toBeCloseTo(table[0].net, 6)
+    expect(txt).toContain('순이득은 같다')
+  })
+
+  it('lists the fact numbers that were on screen, and says they are another numbering', () => {
+    const f = facts.find((x) => x.text.includes('근거 사실'))
+    expect(f.value).toBe(3)
+    expect(f.text).toContain('F1·F2·F3')
+    expect(f.text).toContain('이 답의 F#')
+  })
+
+  it('quotes the operator line, and says it was left empty when it was', () => {
+    expect(txt).toContain('"단일 경로라서"')
+    let bare = defend(g, G0, { type: 'isolate', id: third.id })
+    bare = attackerTurn(g, bare)
+    const t2 = decisionFacts(g, bare, 0).map((f) => f.text).join(' ')
+    expect(t2).toContain('한 줄 근거를 적지 않았다')
+    expect(t2).toContain('근거 사실 번호가 기록되지 않았다')
+  })
+
+  it('says a human pressed it and that there is no execution path', () => {
+    expect(txt).toContain('ADR-0004')
+    expect(txt).toContain('기록이지 명령이 아니다')
+  })
+
+  it('does not claim a human when the record says otherwise', () => {
+    let sys = defend(g, G0, { type: 'isolate', id: third.id, actor: 'system' })
+    sys = attackerTurn(g, sys)
+    const t2 = decisionFacts(g, sys, 0).map((f) => f.text).join(' ')
+    expect(t2).toContain('사람의 승인 기록이 아니다')
+  })
+
+  it('reports the attack that followed with the strategy that played it', () => {
+    const f = facts.find((x) => x.text.includes('공격 -'))
+    expect(f.text).toContain('greedy')
+  })
+
+  it('reads P1 off the row and the next row, not off the present state', () => {
+    const h = played.history[0]
+    const nxt = played.history[1]
+    const now = facts.find((x) => x.unit === '%' && x.text.includes('종료 시 P1'))
+    expect(now.value).toBeCloseTo(h.p1, 9)
+    expect(now.ref).toEqual({ kind: 'mission', id: 'M-C2' })
+    const after = facts.find((x) => x.text.includes('다음 턴'))
+    expect(after.value).toBeCloseTo(nxt.p1 - h.p1, 9)
+    expect(after.unit).toBe('%p')
+  })
+
+  it('says a pass recorded no decision at all', () => {
+    const t2 = decisionFacts(g, played, 1).map((f) => f.text).join(' ')
+    expect(t2).toContain('생략')
+    expect(t2).toContain('참모 순위')
+    expect(t2).toContain('다음 턴 기록이 없다')
+  })
+
+  it('returns one fact for a turn with no row rather than throwing', () => {
+    const miss = decisionFacts(g, played, 9)
+    expect(miss.length).toBe(1)
+    expect(miss[0].text).toContain('턴 10')
+    expect(decisionFacts(g, null, 0).length).toBe(1)
+  })
+
+  it('is deterministic', () => {
+    expect(decisionFacts(g, played, 0)).toEqual(decisionFacts(g, played, 0))
   })
 })

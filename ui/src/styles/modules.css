@@ -195,6 +195,9 @@ body .geo-canvas:active { cursor: grabbing; }
 
 .wg-def-row { display: flex; gap: 6px; }
 .wg-def-row select { flex: 1; min-width: 0; font-size: 11.5px; padding: 4px 7px; }
+/* the decision record's optional line (ADR-0004). Achromatic: it is a note a
+   person writes, not a state the engine produced. */
+.wg-why-input { width: 100%; margin-top: 6px; font-size: 11.5px; padding: 4px 7px; }
 
 .wg-log { margin-top: 10px; border-top: 1px dashed var(--line); padding-top: 8px; }
 .wg-log-row { display: flex; align-items: center; gap: 8px; font-size: 11px; padding: 2px 0; }
@@ -238,6 +241,7 @@ body .geo-canvas:active { cursor: grabbing; }
 .wg-aar-table th, .wg-aar-table td { text-align: left; padding: 3px 4px; border-bottom: 1px solid var(--line-soft); }
 .wg-aar-table th { color: var(--fg-dim); font-weight: 500; }
 .wg-aar-table td.is-hit { color: var(--attack); }
+.wg-aar-why { display: block; color: var(--fg-dim); font-size: 10px; margin-top: 1px; }
 .wg-aar-btns { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
 
 /* Facility layout (defnet-01). Assets indoors, so the map draws buildings

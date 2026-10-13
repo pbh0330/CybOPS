@@ -162,10 +162,25 @@ const CitedNarration = ({ text, facts, onToast }) => (
   />
 )
 
-function StaffCard({ graph, game, rows, p1, llmOk, onIsolate, onToast }) {
+// How many ranked rows the card shows. The number is shared with the decision
+// record: `basis` is the fact ids that were ON SCREEN when the operator
+// committed, so it is this cut that decides which ones those were, not the
+// five staffFacts happens to build.
+export const STAFF_ROWS = 3
+
+// The fact numbers visible on the staff card right now. F1 is the turn line and
+// each shown row adds one (staff-llm.mjs `staffFacts` numbers rows F2, F3, ...
+// in table order), so the visible set is the head of the list - never a claim
+// about a row the reader could not see.
+export function visibleBasis(facts, rows) {
+  if (!facts || !facts.length) return []
+  const shown = Math.min(STAFF_ROWS, (rows || []).length)
+  return facts.slice(0, 1 + shown).map((x) => x.id)
+}
+
+function StaffCard({ graph, game, rows, facts, llmOk, onIsolate, onToast }) {
   const [narr, setNarr] = useState(null)   // { text } | { error } | null
   const [busy, setBusy] = useState(false)
-  const facts = useMemo(() => staffFacts(graph, game, rows, p1), [graph, game, rows, p1])
   useEffect(() => { setNarr(null) }, [game.turn, game.isolated.length])
   const ask = async () => {
     setBusy(true)
@@ -186,7 +201,7 @@ function StaffCard({ graph, game, rows, p1, llmOk, onIsolate, onToast }) {
         {llmOk && game.phase === 'defend' && <button type="button" className="wg-staff-ask" disabled={busy} onClick={ask}>{busy ? '문장 생성 중' : '모델에게 읽게 하기'}</button>}
       </div>
       {none && <div className="wg-staff-none">생략 권고 - 지금 막을 수 있는 수가 없거나 격리 비용이 차단 이득보다 크다</div>}
-      {rows.slice(0, 3).map((r) => (
+      {rows.slice(0, STAFF_ROWS).map((r) => (
         <div className="wg-staff-row" key={r.id}>
           <span className="wg-staff-rank">{r.rank}</span>
           <span className="wg-staff-what">{assetName(graph, r.id).ko} 격리<em className="ref">{r.id}</em>
@@ -210,7 +225,14 @@ function Aar({ graph, game, onAgain, onNewSeed, onObserve }) {
         {game.history.map((h) => (
           <tr key={h.turn}>
             <td>{h.turn + 1}</td>
-            <td>{h.defender ? `${assetName(graph, h.defender.id).ko} 격리 (${pp(h.defender.cost)})` : '생략'}</td>
+            {/* the decision as it was recorded: what, what it cost, where the
+                staff had it, and the operator's own line if they typed one */}
+            <td>{h.defender ? (
+              <>
+                {`${assetName(graph, h.defender.id).ko} 격리 (${pp(h.defender.cost)})`}
+                <small className="wg-aar-why">{h.defender.rank ? `참모 ${h.defender.rank}위` : '순위 기록 없음'}{h.defender.actor === 'human' ? ' · 사람' : ''}{h.defender.rationale ? ` · "${h.defender.rationale}"` : ''}</small>
+              </>
+            ) : '생략'}</td>
             <td>{h.attacker ? `${h.attacker.move.label} ${h.attacker.move.target || ''}` : (h.reason || '-')}</td>
             <td className={h.attacker ? (h.attacker.success ? 'is-hit' : 'is-miss') : ''}>{h.attacker ? (h.attacker.success ? '성공' : '실패') : '-'}</td>
             <td>{pct(h.p1)}</td>
@@ -229,6 +251,9 @@ export default function Wargame({ graph, payload, idx, game, onGame, onSeekIdx, 
   const [probe, setProbe] = useState(null)
   const [busy, setBusy] = useState(false)
   const [iso, setIso] = useState('')
+  // The optional one line that goes into the decision record. Optional means
+  // optional: an empty box still records the decision (game.js stores null).
+  const [why, setWhy] = useState('')
   // Generation guard for the one await in here (the LLM attacker). A game
   // that was quit, restarted or left (mode switch) while the model was
   // thinking must not be written back over whatever replaced it.
@@ -247,6 +272,14 @@ export default function Wargame({ graph, payload, idx, game, onGame, onSeekIdx, 
     return first ? Number(m[first.id] || 0) : 0
   }, [game, graph])
 
+  // Lifted out of StaffCard so the isolate handler and the card read ONE list:
+  // `basis` has to be the numbers the operator was actually looking at, and two
+  // calls to staffFacts would be two lists that could drift.
+  const staffCardFacts = useMemo(
+    () => (game && graph && game.phase === 'defend' ? staffFacts(graph, game, rows, p1) : []),
+    [graph, game, rows, p1],
+  )
+
   // the gate only binds in the sandbox: authored scenarios are complete by
   // construction, and their jewel count is whatever the file says
   const readyState = useMemo(() => (sandbox && graph
@@ -257,7 +290,22 @@ export default function Wargame({ graph, payload, idx, game, onGame, onSeekIdx, 
 
   const start = (cfg, stepIdx) => { gen.current++; onSeekIdx(stepIdx); onGame(startGame(graph, cfg)) }
   const quit = () => { gen.current++; onGame(null) }
-  const isolate = (id) => { if (!id) return; onGame(defend(graph, game, { type: 'isolate', id })); setIso('') }
+  // A person pressed a button, so the record says so (ADR-0004: there is no
+  // other way in). `basis` is what was on the staff card at that moment and
+  // `rank` is read off the table inside game.js - not passed from here, where
+  // it would be a number nothing could check.
+  const isolate = (id) => {
+    if (!id) return
+    onGame(defend(graph, game, {
+      type: 'isolate',
+      id,
+      actor: 'human',
+      basis: visibleBasis(staffCardFacts, rows),
+      rationale: why,
+    }))
+    setIso('')
+    setWhy('')
+  }
   const skip = () => onGame(pass(game))
   const attack = async () => {
     if (!game || game.phase !== 'attack' || busy) return
@@ -296,7 +344,7 @@ export default function Wargame({ graph, payload, idx, game, onGame, onSeekIdx, 
         <button type="button" className="wg-reset" disabled={busy} onClick={quit}>그만두기</button>
       </div>
 
-      {game.phase === 'defend' && <StaffCard graph={graph} game={game} rows={rows} p1={p1} llmOk={llmOk} onIsolate={isolate} onToast={onToast} />}
+      {game.phase === 'defend' && <StaffCard graph={graph} game={game} rows={rows} facts={staffCardFacts} llmOk={llmOk} onIsolate={isolate} onToast={onToast} />}
 
       {last && last.attacker && (
         <div className={`wg-result ${last.attacker.success ? 'is-hit' : 'is-miss'}`}>
@@ -329,6 +377,17 @@ export default function Wargame({ graph, payload, idx, game, onGame, onSeekIdx, 
           <button type="button" disabled={game.phase !== 'defend' || !iso} onClick={() => isolate(iso)}>격리</button>
           <button type="button" disabled={game.phase !== 'defend'} onClick={skip}>생략</button>
         </div>
+        {/* The optional line of the decision record (ADR-0004). It is written
+            next to the decision, not instead of it: leaving it empty records
+            the isolation anyway, with rationale null. */}
+        <input
+          type="text" className="wg-why-input" value={why}
+          disabled={game.phase !== 'defend'}
+          maxLength={140}
+          placeholder="왜 이걸 고르는지 한 줄 (선택)"
+          aria-label="결심 근거 한 줄 (선택 입력)"
+          onChange={(e) => setWhy(e.target.value)}
+        />
         <button type="button" className="wg-go" disabled={game.phase !== 'attack' || busy} onClick={attack}>
           {busy ? (game.cfg.strategy === 'llm' ? '모델 응답 대기' : '진행 중') : '공격 턴 진행'}
         </button>
@@ -338,7 +397,7 @@ export default function Wargame({ graph, payload, idx, game, onGame, onSeekIdx, 
         <div className="wg-log">
           {[...game.history].reverse().slice(0, 12).map((h) => (
             <div key={h.turn}>
-              {h.defender && <div className="wg-log-row is-def"><span className="wg-log-turn">T{h.turn + 1}</span><span className="wg-log-what">격리 {h.defender.id} ({pp(h.defender.cost)})</span><span className="wg-log-tag">방어</span></div>}
+              {h.defender && <div className="wg-log-row is-def"><span className="wg-log-turn">T{h.turn + 1}</span><span className="wg-log-what">격리 {h.defender.id} ({pp(h.defender.cost)}{h.defender.rank ? ` · 참모 ${h.defender.rank}위` : ''})</span><span className="wg-log-tag">{h.defender.actor === 'human' ? '사람' : h.defender.actor || '방어'}</span></div>}
               <div className={`wg-log-row${h.attacker ? (h.attacker.success ? ' is-hit' : ' is-miss') : ''}`}>
                 <span className="wg-log-turn">T{h.turn + 1}</span>
                 <span className="wg-log-what">{h.attacker ? `${h.attacker.move.label} ${h.attacker.move.from && h.attacker.move.target && h.attacker.move.from !== h.attacker.move.target ? `${h.attacker.move.from} → ${h.attacker.move.target}` : (h.attacker.move.target || '')}` : (h.reason || '')}</span>
@@ -347,7 +406,7 @@ export default function Wargame({ graph, payload, idx, game, onGame, onSeekIdx, 
             </div>))}
         </div>
       )}
-      <p className="rail-caption">격리는 모의 상태만 바꾼다. 실행 경로는 없다 (ADR-0004).</p>
+      <p className="rail-caption">격리는 모의 상태만 바꾼다. 실행 경로는 없다 (ADR-0004). 누른 사람·참모 순위·화면에 있던 근거 번호는 기록으로 남고, 참모 질의 <code>decision_why</code> 로 다시 읽을 수 있다.</p>
     </div>
   )
 }

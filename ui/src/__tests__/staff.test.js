@@ -2,10 +2,13 @@ import { describe, it, expect } from 'vitest'
 import replay from '../../public/data/tacnet-01.replay.json'
 import { computeStep, pct } from '../derive.js'
 import { runChain } from '../engine.js'
-import { startGame, staffTable, weightedOf, compromiseOf } from '../game.js'
+import { startGame, defend, pass, attackerTurn, staffTable, weightedOf, compromiseOf } from '../game.js'
 import { readiness } from '../sandbox.js'
 import { readinessFacts } from '../facts.js'
-import { QUERIES, catalog, needsMet, validate, ask, ctxT, graphFingerprint } from '../staff.js'
+import {
+  QUERIES, catalog, needsMet, validate, ask, ctxT, graphFingerprint,
+  recordedTurns, latestDecisionTurn,
+} from '../staff.js'
 
 const g = replay.graph
 // idx 12: t=180, CO2-VEH 침해 0.5, L-VHF-CO1 지형 단절. 관측 모드이므로
@@ -15,6 +18,16 @@ const observe = { graph: g, step: s }
 const G = startGame(g, { mode: 'hold', turns: 8, t: 150, foothold: { id: 'CO2-VEH', level: 0.8 }, seed: 11, strategy: 'greedy' })
 const inGame = { graph: g, step: s, game: G }
 const inSandbox = { graph: g, step: s, sandbox: true }
+// A game with history: turn 1 isolates the staff table's third row, turn 2
+// passes. decision_why needs a RECORDED turn, and startGame has none.
+const STAFF_ROWS_AT_START = staffTable(g, G)
+const PICK = STAFF_ROWS_AT_START[2]
+const played = (() => {
+  let X = defend(g, G, { type: 'isolate', id: PICK.id, basis: ['F1', 'F2'], rationale: '단일 경로라서' })
+  X = attackerTurn(g, X)
+  return attackerTurn(g, pass(X))
+})()
+const inPlayed = { graph: g, step: s, game: played }
 
 const T = s.t
 const METHOD = 'weighted'
@@ -31,16 +44,19 @@ const missionValue = (a, id) => a.facts.find((f) => f.ref && f.ref.kind === 'mis
 
 describe('catalog', () => {
   it('leaves out a game-only query when there is no game, and admits it when there is', () => {
-    // S1 의 6종에는 needs:'game' 이 아직 없다. 게이트 자체가 도는지를 본다 -
-    // S3 의 counterfactual/autoplay 가 이 문 뒤에 선다.
-    // 그래서 아래 마지막 단언은 지금 구조적으로 `0 === 0` 이다. 실질 검사가
-    // 아니라는 것을 알고 남겨 둔다 - S3 가 교전 전용 질의를 넣는 순간 저절로
-    // 실질 검사가 되고, 그때 이 줄을 새로 쓰지 않아도 된다.
+    // U2 가 decision_why 를 넣기 전까지 아래 마지막 단언은 구조적으로
+    // `0 === 0` 이었다 - needs:'game' 질의가 하나도 없었으므로 양쪽이 모두 0
+    // 이었고, 게이트가 꺼져 있어도 통과했다. 이제 교전 전용 질의가 있으므로
+    // 실질 검사다: 분모가 0 이 아닌 것을 먼저 못 박고 비교한다.
+    const gameOnly = QUERIES.filter((q) => q.needs === 'game').map((q) => q.id)
+    expect(gameOnly).toContain('decision_why')
+    expect(gameOnly.length).toBeGreaterThan(0)
     expect(needsMet(observe, 'game')).toBe(false)
     expect(needsMet(inGame, 'game')).toBe(true)
     expect(catalog(observe).some((q) => q.needs === 'game')).toBe(false)
-    expect(catalog(inGame).filter((q) => q.needs === 'game').length)
-      .toBe(QUERIES.filter((q) => q.needs === 'game').length)
+    expect(catalog(observe).map((q) => q.id)).not.toContain('decision_why')
+    expect(catalog(inGame).filter((q) => q.needs === 'game').map((q) => q.id)).toEqual(gameOnly)
+    expect(catalog(inSandbox).map((q) => q.id)).not.toContain('decision_why')
   })
   it('leaves out readiness_gap outside the sandbox', () => {
     expect(catalog(observe).map((q) => q.id)).not.toContain('readiness_gap')
@@ -430,5 +446,119 @@ describe('ask - the rules that hold for every query', () => {
     expect(() => ask(observe, 'mission_why', { missionId: 'M-NOPE' })).toThrow(/M-NOPE/)
     expect(() => ask(observe, 'readiness_gap', {})).toThrow(/readiness_gap/)
     expect(() => ask(observe, 'containment_top', { k: '3' })).toThrow(/k/)
+  })
+})
+
+// --- decision_why --------------------------------------------------------
+//
+// The catalogue's first needs:'game' query (U2). Its subject is the operator:
+// what was isolated, where the staff table had it, and what was ranked first.
+// ADR-0004 makes a person approve the isolation; this is what makes that
+// approval answerable afterwards - and it is still read-only.
+
+describe('recordedTurns / latestDecisionTurn', () => {
+  it('counts the recorded turns 1-based, the way the panel prints them', () => {
+    expect(recordedTurns(inPlayed)).toEqual([1, 2])
+    expect(recordedTurns(inGame)).toEqual([])
+    expect(recordedTurns(observe)).toEqual([])
+  })
+  it('points at the latest turn that recorded a decision, not just the latest', () => {
+    // turn 2 was a pass, so the decision to explain is turn 1
+    expect(latestDecisionTurn(inPlayed)).toBe(1)
+    expect(latestDecisionTurn(inGame)).toBe(null)
+    expect(latestDecisionTurn(observe)).toBe(null)
+  })
+  it('falls back to the last recorded turn when every turn was a pass', () => {
+    const allPass = attackerTurn(g, pass(attackerTurn(g, pass(G))))
+    expect(latestDecisionTurn({ graph: g, game: allPass })).toBe(2)
+  })
+})
+
+describe('validate - turn', () => {
+  it('takes the latest recorded decision when the argument is absent', () => {
+    expect(validate(inPlayed, 'decision_why', {})).toEqual({ ok: true, args: { turn: 1 } })
+  })
+  it('refuses a turn the game never recorded, naming the ones it did', () => {
+    const r = validate(inPlayed, 'decision_why', { turn: 7 })
+    expect(r.ok).toBe(false)
+    expect(r.reason).toContain('턴 7')
+    expect(r.reason).toContain('1, 2')
+  })
+  it('refuses a non-integer turn rather than coercing it', () => {
+    for (const bad of ['1', 1.5, NaN, true]) {
+      const r = validate(inPlayed, 'decision_why', { turn: bad })
+      expect(r.ok, `turn=${String(bad)} 이 통과했다`).toBe(false)
+      expect(r.reason).toContain('turn')
+    }
+  })
+  it('refuses an integer outside the recorded range, by what it is', () => {
+    // 0 and -1 ARE integers, so they are refused for the true reason - the
+    // game recorded no such turn - rather than for being malformed.
+    for (const bad of [0, -1]) {
+      const r = validate(inPlayed, 'decision_why', { turn: bad })
+      expect(r.ok, `turn=${String(bad)} 이 통과했다`).toBe(false)
+      expect(r.reason).toContain(`턴 ${bad}`)
+      expect(r.reason).toContain('1, 2')
+    }
+  })
+  it('refuses the query outright before any turn is recorded', () => {
+    const r = validate(inGame, 'decision_why', {})
+    expect(r.ok).toBe(false)
+    expect(r.reason).toContain('기록된 턴이 없다')
+  })
+  it('refuses it outside a game, which is the catalogue gate talking', () => {
+    const r = validate(observe, 'decision_why', { turn: 1 })
+    expect(r.ok).toBe(false)
+    expect(r.reason).toContain('교전 중에만')
+  })
+})
+
+describe('ask - decision_why', () => {
+  const a = ask(inPlayed, 'decision_why', { turn: 1 })
+
+  it('answers about the recorded turn with the recorded rank', () => {
+    expect(a.query).toBe('decision_why')
+    expect(a.args).toEqual({ turn: 1 })
+    expect(a.label).toContain('턴 1')
+    expect(a.label).toContain(PICK.id)
+    const rank = a.facts.find((f) => f.text.includes('위였다'))
+    expect(rank.value).toBe(3)
+    expect(rank.value).toBe(played.history[0].defender.rank)
+  })
+
+  it('puts the chosen row and the rank-1 row side by side in the table', () => {
+    expect(a.table.rows.map((r) => r.id)).toEqual([PICK.id, STAFF_ROWS_AT_START[0].id])
+    expect(a.table.rows.every((r) => r.cells.length === a.table.cols.length)).toBe(true)
+    expect(a.table.rows[0].cells[0]).toBe('고른 것')
+    expect(a.table.rows[1].cells[0]).toBe('참모 1위')
+  })
+
+  it('records no action - a record is not an order (ADR-0004)', () => {
+    expect(a.actions).toEqual([])
+    expect(a.note).toContain('ADR-0004')
+  })
+
+  it('stamps the same basis every other answer carries', () => {
+    expect(a.t).toBe(ctxT(inPlayed))
+    expect(a.gfp).toBe(graphFingerprint(g))
+  })
+
+  it('answers a passed turn without a table and says why there is none', () => {
+    const b = ask(inPlayed, 'decision_why', { turn: 2 })
+    expect(b.table).toBe(null)
+    expect(b.label).toContain('생략')
+    expect(b.note).toContain('생략')
+    expect(b.facts.length).toBeGreaterThan(0)
+    expect(b.facts.map((f) => f.id)).toEqual(b.facts.map((_, i) => `F${i + 1}`))
+  })
+
+  it('gives the same answer to the same input', () => {
+    expect(ask(inPlayed, 'decision_why', { turn: 1 })).toEqual(ask(inPlayed, 'decision_why', { turn: 1 }))
+  })
+
+  it('throws where validate refuses, with the reason as written', () => {
+    expect(() => ask(inPlayed, 'decision_why', { turn: 9 })).toThrow(/턴 9/)
+    expect(() => ask(observe, 'decision_why', {})).toThrow(/decision_why/)
+    expect(() => ask(inGame, 'decision_why', {})).toThrow(/기록된 턴이 없다/)
   })
 })

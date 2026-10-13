@@ -33,7 +33,7 @@
 // writers for the same localStorage key.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { catalog, ask, validate, ctxT, graphFingerprint, QUERIES } from '../staff.js'
+import { catalog, ask, validate, ctxT, graphFingerprint, QUERIES, recordedTurns, latestDecisionTurn } from '../staff.js'
 import { routeQuestion, narrate } from '../staff-llm.mjs'
 import { config, probeLlm } from '../config.js'
 import { timeLabel } from '../derive.js'
@@ -51,6 +51,7 @@ const ARG_KO = {
   aId: '비교할 자산 A',
   bId: '비교할 자산 B',
   k: '표시 개수',
+  turn: '턴',
 }
 const argLabel = (name) => ARG_KO[name] || name
 
@@ -110,6 +111,24 @@ export function selectableIds(graph) {
     for (const x of (graph && graph[key]) || []) if (x && x.id) out.add(x.id)
   }
   return out
+}
+
+// The turns `decision_why` can be asked about, newest first, each labelled
+// with what was recorded there. The numbers are 1-based - the same ones the
+// wargame panel prints - and they come from staff.js `recordedTurns`, so the
+// select cannot offer a turn `validate` would refuse.
+export function turnOptions(graph, game) {
+  const G = game && game.cfg ? game : null
+  if (!G) return []
+  const rows = G.history || []
+  return recordedTurns({ graph, game: G }).slice().reverse().map((n) => {
+    const h = rows.find((x) => Number(x.turn) + 1 === n)
+    const d = h && h.defender
+    const what = d
+      ? `${assetName(graph, d.id).ko} 격리${d.rank ? ` · 참모 ${d.rank}위` : ''}`
+      : '생략'
+    return { id: n, label: `턴 ${n} · ${what}` }
+  })
 }
 
 export function optionsOf(graph, kind) {
@@ -355,7 +374,26 @@ export function entryOf(res, question, at) {
   }
 }
 
-function ArgControl({ spec, value, onChange, graph }) {
+function ArgControl({ spec, value, onChange, graph, game }) {
+  // A turn is not a count: its options are the turns the game recorded, and
+  // an empty list means the game has not played one yet. The select then says
+  // so rather than offering a number `validate` would refuse.
+  if (spec.kind === 'turn') {
+    const opts = turnOptions(graph, game)
+    return (
+      <label className="staff-arg">
+        <span>{argLabel(spec.name)}</span>
+        <select
+          title={spec.name}
+          value={value === undefined || value === null || value === '' ? '' : String(value)}
+          onChange={(e) => onChange(e.target.value === '' ? '' : Number(e.target.value))}
+        >
+          {!opts.length && <option value="">(기록된 턴 없음)</option>}
+          {opts.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
+        </select>
+      </label>
+    )
+  }
   if (spec.kind === 'int') {
     const opts = K_CHOICES.includes(spec.default) ? K_CHOICES : [spec.default, ...K_CHOICES]
     return (
@@ -599,6 +637,15 @@ export default function StaffDock({
 
   useEffect(() => { setArgs(initialArgs(graph)) }, [graph])
 
+  // The turn select follows the game: the newest recorded decision is what it
+  // offers, and leaving the game empties it. Without this it would keep
+  // pointing at a turn from a game that has ended - a value `validate` would
+  // then refuse, which is correct but useless as a default.
+  const latestTurn = useMemo(() => latestDecisionTurn(ctx), [ctx])
+  useEffect(() => {
+    setArgs((prev) => ({ ...prev, turn: latestTurn === null ? '' : latestTurn }))
+  }, [latestTurn])
+
   // The log belongs to the scenario, not to the session: switching boards
   // swaps it out rather than mixing two boards' answers in one list.
   useEffect(() => {
@@ -636,7 +683,7 @@ export default function StaffDock({
       // absent too, so `validate` gives the reason instead of this file
       // inventing one.
       if (v === undefined || v === '') continue
-      sent[spec.name] = spec.kind === 'int' ? Number(v) : v
+      sent[spec.name] = spec.kind === 'int' || spec.kind === 'turn' ? Number(v) : v
     }
     try {
       // `ask` validates and THROWS on a bad argument - the rejection is the
@@ -730,7 +777,7 @@ export default function StaffDock({
               <div className="staff-args">
                 {q.args.map((spec) => (
                   <ArgControl
-                    key={spec.name} spec={spec} graph={graph}
+                    key={spec.name} spec={spec} graph={graph} game={ctx.game}
                     value={args[spec.name]}
                     onChange={(v) => setArgs((prev) => ({ ...prev, [spec.name]: v }))}
                   />

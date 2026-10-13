@@ -11,10 +11,14 @@
 // be wrong there, so they are scored separately:
 //
 // QUERY_IDS below is the golden set's class list, NOT the catalogue. It is
-// six, and the catalogue is seven: `mission_attribution` was added after this
-// golden set was written and has no questions in it, so nothing here measures
-// how well a model routes to it. That is a gap in the measurement, and it is
-// said here rather than papered over by counting the class as covered.
+// six, and the catalogue is eight: `mission_attribution` (U1) and
+// `decision_why` (U2) were added after this golden set was written and have no
+// questions in it, so nothing here measures how well a model routes to either.
+// That is a gap in the measurement, and it is said here rather than papered
+// over by counting the classes as covered. `decision_why` has a second reason
+// to stay out for now: it is the first needs:'game' query, and every item in
+// this set is asked in the observe or sandbox ctx, where the catalogue gate
+// correctly refuses it.
 //
 //   routing   did the model pick the query id (and the arguments) the golden
 //             set says the question meant? Reported as precision@1 PER CLASS

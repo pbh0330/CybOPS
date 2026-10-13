@@ -394,6 +394,136 @@ export function gameFacts(g, G) {
   return out
 }
 
+// --- the decision record, read out ---------------------------------------
+//
+// One history row, phrased so a person can reconstruct the moment: what was
+// isolated, where the staff table had ranked it, what was ranked first and how
+// the two compared, which fact numbers were on screen, the one line the
+// operator typed, and what happened to P1 after. Every number here was written
+// by the engine at the time (game.js `defend` / `attackerTurn`); nothing is
+// recomputed against the present state, because the present state is a
+// different turn.
+//
+// `turn` is the 0-based number history stores (h.turn). The sentences say
+// turn + 1, the same off-by-one the panel shows.
+//
+// The fact ids in `basis` are the numbering of the staff card the operator was
+// looking at. They are NOT this answer's F numbers, and the sentence says so -
+// a reader who clicks F2 here would otherwise land on an unrelated fact.
+function p1MissionOf(g) {
+  const m = (g?.missions || []).slice().sort((a, b) => (num(a.priority) || 9) - (num(b.priority) || 9))[0]
+  return m ? m.id : null
+}
+
+const WHO_KO = { human: '사람(운용자)', system: '시스템' }
+
+export function decisionFacts(g, G, turn) {
+  const list = (G && G.history) || []
+  const n = Number(turn)
+  const h = list.find((x) => Number(x.turn) === n)
+  const turnRef = refOf('turn', String(n))
+  if (!h) {
+    return [fact(`턴 ${n + 1} 에는 기록된 행이 없다 - 결심을 읽을 수 없다.`, turnRef)]
+  }
+  const head = `턴 ${h.turn + 1}`
+  const out = []
+  const d = h.defender
+
+  if (!d) {
+    out.push(fact(`${head} 방어측은 격리하지 않고 생략했다 - 기록된 결심이 없고, 참모 순위·근거도 남지 않았다.`, turnRef))
+  } else {
+    const who = WHO_KO[d.actor] || d.actor || '기록 없음'
+    out.push(fact(
+      `${head} 결심 - ${who}이 ${nameOf(g, d.id)} 을 격리했다. 임무 비용 ${sgnPp(num(d.cost))}.`,
+      refOf('asset', d.id), num(d.cost), '%p',
+    ))
+
+    const rows = d.staff && d.staff.rows ? Number(d.staff.rows) : null
+    out.push(d.rank
+      ? fact(
+        `${nameOf(g, d.id)} 은 그 턴 참모 표의 후보 ${rows === null ? '?' : rows}개 중 ${d.rank}위였다.`,
+        refOf('asset', d.id), d.rank,
+      )
+      : fact(`${nameOf(g, d.id)} 의 그 턴 참모 순위가 기록되지 않았다 - 순위를 적기 전에 만들어진 행이다.`, refOf('asset', d.id)))
+
+    const top = (d.staff && d.staff.top) || null
+    const mine = (d.staff && d.staff.chosen) || null
+    if (top && top.id === d.id) {
+      out.push(fact('운용자가 고른 것이 그 턴 참모 1위와 같다 - 순위 불일치 없음.', refOf('asset', d.id), 0))
+    } else if (top) {
+      out.push(fact(
+        `그 턴 1위는 ${nameOf(g, top.id)} 였다 - 임무 비용 ${sgnPp(num(top.cost))}, 막는 공격 수 ${num(top.blocks)}개, 순이득 ${sgnPp(num(top.net))}.`,
+        refOf('asset', top.id), num(top.net), '%p',
+      ))
+      if (mine) {
+        const dc = Number((num(mine.cost) - num(top.cost)).toFixed(9))
+        const db = num(mine.blocks) - num(top.blocks)
+        out.push(fact(
+          `고른 것과 1위의 비교 - 임무 비용 ${sgnPp(num(mine.cost))} 대 ${sgnPp(num(top.cost))} (차이 ${sgnPp(dc)}), 막는 공격 수 ${num(mine.blocks)}개 대 ${num(top.blocks)}개 (차이 ${db >= 0 ? '+' : ''}${db}개).`,
+          refOf('asset', d.id), dc, '%p',
+        ))
+        // staffTable sorts by net, then by blocks, then by id. When the two
+        // rows tie on net the rank gap is that tiebreak and nothing else, and
+        // a reader who takes 3위 for "worse" would be reading a sort order as
+        // a judgement (the same thing StaffDock's 동률 mark exists to stop).
+        if (Math.abs(num(mine.net) - num(top.net)) < 1e-9) {
+          out.push(fact(
+            `고른 것과 1위의 순이득은 같다 (${sgnPp(num(top.net))}) - 순위는 막는 공격 수로 갈린 것이고 우열이 아니다.`,
+            refOf('asset', d.id), 0, '%p',
+          ))
+        }
+      }
+    } else {
+      out.push(fact('그 턴 참모 표의 1위 행이 기록되지 않았다 - 비교할 기준이 없다.', turnRef))
+    }
+
+    const basis = (d.basis || [])
+    out.push(basis.length
+      ? fact(
+        `결심 당시 화면에 있던 근거 사실 ${basis.length}개 - ${basis.join('·')} (그 시점 참모 카드의 번호이고, 이 답의 F# 와는 다른 체계다).`,
+        turnRef, basis.length,
+      )
+      : fact('결심 당시의 근거 사실 번호가 기록되지 않았다 - 참모 카드 없이 자산 목록에서 바로 고른 결심이다.', turnRef, 0))
+
+    out.push(d.rationale
+      ? fact(`운용자가 적은 한 줄 - "${d.rationale}".`, turnRef)
+      : fact('운용자는 한 줄 근거를 적지 않았다 - 선택 입력이고 비어 있어도 결심은 기록된다.', turnRef))
+
+    out.push(d.actor === 'human'
+      ? fact('이 격리는 사람이 누른 것이고 자동 실행 경로는 없다 (ADR-0004) - 이 행은 기록이지 명령이 아니다.', turnRef)
+      : fact(`이 행은 사람이 아니라 ${who}으로 기록돼 있다 - 사람의 승인 기록이 아니다 (ADR-0004).`, turnRef))
+  }
+
+  if (h.attacker && h.attacker.move) {
+    const mv = h.attacker.move
+    const by = h.attacker.by || '기록 없음'
+    const tgt = mv.target ? nameOf(g, mv.target) : '대상 없음'
+    out.push(fact(
+      `${head} 공격 - ${by} 가 고른 ${mv.label || mv.action}, 대상 ${tgt}, ${h.attacker.success ? '성공' : '실패'}.`,
+      mv.target ? refOf('asset', mv.target) : turnRef,
+    ))
+  } else {
+    out.push(fact(`${head} 공격자는 둘 수 있는 수가 없었다 - ${h.reason || '사유 기록 없음'}.`, turnRef))
+  }
+
+  const pid = p1MissionOf(g)
+  const p1 = num(h.p1)
+  out.push(fact(
+    `${head} 종료 시 P1 ${pid ? missionName(g, pid) : '임무'} 저하도 ${pct(p1)}.`,
+    pid ? refOf('mission', pid) : turnRef, p1, '%',
+  ))
+
+  const next = list.find((x) => Number(x.turn) === n + 1)
+  out.push(next
+    ? fact(
+      `다음 턴 ${next.turn + 1} 종료 시 P1 저하도 ${pct(num(next.p1))} - 이 결심 뒤 변화 ${sgnPp(num(next.p1) - p1)}.`,
+      pid ? refOf('mission', pid) : turnRef, Number((num(next.p1) - p1).toFixed(9)), '%p',
+    )
+    : fact('다음 턴 기록이 없다 - 이 턴이 마지막으로 기록된 턴이다.', turnRef))
+
+  return out
+}
+
 // The sandbox readiness gate (ADR-0027), read out. Counts first - they are
 // what the card shows - then one sentence per thing that is still missing, so
 // a citation can point at it.

@@ -1,10 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import replay from '../../public/data/tacnet-01.replay.json'
 import { computeStep } from '../derive.js'
-import { ask, graphFingerprint } from '../staff.js'
+import { ask, graphFingerprint, validate } from '../staff.js'
 import { catalog } from '../staff.js'
+import { startGame, defend, pass, attackerTurn } from '../game.js'
 import {
-  LOG_MAX, storeKey, tieRuns, selectableIds, optionsOf, initialArgs, pushLog, readLog,
+  LOG_MAX, storeKey, tieRuns, selectableIds, optionsOf, turnOptions, initialArgs, pushLog, readLog,
   staleOf, staleWhy, staleText,
   FALLBACK_QUERY, errKo, llmNoteOf, fallbackNote, noteWith, runQuestion, entryOf, argChips,
 } from '../ui/StaffDock.jsx'
@@ -526,5 +527,42 @@ describe('llmNoteOf', () => {
 
   it('모델이 있으면 사유가 없다', () => {
     expect(llmNoteOf({ ok: true, models: ['qwen2.5:7b'] }, cfg)).toBe('')
+  })
+})
+
+// --- the turn select (U2) -------------------------------------------------
+//
+// `decision_why` takes a turn, and a turn is not a count: its options are the
+// turns the game recorded. They come from staff.js `recordedTurns`, so the
+// select cannot offer a value `validate` would refuse - the failure this
+// replaces was the k-style select offering 3, 5, 8, 12 in an eight-turn game.
+
+describe('turnOptions', () => {
+  const base = { mode: 'hold', turns: 8, t: 150, foothold: { id: 'CO2-VEH', level: 0.8 }, seed: 11, strategy: 'greedy' }
+  const G0 = startGame(g, base)
+  const played = (() => {
+    let X = defend(g, G0, { type: 'isolate', id: 'RELAY-1' })
+    X = attackerTurn(g, X)
+    return attackerTurn(g, pass(X))
+  })()
+
+  it('offers the recorded turns newest first, labelled with what was recorded', () => {
+    const opts = turnOptions(g, played)
+    expect(opts.map((o) => o.id)).toEqual([2, 1])
+    expect(opts[1].label).toContain('턴 1')
+    expect(opts[1].label).toContain('격리')
+    expect(opts[1].label).toContain('참모')
+    expect(opts[0].label).toContain('생략')
+  })
+
+  it('offers nothing before a turn is played, and nothing without a game', () => {
+    expect(turnOptions(g, G0)).toEqual([])
+    expect(turnOptions(g, null)).toEqual([])
+  })
+
+  it('offers only values validate accepts', () => {
+    for (const o of turnOptions(g, played)) {
+      expect(validate({ graph: g, game: played }, 'decision_why', { turn: o.id }).ok).toBe(true)
+    }
   })
 })
