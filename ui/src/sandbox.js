@@ -90,6 +90,39 @@ export function linkCandidates(g, rules, assetId) {
   return out.map((c, i) => ({ ...c, rank: i + 1 }))
 }
 
+// Which rule conditions a scenario may waive by declaration: the conditions
+// the table hangs on a bearer. The "both ends carry this bearer" test is NOT
+// on the list, and that is the whole point of having a list. Whether a type
+// carries a bearer is a question about the TABLE - c2-server was missing
+// `vhf` and the answer was to fix the row (U13), not to let the scenario
+// declare its way past it. A blanket "this link is fine" would have covered
+// that too, silently.
+const EXEMPTABLE = ['same_site', 'needs_type']
+
+// A link's declared abstraction exception, or null when it has none the
+// predicate will honour.
+//
+// defnet-01 already admitted, in prose, why FW01 is wired to workstations at
+// other sites: "부대별 액세스 스위치는 모델링하지 않는다". linkFitsRules cannot
+// read a note, so a scenario that was being honest looked wrong on screen.
+// This moves the same sentence to where the predicate reaches it (ADR-0033).
+// The field does not start with '_' on purpose: in this repository '_' marks
+// prose for people only, and a machine-read field wearing that prefix would
+// be read as prose by the next person.
+//
+// `why` is required: an exception without a reason is a switch that turns the
+// judge off, and a link that carries one is still out of rule. `exempts` must
+// name the conditions waived, so the declaration cannot quietly cover a later
+// violation of a different kind.
+export function linkException(l) {
+  const e = l && l.rule_exception
+  if (!e || typeof e !== 'object' || Array.isArray(e)) return null
+  const why = typeof e.why === 'string' ? e.why.trim() : ''
+  const exempts = (Array.isArray(e.exempts) ? e.exempts : []).filter((r) => EXEMPTABLE.includes(r))
+  if (!why || !exempts.length) return null
+  return { exempts, why }
+}
+
 // Does a link that is already on the board still fit the rule table? The same
 // reading linkCandidates uses to PROPOSE a link, applied to one that is there
 // already: the inspector's 규칙 밖 mark and the overlay's dotted ghost line
@@ -106,6 +139,12 @@ export function linkCandidates(g, rules, assetId) {
 // not make, and would silently flip the inspector's verdict on exactly the
 // links a person is most likely to have left half-built. This is the reading
 // the inline predicate in Rail.jsx had before it moved here.
+//
+// A link may waive a condition by declaring it (linkException above). Only a
+// link that EXISTS can carry a declaration, which is why this reads one and
+// linkCandidates does not: candidates are links that are not there yet, so
+// there is nothing to read, and the proposer still refuses wired across
+// sites. One predicate, two questions - not two predicates (ADR-0033).
 export function linkFitsRules(g, rules, l) {
   if (!l) return true
   const a = byId(g, l.a)
@@ -119,8 +158,10 @@ export function linkFitsRules(g, rules, l) {
   const r = (rules.bearers || {})[bearer] || {}
   // '신규' is not a place: siteOf reads it as no site, same as linkCandidates
   const sameSite = !!siteOf(a) && siteOf(a) === siteOf(b)
-  if (r.same_site && !sameSite) return false
-  if (r.needs_type && a.type !== r.needs_type && b.type !== r.needs_type) return false
+  const waived = linkException(l)
+  const exempt = (rule) => !!waived && waived.exempts.includes(rule)
+  if (r.same_site && !sameSite && !exempt('same_site')) return false
+  if (r.needs_type && a.type !== r.needs_type && b.type !== r.needs_type && !exempt('needs_type')) return false
   return both
 }
 

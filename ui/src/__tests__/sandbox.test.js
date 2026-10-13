@@ -4,7 +4,7 @@ import rules from '../../public/data/link-rules.json'
 import {
   makeSandbox, linkCandidates, missionCandidates, readiness, placeFree, placeNear,
   validateImport, listPlans, savePlan, loadPlan, deletePlan, SANDBOX_ID, siteOf, ruleGap,
-  linkFitsRules,
+  linkFitsRules, linkException,
 } from '../sandbox.js'
 
 const tg = replay.graph
@@ -343,6 +343,138 @@ describe('linkFitsRules', () => {
     for (const c of proposed) {
       const l = { id: 'L', a: 'A', b: c.id, bearer: c.bearer }
       expect(linkFitsRules({ ...graph, links: [l] }, rules, l)).toBe(true)
+    }
+  })
+})
+
+
+// A scenario may declare, in the link data, that it waives a rule condition
+// because it folded a layer away (ADR-0033). The declaration is read here and
+// nowhere else: linkCandidates proposes links that do not exist yet, so there
+// is no declaration to read and it still refuses wired across sites.
+describe('linkException and the rules it can waive', () => {
+  const a = (over) => ({ id: 'A', type: 'c2-server', site: '본부', unit: 'U', ...over })
+  const b = (over) => ({ id: 'B', type: 'satcom-terminal', site: '전방', unit: 'U', ...over })
+  const g = (x, y, l) => ({ assets: [x, y], links: [l] })
+  const wired = (exc) => ({ id: 'L', a: 'A', b: 'B', bearer: 'wired', ...(exc ? { rule_exception: exc } : {}) })
+
+  it('passes a cross-site wired link that declares the same_site exemption with a reason', () => {
+    const l = wired({ exempts: ['same_site'], why: '부대별 액세스 스위치를 모델링하지 않는다' })
+    expect(linkFitsRules(g(a(), b(), l), rules, l)).toBe(true)
+    expect(linkException(l).exempts).toEqual(['same_site'])
+  })
+
+  // An exemption with no reason is not an exemption, it is a switch that
+  // turns the judge off, and a switch that can be flipped without saying why
+  // ends up flipped everywhere. The link stays 규칙 밖.
+  it('does not honour a declaration with no reason', () => {
+    for (const exc of [
+      { exempts: ['same_site'] },
+      { exempts: ['same_site'], why: '' },
+      { exempts: ['same_site'], why: '   ' },
+      { exempts: ['same_site'], why: 42 },
+    ]) {
+      const l = wired(exc)
+      expect(linkException(l)).toBe(null)
+      expect(linkFitsRules(g(a(), b(), l), rules, l)).toBe(false)
+    }
+  })
+
+  // "this link is fine" would also cover the next violation, of a kind nobody
+  // looked at. The declaration has to name what it waives.
+  it('does not honour a declaration that names no rule, or a rule that is not waivable', () => {
+    for (const exc of [
+      { why: '이유는 있는데 무엇을 면제받는지 적지 않았다' },
+      { exempts: [], why: '빈 목록' },
+      { exempts: ['any'], why: '전부 면제' },
+      { exempts: ['bearer'], why: '규칙표에 없는 베어러를 면제받겠다' },
+    ]) {
+      const l = wired(exc)
+      expect(linkException(l)).toBe(null)
+      expect(linkFitsRules(g(a(), b(), l), rules, l)).toBe(false)
+    }
+  })
+
+  it('still flags a violation the declaration does not cover', () => {
+    const why = '액세스 스위치를 모델링하지 않는다'
+    // same_site waived, but a workstation does not carry satcom at all: that
+    // is a question about the rule table's row, not about this scenario's
+    // abstraction, so no declaration can waive it
+    const sat = { id: 'L', a: 'A', b: 'B', bearer: 'satcom', rule_exception: { exempts: ['same_site'], why } }
+    expect(linkFitsRules(g(a(), b({ type: 'workstation' }), sat), rules, sat)).toBe(false)
+    // and needs_type is not waived by a same_site declaration
+    const sat2 = { id: 'L', a: 'A', b: 'B', bearer: 'satcom', rule_exception: { exempts: ['same_site'], why } }
+    expect(linkFitsRules(g(a(), b({ type: 'c2-terminal' }), sat2), rules, sat2)).toBe(false)
+  })
+
+  // The invariant the comment above linkFitsRules sets up: one predicate, two
+  // questions. Splitting same_site into a proposal-only preference was the
+  // first idea and it would have broken this (ADR-0033 rejects it).
+  it('leaves linkCandidates refusing wired across sites', () => {
+    const graph = { assets: [a(), b({ type: 'c2-server' })], links: [] }
+    const proposed = linkCandidates(graph, rules, 'A').map((c) => `${c.id}:${c.bearer}`)
+    expect(proposed).not.toContain('B:wired')
+  })
+})
+
+// Every link a shipped scenario declares, walked through the app's own
+// predicate. The rule table is a copy of what tacnet-01 declares (its
+// `template` field says so), so a shipped link the table rejects is a finding
+// somewhere - in the table, or in the scenario, or in the scenario's
+// disclosure.
+//
+// This walk arrived (U13) with nine links pinned here by id as expected
+// failures, labelled "open findings, not accepted behaviour": tacnet's
+// L-TOC-FDC and defnet's L-SW-*02 / L-FW-WKS00x, all cross-site `wired`
+// against bearers.wired.same_site. The pin lists are gone and nothing was
+// pinned in their place, because the nine were never a rule problem:
+// defnet-01 had already disclosed the simplification in `_links_note` and
+// notes[5], where the predicate could not read it. The scenarios declare it
+// in the link data now (ADR-0033), and the assertion below is stronger than
+// the pin list was - every shipped link either fits the table or says, in
+// data, which condition it waives and what it left unmodelled.
+//
+// Not asserted here: a link whose bearer the table does not give its types at
+// all. That is a question about the TABLE and no declaration may waive it
+// (EXEMPTABLE in sandbox.js). `L-VHF-RLY` is the open one - c2-server was
+// missing `vhf` - and it is closed by the table row on data/link-rules-vhf,
+// not by a declaration. When that row lands, assert this category empty too.
+describe('shipped scenarios against the rule table', () => {
+  // off-table links that fail a bearer CONDITION (same_site, needs_type)
+  // without declaring it: the category this task closed
+  const undeclared = (graph) => {
+    const byId = new Map(graph.assets.map((x) => [x.id, x]))
+    return (graph.links || [])
+      .filter((l) => !linkFitsRules(graph, rules, l))
+      .filter((l) => {
+        const ra = (rules.types[(byId.get(l.a) || {}).type] || {}).bearers || []
+        const rb = (rules.types[(byId.get(l.b) || {}).type] || {}).bearers || []
+        return ra.includes(l.bearer) && rb.includes(l.bearer)
+      })
+      .map((l) => `${l.id}: ${l.a} --${l.bearer}--> ${l.b}`)
+  }
+  it('tacnet-01 declares every condition it waives', () => {
+    expect(undeclared(tg)).toEqual([])
+  })
+  it('defnet-01 declares every condition it waives', async () => {
+    const defnet = (await import('../../public/data/defnet-01.replay.json')).default
+    expect(undeclared(defnet.graph)).toEqual([])
+  })
+  // the declarations sit on the links the walk named, and each carries a
+  // reason: an empty list above could also mean nobody declared anything
+  it('the nine links the walk found now carry a reason', async () => {
+    const defnet = (await import('../../public/data/defnet-01.replay.json')).default
+    const declared = (g) => (g.links || []).filter((l) => linkException(l)).map((l) => l.id)
+    expect(declared(tg)).toEqual(['L-TOC-FDC'])
+    expect(declared(defnet.graph)).toEqual([
+      'L-SW-ESX02', 'L-SW-DC02', 'L-SW-DB02',
+      'L-FW-WKS001', 'L-FW-WKS002', 'L-FW-WKS003', 'L-FW-WKS004', 'L-FW-WKS005',
+    ])
+    for (const g of [tg, defnet.graph]) {
+      for (const l of g.links || []) {
+        const e = linkException(l)
+        if (e) expect(e.why.length).toBeGreaterThan(10)
+      }
     }
   })
 })

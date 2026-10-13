@@ -110,7 +110,7 @@
     "_redundancy_note": "DC02·DB02·ESX02 를 예비 전산동에 둔 것이 이 배치도의 요점이다. DC01 하나만 침해되면 임무 저하도가 0.0% 인데 DC01+DC02 면 80.5% 인 이유가 지도에서 보인다 - 이중화 쌍이 다른 건물에 있다. 이 사실은 화면에 그려질 뿐이고 엔진은 여전히 requires 엣지만 읽는다."
   },
 
-  "_links_note": "물리 전송로다. 아래 communicates_with(논리 통신 관계)와 다른 층이며 서로 복사본이 아니다. 전산실 구간은 SW01 이 잇고, 지휘소·대대 구간은 FW01 에 붙어 전산실로 들어간다. 부대별 액세스 스위치는 모델링하지 않는다. 이 추상 수준에서 FW01 이 사용자 구간의 집선·정책 지점 역할을 겸한다.",
+  "_links_note": "물리 전송로다. 아래 communicates_with(논리 통신 관계)와 다른 층이며 서로 복사본이 아니다. 전산실 구간은 SW01 이 잇고, 지휘소·대대 구간은 FW01 에 붙어 전산실로 들어간다. 부대별 액세스 스위치는 모델링하지 않는다. 이 추상 수준에서 FW01 이 사용자 구간의 집선·정책 지점 역할을 겸한다. 이 단순화는 해당 링크의 rule_exception 에 기계가 읽는 형태로도 선언돼 있다 - 산문만으로는 판정기에 닿지 않는다(ADR-0033).",
 
   "links": [
     {"id": "L-SW-DC01",   "a": "SW01", "b": "DC01",   "bearer": "wired"},
@@ -120,17 +120,25 @@
     {"id": "L-SW-WEB01",  "a": "SW01", "b": "WEB01",  "bearer": "wired"},
     {"id": "L-SW-ESX01",  "a": "SW01", "b": "ESX01",  "bearer": "wired"},
 
-    {"id": "L-SW-ESX02",  "a": "SW01", "b": "ESX02",  "bearer": "wired"},
-    {"id": "L-SW-DC02",   "a": "SW01", "b": "DC02",   "bearer": "wired"},
-    {"id": "L-SW-DB02",   "a": "SW01", "b": "DB02",   "bearer": "wired"},
+    {"id": "L-SW-ESX02",  "a": "SW01", "b": "ESX02",  "bearer": "wired",
+     "rule_exception": {"exempts": ["same_site"], "why": "예비 전산실용 스위치(SW02)를 두지 않아 SW01 이 두 전산실의 집선 지점을 겸한다(notes[5])."}},
+    {"id": "L-SW-DC02",   "a": "SW01", "b": "DC02",   "bearer": "wired",
+     "rule_exception": {"exempts": ["same_site"], "why": "예비 전산실용 스위치(SW02)를 두지 않아 SW01 이 두 전산실의 집선 지점을 겸한다(notes[5])."}},
+    {"id": "L-SW-DB02",   "a": "SW01", "b": "DB02",   "bearer": "wired",
+     "rule_exception": {"exempts": ["same_site"], "why": "예비 전산실용 스위치(SW02)를 두지 않아 SW01 이 두 전산실의 집선 지점을 겸한다(notes[5])."}},
 
     {"id": "L-SW-FW01",   "a": "SW01", "b": "FW01",   "bearer": "wired"},
 
-    {"id": "L-FW-WKS001", "a": "FW01", "b": "WKS001", "bearer": "wired"},
-    {"id": "L-FW-WKS002", "a": "FW01", "b": "WKS002", "bearer": "wired"},
-    {"id": "L-FW-WKS003", "a": "FW01", "b": "WKS003", "bearer": "wired"},
-    {"id": "L-FW-WKS004", "a": "FW01", "b": "WKS004", "bearer": "wired"},
-    {"id": "L-FW-WKS005", "a": "FW01", "b": "WKS005", "bearer": "wired"}
+    {"id": "L-FW-WKS001", "a": "FW01", "b": "WKS001", "bearer": "wired",
+     "rule_exception": {"exempts": ["same_site"], "why": "부대별 액세스 스위치를 모델링하지 않아 FW01 이 사용자 구간의 집선·정책 지점을 겸한다(_links_note)."}},
+    {"id": "L-FW-WKS002", "a": "FW01", "b": "WKS002", "bearer": "wired",
+     "rule_exception": {"exempts": ["same_site"], "why": "부대별 액세스 스위치를 모델링하지 않아 FW01 이 사용자 구간의 집선·정책 지점을 겸한다(_links_note)."}},
+    {"id": "L-FW-WKS003", "a": "FW01", "b": "WKS003", "bearer": "wired",
+     "rule_exception": {"exempts": ["same_site"], "why": "부대별 액세스 스위치를 모델링하지 않아 FW01 이 사용자 구간의 집선·정책 지점을 겸한다(_links_note)."}},
+    {"id": "L-FW-WKS004", "a": "FW01", "b": "WKS004", "bearer": "wired",
+     "rule_exception": {"exempts": ["same_site"], "why": "부대별 액세스 스위치를 모델링하지 않아 FW01 이 사용자 구간의 집선·정책 지점을 겸한다(_links_note)."}},
+    {"id": "L-FW-WKS005", "a": "FW01", "b": "WKS005", "bearer": "wired",
+     "rule_exception": {"exempts": ["same_site"], "why": "부대별 액세스 스위치를 모델링하지 않아 FW01 이 사용자 구간의 집선·정책 지점을 겸한다(_links_note)."}}
   ],
 
   "edges": {

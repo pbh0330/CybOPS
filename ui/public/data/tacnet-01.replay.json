@@ -900,7 +900,13 @@
                                     "id":  "L-TOC-FDC",
                                     "a":  "TOC-SRV",
                                     "b":  "FDC-SRV",
-                                    "bearer":  "wired"
+                                    "bearer":  "wired",
+                                    "rule_exception":  {
+                                        "exempts":  [
+                                            "same_site"
+                                        ],
+                                        "why":  "여단 TOC 와 포병 FDC 는 TACGRID-01 좌표로 5137.6 m 떨어진 다른 위치이고, 둘을 잇는 야전 유선의 중간 전송 구간을 모델링하지 않아 한 링크로 접었다."
+                                    }
                                 },
                                 {
                                     "id":  "L-FDC-LAN",
