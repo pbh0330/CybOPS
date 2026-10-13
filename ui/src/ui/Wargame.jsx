@@ -14,6 +14,20 @@ import { CitedText, factText } from './cite.jsx'
 // scored on the mission number the rest of the screen shows, and nothing here
 // leaves the browser except an optional chat call to a local model.
 
+// Where a wargame starts. A scenario can declare it - mission.json
+// `wargame.foothold`, carried into the replay graph - and that declaration
+// exists because the fallback is the replay's FIRST COMPROMISE STATE, which is
+// a propagation input rather than a game seed. defnet-01's is WKS003 at 0.3,
+// the deterministic layer's judgment at initial access, and it sits under
+// attack.js's foothold threshold on purpose: a game seeded there would have no
+// legal move at all. ui/tools/verify-scenarios.mjs plays the declared seed and
+// fails the gate when it yields none, so this is checked rather than hoped for.
+export function startFoothold(graph, payload) {
+  const d = (graph && graph.wargame) ? graph.wargame.foothold : null
+  if (d && d.id) return { id: d.id, level: Number(d.level) }
+  return defaultFoothold(payload)
+}
+
 const pct = (v) => `${(Number(v || 0) * 100).toFixed(1)}%`
 const pp = (v) => `${v >= 0 ? '+' : ''}${(Number(v || 0) * 100).toFixed(1)}%p`
 const MODES = [['hold', '버티기'], ['jewel', '보석 방어']]
@@ -41,7 +55,7 @@ const attackerEnabled = () => !!((config().llm || {}).attacker_enabled)
 function StartCard({ graph, payload, idx, llmOk, llmNote, onStart, readyState }) {
   const steps = payload?.steps || []
   const attackerOn = attackerEnabled()
-  const foot = defaultFoothold(payload)
+  const foot = startFoothold(graph, payload)
   // the select lists graph.assets; with an edited graph the scenario's
   // default foothold may not be in it, and a foothold outside the graph
   // would start a game the engine cannot play

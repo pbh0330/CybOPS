@@ -148,6 +148,15 @@ node ui\tools\parity.mjs                   # JS 포트와 1622 값 대조, 불�
   S-C2MSG 는 TOC-SRV/BN-SRV 이중화인데 대대에서 TOC-SRV 에 도달하지 못한다.
   `notes[0]` 의 주장이고, 정적 그래프로는 표현되지 않는 전술망의 성질이다.
 
+이 시나리오는 `wargame.foothold` 를 **선언하지 않는다.** `game.js` `defaultFoothold()`
+가 `attack-timeline.json` 의 첫 침해 상태(CO2-VEH 0.5)를 집어오고, 그것이 `attack.js`
+의 거점 임계값 0.5 를 넘으므로 교전이 시작된다. **그것은 우연히 성립하는 것이다** -
+defnet-01 은 같은 자리가 0.3 이어서 합법 수가 0 이었고, 그래서 거기는 교전용 거점을
+따로 선언한다(`scenarios/defnet-01/PROVENANCE.md` 7절). 여기서는 선언이 없어도 되는
+것이 아니라 선언 없이 맞는 것이므로, `ui/tools/verify-scenarios.mjs`
+`checkWargameFoothold` 가 폴백 값으로 실제 게임을 시작해 합법 수를 매번 센다. 첫 침해
+수준이 내려가면 게이트가 떨어진다.
+
 **79.0% 와 100.0% 는 저작한 가중치의 함수다.** 구조에 관한 주장("기동 단절은 공격이
 아니다", "도달성 없는 이중화는 무의미하다")은 이 데이터로 할 수 있고, 수치 자체에 관한
 주장("실제로 79% 저하된다")은 할 수 없다.

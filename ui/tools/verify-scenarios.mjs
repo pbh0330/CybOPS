@@ -52,7 +52,7 @@ import { readFileSync, readdirSync, existsSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { runChain, runStep, containmentCandidates } from '../src/engine.js'
-import { startGame, defend, pass, attackerTurn, staffTable, defaultFoothold } from '../src/game.js'
+import { startGame, defend, pass, attackerTurn, staffTable, defaultFoothold, legalFor } from '../src/game.js'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const root = join(here, '..', '..')
@@ -609,6 +609,104 @@ function checkReplayBatching(id, payload) {
   say(`${n} steps, chunk sizes 1/4/7/20 and reverse order all agree`)
 }
 
+// --------------------------- B2. the replay carries the graph it was built on
+//
+// The UI never opens mission.json; it reads the graph embedded in the replay
+// (ADR-0003). So an edit to mission.json that is not followed by
+// Export-ReplayData.ps1 changes nothing the reviewer sees, and the two copies
+// drift. Commit 4f3cb36 re-exported for exactly this reason. Both shipped
+// scenarios are identical copies today, so this is cheap to keep true.
+function checkGraphMirror(id, graph, payload) {
+  const G = `graph mirror(${id})`
+  ok()
+  if (same(graph, payload.graph)) return
+  const a = Object.keys(graph)
+  const b = Object.keys(payload.graph)
+  const missing = a.filter((k) => !b.includes(k))
+  const extra = b.filter((k) => !a.includes(k))
+  const changed = a.filter((k) => b.includes(k) && !same(graph[k], payload.graph[k]))
+  const what = [
+    missing.length ? `absent from the replay: ${missing.join(', ')}` : '',
+    extra.length ? `only in the replay: ${extra.join(', ')}` : '',
+    changed.length ? `different: ${changed.join(', ')}` : '',
+  ].filter(Boolean).join('; ')
+  fail(G, `the replay's embedded graph is not the mission.json it was exported from (${what})`
+    + ' - re-run scripts/Export-ReplayData.ps1, or the screen is showing the old scenario')
+}
+
+// ------------------------------------- C0. the declared foothold is playable
+//
+// A scenario declares where a wargame starts. If that seed does not clear
+// attack.js's usable-foothold threshold the attacker has no legal move on turn
+// one, the game ends before it begins, and nothing says so: the start card just
+// sits there. That is how defnet-01 shipped. Its replay's first compromise
+// state is WKS003 at 0.3 - the deterministic layer's judgment at initial access
+// ("a mail attachment ran a script"), which is a propagation input and correctly
+// below a usable foothold - and game.js defaultFoothold() handed that straight
+// to the game. This tool used to paper over it with Math.max(0.5, level) and a
+// comment; a comment is not a gate.
+//
+// The scenario now declares the wargame seed separately (mission.json
+// `wargame.foothold`), the propagation input is left alone, and this measures
+// the declaration by starting a real game with it.
+
+// Where a wargame starts, and where that came from.
+function wargameSeed(graph, payload) {
+  const d = (graph.wargame || {}).foothold
+  if (d && d.id) return { seed: { id: d.id, level: Number(d.level) }, where: 'mission.json wargame.foothold' }
+  const f = defaultFoothold(payload)
+  if (f) return { seed: f, where: 'the replay attack timeline, via game.js defaultFoothold()' }
+  return null
+}
+
+// Count the attacker's options at a given seed. legalFor is what the start card
+// calls, so this is the list the player would actually be offered.
+function movesAt(graph, seed) {
+  const t = graph.timeline ? 300 : -1
+  const cfg = { mode: 'hold', turns: 12, t, seed: 20260906, strategy: 'greedy', foothold: seed, method: 'weighted' }
+  return { moves: legalFor(graph, startGame(graph, cfg)), t }
+}
+
+// Returns the seed the batching checks below should play, or null when there is
+// nothing playable to check.
+function checkWargameFoothold(id, graph, payload) {
+  const G = `wargame foothold(${id})`
+  const r = wargameSeed(graph, payload)
+  if (!r) { note(`${id} declares no wargame foothold and its replay has no attack input - nothing to play`); return null }
+  const { seed, where } = r
+
+  ok()
+  if (!(graph.assets || []).some((a) => a.id === seed.id)) {
+    fail(G, `the declared foothold names ${seed.id} (${where}), which is not an asset in this scenario`)
+    return null
+  }
+  ok()
+  if (!(Number.isFinite(seed.level) && seed.level > 0 && seed.level <= 1)) {
+    fail(G, `the declared foothold level for ${seed.id} is ${seed.level} (${where}), not a compromise level in (0, 1]`)
+    return null
+  }
+
+  const { moves, t } = movesAt(graph, seed)
+  ok()
+  if (!moves.length) {
+    fail(G, `${seed.id} at level ${seed.level} (${where}) gives the attacker no legal move at t=${t}, `
+      + 'so a wargame started from this scenario\'s own declared default ends before turn one. '
+      + 'attack.js needs at least FOOTHOLD (0.5) on some asset. Declare a wargame seed in '
+      + 'mission.json (wargame.foothold) rather than raising a propagation input to get one.')
+    return null
+  }
+  say(`declared foothold ${seed.id} @ ${seed.level} (${where}) -> ${moves.length} legal move(s) at t=${t}`)
+
+  // Not vacuous: the same measurement below the threshold has to come back
+  // empty, or this check could never fail.
+  ok()
+  const dead = movesAt(graph, { id: seed.id, level: 0.01 }).moves
+  if (dead.length) {
+    fail(G, `${seed.id} at level 0.01 still produced ${dead.length} legal move(s) - this check cannot fail`)
+  }
+  return seed
+}
+
 // A defender that is a pure function of the game state, so a resumed game makes
 // the same choice a continuous one would. Isolating the top-ranked row is also
 // the move the staff panel recommends, which keeps the run realistic.
@@ -644,14 +742,12 @@ function firstDivergence(a, b) {
   return null
 }
 
-function checkWargameBatching(id, payload) {
+// `foothold` is the seed checkWargameFoothold already measured as playable, so
+// this plays the scenario's own declared start rather than a patched-up one.
+function checkWargameBatching(id, payload, foothold) {
   const G = `wargame batching(${id})`
   const g = payload.graph
-  const seed = defaultFoothold(payload)
-  if (!seed) { note(`${id} replay has no attack input, so no wargame foothold - batching unchecked`); return }
-  // The attacker needs a usable foothold (attack.js FOOTHOLD = 0.5); defnet-01's
-  // chain starts at 0.3, which would end the game before turn one.
-  const foothold = { id: seed.id, level: Math.max(0.5, Number(seed.level) || 0.5) }
+  if (!foothold) { note(`${id} has no playable wargame foothold - batching unchecked`); return }
   const t = g.timeline ? 300 : -1
   const turns = 12
 
@@ -841,10 +937,11 @@ for (const s of scenarios) {
     continue
   }
   checkJsonRoundTrip(`${s.id} replay payload`, s.payload)
+  checkGraphMirror(s.id, s.graph, s.payload)
   checkReplayValues(s.id, s.payload)
   checkStory(s.id, s.payload)
   checkReplayBatching(s.id, s.payload)
-  checkWargameBatching(s.id, s.payload)
+  checkWargameBatching(s.id, s.payload, checkWargameFoothold(s.id, s.graph, s.payload))
 }
 
 console.log('\nself test (break the data, require the check to notice)')
