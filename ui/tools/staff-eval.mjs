@@ -5,10 +5,16 @@
 //
 // What this measures, and what it refuses to measure.
 //
-// The staff answers out of a closed catalogue of six read-only queries
-// (src/staff.js). staff-llm.mjs picks one of those six from a sentence a
-// person typed, and then reads the engine's facts back out. Two different
-// things can be wrong there, so they are scored separately:
+// The staff answers out of a closed catalogue of read-only queries
+// (src/staff.js). staff-llm.mjs picks one of them from a sentence a person
+// typed, and then reads the engine's facts back out. Two different things can
+// be wrong there, so they are scored separately:
+//
+// QUERY_IDS below is the golden set's class list, NOT the catalogue. It is
+// six, and the catalogue is seven: `mission_attribution` was added after this
+// golden set was written and has no questions in it, so nothing here measures
+// how well a model routes to it. That is a gap in the measurement, and it is
+// said here rather than papered over by counting the class as covered.
 //
 //   routing   did the model pick the query id (and the arguments) the golden
 //             set says the question meant? Reported as precision@1 PER CLASS
@@ -73,6 +79,9 @@ async function ensureJsonLoader() {
 
 // --- pure helpers (exported so the unit tests can reach them) ---------------
 
+// The classes the golden set scores. A subset of staff.js QUERIES: see the
+// header. Adding an id here without adding at least three questions for it
+// makes checkGolden fail, which is the intended order.
 export const QUERY_IDS = [
   'state_summary', 'mission_why', 'asset_impact',
   'containment_top', 'compare_defense', 'readiness_gap',

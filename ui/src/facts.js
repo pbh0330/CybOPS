@@ -189,6 +189,150 @@ function cutAt(k) {
   return Number.isFinite(n) && n >= 1 ? Math.floor(n) : TOP_N
 }
 
+// --- asset attribution ----------------------------------------------------
+//
+// A mission reads 76.2% degraded and nothing says which asset is responsible.
+// `missionFacts` splits that number by CAUSE (compromise, environment, their
+// interaction); this splits the same number by ASSET.
+//
+// The method is leave-one-out against the engine, not an inference about it:
+// set one asset's compromise back to 0, run the chain again, and the drop in
+// the mission's degradation is that asset's contribution. runChain is cheap
+// and deterministic, so a contribution here is a measured difference between
+// two engine runs rather than a weight fitted to one.
+//
+// NOTHING IS NORMALISED. Individual contributions do not add up to the total,
+// and the gap is reported instead of being scaled away:
+//
+//   total = floor + joint
+//   joint = sum(contributions) + interaction
+//
+//   floor        what is left when EVERY compromise is set to 0. Outages and
+//                environment; no asset's compromise can be charged for it.
+//   joint        what the compromises together are worth (total - floor).
+//   interaction  joint - sum. Positive where two assets mask each other (a
+//                max combine: removing one leaves the other at the same
+//                height), negative where a redundancy group needs both of
+//                them, because the service multiplies its providers and each
+//                one alone then looks decisive. A bar rescaled to add up to
+//                the total would hide exactly this term.
+//
+// `total` is recomputed here rather than read off s.mission, so the total and
+// the per-asset values come out of the same engine call and the arithmetic
+// above is exact. In the staff query path s.mission IS that same runChain
+// output; against an exported replay step the two agree to parity tolerance
+// (1e-9), well below the 0.1% the display rounds to.
+
+const ATTR_DP = 9
+const r9 = (v) => Number(num(v).toFixed(ATTR_DP))
+
+// A signed %p. The sign is printed rather than assumed: interaction goes
+// either way, and so would a contribution if the engine ever stopped being
+// monotone in compromise.
+const sgnPp = (v) => `${num(v) >= 0 ? '+' : ''}${pp(v)}`
+
+export function attribution(g, s, missionId, method = 'weighted') {
+  const t = s && s.t !== undefined && s.t !== null ? Number(s.t) : -1
+  const compromise = { ...((s && s.compromise) || {}) }
+  const opt = { t, method: method || 'weighted', causes: 'all' }
+
+  const base = runChain(g, compromise, opt)
+  const total = num(base.mission[missionId])
+  const active = base.mission_active ? base.mission_active[missionId] !== false : true
+  const floor = num(runChain(g, {}, opt).mission[missionId])
+
+  // Only assets the graph declares, and only the compromised ones: an asset
+  // at 0 did not move the number, so it is not listed as having moved it by 0.
+  const ids = (g?.assets || []).map((a) => a.id).filter((id) => num(compromise[id]) > 0).sort()
+  const rows = ids.map((id) => {
+    const after = num(runChain(g, { ...compromise, [id]: 0 }, opt).mission[missionId])
+    return { id, compromise: num(compromise[id]), after, contribution: r9(total - after) }
+  })
+  rows.sort((a, b) => (b.contribution - a.contribution) || String(a.id).localeCompare(String(b.id)))
+
+  const sum = r9(rows.reduce((acc, x) => acc + x.contribution, 0))
+  const joint = r9(total - floor)
+  return {
+    mission: missionId, t, method: opt.method, active,
+    total, floor, joint, rows, sum, interaction: r9(joint - sum),
+  }
+}
+
+// attribution(), phrased. `opts.data` reuses a result the caller already has,
+// so one answer does not run the engine twice; `opts.k` cuts the ranked
+// sentences, and the sum is over ALL the rows either way - a cut list must not
+// move the number the residual is read off.
+export function attributionFacts(g, s, missionId, opts = {}) {
+  const o = opts || {}
+  const a = o.data || attribution(g, s, missionId, o.method)
+  const mRef = refOf('mission', missionId)
+  const m = (g?.missions || []).find((x) => x.id === missionId)
+  const head = `${missionName(g, missionId)}${m && m.priority !== undefined ? ` P${m.priority}` : ''}`
+
+  if (!a.active) {
+    return [fact(`${head} 임무는 현재 단계에 활성 작업이 없어 저하도를 내지 않는다 - 자산별로 가를 것이 없다.`, mRef)]
+  }
+
+  const out = [fact(`${head} 임무 저하도 ${pct(a.total)} - 아래는 이것을 자산별 기여로 가른 것이다.`, mRef, a.total, '%')]
+
+  if (a.floor > 1e-9) {
+    out.push(fact(
+      `${head} 침해를 전부 0 으로 되돌려도 ${pct(a.floor)} 는 남는다 - 단절·환경 몫이고 어느 자산의 침해에도 돌릴 수 없다.`,
+      mRef, a.floor, '%',
+    ))
+  }
+
+  if (!a.rows.length) {
+    out.push(a.total > 1e-9
+      ? fact(`현 시각 침해된 자산이 없다 - 저하도 ${pct(a.total)} 는 전부 단절·환경에서 왔다.`, mRef, a.total, '%')
+      : fact(`현 시각 침해된 자산도 저하도도 없다 (${pct(0)}).`, mRef, 0, '%'))
+    return out
+  }
+
+  const k = cutAt(o.k)
+  for (const r of a.rows.slice(0, k)) {
+    out.push(Math.abs(r.contribution) > 1e-9
+      ? fact(
+        `${nameOf(g, r.id)} 침해 ${pct(r.compromise)} - 이 임무 저하에 ${sgnPp(r.contribution)} 기여 (그 침해만 0 으로 되돌리면 ${pct(a.total)} → ${pct(r.after)}).`,
+        refOf('asset', r.id), r.contribution, '%p',
+      )
+      : fact(
+        `${nameOf(g, r.id)} 침해 ${pct(r.compromise)} 이지만 이 임무 저하에는 기여하지 않는다 (${pp(0)}, 되돌려도 ${pct(r.after)}).`,
+        refOf('asset', r.id), 0, '%p',
+      ))
+  }
+  if (a.rows.length > k) {
+    out.push(fact(
+      `침해 자산 ${a.rows.length}개 중 기여 상위 ${k}개만 문장으로 냈다 - 아래 합계는 ${a.rows.length}개 전부로 계산한 것이고, 표에는 전부 들어 있다.`,
+      mRef, a.rows.length,
+    ))
+  }
+
+  out.push(Math.abs(a.interaction) > 1e-9
+    ? fact(
+      `침해 자산 ${a.rows.length}개의 개별 기여 합 ${sgnPp(a.sum)}, 침해 전체의 몫 ${sgnPp(a.joint)} (${pct(a.total)} - ${pct(a.floor)}), 차이 ${sgnPp(a.interaction)} 는 자산 간 상호작용이다 - 합이 전체와 맞도록 개별 기여를 고치지 않는다.`,
+      mRef, a.interaction, '%p',
+    )
+    : fact(
+      `침해 자산 ${a.rows.length}개의 개별 기여 합 ${sgnPp(a.sum)} 이 침해 전체의 몫 ${sgnPp(a.joint)} 과 같다 - 이 구성에서는 상호작용 항이 0 이다 (${pp(0)}).`,
+      mRef, 0, '%p',
+    ))
+
+  // Measured on tacnet-01: RELAY-1 + SAT-TERM against M-FIRE gives a sum of
+  // +17.3%p against a total of 8.6%p. A redundancy group's service multiplies
+  // its providers, so returning either one alone makes that one look
+  // decisive, and the two leave-one-out runs double-count the same loss. The
+  // sum is then not a share of anything and the sentence says so, because a
+  // reader who divides it by the total gets 200%.
+  if (a.sum > a.total + 1e-9) {
+    out.push(fact(
+      `개별 기여의 합 ${sgnPp(a.sum)} 이 전체 저하도 ${pct(a.total)} 보다 크다 - 이중화 서비스는 제공 자산을 곱해서 합치므로 하나만 되돌리면 각각이 결정적으로 보인다. 이 합을 전체로 나눠 비율로 읽으면 안 된다.`,
+      mRef, a.sum, '%p',
+    ))
+  }
+  return out
+}
+
 // game.js staffTable rows, phrased. The order is the table's own (rank); this
 // never reorders it (ADR-0003). `g` is optional - without it a row is named by
 // its id alone. `blocks`/`gainBlocked` are null in the observe mode, where

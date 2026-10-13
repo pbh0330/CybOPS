@@ -47,9 +47,10 @@ describe('catalog', () => {
     expect(catalog(inGame).map((q) => q.id)).not.toContain('readiness_gap')
     expect(catalog(inSandbox).map((q) => q.id)).toContain('readiness_gap')
   })
-  it('lists the five graph queries in the observe mode', () => {
+  it('lists the six graph queries in the observe mode', () => {
     expect(catalog(observe).map((q) => q.id)).toEqual([
-      'state_summary', 'mission_why', 'asset_impact', 'containment_top', 'compare_defense',
+      'state_summary', 'mission_why', 'mission_attribution',
+      'asset_impact', 'containment_top', 'compare_defense',
     ])
   })
   it('hands out descriptors without run(), so nothing can bypass validate', () => {
@@ -145,6 +146,64 @@ describe('ask - mission_why', () => {
     expect(task.value).toBeCloseTo(truth, 9)
     expect(a.table.rows.every((r) => (g.tasks.find((t) => t.id === r.id))))
       .toBe(true)
+  })
+})
+
+// The companion to mission_why: the same degradation, split by ASSET instead
+// of by cause. Everything here is checked against runChain called directly,
+// so the query cannot pass by agreeing with facts.js.
+describe('ask - mission_attribution', () => {
+  const loo = (id, mid) => chainOf({ ...s.compromise, [id]: 0 }).mission[mid]
+  const floorOf = (mid) => chainOf({}).mission[mid]
+
+  it('charges each asset the drop its own compromise accounts for', () => {
+    const a = ask(observe, 'mission_attribution', { missionId: 'M-C2' })
+    const total = chainOf(s.compromise).mission['M-C2']
+    const rows = a.facts.filter((f) => f.ref && f.ref.kind === 'asset')
+    expect(rows.length).toBeGreaterThan(0)
+    for (const f of rows) {
+      expect(f.unit).toBe('%p')
+      expect(f.value).toBeCloseTo(total - loo(f.ref.id, 'M-C2'), 9)
+    }
+  })
+
+  it('splits the same total mission_why splits, along a different axis', () => {
+    const why = ask(observe, 'mission_why', { missionId: 'M-C2' })
+    const attr = ask(observe, 'mission_attribution', { missionId: 'M-C2' })
+    const totalOf = (x) => x.facts.find((f) => f.ref && f.ref.kind === 'mission' && f.ref.id === 'M-C2' && f.unit === '%').value
+    expect(totalOf(attr)).toBeCloseTo(totalOf(why), 9)
+    // 원인 분해 vs 자산 분해. The note has to say which this is, or the two
+    // answers look like the same decomposition disagreeing with itself.
+    expect(attr.note).toContain('mission_why')
+    expect(attr.note).toContain('자산별')
+    expect(attr.label).not.toBe(why.label)
+  })
+
+  it('ends the table with the arithmetic rather than a share of the total', () => {
+    const a = ask(observe, 'mission_attribution', { missionId: 'M-C2' })
+    const ids = a.table.rows.map((r) => r.id)
+    expect(ids.slice(-5)).toEqual(['__sum', '__inter', '__joint', '__floor', '__total'])
+    const cell = (rid) => a.table.rows.find((r) => r.id === rid).cells[3]
+    expect(cell('__total')).toBe(pct(chainOf(s.compromise).mission['M-C2']))
+    expect(cell('__floor')).toBe(pct(floorOf('M-C2')))
+    // No cell is a contribution expressed as a percentage of the total - that
+    // normalisation is the thing this query refuses to do.
+    const share = pct(a.facts.find((f) => f.ref && f.ref.kind === 'asset').value / chainOf(s.compromise).mission['M-C2'])
+    expect(a.table.rows.every((r) => !r.cells.includes(share))).toBe(true)
+  })
+
+  it('names the environment floor no asset can be charged for', () => {
+    const a = ask(observe, 'mission_attribution', { missionId: 'M-C2' })
+    const f = a.facts.find((x) => x.text.includes('단절·환경 몫'))
+    expect(f).toBeTruthy()
+    expect(f.value).toBeCloseTo(floorOf('M-C2'), 9)
+  })
+
+  it('wants a mission id and rejects one the graph does not have', () => {
+    expect(validate(observe, 'mission_attribution', {}).ok).toBe(false)
+    expect(() => ask(observe, 'mission_attribution', { missionId: 'M-NOPE' })).toThrow(/M-NOPE/)
+    expect(validate(observe, 'mission_attribution', { missionId: 'M-FIRE' }))
+      .toEqual({ ok: true, args: { missionId: 'M-FIRE' } })
   })
 })
 
@@ -343,6 +402,8 @@ describe('ask - the rules that hold for every query', () => {
   const cases = [
     [observe, 'state_summary', {}],
     [observe, 'mission_why', { missionId: 'M-C2' }],
+    [observe, 'mission_attribution', { missionId: 'M-C2' }],
+    [observe, 'mission_attribution', { missionId: 'M-FIRE' }],
     [observe, 'asset_impact', { assetId: 'TOC-SRV' }],
     [observe, 'containment_top', { k: 5 }],
     [observe, 'compare_defense', { aId: 'TOC-SRV', bId: 'BN-SRV' }],

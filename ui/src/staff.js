@@ -40,6 +40,7 @@ import { assetName } from './labels.js'
 import {
   numbered, missionFacts, assetFacts, serviceFacts,
   containmentFacts, gameFacts, readinessFacts, TOP_N,
+  attribution, attributionFacts,
 } from './facts.js'
 
 const f = (text, ref = null, value = null, unit = null) => ({ text, ref, value, unit })
@@ -215,6 +216,38 @@ function containmentTable(g, rows, scored) {
 
 const COLS_NOTE = '교전 중에는 막는 공격 수·최대 차단 이득·순이득 열이 더 붙는다. 관측 모드에는 공격자가 없어 그 세 값은 계산하지 않고 임무 비용만 매긴다 - 표의 열 이름이 두 경우에 다르다.'
 
+// --- asset attribution ----------------------------------------------------
+//
+// Why this is a second query and not an extra block inside mission_why: the
+// two decompose the SAME degradation along different axes. mission_why splits
+// it by cause (compromise / environment / interaction, which is what the
+// mission bar draws); this splits it by asset. Neither is a refinement of the
+// other, and a reader who takes one for the other will read "침해 54.0%p" as
+// "TOC-SRV 54.0%p". The note says so on every answer.
+const ATTR_NOTE = [
+  'mission_why 는 같은 저하도를 원인(침해·환경·상호작용)으로 가르고, 이 질의는 자산별로 가른다 - 분해 축이 다르고 서로를 대체하지 않는다.',
+  '기여도는 leave-one-out 이다: 그 자산의 침해만 0 으로 되돌려 엔진을 다시 돌린 차이이고, 추정이 아니라 엔진 두 번의 차이다.',
+  '개별 기여의 합은 전체 저하도와 같지 않다. 차이는 단절·환경 바닥과 자산 간 상호작용으로 표에 따로 적고, 합이 전체와 맞도록 비율로 고치지 않는다.',
+  '상호작용은 음수가 될 수 있고, 그때는 개별 합이 전체 저하도보다 커진다 - 이중화 서비스가 제공 자산을 곱해서 합치기 때문이다(tacnet-01 의 RELAY-1+SAT-TERM 대 M-FIRE 에서 합 +17.3%p, 전체 8.6%). 그래서 이 합은 비율의 분자가 아니다.',
+].join(' ')
+
+// The summary rows carry their unit in the cell, not in the column head: the
+// asset rows and the three derived rows are %p, the last two are levels in %.
+// Putting one unit in the header would make one of the two groups a lie.
+function attributionTable(g, a) {
+  const rows = a.rows.map((r) => ({
+    id: r.id,
+    cells: [assetName(g, r.id).ko, r.id, pct(r.compromise), signed(r.contribution), pct(r.after)],
+  }))
+  const line = (key, label, cell) => ({ id: key, cells: [label, '', '', cell, ''] })
+  rows.push(line('__sum', '개별 기여 합', signed(a.sum)))
+  rows.push(line('__inter', '자산 간 상호작용 (침해 몫 - 개별 합)', signed(a.interaction)))
+  rows.push(line('__joint', '침해 전체의 몫 (전체 - 바닥)', signed(a.joint)))
+  rows.push(line('__floor', '단절·환경 바닥 (자산별로 가를 수 없음)', pct(a.floor)))
+  rows.push(line('__total', '전체 저하도 (침해 몫 + 바닥)', pct(a.total)))
+  return { cols: ['자산 / 항목', 'ID', '침해', '값', '0 으로 되돌린 뒤'], rows }
+}
+
 // --- the catalogue --------------------------------------------------------
 
 export const QUERIES = [
@@ -287,6 +320,29 @@ export const QUERIES = [
           })),
         },
         note: ranked.length ? null : '현재 단계에 이 임무의 활성 작업이 없다 - 저하도를 내지 않는 구간이다.',
+      }
+    },
+  },
+  {
+    id: 'mission_attribution',
+    label: '이 임무 저하는 어느 자산 때문인가',
+    args: [{ name: 'missionId', kind: 'mission', required: true }],
+    needs: 'graph',
+    run(ctx, args) {
+      const g = ctx.graph
+      const id = args.missionId
+      const view = viewOf(ctx)
+      const { method } = baseOf(ctx)
+      // Computed once and handed to the phrasing, so the answer and its table
+      // are the same numbers rather than two runs that could round apart.
+      const a = attribution(g, view, id, method)
+      return {
+        label: `자산별 기여 - ${missionLabel(g, id)}`,
+        facts: attributionFacts(g, view, id, { data: a }),
+        table: a.active ? attributionTable(g, a) : null,
+        note: a.active
+          ? ATTR_NOTE
+          : `현재 단계에 이 임무의 활성 작업이 없어 저하도가 0 이고 가를 것이 없다. ${ATTR_NOTE}`,
       }
     },
   },
