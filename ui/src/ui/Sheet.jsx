@@ -37,6 +37,9 @@ export default function Sheet({ peek, children, raised, onStateChange }) {
     if (raised != null && state === 'peek') setState('half')
   }, [raised])          // eslint-disable-line react-hooks/exhaustive-deps
 
+  // U15: 상태를 밖으로 알린다. App 이 그것을 `.app` 의 data-sheet 로 적고, CSS 가
+  // 시트 높이(--sheet-h)와 지도 워터마크의 bottom 을 같은 값에서 고른다(ADR-0025).
+  // 상태의 주인은 여기 하나다 - 저쪽은 이 신호를 받아 적을 뿐이다.
   useEffect(() => { if (onStateChange) onStateChange(state) }, [state, onStateChange])
 
   function heights() {

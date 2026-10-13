@@ -87,6 +87,11 @@ export default function App() {
   // 접힘의 단일 신호. 뷰포트 질의(ADR-0030)와 넘침 측정은 서로 다른 신호이고,
   // 여기서 OR 로 합쳐져 같은 패널로 간다.
   const foldTools = compact || tbOver
+  // U15: 시트가 지금 어느 높이인지. 상태의 주인은 Sheet 이고 여기는 그것을
+  // `.app` 의 data-sheet 로 적기만 한다 - CSS 가 시트 높이(--sheet-h)를 그
+  // 속성으로 고르고, 지도 워터마크의 bottom 이 같은 값에서 계산된다(ADR-0025).
+  // 워터마크는 지도 패널 안에 있어서 시트의 data-state 를 직접 못 읽는다.
+  const [sheetState, setSheetState] = useState('peek')
   const [toast, setToast] = useState(null)
   const [geoCam, setGeoCam] = useState({ mode: '2d', az: 35, pitch: 55, zScale: 12, terrain: true })
   // sandbox (ADR-0027): the link rule table, and the saved plans in localStorage
@@ -535,7 +540,11 @@ export default function App() {
   )
 
   return (
-    <div className="app" data-compact={compact ? '1' : undefined}>
+    <div
+      className="app"
+      data-compact={compact ? '1' : undefined}
+      data-sheet={compact ? sheetState : undefined}
+    >
       <Topbar
         scenarios={scenarios}
         scenarioId={scenarioId}
@@ -638,7 +647,11 @@ export default function App() {
       />
 
       {compact && (
-        <Sheet peek={peekLine(graph, step, mode === 'wargame' ? game : null)} raised={selectedData?.id ?? null}>
+        <Sheet
+          peek={peekLine(graph, step, mode === 'wargame' ? game : null)}
+          raised={selectedData?.id ?? null}
+          onStateChange={setSheetState}
+        >
           {railEl}
         </Sheet>
       )}

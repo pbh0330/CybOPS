@@ -626,6 +626,18 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
 
 .sheet { display: none; }
 
+/* U15: 시트 높이는 이 세 줄에만 있다. 값은 그대로다(56px / 50dvh / 86dvh).
+   `.sheet` 가 아니라 `.app` 에 올려 두는 이유는 지도 워터마크가 같은 값을 읽어야
+   하기 때문이다(ADR-0025: 덮인 고지는 꺼진 고지다). 커스텀 프로퍼티는 자손으로만
+   상속되므로 `.sheet` 에 선언하면 형제인 지도 패널이 못 읽는다.
+   `data-sheet` 은 App 이 적고, Sheet 의 `data-state` 와 같은 값이다 - 둘 다
+   Sheet 의 `onStateChange` 하나에서 나오므로 상태의 사본이 늘지 않는다.
+   속성이 아직 없는 첫 렌더에서도 peek 으로 정의돼 있어 높이가 비는 순간은 없다. */
+[data-compact="1"] { --sheet-peek-h: 56px; --sheet-h: var(--sheet-peek-h); }
+[data-compact="1"][data-sheet="peek"] { --sheet-h: var(--sheet-peek-h); }
+[data-compact="1"][data-sheet="half"] { --sheet-h: 50dvh; }
+[data-compact="1"][data-sheet="full"] { --sheet-h: 86dvh; }
+
 [data-compact="1"] .sheet {
   display: flex; flex-direction: column;
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
@@ -635,9 +647,10 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
   padding-bottom: env(safe-area-inset-bottom, 0px);
   transition: height .18s ease;
 }
-[data-compact="1"] .sheet[data-state="peek"] { height: 56px; }
-[data-compact="1"] .sheet[data-state="half"] { height: 50dvh; }
-[data-compact="1"] .sheet[data-state="full"] { height: 86dvh; }
+/* 세 상태의 높이는 전부 위의 --sheet-h 에서 온다. `data-state` 는 그대로 남는다 -
+   peek 에서 본문을 접는 아래 규칙이 그것을 읽고, 드래그 중의 인라인 height 가
+   이 규칙을 덮는 것도 그대로다. */
+[data-compact="1"] .sheet { height: var(--sheet-h); }
 
 .sheet-grip {
   flex: none; display: flex; flex-direction: column; align-items: center; gap: 4px;
@@ -905,7 +918,9 @@ button.staff-fact:hover { color: var(--text-primary); border-bottom-color: var(-
      sibling of .main and would otherwise sit underneath the fixed sheet.
      Padding here keeps the stage AND the timeline above it, which is the
      stacking the compact spec draws. */
-  .app { padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px)); }
+  /* U15: 같은 56px 을 여기서 또 적지 않는다. 이것은 "peek 높이만큼" 이라는 뜻이고
+     그 값은 --sheet-peek-h 한 곳에 있다. */
+  .app { padding-bottom: calc(var(--sheet-peek-h) + env(safe-area-inset-bottom, 0px)); }
   /* inside the sheet the rail is the whole panel: no left edge, no second
      surface colour on top of the sheet's own */
   .sheet .rail { border-left: none; background: none; }
@@ -1088,6 +1103,42 @@ button.staff-fact:hover { color: var(--text-primary); border-bottom-color: var(-
   .ribbon-wrap { display: none; }
   .clock { margin-left: auto; min-width: 0; }
   .clock-time { font-size: 20px; }
+}
+
+/* ============================================================= U15: 워터마크 */
+/* ADR-0025 3번은 "가상 훈련 시나리오 · 실제 부대 배치 아님" 을 항상 표시하고 끌
+ * 수 없게 한다. 그런데 bottom: 56px 는 시트(ADR-0030)의 peek 높이와 같은 값이어서
+ * peek 에서만 보였고 half(50dvh) 와 full(86dvh) 에서는 시트가 그 위를 덮었다.
+ * 덮인 고지는 꺼진 고지다 - 이 화면이 실제 부대 배치가 아니라는 고지는 여기 하나뿐이다.
+ *
+ * 데스크톱은 건드리지 않는다: 시트가 없으므로 bottom 은 그대로 56px 이고, 그 값은
+ * 지도 패널 바닥의 .geo-foot 을 비키는 높이다. peek 도 건드리지 않는다 - .app 이
+ * 아래에 비워 두는 띠가 정확히 peek 높이라서(위의 --sheet-peek-h) peek 시트는
+ * 지도 패널 바닥에도 못 닿는다. 390x843 실측으로 워터마크 아래끝이 뷰포트
+ * 바닥에서 175px, peek 시트 윗끝이 56px 이다.
+ *
+ * 그래서 올라가는 것은 peek 보다 높은 상태뿐이다. 그 상태에서는 position: fixed
+ * 로 바뀐다. 시트도 fixed 라서 같은 좌표계에서 재야 "시트 위" 가 정확해진다.
+ * 패널 안에서 absolute 로 재려면 타임라인 높이와 .app 의 아래 패딩을 이 규칙에
+ * 또 적어야 하고, 그것이 같은 수가 두 곳에 생기는 그 일이다. 높이는 --sheet-h
+ * 한 곳에서 오고 여기서는 읽기만 한다.
+ *
+ * 상태를 두 개 적는 것이 조건부로 숨기는 것은 아니다. 문장은 세 상태 전부에서
+ * 같은 하나로 보인다. 상태가 하나 늘면 `watermark.test.js` 가 그 상태에 이 규칙이
+ * 없다고 말한다 - peek 보다 높은 상태는 전부 여기 있어야 한다.
+ *
+ * z-index 는 시트(30) 보다 위다. 자리로 이미 안 겹치지만 dvh 반올림이나 safe-area
+ * 로 1px 이 겹치는 날 고지가 지는 쪽이 되지 않게 한다. pointer-events: none 이므로
+ * 시트의 손잡이를 가로채지 않는다.
+ *
+ * 문장의 두 번째 사본은 만들지 않는다. MapPane.jsx 의 그 한 노드가 움직인다.
+ * 배경 불투명도와 색은 그대로이므로 U7 이 잰 대비도 그대로다 - 이 블록은 위치만
+ * 바꾼다. */
+[data-compact="1"][data-sheet="half"] .map-watermark,
+[data-compact="1"][data-sheet="full"] .map-watermark {
+  position: fixed;
+  bottom: calc(var(--sheet-h) + 8px);
+  z-index: 31;
 }
 
 /* ================================================================= U7: 와이어 */
