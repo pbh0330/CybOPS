@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { markerRows, linkFeatures, trackFeatures, attackArcFeatures, gridFeatures, aoFeature, stackAt, ghostFeatures } from '../mapLayers.js'
+import { markerRows, linkFeatures, trackFeatures, attackArcFeatures, gridFeatures, aoFeature, stackAt, ghostFeatures, WIRE } from '../mapLayers.js'
+import { CAUSE_COLOR } from '../graph.js'
 
 const georef = { anchor: { x: 0, y: 0, lat: 38.02, lon: 128.08 } }
 const extent = { x: [0, 24000], y: [0, 18000] }
@@ -142,5 +143,87 @@ describe('ghostFeatures', () => {
     expect(out.lines.features).toHaveLength(0)
     expect(ghostFeatures(graph, null, 0, georef).lines.features).toHaveLength(0)
     expect(ghostFeatures(graph, gh({ from: 'NOWHERE' }), 0, georef).lines.features).toHaveLength(0)
+  })
+})
+
+// U7. The one thing that can go wrong in a holographic render mode on THIS
+// screen is colour, and the trap is one level deeper than "do not recolour
+// the assets": `--mobility` is cyan (#35c8ff), so a RedCarpet-style cyan
+// terrain would not add a ninth saturated colour, it would spend one of the
+// eight on the background and make the whole map read as "mobility cause"
+// (ADR-0024, ADR-0012). A comment does not stop that. This does.
+describe('WIRE palette (U7)', () => {
+  const colors = () => Object.entries(WIRE).filter(([, v]) => typeof v === 'string' && v.startsWith('#'))
+
+  // ADR-0025 section 3 sets the bar itself: the navy-black surfaces count as
+  // achromatic because their OKLCH chroma is at or under 0.03. A raw
+  // channel-spread test would have failed --surface-board (#070a10, spread 9
+  // of 255) and would have been the wrong rule, not a caught bug. So measure
+  // the quantity the ADR measures.
+  const chroma = (h) => {
+    const lin = (c) => (c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4))
+    const [r, g, b] = [1, 3, 5].map((i) => lin(parseInt(h.slice(i, i + 2), 16) / 255))
+    const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b)
+    const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b)
+    const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b)
+    return Math.hypot(
+      1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s,
+      0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s,
+    )
+  }
+
+  it('has colours at all, so the assertions below are not vacuous', () => {
+    expect(colors().length).toBeGreaterThan(0)
+    // the measure works: cyan, the colour this mode is not allowed to be, is
+    // far over the bar
+    expect(chroma(CAUSE_COLOR.mobility)).toBeGreaterThan(0.1)
+  })
+
+  it('is achromatic by the ADR-0025 bar: OKLCH chroma at or under 0.03', () => {
+    for (const [k, v] of colors()) {
+      expect(chroma(v), `${k} = ${v} carries chroma ${chroma(v).toFixed(4)}`).toBeLessThanOrEqual(0.03)
+    }
+  })
+
+  // Chroma alone is not enough: --maintenance (#7f8794) measures 0.0217 and
+  // would clear the bar above, so an exact-match test has to sit next to it.
+  it('reuses none of the eight cause colours', () => {
+    const causes = Object.values(CAUSE_COLOR).map((c) => String(c).toLowerCase())
+    for (const [k, v] of colors()) {
+      expect(causes, `${k} = ${v} is a cause colour`).not.toContain(v.toLowerCase())
+    }
+  })
+
+  it('keeps every opacity a real fraction, so no layer is accidentally opaque or gone', () => {
+    for (const [k, v] of Object.entries(WIRE)) {
+      if (!/Opacity$/.test(k)) continue
+      expect(v, k).toBeGreaterThan(0)
+      expect(v, k).toBeLessThanOrEqual(1)
+    }
+  })
+
+  it('brightens the 2 km grid past the 0.14 it is drawn at with a basemap', () => {
+    expect(WIRE.gridOpacity).toBeGreaterThan(0.14)
+    // and the fine grid stays under it: the 2 km grid is the one that is read
+    expect(WIRE.fineOpacity).toBeLessThan(WIRE.gridOpacity)
+  })
+})
+
+// The fine grid is the SAME gridFeatures call at a smaller spacing - no
+// contour is computed anywhere, which is the whole point of the approach.
+describe('gridFeatures at the wire spacing', () => {
+  it('subdivides the 2 km grid without leaving the extent', () => {
+    const coarse = gridFeatures(georef, extent, 2000).lines.features[0].geometry.coordinates
+    const fineLines = gridFeatures(georef, extent, WIRE.fineSpacing).lines.features[0].geometry.coordinates
+    expect(fineLines.length).toBeGreaterThan(coarse.length)
+    // 2000 / 500 = 4 subdivisions per cell, so 4x the lines minus the shared edges
+    expect(fineLines.length).toBe(49 + 37)
+    const [[lon0, lat0]] = gridFeatures(georef, extent, 2000).labels.features.map((f) => f.geometry.coordinates)
+    for (const seg of fineLines) {
+      for (const [lon, lat] of seg) {
+        expect(lon).toBeGreaterThanOrEqual(lon0 - 1e-9)
+        expect(lat).toBeGreaterThanOrEqual(lat0 - 1e-9)
+      }
+    }
   })
 })
