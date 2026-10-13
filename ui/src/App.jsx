@@ -75,10 +75,18 @@ export default function App() {
   // the wargame is a value (game.js); App owns it so the pictures can read it
   const [game, setGame] = useState(null)
   const [onboard, setOnboard] = useState(false)
-  // The topbar's `⋯` panel, once it exists (compact only). Controls that live
-  // in other components are parented INTO this node rather than rebuilt in
-  // it - one node per control, same rule as railEl below.
+  // The topbar's `⋯` panel. Controls that live in other components are
+  // parented INTO this node rather than rebuilt in it - one node per control,
+  // same rule as railEl below.
   const [menuNode, setMenuNode] = useState(null)
+  // U12: 상판 툴바가 자기 상자를 넘었다고 알려 온 상태. 좁은 화면이 아니어도
+  // (1600x900 은 compact 가 아니다) 내용이 넘치면 같은 `⋯` 패널로 접는다.
+  // 측정은 BoardToolbar 가 자기 엘리먼트에서 하고, 판정의 히스테리시스는
+  // fold.js 에 있다 - 접으면 넘침이 사라지므로 상자 폭으로만 되돌린다.
+  const [tbOver, setTbOver] = useState(false)
+  // 접힘의 단일 신호. 뷰포트 질의(ADR-0030)와 넘침 측정은 서로 다른 신호이고,
+  // 여기서 OR 로 합쳐져 같은 패널로 간다.
+  const foldTools = compact || tbOver
   const [toast, setToast] = useState(null)
   const [geoCam, setGeoCam] = useState({ mode: '2d', az: 35, pitch: 55, zScale: 12, terrain: true })
   // sandbox (ADR-0027): the link rule table, and the saved plans in localStorage
@@ -541,6 +549,7 @@ export default function App() {
         game={mode === 'wargame' ? game : null}
         sandbox={isSandbox}
         compact={compact}
+        folded={tbOver}
         onMenuNode={setMenuNode}
       />
 
@@ -588,7 +597,8 @@ export default function App() {
               : (edited ? '편집됨 · 수치는 로컬 엔진이 계산한다' : '')}
             sandbox={isSandbox} plans={plans}
             onSavePlan={onSavePlan} onLoadPlan={onLoadPlan} onDeletePlan={onDeletePlan} onImport={onImport}
-            menuNode={compact ? menuNode : null}
+            menuNode={foldTools ? menuNode : null}
+            onFold={setTbOver}
           />
           <div className="canvas-wrap">
             <GraphCanvas
