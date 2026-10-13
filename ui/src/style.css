@@ -193,6 +193,9 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
 .legend-bar .lg-rule { width: 1px; height: 12px; background: var(--line-strong); }
 .legend-item { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); }
 .legend-sw { width: 10px; height: 10px; border-radius: 2px; border: 1.5px solid currentColor; }
+/* U3 legend key. Thickness carries the whole message: no hue, because red is
+   adversary effect and nothing else (ADR-0024). */
+.legend-thick { width: 16px; height: 0; border-top: 5px solid var(--text-secondary); opacity: .8; }
 
 /* ------------------------------------------------------------- rail */
 

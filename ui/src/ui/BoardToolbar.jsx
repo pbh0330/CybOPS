@@ -8,6 +8,9 @@ const VIEWS = [
 
 export default function BoardToolbar({
   view, onView, mode, labels, onLabels, onFit,
+  // U3: the contribution layer. Off by default - it costs one engine run per
+  // compromised asset and it is an analysis layer, not part of the picture.
+  contrib = false, onContrib,
   tool, onTool, canUndo, canRedo, onUndo, onRedo, onExport, onReset, editState,
   // sandbox (ADR-0027): named plans in localStorage and a JSON import
   sandbox = false, plans = [], onSavePlan, onLoadPlan, onDeletePlan, onImport,
@@ -58,6 +61,12 @@ export default function BoardToolbar({
     </label>
   )
 
+  const contribChk = (
+    <label className="chk" title="자산별 임무 저하 기여를 선 굵기로 그린다. 굵기는 자산 간 비교이고 임무 저하도의 몫이 아니다.">
+      <input type="checkbox" checked={contrib} onChange={(e) => onContrib && onContrib(e.target.checked)} /> 기여 굵기
+    </label>
+  )
+
   return (
     <div className="board-toolbar">
       {into(viewSeg)}
@@ -93,6 +102,7 @@ export default function BoardToolbar({
       )}
 
       {into(labelsChk)}
+      {into(contribChk)}
       <button type="button" onClick={onFit}>화면 맞춤</button>
     </div>
   )

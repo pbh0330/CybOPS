@@ -13,9 +13,12 @@
 // 100% by construction).
 
 import { describe, it, expect } from 'vitest'
+import { readFileSync } from 'node:fs'
 import payload from '../../public/data/tacnet-01.replay.json'
 import { startGame, defend, pass, attackerTurn, staffTable } from '../game.js'
 import { classify, decisionsOf, agreementOf, firstEffectiveOf, approvalOf, aarMetrics } from '../aar.js'
+import { decisionFacts } from '../facts.js'
+import { sameNet, TIE_EPS } from '../tie-core.mjs'
 
 const g = payload.graph
 // t = 0: the attack has not started, every candidate's net is 0, the table is
@@ -243,5 +246,59 @@ describe('aarMetrics', () => {
   it('is deterministic for the same seed and the same picks', () => {
     const once = () => JSON.stringify(aarMetrics(play(sharp, [atRank(1), atRank(2), () => null])))
     expect(once()).toBe(once())
+  })
+})
+
+// --- the tie epsilon, once ------------------------------------------------
+//
+// The threshold for "these two nets are the same" was written in three
+// places: game.js (tiedTopOf), aar.js (classify) and facts.js
+// (decisionFacts). They agreed, and each side was tested, but a one-sided
+// change would have made the AAR card and `decision_why` disagree about
+// whether two options tied - the same drift the citation arithmetic had
+// before cite-core.mjs, and the same fix. One definition, three consumers.
+//
+// The source check is the part that holds: knowing the rule did not stop the
+// drift anywhere else in this repo, a checker did.
+describe('동률 엡실론은 한 벌이다 (tie-core.mjs)', () => {
+  const read = (f) => readFileSync(new URL(`../${f}`, import.meta.url), 'utf8')
+
+  it('compares on the one threshold, from both sides of it', () => {
+    expect(sameNet(0.25, 0.25)).toBe(true)
+    expect(sameNet(0.25, 0.25 + TIE_EPS / 2)).toBe(true)
+    expect(sameNet(0.25, 0.25 - TIE_EPS / 2)).toBe(true)
+    expect(sameNet(0.25, 0.25 + TIE_EPS * 2)).toBe(false)
+    expect(sameNet(0.25, 0.25 - TIE_EPS * 2)).toBe(false)
+    // a non-number is 0, not NaN: a missing net must not read as tied with
+    // every other missing net by accident of NaN comparison
+    expect(sameNet(null, 0)).toBe(true)
+    expect(sameNet(undefined, 1)).toBe(false)
+  })
+
+  it('is imported by all three consumers and copied by none of them', () => {
+    for (const f of ['game.js', 'aar.js', 'facts.js']) {
+      const src = read(f)
+      expect(src).toContain("from './tie-core.mjs'")
+      // the comparison itself, not every 1e-9 in the file: facts.js uses the
+      // same magnitude for "is this %p worth a sentence", which is a
+      // different question and stays where it is
+      expect(src).not.toMatch(/net[^\n]*1e-9|1e-9[^\n]*net/)
+    }
+  })
+
+  it('agrees with the three consumers on one real tied turn', () => {
+    const G = startGame(g, flat)
+    const table = staffTable(g, G)
+    const picked = tiedPick(table)
+    const d = defend(g, G, { type: 'isolate', id: picked.id }).pending.defender
+    // game.js counted the tie
+    expect(d.staff.tiedTop).toBe(table.filter((r) => sameNet(r.net, table[0].net)).length)
+    // aar.js read the same turn as a tie rather than as a disagreement
+    const c = classify({ defender: d })
+    expect(c).toMatchObject({ agreed: true, tied: true })
+    // facts.js said so in words, off the same comparison
+    const said = decisionFacts(g, { history: [{ turn: 0, defender: d }] }, 0)
+      .some((x) => x.text.includes('순이득은 같다'))
+    expect(said).toBe(true)
   })
 })

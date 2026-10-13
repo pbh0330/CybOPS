@@ -36,11 +36,15 @@
 // eight-turn game is three, and the caller is given the 3 to print.
 
 // staffTable's `net` is a 6-decimal rounded difference, so two candidates that
-// tie arithmetically can differ in the last bit. Same epsilon facts.js uses
-// for the same comparison on the same field.
-const EPS = 1e-9
+// tie arithmetically can differ in the last bit. The epsilon and the
+// comparison are NOT written here: game.js (tiedTopOf), facts.js
+// (decisionFacts) and this file all ask the same question of the same field,
+// and three copies of it meant a one-sided change could make the AAR card and
+// `decision_why` disagree about whether two options tied. One definition,
+// three consumers - the shape cite-core.mjs already has.
+import { sameNet } from './tie-core.mjs'
+
 const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0)
-const sameNet = (a, b) => Math.abs(num(a) - num(b)) < EPS
 
 // One history row's isolation, classified.
 //

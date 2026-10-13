@@ -24,6 +24,7 @@ import { compromiseOf } from './game.js'
 import { runChain } from './engine.js'
 import { footholds } from './attack.js'
 import { readiness as readinessOf } from './sandbox.js'
+import { sameNet } from './tie-core.mjs'
 
 // %p (percentage points) shares the display rule of % so a decomposition can
 // never disagree with the total it decomposes.
@@ -466,7 +467,11 @@ export function decisionFacts(g, G, turn) {
         // rows tie on net the rank gap is that tiebreak and nothing else, and
         // a reader who takes 3위 for "worse" would be reading a sort order as
         // a judgement (the same thing StaffDock's 동률 mark exists to stop).
-        if (Math.abs(num(mine.net) - num(top.net)) < 1e-9) {
+        //
+        // tie-core.mjs's test, shared with game.js (tiedTopOf) and aar.js
+        // (classify): this sentence and the AAR card must never disagree
+        // about whether the two rows tied.
+        if (sameNet(mine.net, top.net)) {
           out.push(fact(
             `고른 것과 1위의 순이득은 같다 (${sgnPp(num(top.net))}) - 순위는 막는 공격 수로 갈린 것이고 우열이 아니다.`,
             refOf('asset', d.id), 0, '%p',

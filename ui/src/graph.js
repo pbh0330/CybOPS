@@ -316,6 +316,28 @@ export function stylesheet() {
     { selector: 'node.faded', style: { 'opacity': 0.16 } },
     { selector: 'edge.faded', style: { 'opacity': 0.08 } },
     { selector: 'edge.path', style: { 'width': 2, 'line-color': '#9aa5b1', 'target-arrow-color': '#9aa5b1', 'opacity': 1 } },
+    // U3: contribution as thickness. `contribW` is derive.contribLayer's
+    // weight - a per-asset contribution in %p divided by the LARGEST
+    // contribution in the same set, never by the mission total. Per-asset
+    // contributions can exceed that total (engine.js serviceDegFor multiplies
+    // the providers of a redundancy_group, so either provider alone reads as
+    // decisive), and a thickness drawn as a share of the total would say each
+    // of two assets was the whole of a loss both of them share.
+    //
+    // Thickness and opacity only. No hue at all: red is adversary effect and
+    // nothing else (ADR-0012, ADR-0024), and this layer is analysis. The node
+    // outline is used rather than its border because the border already
+    // carries the cause and the selection, and a relay that contributes
+    // through reachability alone has no structural edge to thicken.
+    //
+    // Declared after .path and .faded so the weight wins the width while
+    // .faded keeps element opacity, which is a different property.
+    { selector: 'node.contrib', style: {
+      'outline-width': 'mapData(contribW, 0, 1, 1.5, 8)', 'outline-color': '#9aa5b1',
+      'outline-opacity': 'mapData(contribW, 0, 1, 0.3, 0.85)', 'outline-offset': 2 } },
+    { selector: 'edge.contrib', style: {
+      'width': 'mapData(contribW, 0, 1, 1.6, 7)',
+      'line-opacity': 'mapData(contribW, 0, 1, 0.4, 1)', 'z-index': 7 } },
     { selector: '.hidden', style: { 'display': 'none' } },
   ]
 }

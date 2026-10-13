@@ -295,3 +295,54 @@ export function gameOverlay(g, game) {
     : null
   return { candidates, nodeThreats, last, isolated: game.isolated.slice(), footholds: footholds(game.attacker, game.isolated), turn: game.turn }
 }
+
+// --- U3: contribution as thickness --------------------------------------
+//
+// `attribution()` (facts.js) measures, per asset, how many percentage points
+// of ONE mission's degradation that asset's compromise accounts for: set its
+// compromise back to 0, run the chain again, take the drop. The numbers are
+// the engine's, measured, not fitted (ADR-0003).
+//
+// THE SCALE IS max(contribution) INSIDE THE SET, NEVER THE MISSION TOTAL.
+//
+// This is not a stylistic preference. Per-asset contributions can EXCEED the
+// total they are drawn against, because engine.js serviceDegFor multiplies
+// the providers of a redundancy_group: with two providers compromised,
+// removing either one alone reads as decisive and the same loss is charged
+// twice. On tacnet-01 at t=180, RELAY-1 (0.6) and SAT-TERM (0.7) against
+// M-FIRE each read +8.6%p for a total of 8.6% - an individual sum of +17.3%p
+// against a total of 8.6%, and a pair sweep found four such combinations.
+// Dividing by the total would draw two lines at 100% each and a picture that
+// says each of two assets is the whole of a loss both of them share.
+//
+// So the weight is a RANK-FREE COMPARISON BETWEEN ASSETS and nothing else.
+// The legend has to say that, because thickness invites being read as a share.
+export function contribLayer(attr, mission) {
+  if (!attr || attr.active === false) return null
+  const rows = (attr.rows || []).filter((r) => num(r.contribution) > 0)
+  if (!rows.length) return null
+  const max = Math.max(...rows.map((r) => num(r.contribution)))
+  if (!(max > 0)) return null
+  return {
+    mission: attr.mission,
+    missionName: (mission && (mission.name || mission.id)) || attr.mission,
+    total: num(attr.total),
+    max,
+    // w is contribution / max(contribution): 1 for the heaviest asset in the
+    // set, proportional below it, and never a fraction of `total`.
+    rows: rows
+      .map((r) => ({ id: r.id, contribution: num(r.contribution), w: num(r.contribution) / max }))
+      .sort((a, b) => (b.contribution - a.contribution) || String(a.id).localeCompare(String(b.id))),
+  }
+}
+
+// Which mission the contribution layer is about. attribution() splits ONE
+// mission's degradation, so the layer has to name one: the highest-priority
+// mission that has active work at this step, the same mission peekLine puts in
+// the phone's one line. Reported, never averaged across missions - a mean of
+// two different totals is not a contribution to either.
+export function contribMission(graph, s) {
+  const missions = (graph?.missions || []).slice().sort((a, b) => (num(a.priority) || 9) - (num(b.priority) || 9))
+  const active = (m) => (s?.mission_active ? s.mission_active[m.id] !== false : true)
+  return missions.find(active) || missions[0] || null
+}

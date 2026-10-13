@@ -1,7 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import replay from '../../public/data/tacnet-01.replay.json'
 import { startGame, defend, pass, attackerTurn } from '../game.js'
-import { eventRows, kpiOf, timeLabel, BAND_LABELS, gameOverlay, peekLine } from '../derive.js'
+import {
+  eventRows, kpiOf, timeLabel, BAND_LABELS, gameOverlay, peekLine,
+  contribLayer, contribMission,
+} from '../derive.js'
+import { attribution } from '../facts.js'
 
 const graph = {
   timeline: { t0_iso: '2026-09-10T06:00:00+09:00', horizon: 420, step: 15 },
@@ -118,5 +122,100 @@ describe('peekLine', () => {
   })
   it('survives a graph with no missions at all', () => {
     expect(peekLine({ missions: [] }, {}, null)).toBe('임무 없음')
+  })
+})
+
+// --- U3: contribution as thickness ---------------------------------------
+//
+// The one thing these tests exist to hold down: the weight is scaled by the
+// LARGEST contribution in the set and never by the mission total.
+//
+// U1 measured why. engine.js serviceDegFor MULTIPLIES the providers of a
+// redundancy_group, so with two providers compromised, removing either one
+// alone reads as decisive and the same loss is charged twice. On tacnet-01 at
+// t=180, RELAY-1 (0.6) and SAT-TERM (0.7) against M-FIRE each read +8.6%p
+// against a total of 8.6% - an individual sum of +17.3%p. Divided by the
+// total, both lines would be drawn at full thickness and the picture would
+// say each of two assets is the whole of a loss they share. A pair sweep
+// found four such combinations, so this is the normal case for a redundancy
+// group, not a corner.
+describe('contribLayer', () => {
+  const tg = replay.graph
+  const at = (i, compromise) => ({ ...replay.steps[i], compromise })
+  // the measured pair, read off the engine here rather than asserted as a
+  // constant, so a scenario edit fails the premise instead of the metric
+  const PAIR = { 'RELAY-1': 0.6, 'SAT-TERM': 0.7 }
+
+  it('has the premise: per-asset contributions sum past the total', () => {
+    const a = attribution(tg, at(12, PAIR), 'M-FIRE')
+    expect(a.sum).toBeGreaterThan(a.total)
+    expect(a.interaction).toBeLessThan(0)
+    // what a share would have claimed, and why it cannot be drawn
+    for (const r of a.rows) expect(r.contribution / a.total).toBeCloseTo(1, 6)
+  })
+
+  it('scales by max(contribution) in the set, not by the mission total', () => {
+    const comp = { 'RELAY-1': 0.6, 'SAT-TERM': 0.7, 'TOC-SRV': 0.5 }
+    const a = attribution(tg, at(12, comp), 'M-FIRE')
+    const layer = contribLayer(a, { id: 'M-FIRE', name: '화력지원' })
+    expect(a.sum).toBeGreaterThan(a.total)          // the trap is live here too
+    const max = Math.max(...a.rows.map((r) => r.contribution))
+    for (const row of layer.rows) {
+      const src = a.rows.find((r) => r.id === row.id)
+      expect(row.w).toBeCloseTo(src.contribution / max, 9)
+      // and NOT the share: on this set the two readings differ
+      expect(row.w).not.toBeCloseTo(src.contribution / a.total, 4)
+    }
+    expect(layer.max).toBeCloseTo(max, 9)
+    expect(layer.missionName).toBe('화력지원')
+  })
+
+  it('keeps every weight inside 0..1 even where the sum is twice the total', () => {
+    const layer = contribLayer(attribution(tg, at(12, PAIR), 'M-FIRE'), null)
+    expect(layer.rows.length).toBe(2)
+    for (const r of layer.rows) {
+      expect(r.w).toBeGreaterThan(0)
+      expect(r.w).toBeLessThanOrEqual(1)
+    }
+    // equal contributions draw equally: the comparison says "these two are
+    // the same", which is the true statement about a shared loss
+    expect(layer.rows[0].w).toBeCloseTo(layer.rows[1].w, 9)
+    expect(layer.rows.reduce((x, r) => x + r.contribution, 0)).toBeGreaterThan(layer.total)
+  })
+
+  it('carries the heaviest asset at full weight and ranks downward', () => {
+    const comp = { 'RELAY-1': 0.6, 'SAT-TERM': 0.7, 'TOC-SRV': 0.5 }
+    const layer = contribLayer(attribution(tg, at(12, comp), 'M-FIRE'), null)
+    expect(layer.rows[0].w).toBeCloseTo(1, 9)
+    const ws = layer.rows.map((r) => r.w)
+    expect(ws).toEqual([...ws].sort((x, y) => y - x))
+  })
+
+  it('draws nothing when there is nothing to compare', () => {
+    expect(contribLayer(null, null)).toBe(null)
+    expect(contribLayer({ active: false, rows: [{ id: 'A', contribution: 1 }] }, null)).toBe(null)
+    // compromised but contributing nothing to this mission: a 0 weight is not
+    // a thin line, it is no line
+    expect(contribLayer({ active: true, rows: [{ id: 'A', contribution: 0 }], total: 0 }, null)).toBe(null)
+    expect(contribLayer(attribution(tg, at(12, {}), 'M-FIRE'), null)).toBe(null)
+  })
+})
+
+describe('contribMission', () => {
+  const tg = replay.graph
+  it('picks the highest-priority mission with active work', () => {
+    const m = contribMission(tg, { mission_active: { 'M-C2': true, 'M-FIRE': true } })
+    expect(m.id).toBe('M-C2')
+  })
+  it('skips a mission with no active task at this step', () => {
+    const m = contribMission(tg, { mission_active: { 'M-C2': false, 'M-FIRE': true } })
+    expect(m.id).toBe('M-FIRE')
+  })
+  it('treats a step with no activity table as all active', () => {
+    expect(contribMission(tg, {}).id).toBe('M-C2')
+  })
+  it('has nothing to name without missions', () => {
+    expect(contribMission({ missions: [] }, {})).toBe(null)
+    expect(contribMission(null, null)).toBe(null)
   })
 })

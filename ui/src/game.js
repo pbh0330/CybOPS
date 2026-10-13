@@ -12,8 +12,9 @@
 
 import { legalMoves, scoreMoves, playTurn, footholds, greedyChooser, randomChooser, orderMoves } from './attack.js'
 import { runChain } from './engine.js'
+import { sameNet } from './tie-core.mjs'
 
-const DEFAULTS = { mode: 'hold', turns: 8, t: 0, foothold: null, seed: 20260906, strategy: 'greedy', method: 'weighted' }
+const DEFAULTS ={ mode: 'hold', turns: 8, t: 0, foothold: null, seed: 20260906, strategy: 'greedy', method: 'weighted' }
 
 export function compromiseOf(G) {
   const s = { ...(G.attacker || {}) }
@@ -162,10 +163,15 @@ const staffRow = (r) => (r ? {
 // staff had no preference", and the table is gone by the time anyone asks, so
 // it is written here with the rest of the record. One integer off a table
 // already in hand; nothing existing changes meaning.
+//
+// The tie test is tie-core.mjs's, not a local epsilon: aar.js and facts.js ask
+// the same question of the same field, and a one-sided change to any of the
+// three would make the AAR card and `decision_why` disagree about whether two
+// options tied.
 const tiedTopOf = (rows) => {
   if (!rows.length) return 0
   const top = rows[0].net
-  return rows.filter((r) => Math.abs(r.net - top) < 1e-9).length
+  return rows.filter((r) => sameNet(r.net, top)).length
 }
 
 export function defend(g, G, act) {

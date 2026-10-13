@@ -3,7 +3,8 @@ import { loadConfig } from './config.js'
 import { loadSymbology, unmappedTypes } from './symbols.js'
 import { createEditor } from './editor.js'
 import { compromiseOf } from './game.js'
-import { computeStep, activePhaseNames, clockOf, gameOverlay, peekLine } from './derive.js'
+import { computeStep, activePhaseNames, clockOf, gameOverlay, peekLine, contribLayer, contribMission } from './derive.js'
+import { attribution } from './facts.js'
 import { makeSandbox, loadRules, validateImport, listPlans, savePlan, loadPlan, deletePlan, SANDBOX_ID, TEMPLATE_ID } from './sandbox.js'
 import { useCompact } from './useCompact.js'
 import Topbar from './ui/Topbar.jsx'
@@ -55,6 +56,10 @@ export default function App() {
   const [mode, setMode] = useState('observe')
   const [tab, setTab] = useState(pick('tab', ['cuts', 'actions', 'inspect'], 'actions'))
   const [labels, setLabels] = useState(true)
+  // U3: the contribution layer is OFF by default. It is an analysis layer and
+  // it costs one engine run per compromised asset, so nobody pays for it
+  // until they ask.
+  const [contribOn, setContribOn] = useState(false)
   const [playing, setPlaying] = useState(false)
   const [speed, setSpeed] = useState(1)
   const [selectedData, setSelectedData] = useState(null)
@@ -219,6 +224,22 @@ export default function App() {
     [payload, graph, idx, edited, wargameState]
   )
   const overlay = useMemo(() => (mode === 'wargame' && game && graph ? gameOverlay(graph, game) : null), [mode, game, graph])
+  // U3. attribution() is leave-one-out against the engine: one runChain per
+  // compromised asset plus two. Only computed when the toggle is on, and
+  // memoised on the step so panning the picture does not re-run the engine.
+  //
+  // contribLayer scales the %p by max(contribution) INSIDE the set. It is
+  // never divided by the mission total: a per-asset contribution can exceed
+  // that total (engine.js serviceDegFor multiplies the providers of a
+  // redundancy_group), so a share would be a false statement about a loss two
+  // assets share. The legend carries that sentence.
+  const contrib = useMemo(() => {
+    if (!contribOn || !graph || !step) return null
+    const m = contribMission(graph, step)
+    if (!m) return null
+    return contribLayer(attribution(graph, step, m.id, payload?.method), m)
+  }, [contribOn, graph, step, payload])
+
   // While a game runs the clock is the game's cfg.t: the timeline is frozen
   // so the pictures and the turn loop cannot drift apart.
   const locked = mode === 'wargame' && !!game
@@ -539,6 +560,7 @@ export default function App() {
           <BoardToolbar
             view={view} onView={onView} mode={mode}
             labels={labels} onLabels={setLabels}
+            contrib={contribOn} onContrib={setContribOn}
             onFit={() => cyRef.current && cyRef.current.fit(undefined, 16)}
             tool={tool}
             onTool={(t) => { setTool(t); editorRef.current?.setTool(t) }}
@@ -558,6 +580,7 @@ export default function App() {
               graph={graph} step={step} steps={payload?.steps} idx={idx} view={view} labels={labels}
               hidden={isGeo} cyRef={cyRef} onSelect={onSelect} onTap={onTap}
               selected={selectedData?.id || null} overlay={overlay}
+              contrib={contrib}
             />
             {hasGeoref ? (
               <MapPane

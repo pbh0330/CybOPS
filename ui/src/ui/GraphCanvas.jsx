@@ -46,7 +46,7 @@ function paintSymbol(n, state) {
   })
 }
 
-export default function GraphCanvas({ graph, step, steps, idx, view, labels, hidden, cyRef, onSelect, onTap, selected, overlay }) {
+export default function GraphCanvas({ graph, step, steps, idx, view, labels, hidden, cyRef, onSelect, onTap, selected, overlay, contrib }) {
   const boxRef = useRef(null)
   const flowRef = useRef({ raf: null, offset: 0, view, hidden })
   const [bands, setBands] = useState([])
@@ -223,44 +223,51 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
     cy.nodes().style('text-opacity', labels ? 1 : 0)
   }, [labels, graph])
 
-  // --- wargame overlay -----------------------------------------------------
-  // Ghost arrows are the attacker's candidate moves (the engine's legal move
-  // table, top n by gain). They are drawn over the layout and never fed to
-  // it, and they do not crawl: a move that has not happened is not traffic.
-  // The flash marks one adjudication, once per turn.
-  const flashRef = useRef({ turn: -1, timer: null })
+  // --- contribution weight (U3) --------------------------------------------
+  //
+  // A toggle, off by default. `contrib` is derive.contribLayer's output:
+  // attribution()'s per-asset %p, each divided by the LARGEST contribution in
+  // the same set. Not by the mission total - contributions can exceed it (see
+  // the note in derive.js and the stylesheet rule in graph.js), so the
+  // thickness is a comparison between assets and the legend says so.
+  //
+  // Two things get the weight: the asset node's outline, and the structural
+  // edges between that asset and the mission. The node carries it too because
+  // an asset that contributes only through reachability (a relay) has no
+  // structural edge to the mission at all, and edges alone would draw the
+  // most interesting contributor as nothing.
   useEffect(() => {
     const cy = cyRef.current
     if (!cy) return
-    cy.edges('.threat-hop').remove()
-    cy.nodes().removeClass('threat isolated')
-    // No game, or a game with nothing adjudicated yet (a restart goes straight
-    // from the old game's overlay to the new one's): forget the last flashed
-    // turn so the next adjudication flashes even on the same turn index.
-    if (!overlay || !overlay.last) flashRef.current.turn = -1
-    if (!overlay) return
-    const els = []
-    for (const c of overlay.candidates) {
-      if (!cy.$id(c.from).length || !cy.$id(c.to).length) continue
-      els.push({ group: 'edges', classes: 'threat-hop', data: { id: `threat:${c.from}->${c.to}`, source: c.from, target: c.to, w: Math.max(1.5, 4 - c.rank * 0.4) } })
-    }
-    if (els.length) cy.add(els)
-    for (const n of overlay.nodeThreats) cy.$id(n.id).addClass('threat')
-    for (const id of overlay.isolated) cy.$id(id).addClass('isolated')
-    // one flash per adjudicated turn
-    if (overlay.last && overlay.last.turn !== flashRef.current.turn) {
-      flashRef.current.turn = overlay.last.turn
-      const n = cy.$id(overlay.last.to)
-      const cls = overlay.last.success ? 'flash-hit' : 'flash-miss'
-      // a second adjudication inside 800 ms: the first target's class must go
-      // too, or its underlay stays on for good once its timer is cancelled
-      clearTimeout(flashRef.current.timer)
-      cy.nodes().removeClass('flash-hit flash-miss')
-      n.addClass(cls)
-      flashRef.current.timer = setTimeout(() => n.removeClass(cls), 800)
-    }
-  }, [overlay, graph, cyReady])
-  useEffect(() => () => clearTimeout(flashRef.current.timer), [])
+    cy.elements().removeClass('contrib')
+    if (!contrib || view === 'geo') return
+    const structural = cy.edges().not('.transport').not('.attack-hop').not('.threat-hop')
+    const mission = cy.$id(contrib.mission)
+    // influence runs opposite to the drawn direction (mission -> task ->
+    // service -> asset), so the edges an asset's loss travels along are its
+    // predecessors, cut down to those the mission can also reach
+    const reach = mission.length ? mission.successors().edges() : null
+    const widths = new Map()
+    cy.batch(() => {
+      for (const r of contrib.rows) {
+        const n = cy.$id(r.id)
+        if (!n.length) continue
+        n.data('contribW', r.w)
+        n.addClass('contrib')
+        let up = n.predecessors().edges().intersection(structural)
+        if (reach) up = up.intersection(reach)
+        // an edge on two assets' paths takes the heavier weight: the line is
+        // one line, and the lighter claim is already made by the other node
+        for (const e of up) widths.set(e.id(), Math.max(widths.get(e.id()) || 0, r.w))
+      }
+      for (const [id, w] of widths) {
+        const e = cy.$id(id)
+        if (!e.length) continue
+        e.data('contribW', w)
+        e.addClass('contrib')
+      }
+    })
+  }, [contrib, view, graph, step, cyReady])
 
   // --- paint ------------------------------------------------------------
   useEffect(() => {
@@ -386,6 +393,18 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
             <>
               <span className="lg-rule" />
               <span className="legend-item">선택 노드의 기여 경로만 밝게</span>
+            </>
+          )}
+          {contrib && view !== 'geo' && (
+            <>
+              <span className="lg-rule" />
+              <span
+                className="legend-item legend-contrib"
+                title="attribution() 의 자산별 기여(%p)를 그 집합의 최대 기여로 나눈 값이다. 임무 저하도로 나눈 몫이 아니다 - 중복 그룹에서는 자산별 기여의 합이 저하도를 넘을 수 있다."
+              >
+                <span className="legend-thick" />
+                선 굵기 = {contrib.missionName} 저하 기여 · 자산 간 비교이고 저하도의 몫이 아니다
+              </span>
             </>
           )}
         </div>
