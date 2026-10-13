@@ -5,7 +5,7 @@ import { config } from '../config.js'
 import { CAUSE_COLOR } from '../graph.js'
 import { attackHops } from '../derive.js'
 import { toLonLat, fromLonLat, toMgrs } from '../georef.js'
-import { markerRows, linkFeatures, trackFeatures, attackArcFeatures, gridFeatures, aoFeature, stackAt, ghostFeatures } from '../mapLayers.js'
+import { markerRows, linkFeatures, trackFeatures, attackArcFeatures, gridFeatures, aoFeature, stackAt, ghostFeatures, WIRE } from '../mapLayers.js'
 import { deviceIconDataUri } from '../icons.js'
 import { assetName } from '../labels.js'
 
@@ -18,6 +18,16 @@ import { assetName } from '../labels.js'
 // throw the overlays away.
 
 const BASES = [['dark', '다크'], ['satellite', '위성'], ['terrain', '지형']]
+// U7. The wire mode is ORTHOGONAL to BASES, not a fourth entry in it: it is
+// not an answer to "which basemap" but to "no basemap at all", and as a
+// fourth base its state would overlap 위성 and 지형 (both of which it turns
+// off). So it gets its own two-button seg beside the base switcher.
+//
+// The label says 와이어, not 홀로그램. Every reference implementation of this
+// mode - RedCarpet included - promises a cyan glow with that word, and this
+// one deliberately refuses it (see WIRE in mapLayers.js). 와이어 describes
+// what it actually does, terrain as lines, and promises no colour.
+const WIRE_MODES = [[false, '지도'], [true, '와이어']]
 // A thumb is about this wide on a marker, and markers are drawn at 30px. Two
 // assets inside this radius of each other on SCREEN are one tap target, so
 // the tap has to report both and let the caller decide what that means.
@@ -75,6 +85,17 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
   const [base, setBase] = useState('satellite')
   const [is3d, setIs3d] = useState(true)
   const [tileError, setTileError] = useState(false)
+  // U7. Session state on purpose: NOT localStorage. A reopened console that
+  // came up with no basemap reads as a broken map, so the mode has to be
+  // asked for every time. Default false - the default view is the map.
+  const [wire, setWire] = useState(false)
+  // The ids of the basemap style's own layers (everything the style shipped
+  // except its background), so the wire mode can hide the lot without
+  // guessing names. Captured at load from the style we fetched, so an on-prem
+  // style with different layer ids needs no code change.
+  const baseIdsRef = useRef([])
+  // The style's own background colour, to put back when the mode turns off.
+  const baseBgRef = useRef(null)
 
   // Every asset a tap on `id` could have meant. The projection is done at tap
   // time, not at draw time: pan, zoom and pitch all move markers relative to
@@ -180,11 +201,49 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
       map.on('load', () => {
         const style = map.getStyle()
         const beforeLabels = firstSymbolLayer(style)
+        // U7: read before anything is added, so this is the basemap's own
+        // layer set and never one of ours.
+        baseIdsRef.current = (style.layers || []).map((l) => l.id).filter((id) => id !== 'background')
+        const bgLayer = (style.layers || []).find((l) => l.id === 'background')
+        baseBgRef.current = (bgLayer && bgLayer.paint && bgLayer.paint['background-color']) || WIRE.board
         map.addSource('sat', { type: 'raster', tiles: [cfg.satellite], tileSize: 256, maxzoom: 18 })
         map.addLayer({ id: 'sat', type: 'raster', source: 'sat', paint: { 'raster-opacity': 1 }, layout: { visibility: 'none' } }, beforeLabels)
         map.addSource('dem', { type: 'raster-dem', tiles: [cfg.dem], tileSize: 256, encoding: 'terrarium', maxzoom: 15 })
         map.addLayer({ id: 'hillshade', type: 'hillshade', source: 'dem', layout: { visibility: 'none' },
           paint: { 'hillshade-exaggeration': 0.6, 'hillshade-shadow-color': '#05070c', 'hillshade-highlight-color': '#b9c4d1' } }, beforeLabels)
+
+        // U7 wire mode, built here and left hidden. Two pieces, both under the
+        // overlays so a link or a marker is never behind them.
+        //
+        // The terrain wireframe needs NO new geometry and NO contour
+        // computation (MapLibre 5 cannot generate contours from a raster-dem
+        // anyway). `setTerrain` is already on for the 3D view, and MapLibre
+        // drapes vector layers over the DEM, so the straight 2 km grid is
+        // ALREADY bending over the real ridges - it is just invisible at 0.14
+        // opacity under a satellite raster. The mode turns the raster off and
+        // turns the grid up. This fine grid is the same gridFeatures call at a
+        // smaller spacing, which subdivides each 2 km cell into a mesh.
+        const fine = gridFeatures(georef, extent, WIRE.fineSpacing)
+        map.addSource('wire-grid', { type: 'geojson', data: fine.lines })
+        map.addLayer({ id: 'wire-grid', type: 'line', source: 'wire-grid', layout: { visibility: 'none' },
+          paint: { 'line-color': WIRE.line, 'line-opacity': WIRE.fineOpacity, 'line-width': WIRE.fineWidth } }, beforeLabels)
+
+        // Buildings, if the basemap has any. Found by the style's own layer
+        // rather than by hardcoding OpenMapTiles names, so a style without
+        // buildings (the fallback, or an on-prem style) simply gets none.
+        const bldg = (style.layers || []).find((l) => l['source-layer'] === 'building')
+        if (bldg && bldg.source) {
+          const src = { source: bldg.source, 'source-layer': bldg['source-layer'], minzoom: bldg.minzoom || 12 }
+          map.addLayer({ id: 'wire-bldg', type: 'fill-extrusion', ...src, layout: { visibility: 'none' },
+            paint: {
+              'fill-extrusion-color': WIRE.line,
+              'fill-extrusion-opacity': WIRE.bldgOpacity,
+              'fill-extrusion-height': ['coalesce', ['get', 'render_height'], 8],
+              'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], 0],
+            } }, beforeLabels)
+          map.addLayer({ id: 'wire-bldg-line', type: 'line', ...src, layout: { visibility: 'none' },
+            paint: { 'line-color': WIRE.line, 'line-opacity': WIRE.bldgLineOpacity, 'line-width': WIRE.bldgLineWidth } }, beforeLabels)
+        }
 
         // overlays, bottom to top
         map.addSource('ao', { type: 'geojson', data: aoFeature(georef, extent) })
@@ -299,14 +358,55 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
     }
   }, [])
 
-  // --- base map / terrain ----------------------------------------------
+  // --- base map / wire mode (U7) ----------------------------------------
+  // One effect for both, so there is no order in which base and wire can
+  // disagree about who owns a layer's visibility.
   useEffect(() => {
     const map = mapRef.current
     if (!map || !ready) return
-    map.setLayoutProperty('sat', 'visibility', base === 'satellite' ? 'visible' : 'none')
-    map.setLayoutProperty('hillshade', 'visibility', base === 'terrain' ? 'visible' : 'none')
-  }, [base, ready])
+    // wire mode has no basemap at all: not the satellite raster, not the
+    // hillshade, and not the vector style's own fills, roads and place names
+    // either. What is left is the dark board and our own lines.
+    map.setLayoutProperty('sat', 'visibility', !wire && base === 'satellite' ? 'visible' : 'none')
+    map.setLayoutProperty('hillshade', 'visibility', !wire && base === 'terrain' ? 'visible' : 'none')
+    for (const id of baseIdsRef.current) {
+      if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', wire ? 'none' : 'visible')
+    }
+    if (map.getLayer('background')) {
+      map.setPaintProperty('background', 'background-color', wire ? WIRE.board : baseBgRef.current)
+    }
+    map.setPaintProperty('grid', 'line-opacity', wire ? WIRE.gridOpacity : 0.14)
+    map.setPaintProperty('grid', 'line-width', wire ? WIRE.gridWidth : 0.8)
+    for (const id of ['wire-grid', 'wire-bldg', 'wire-bldg-line']) {
+      if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', wire ? 'visible' : 'none')
+    }
+    // U9's five ghost layers all stay exactly as they are - they are a
+    // construction aid and already achromatic, and hiding them would take the
+    // 연결 target away from a mode the operator can edit in (ghost-hit is the
+    // invisible 20px tap stroke, so hiding it would make the candidates
+    // untappable rather than merely invisible). The one value that moves is
+    // the casing's opacity; the comment on WIRE says why.
+    if (map.getLayer('ghost-casing')) {
+      map.setPaintProperty('ghost-casing', 'line-opacity', wire ? WIRE.ghostCasingOpacity : 0.5)
+    }
+  }, [base, wire, ready])
 
+  // Terrain and pitch. The wire mode deliberately does NOT appear here.
+  //
+  // Markers ARE terrain-aware in MapLibre 5: measured at 1600x900 over the
+  // 인제 AO, a marker's rendered centre equals map.project(lngLat) to 0.000 px
+  // for all 13, with or without terrain. So raising `exaggeration` re-elevates
+  // every asset symbol - 11.5 px at 2.0 and 35.2 px at 3.0, camera pinned -
+  // and that is a display mode moving positions the operator reads. Pitch is
+  // camera: it moves markers and draped lines together. Neither is worth it
+  // here, so this mode touches neither, and entering it moves every marker by
+  // 0.000 px (both directions, and round trip).
+  //
+  // The relief the wireframe needs is already there at 1.5x and 55 degrees:
+  // over the AO's 130 grid nodes the draped 2 km grid deflects up to 47.3 px
+  // (mean 21.3) from where the same nodes land with terrain off. 2D stays
+  // flat on purpose - wire + 2D is the plan-view wireframe, and the fine grid
+  // is what makes it one.
   useEffect(() => {
     const map = mapRef.current
     if (!map || !ready) return
@@ -519,17 +619,25 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
   const anchorMgrs = anchor ? toMgrs(anchor.lat, anchor.lon, 3) : ''
 
   return (
-    <div className="map-pane" hidden={hidden}>
+    <div className="map-pane" data-wire={wire ? '1' : undefined} hidden={hidden}>
       <div className="map-canvas" ref={boxRef} />
       <div className="geo-controls map-controls">
         <div className="seg" role="group" aria-label="바탕">
           {BASES.map(([id, label]) => (
-            <button key={id} type="button" className={base === id ? 'on' : ''} aria-pressed={base === id} onClick={() => setBase(id)}>{label}</button>
+            <button key={id} type="button" className={base === id ? 'on' : ''} aria-pressed={base === id} onClick={() => setBase(id)} disabled={wire}>{label}</button>
           ))}
         </div>
         <div className="seg" role="group" aria-label="차원">
           <button type="button" className={!is3d ? 'on' : ''} onClick={() => setIs3d(false)}>2D</button>
           <button type="button" className={is3d ? 'on' : ''} onClick={() => setIs3d(true)}>3D</button>
+        </div>
+        {/* U7: orthogonal to 바탕, so its own seg. The base seg is disabled
+            while this is on rather than hidden - the operator has to be able
+            to see which basemap is waiting for them on the way back. */}
+        <div className="seg seg-wire" role="group" aria-label="렌더">
+          {WIRE_MODES.map(([on, label]) => (
+            <button key={label} type="button" className={wire === on ? 'on' : ''} aria-pressed={wire === on} onClick={() => setWire(on)}>{label}</button>
+          ))}
         </div>
       </div>
       {/* not removable by design (ADR-0025): the screenshot carries the caveat */}
@@ -538,6 +646,8 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
       <div className="geo-foot">
         <span>{graph?.geo?.frame?.id} · 격자 2 km · MGRS {anchorMgrs}</span>
         <span>지형 DEM · 3D 과장 1.5배</span>
+        {/* says so in the screenshot too, not just on the screen */}
+        {wire && <span>와이어 · 바탕 없음 · 지형은 격자선, 상태색 그대로</span>}
         <span className="geo-warn">{editable ? '편집 모드 - 마커를 끌어 배치한다' : '위치는 표시 전용이다. 단절 원인은 저작값이고 지형에서 계산하지 않는다.'}</span>
       </div>
     </div>

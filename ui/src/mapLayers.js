@@ -172,3 +172,33 @@ export function stackAt(points, id, radiusPx) {
     .map((p) => p.id)
     .sort()
 }
+
+// U7: the wire mode's palette, kept here as DATA so it can be checked by a
+// test instead of trusted.
+//
+// RedCarpet's holographic surface is cyan. Ours cannot be: `--mobility` IS
+// cyan (`#35c8ff`), so painting the terrain cyan would not add a ninth
+// saturated colour, it would misuse one of the eight and make the whole map
+// read as "mobility cause" underneath assets carrying their own cause colours
+// (ADR-0024, ADR-0012). So this mode is made of geometry and opacity, and the
+// only ink in it is the achromatic `--text-primary` the 2 km grid already
+// uses. mapLayers.test.js asserts that every colour here is achromatic and is
+// none of the eight cause colours - the rule is falsifiable, not a comment.
+export const WIRE = {
+  board: '#070a10',        // --surface-board: the background once the basemap is off
+  line: '#f2f3f4',         // --text-primary: the one ink this mode draws with
+  gridOpacity: 0.5,        // the 2 km grid stops being a reference and becomes the subject
+  gridWidth: 1,
+  fineSpacing: 500,        // a second gridFeatures pass; no contour is computed anywhere
+  fineOpacity: 0.16,
+  fineWidth: 0.6,
+  bldgOpacity: 0.16,       // fill-extrusion, low; the outline carries the shape
+  bldgLineOpacity: 0.4,
+  bldgLineWidth: 0.6,
+  // U9's ghost casing is a dark stroke under the candidate dashes. Its job
+  // changes here rather than disappearing: with no satellite raster to hide
+  // under, what the dashes now cross is the brightened grid, and the casing
+  // still separates the two. Raised, because the grid it must cut through is
+  // brighter than the base map it was tuned against.
+  ghostCasingOpacity: 0.85,
+}

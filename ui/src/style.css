@@ -1052,3 +1052,63 @@ button.staff-fact:hover { color: var(--text-primary); border-bottom-color: var(-
   .clock { margin-left: auto; min-width: 0; }
   .clock-time { font-size: 20px; }
 }
+
+/* ================================================================= U7: 와이어 */
+/* The wire (holographic) render mode. Deliberately the LAST block in this
+ * file and self-contained, so it merges mechanically against anything else
+ * editing the sheet or the toolbar.
+ *
+ * There is no colour in here, by rule. RedCarpet's hologram is cyan and
+ * `--mobility` IS cyan (#35c8ff): a cyan terrain would misuse one of the
+ * eight cause colours rather than add a ninth (ADR-0024, ADR-0012). The mode
+ * is geometry and opacity; the map layers live in mapLayers.js `WIRE`.
+ */
+
+/* The render seg sits beside 바탕/차원 and must not be the thing that pushes
+   the controls block onto a third row at 390px. */
+.seg-wire button { white-space: nowrap; }
+
+/* The base switcher is disabled, not hidden, while the mode is on: the
+   operator has to see which basemap comes back. Disabled chrome is quieter,
+   never coloured. */
+.geo-controls .seg button:disabled { opacity: .45; cursor: default; }
+
+/* ADR-0025: the watermark cannot be turned off, and once the basemap is gone
+   it sits over the near-black board with brightened grid lines crossing
+   behind it. Computed contrast of --text-primary against the composited
+   panel (WCAG relative luminance):
+     today, panel .78 over the dark board ............ 17.83:1
+     today, panel .78 over a bright satellite pixel ... 13.35:1  <- the floor now
+     wire,  panel .92 over the board .................. 17.83:1
+     wire,  panel .92 over a 0.5-opacity grid line .... 16.69:1  <- the floor here
+     wire,  panel left at .78 over that grid line ..... 14.06:1  (rejected)
+   So the panel gets MORE opaque in this mode, not less: the mode's worst case
+   is above the one the screen already ships with. The border steps up from
+   --line-strong (1.57:1 against the panel) to --text-muted (7.49:1) so the
+   box still has an edge against a background that is now nearly its own
+   value. Achromatic throughout - both are existing neutral tokens. */
+.map-pane[data-wire="1"] .map-watermark {
+  background: rgba(7, 10, 16, .92);
+  border-color: var(--text-muted);
+}
+
+/* The MapLibre attribution and nav control keep their own surface - the tile
+   attribution is still owed even when no raster tile is drawn, because the
+   DEM is still being fetched. */
+.map-pane[data-wire="1"] .maplibregl-ctrl-attrib { background: rgba(7, 10, 16, .85) !important; }
+
+@media (max-width: 860px) {
+  /* ADR-0030: the control has to be reachable with a thumb at 390px, and a
+     third seg must not push the block onto a second row over the stage.
+     Measured at 390x844 in the page: today's two segs are 298px wide, one
+     row, with 32.1px buttons (the blanket 44px rule covers .rail/.sheet/
+     .inspect and never this block). Adding a third seg at the desktop
+     padding takes it to 334px, which is wider than the 334px the block has
+     from `right: 56px` to the left edge, so it wraps: two rows, 97.8px tall
+     over the stage. Narrower padding plus a real 44px target gives one row
+     again, 329.6px wide, 61px tall, every button 44px.
+     The render seg leads, because it is the one that changes the most. */
+  .map-controls { right: 52px; gap: 6px; padding: 6px 8px; }
+  .map-controls .seg button { padding: 6px 9px; min-height: 44px; }
+  .seg-wire { order: -1; }
+}
