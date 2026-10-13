@@ -201,6 +201,11 @@ $written = Get-Content $targetPath -Raw -Encoding utf8 | ConvertFrom-Json
 Write-Output ("      result  llm.enabled = {0}   llm.endpoint = {1}" -f $written.llm.enabled, $written.llm.endpoint)
 
 # ---------------------------------------------------------------- 4. gate
+#
+# This is THE hosted gate: ui\dist, after step 3 wrote the hosted config into
+# it. There is no ui\dist-hosted anywhere in this procedure, and no script in
+# this repo builds one. Invoke-Gates.ps1 checks the same pair before the copy,
+# by naming the config file with -Config.
 
 Write-Step 'bundle gate: Test-BundleConfig.ps1 -Posture hosted'
 

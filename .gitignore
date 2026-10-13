@@ -75,7 +75,9 @@ analysis/briefing/_v3-*.log
 # 콘솔 로그. 결과는 eval/results 의 JSON 에 있고 이것은 실행 흔적일 뿐이다.
 analysis/logs/
 
-# 호스팅용 산출물. Publish-Briefings.ps1 + Test-BundleConfig.ps1 로 다시 만들 수 있다.
+# 2026-09-09 에 손으로 만든 호스팅 산출물. 이것을 만드는 스크립트는 없다
+# (Publish-Briefings.ps1 은 브리핑 JSON 만 쓴다). 호스티드 번들은 별도 디렉터리가
+# 아니라 ui/dist + 호스티드 config.json 이다 - docs/21-deployment.md 4.1절.
 ui/dist-hosted/
 ui/mc-cycop-hosted.zip
 

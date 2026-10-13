@@ -131,6 +131,37 @@ Copy-Item ui\public\config.hosted.example.json ui\dist\config.json -Force
 3)에서 `config.json` 을 `ui\public\` 이 아니라 `ui\dist\` 에 두는 것에 주의한다.
 `public/` 을 고치면 다음 빌드에 반영되지만 **이번 산출물에는 안 들어간다.**
 
+### 4.1 호스티드 번들은 별도 디렉터리가 아니다
+
+**`ui\dist-hosted` 를 만드는 스크립트는 이 저장소에 없다.** 호스티드 산출물은 위
+절차 그대로 `ui\dist` **하나**이고, `local` 과 다른 것은 그 안의 `config.json`
+**한 파일**뿐이다. 그러니 호스티드 번들을 만드는 명령은 위 2)~3) 두 줄이다.
+
+```powershell
+# 자체 호스팅(nginx/Caddy)용 호스티드 번들
+npm --prefix ui run build
+Copy-Item ui\public\config.hosted.example.json ui\dist\config.json -Force
+.\scripts\Test-BundleConfig.ps1 -Bundle ui\dist -Posture hosted
+
+# AWS 시연 사본용 호스티드 번들: 위 세 줄을 Deploy-Aws.ps1 이 대신한다
+.\scripts\Deploy-Aws.ps1 -Bucket <bucket> -DistributionId <id> -DryRun
+```
+
+번들을 호스티드 자세로 **갈아입히지 않고** 자세 설정만 미리 검사하려면 `-Config` 로
+들어갈 파일을 가리킨다. `Invoke-Gates.ps1` 의 `bundle: hosted` 가 이 형태로 돌고,
+`Deploy-Aws.ps1` 4단계가 복사 **뒤에** 검사하는 것과 같은 짝을 복사 **전에** 본다.
+
+```powershell
+.\scripts\Test-BundleConfig.ps1 -Bundle ui\dist -Posture hosted `
+  -Config ui\public\config.aws.example.json
+```
+
+> **낡은 `ui/dist-hosted/` 와 `ui/mc-cycop-hosted.zip`.** 2026-09-09 에 손으로 만든
+> 것이고 ADR-0024(React 재설계)가 "재생성해야 한다" 고 적은 뒤 재생성되지 않았다.
+> 게이트가 2026-10-14 부터 그것을 더 이상 읽지 않으므로 **아무것도 그 디렉터리를
+> 참조하지 않는다.** 지우는 것은 사람의 몫이고(ADR-0010 4번), 안 지워도 해롭지 않다.
+> 둘 다 gitignore 대상이다.
+
 ## 5. 올린 뒤 확인
 
 | 확인 | 방법 | 기대 |

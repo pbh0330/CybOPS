@@ -17,13 +17,27 @@
 # Usage:
 #   .\scripts\Test-BundleConfig.ps1 -Bundle ui\dist -Posture hosted
 #   .\scripts\Test-BundleConfig.ps1 -Bundle ui\dist -Posture local
+#   .\scripts\Test-BundleConfig.ps1 -Bundle ui\dist -Posture hosted `
+#       -Config ui\public\config.aws.example.json
+#
+# -Config says WHICH config.json to judge. It defaults to the one inside the
+# bundle, which is the right answer for a bundle that is already dressed for
+# its posture. It exists because the hosted artifact is not a second
+# directory: Deploy-Aws.ps1 step 3 copies one file into ui\dist and uploads
+# that, so "the hosted bundle" is ui\dist plus a hosted config. Pointing at
+# that config checks the thing the deploy will actually ship, without anyone
+# having to produce a ui\dist-hosted that no script in this repo builds.
 #
 # Exit 0 = the bundle matches the posture. Exit 1 = do not deploy this.
+# Exit 3 = nothing was checked, because there is no bundle to check. That is
+# not a pass: Invoke-Gates.ps1 reports it as a skip with this script's reason,
+# and a caller that treats non-zero as a stop (Deploy-Aws.ps1) still stops.
 
 param(
   [string]$Bundle = "$PSScriptRoot\..\ui\dist",
   [ValidateSet('hosted', 'local')]
   [string]$Posture = '',
+  [string]$Config = '',
   [string]$OutJson = ''
 )
 
@@ -33,12 +47,23 @@ param(
 # arguments therefore printed DO NOT DEPLOY about a bundle nobody was
 # deploying. A gate that fails when nothing is wrong stops being read.
 #
-# So infer the posture from the bundle when it is not given, and say which one
-# was chosen. ui\dist-hosted is built by Publish-Briefings for a public host;
-# anything else is local.
+# So infer the posture from the name it was pointed at when it is not given,
+# and say which one was chosen. The name that carries the posture is the
+# CONFIG's when one was named, because that is the file the posture lives in;
+# otherwise it is the bundle directory's.
+#
+# No posture is inferred from 'ui\dist-hosted' any more, and no script in this
+# repo builds such a directory. That comment used to say Publish-Briefings
+# built it. It does not: that script writes briefing JSON into ui\public\data
+# and never touches a bundle directory. The one in the main tree is a leftover
+# from 2026-09-09, before the React redesign (ADR-0024 said to regenerate it
+# and nobody did), and this gate used to be green only because it happened to
+# still be sitting there.
 if (-not $Posture) {
-  $leaf = Split-Path $Bundle -Leaf
-  if ($leaf -like '*hosted*') { $Posture = 'hosted' } else { $Posture = 'local' }
+  $nameSource = $Bundle
+  if ($Config) { $nameSource = $Config }
+  $leaf = Split-Path $nameSource -Leaf
+  if ($leaf -like '*hosted*' -or $leaf -like '*aws*') { $Posture = 'hosted' } else { $Posture = 'local' }
   Write-Output ("  posture   : {0} (inferred from '{1}'; pass -Posture to override)" -f $Posture, $leaf)
 }
 
@@ -53,12 +78,18 @@ function Add-Fail($m) { [void]$fail.Add($m) }
 function Add-Warn($m) { [void]$warn.Add($m) }
 function Add-Ok($m)   { [void]$ok.Add($m) }
 
+# No bundle means nothing was checked, and saying DO NOT DEPLOY about a bundle
+# that does not exist is not the same statement as saying it about a bundle
+# that is wrong. Exit 3 separates them: a caller that stops on non-zero still
+# stops, and Invoke-Gates.ps1 prints this as a skip carrying the command that
+# makes the target. A fresh worktree has no build; that is a fact about the
+# worktree, not a finding about the bundle.
 if (-not (Test-Path $Bundle)) {
   Write-Output ''
-  Write-Output ("ERROR: bundle not found: {0}" -f $Bundle)
-  Write-Output '  build it first:  cd ui; npm run build'
+  Write-Output ("SKIP: nothing to check. No bundle at: {0}" -f $Bundle)
+  Write-Output '  build it first:  npm --prefix ui run build'
   Write-Output ''
-  exit 1
+  exit 3
 }
 $Bundle = (Resolve-Path $Bundle).Path
 
@@ -71,8 +102,17 @@ else { Add-Fail 'index.html missing: this is not a built bundle' }
 # ---------------------------------------------------------------- config
 
 $cfgPath = Join-Path $Bundle 'config.json'
+$cfgNamed = $false
+if ($Config) {
+  $cfgPath = $Config
+  $cfgNamed = $true
+}
 $cfg = $null
-if (-not (Test-Path $cfgPath)) {
+if ($cfgNamed -and -not (Test-Path $cfgPath)) {
+  # A named config is a file somebody committed. Missing is a break in the
+  # repo, not a posture choice, so it does not fall back to the bundle's own.
+  Add-Fail ("config named with -Config does not exist: {0}" -f $cfgPath)
+} elseif (-not (Test-Path $cfgPath)) {
   # Not fatal by itself: config.js falls back to DEFAULTS. That is exactly the
   # problem for a hosted bundle, because the default is the loopback posture.
   if ($Posture -eq 'hosted') {
@@ -81,11 +121,16 @@ if (-not (Test-Path $cfgPath)) {
     Add-Warn 'config.json missing; the loader defaults apply (local posture, so this is fine)'
   }
 } else {
+  $cfgPath = (Resolve-Path $cfgPath).Path
   try {
     $cfg = Get-Content $cfgPath -Raw -Encoding utf8 | ConvertFrom-Json
-    Add-Ok 'config.json parses'
+    if ($cfgNamed) {
+      Add-Ok ("config parses: {0} (NOT the bundle's own config.json - this is the file the deploy copies in, Deploy-Aws.ps1 step 3)" -f $cfgPath)
+    } else {
+      Add-Ok 'config.json parses'
+    }
   } catch {
-    Add-Fail ("config.json does not parse: {0}" -f $_.Exception.Message)
+    Add-Fail ("config does not parse: {0}: {1}" -f $cfgPath, $_.Exception.Message)
   }
 }
 
@@ -168,6 +213,7 @@ foreach ($g in $gz) {
 Write-Output ''
 Write-Output ("bundle config check   posture: {0}" -f $Posture)
 Write-Output ("bundle: {0}" -f $Bundle)
+Write-Output ("config: {0}" -f $cfgPath)
 Write-Output ('=' * 74)
 foreach ($m in $ok)   { Write-Output ("  ok    {0}" -f $m) }
 foreach ($m in $warn) { Write-Output ("  warn  {0}" -f $m) }
@@ -179,6 +225,7 @@ if ($OutJson) {
     generated = (Get-Date).ToString('o')
     generator = 'scripts/Test-BundleConfig.ps1'
     bundle    = $Bundle
+    config    = $cfgPath
     posture   = $Posture
     ok        = @($ok)
     warnings  = @($warn)
