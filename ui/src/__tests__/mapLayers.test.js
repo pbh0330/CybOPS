@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { markerRows, linkFeatures, trackFeatures, attackArcFeatures, gridFeatures, aoFeature, stackAt } from '../mapLayers.js'
+import { markerRows, linkFeatures, trackFeatures, attackArcFeatures, gridFeatures, aoFeature, stackAt, ghostFeatures } from '../mapLayers.js'
 
 const georef = { anchor: { x: 0, y: 0, lat: 38.02, lon: 128.08 } }
 const extent = { x: [0, 24000], y: [0, 18000] }
@@ -97,5 +97,50 @@ describe('stackAt', () => {
       { id: 'A', x: 108, y: 104 },   // 9px 거리
     ]
     expect(stackAt(unsorted, 'Z', 22)).toEqual(['A', 'Z'])
+  })
+})
+
+// U9: the link candidates of the selected asset, on the ground. Straight and
+// not arced - the attack arc curves because it is a route somebody took, and
+// a candidate is not a route. `kind` rides on the feature because MapLibre
+// cannot make line-dasharray data-driven, so MapPane filters one source into
+// two line layers: the dashed / dotted distinction is the whole point and
+// must not vanish into one style.
+describe('ghostFeatures', () => {
+  const gh = (over) => ({ from: 'A', cands: [], offRule: [], ...over })
+
+  it('draws a two-point line per candidate, from the selected asset outward', () => {
+    const out = ghostFeatures(graph, gh({ cands: [{ to: 'B', bearer: 'vhf', w: 3.6 }] }), 0, georef)
+    expect(out.lines.features).toHaveLength(1)
+    const f = out.lines.features[0]
+    expect(f.geometry.type).toBe('LineString')
+    expect(f.geometry.coordinates).toHaveLength(2)
+    expect(f.properties).toMatchObject({ kind: 'cand', from: 'A', to: 'B', bearer: 'vhf', w: 3.6 })
+  })
+
+  it('gives a candidate an endpoint handle short of the far marker', () => {
+    const out = ghostFeatures(graph, gh({ cands: [{ to: 'B', bearer: 'vhf', w: 3 }] }), 0, georef)
+    expect(out.ends.features).toHaveLength(1)
+    const [lon0, lat0] = out.lines.features[0].geometry.coordinates[0]
+    const [lon1, lat1] = out.lines.features[0].geometry.coordinates[1]
+    const [lonE, latE] = out.ends.features[0].geometry.coordinates
+    // between the two ends, and nearer the far one
+    const span = Math.hypot(lon1 - lon0, lat1 - lat0)
+    expect(Math.hypot(lonE - lon0, latE - lat0)).toBeLessThan(span)
+    expect(Math.hypot(lonE - lon1, latE - lat1)).toBeLessThan(span / 2)
+    expect(out.ends.features[0].properties.to).toBe('B')
+  })
+
+  it('tags an out-of-rule link and gives it no handle: there is nothing to connect', () => {
+    const out = ghostFeatures(graph, gh({ offRule: [{ id: 'L-1', to: 'B', bearer: 'wired', w: 2 }] }), 0, georef)
+    expect(out.lines.features.map((f) => f.properties.kind)).toEqual(['off'])
+    expect(out.ends.features).toHaveLength(0)
+  })
+
+  it('drops an end that has no position, and draws nothing without a selection', () => {
+    const out = ghostFeatures(graph, gh({ cands: [{ to: 'NOWHERE', bearer: 'vhf', w: 3 }] }), 0, georef)
+    expect(out.lines.features).toHaveLength(0)
+    expect(ghostFeatures(graph, null, 0, georef).lines.features).toHaveLength(0)
+    expect(ghostFeatures(graph, gh({ from: 'NOWHERE' }), 0, georef).lines.features).toHaveLength(0)
   })
 })

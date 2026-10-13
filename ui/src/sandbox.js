@@ -90,6 +90,33 @@ export function linkCandidates(g, rules, assetId) {
   return out.map((c, i) => ({ ...c, rank: i + 1 }))
 }
 
+// Does a link that is already on the board still fit the rule table? The same
+// reading linkCandidates uses to PROPOSE a link, applied to one that is there
+// already: the inspector's 규칙 밖 mark and the overlay's dotted ghost line
+// (derive.linkGhosts) are one predicate, so the flag and the line can never
+// disagree. A link that stopped fitting is flagged, never removed - the board
+// stays the person's and the flag is the table's opinion.
+//
+// True when the table cannot say: no table, or either end's type absent from
+// it. Silence is not an accusation.
+export function linkFitsRules(g, rules, l) {
+  if (!l) return true
+  const a = byId(g, l.a)
+  const b = byId(g, l.b)
+  if (!a || !b || !rules || !rules.types) return true
+  const ra = rules.types[a.type]
+  const rb = rules.types[b.type]
+  if (!ra || !rb) return true
+  const bearer = l.bearer || 'wired'
+  const both = (ra.bearers || []).includes(bearer) && (rb.bearers || []).includes(bearer)
+  const r = (rules.bearers || {})[bearer] || {}
+  // '신규' is not a place: siteOf reads it as no site, same as linkCandidates
+  const sameSite = !!siteOf(a) && siteOf(a) === siteOf(b)
+  if (r.same_site && !sameSite) return false
+  if (r.needs_type && a.type !== r.needs_type && b.type !== r.needs_type) return false
+  return both
+}
+
 export function missionCandidates(g, rules, assetId) {
   const me = byId(g, assetId)
   const r = me && rules && rules.types ? rules.types[me.type] : null

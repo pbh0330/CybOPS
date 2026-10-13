@@ -1,11 +1,13 @@
 import { describe, it, expect } from 'vitest'
 import replay from '../../public/data/tacnet-01.replay.json'
+import rules from '../../public/data/link-rules.json'
 import { startGame, defend, pass, attackerTurn } from '../game.js'
 import {
   eventRows, kpiOf, timeLabel, BAND_LABELS, gameOverlay, peekLine,
-  contribLayer, contribMission,
+  contribLayer, contribMission, linkGhosts,
 } from '../derive.js'
 import { attribution } from '../facts.js'
+import { linkCandidates } from '../sandbox.js'
 
 const graph = {
   timeline: { t0_iso: '2026-09-10T06:00:00+09:00', horizon: 420, step: 15 },
@@ -217,5 +219,71 @@ describe('contribMission', () => {
   it('has nothing to name without missions', () => {
     expect(contribMission({ missions: [] }, {})).toBe(null)
     expect(contribMission(null, null)).toBe(null)
+  })
+})
+
+// --- U9: where a selected asset can connect ------------------------------
+describe('linkGhosts', () => {
+  const tg = replay.graph
+
+  it('draws one line per target, on the best-ranked bearer', () => {
+    const gh = linkGhosts(tg, rules, 'BN-SRV')
+    const ids = gh.cands.map((c) => c.to)
+    expect(new Set(ids).size).toBe(ids.length)
+    const all = linkCandidates(tg, rules, 'BN-SRV')
+    for (const c of gh.cands) {
+      const best = all.find((x) => x.id === c.to)
+      expect(c.bearer).toBe(best.bearer)            // the bearer addLinkWith gets
+    }
+    expect(gh.from).toBe('BN-SRV')
+  })
+
+  it('ranks from 1 and thins with the rank, the way the wargame ghosts do', () => {
+    const gh = linkGhosts(tg, rules, 'BN-SRV')
+    expect(gh.cands.map((c) => c.rank)).toEqual(gh.cands.map((x, i) => i + 1))
+    const ws = gh.cands.map((c) => c.w)
+    expect(ws).toEqual([...ws].sort((x, y) => y - x))
+    expect(Math.min(...ws)).toBeGreaterThanOrEqual(1.5)
+  })
+
+  it('caps the drawn lines and still reports how many there were', () => {
+    const gh = linkGhosts(tg, rules, 'BN-SRV')
+    expect(gh.cands.length).toBeLessThanOrEqual(8)
+    expect(gh.total).toBeGreaterThanOrEqual(gh.cands.length)
+  })
+
+  it('never proposes a link that is already there', () => {
+    const gh = linkGhosts(tg, rules, 'BN-SRV')
+    const mine = (tg.links || []).filter((l) => l.a === 'BN-SRV' || l.b === 'BN-SRV')
+      .map((l) => (l.a === 'BN-SRV' ? l.b : l.a))
+    for (const c of gh.cands) expect(mine).not.toContain(c.to)
+  })
+
+  it('marks an existing link the rule table no longer fits, and does not drop it', () => {
+    // same site is what wired needs; move one end and the link is out of rule
+    const wired = (tg.links || []).find((l) => l.bearer === 'wired' && (l.a === 'TOC-WS' || l.b === 'TOC-WS'))
+    expect(wired).toBeTruthy()
+    const off = {
+      ...tg,
+      assets: tg.assets.map((a) => (a.id === 'TOC-WS' ? { ...a, site: '다른 곳' } : a)),
+    }
+    const gh = linkGhosts(off, rules, 'TOC-WS')
+    expect(gh.offRule.map((x) => x.id)).toContain(wired.id)
+    // and the clean board has none of them
+    expect((linkGhosts(tg, rules, 'TOC-WS') || { offRule: [] }).offRule).toEqual([])
+  })
+
+  it('has nothing to draw without a table, an asset, or a candidate', () => {
+    expect(linkGhosts(tg, null, 'BN-SRV')).toBe(null)
+    expect(linkGhosts(tg, rules, 'NOPE')).toBe(null)
+    expect(linkGhosts(null, rules, 'BN-SRV')).toBe(null)
+    const lone = { assets: [{ id: 'A', type: 'switch', site: '본부' }], links: [] }
+    expect(linkGhosts(lone, rules, 'A')).toBe(null)
+  })
+
+  it('says why the table is silent, so the overlay can repeat the inspector', () => {
+    const odd = { assets: [{ id: 'A', type: 'tent', site: '본부' }, { id: 'B', type: 'switch', site: '본부' }], links: [] }
+    expect(linkGhosts(odd, rules, 'A')).toBe(null)
+    expect(linkGhosts(tg, rules, 'BN-SRV').gap).toBe(null)
   })
 })

@@ -5,7 +5,7 @@ import { config } from '../config.js'
 import { CAUSE_COLOR } from '../graph.js'
 import { attackHops } from '../derive.js'
 import { toLonLat, fromLonLat, toMgrs } from '../georef.js'
-import { markerRows, linkFeatures, trackFeatures, attackArcFeatures, gridFeatures, aoFeature, stackAt } from '../mapLayers.js'
+import { markerRows, linkFeatures, trackFeatures, attackArcFeatures, gridFeatures, aoFeature, stackAt, ghostFeatures } from '../mapLayers.js'
 import { deviceIconDataUri } from '../icons.js'
 import { assetName } from '../labels.js'
 
@@ -33,7 +33,7 @@ function firstSymbolLayer(style) {
 // Everything else - lines, fills, DOM markers - draws fine without glyphs.
 const FALLBACK_STYLE = { version: 8, sources: {}, layers: [{ id: 'background', type: 'background', paint: { 'background-color': '#070a10' } }] }
 
-export default function MapPane({ graph, step, steps, idx, selected, onSelect, hidden, overlay, editable, onMove, compact }) {
+export default function MapPane({ graph, step, steps, idx, selected, onSelect, hidden, overlay, editable, onMove, compact, ghosts, onGhostConnect }) {
   const boxRef = useRef(null)
   const mapRef = useRef(null)
   const markers = useRef(new Map())
@@ -61,6 +61,12 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
   // onSelect now closes over `compact`, which changes on a rotate.
   const selectRef = useRef(onSelect)
   selectRef.current = onSelect
+  // U9: the connect callback. Same reason as selectRef - the click handler is
+  // registered once, when the map is built, and must not keep the prop it was
+  // born with. It calls editor.addLinkWith, the one path the inspector's
+  // 연결 button also takes.
+  const ghostRef = useRef(onGhostConnect)
+  ghostRef.current = onGhostConnect
   // The marker rows of the last draw, so a tap can project every asset and
   // ask which of them share the pixel it landed on.
   const rowsRef = useRef([])
@@ -155,7 +161,21 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
       })
       // map.on('click') is suppressed after a drag; a DOM onClick on the box is
       // not, and would deselect on every pan
-      map.on('click', () => selectRef.current(null))
+      //
+      // U9 rides on this one handler rather than on a per-layer listener: a
+      // click that lands on a ghost line (or its endpoint handle) connects and
+      // must NOT also deselect, and querying the rendered features here makes
+      // that true without depending on which listener MapLibre calls first.
+      map.on('click', (e) => {
+        const ids = ['ghost-end', 'ghost-hit'].filter((id) => map.getLayer(id))
+        const hits = ids.length ? map.queryRenderedFeatures(e.point, { layers: ids }) : []
+        const f = hits.find((x) => x.properties && x.properties.to)
+        if (f) {
+          if (ghostRef.current) ghostRef.current(f.properties.from, f.properties.to, f.properties.bearer)
+          return
+        }
+        selectRef.current(null)
+      })
 
       map.on('load', () => {
         const style = map.getStyle()
@@ -192,6 +212,39 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
             'line-opacity': ['case', ['get', 'dead'], 0.55, 0.9],
             'line-dasharray': ['case', ['get', 'dead'], ['literal', [1, 0]], ['case', ['get', 'cut'], ['literal', [1, 2.5]], ['literal', [1, 0]]]],
           } })
+        // U9: where the selected asset can connect, in edit mode. Achromatic
+        // and distinguished by line style only - this is a construction aid,
+        // not an adversary effect, and red is the adversary's (ADR-0012,
+        // ADR-0024). Two line layers rather than one data-driven dasharray,
+        // because line-dasharray is not a data-driven property: the dashed /
+        // dotted distinction is exactly what must not silently vanish.
+        map.addSource('ghost', { type: 'geojson', data: EMPTY })
+        // A dark casing under the dashes. The base map can be a bright
+        // satellite raster, and a pale achromatic line at half opacity
+        // disappears into it - the dash pattern is the whole message here, so
+        // it has to survive the brightest base the operator can pick. Darker
+        // rather than brighter, because brighter would start competing with
+        // the real links.
+        map.addLayer({ id: 'ghost-casing', type: 'line', source: 'ghost', layout: { 'line-cap': 'round' },
+          paint: { 'line-color': '#070a10', 'line-width': ['+', ['get', 'w'], 3.5], 'line-opacity': 0.5 } })
+        map.addLayer({ id: 'ghost-cand', type: 'line', source: 'ghost', filter: ['==', ['get', 'kind'], 'cand'],
+          layout: { 'line-cap': 'round' },
+          paint: { 'line-color': '#e6f0fb', 'line-width': ['get', 'w'], 'line-opacity': 0.8, 'line-dasharray': [3, 2.5] } })
+        map.addLayer({ id: 'ghost-off', type: 'line', source: 'ghost', filter: ['==', ['get', 'kind'], 'off'],
+          layout: { 'line-cap': 'round' },
+          paint: { 'line-color': '#e6f0fb', 'line-width': 2, 'line-opacity': 0.8, 'line-dasharray': [0.4, 2.4] } })
+        // the tap target: invisible and wide, because a thumb cannot land on a
+        // 2 px line at 390px
+        map.addLayer({ id: 'ghost-hit', type: 'line', source: 'ghost', filter: ['==', ['get', 'kind'], 'cand'],
+          paint: { 'line-color': '#c2c6cb', 'line-width': 20, 'line-opacity': 0 } })
+        map.addSource('ghost-end', { type: 'geojson', data: EMPTY })
+        map.addLayer({ id: 'ghost-end', type: 'circle', source: 'ghost-end',
+          paint: { 'circle-radius': 7, 'circle-color': '#0b0f16', 'circle-opacity': 0.8,
+            'circle-stroke-color': '#e6f0fb', 'circle-stroke-width': 1.6, 'circle-stroke-opacity': 0.9 } })
+        for (const id of ['ghost-hit', 'ghost-end']) {
+          map.on('mouseenter', id, () => { map.getCanvas().style.cursor = 'pointer' })
+          map.on('mouseleave', id, () => { map.getCanvas().style.cursor = '' })
+        }
         // the attacker's candidate moves during a wargame: faint, dotted, red
         // (ADR-0012), under the real attack arc
         map.addSource('threat', { type: 'geojson', data: EMPTY })
@@ -288,6 +341,16 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
       map.getSource('threat').setData(ghosts)
     } else {
       map.getSource('threat').setData(EMPTY)
+    }
+    // U9: candidates only while editing. In observe mode there is no overlay
+    // at all - nothing to build, nothing to connect.
+    if (ghosts && editable) {
+      const gf = ghostFeatures(graph, ghosts, t, georef)
+      map.getSource('ghost').setData(gf.lines)
+      map.getSource('ghost-end').setData(gf.ends)
+    } else {
+      map.getSource('ghost').setData(EMPTY)
+      map.getSource('ghost-end').setData(EMPTY)
     }
     const isolated = overlay ? overlay.isolated : []
     const threats = overlay ? new Set(overlay.nodeThreats.map((n) => n.id)) : new Set()
@@ -407,7 +470,7 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
       }
     }
     for (const [id, m] of markers.current) if (!seen.has(id)) { m.remove(); markers.current.delete(id) }
-  }, [graph, step, steps, idx, t, georef, ready, selected, onSelect, overlay, editable, compact])
+  }, [graph, step, steps, idx, t, georef, ready, selected, onSelect, overlay, editable, compact, ghosts])
 
   // One flash per adjudicated turn, on the target's marker. Declared after the
   // marker effect so the markers exist when it runs. The turn is recorded

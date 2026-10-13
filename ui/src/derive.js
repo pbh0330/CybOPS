@@ -8,6 +8,7 @@ import { runStep, containmentCandidates } from './engine.js'
 import { assetName, linkName, techniqueKo } from './labels.js'
 import { legalFor } from './game.js'
 import { footholds } from './attack.js'
+import { linkCandidates, linkFitsRules, ruleGap } from './sandbox.js'
 
 export function num(v) { return typeof v === 'number' ? v : Number(v || 0) }
 export function pct(v) { return `${(num(v) * 100).toFixed(1)}%` }
@@ -345,4 +346,49 @@ export function contribMission(graph, s) {
   const missions = (graph?.missions || []).slice().sort((a, b) => (num(a.priority) || 9) - (num(b.priority) || 9))
   const active = (m) => (s?.mission_active ? s.mission_active[m.id] !== false : true)
   return missions.find(active) || missions[0] || null
+}
+
+// --- U9: where a selected asset can connect ------------------------------
+//
+// The inspector's candidate list (Rail's 구성 block) says WHAT can be wired.
+// It never said WHERE, so a name had to be matched against the picture by
+// hand. This is the same list as geometry: one line per candidate target.
+//
+// `linkCandidates` emits one row per (target, bearer) pair. The overlay keeps
+// the best-ranked bearer per target - a second line to the same box says
+// nothing the first does not, and the full bearer list belongs in the
+// inspector. The bearer that rides along is the one `addLinkWith` is called
+// with, so the line and the inspector's 연결 button create the same link.
+//
+// Two kinds, told apart by LINE STYLE and never by colour (ADR-0012,
+// ADR-0024 - these are construction aids, and red is the adversary's):
+//
+//   cands    the rule table's candidates, drawn dashed, clickable
+//   offRule  this asset's EXISTING links that the rule table no longer fits
+//            (the inspector's 규칙 밖 mark, same predicate), drawn dotted and
+//            inert - there is nothing to connect, the point is that the flag
+//            now has a place on screen
+const GHOST_MAX = 8
+
+export function linkGhosts(graph, rules, assetId) {
+  if (!graph || !assetId) return null
+  const me = (graph.assets || []).find((a) => a.id === assetId)
+  if (!me) return null
+  const seen = new Set()
+  const cands = []
+  for (const c of linkCandidates(graph, rules, assetId)) {
+    if (seen.has(c.id)) continue
+    seen.add(c.id)
+    cands.push({ to: c.id, bearer: c.bearer, why: c.why, rank: cands.length + 1 })
+  }
+  const shown = cands.slice(0, GHOST_MAX)
+  // same thickness rule as the wargame's ghost arrows (gameOverlay), so the
+  // two overlays are read with one eye
+  for (const c of shown) c.w = Math.max(1.5, 4 - c.rank * 0.4)
+  const offRule = (graph.links || [])
+    .filter((l) => l.a === assetId || l.b === assetId)
+    .filter((l) => !linkFitsRules(graph, rules, l))
+    .map((l) => ({ id: l.id, to: l.a === assetId ? l.b : l.a, bearer: l.bearer || '', w: 2 }))
+  if (!shown.length && !offRule.length) return null
+  return { from: assetId, gap: ruleGap(rules, me.type), total: cands.length, cands: shown, offRule }
 }

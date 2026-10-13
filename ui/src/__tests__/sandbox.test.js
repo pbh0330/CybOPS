@@ -4,6 +4,7 @@ import rules from '../../public/data/link-rules.json'
 import {
   makeSandbox, linkCandidates, missionCandidates, readiness, placeFree, placeNear,
   validateImport, listPlans, savePlan, loadPlan, deletePlan, SANDBOX_ID, siteOf, ruleGap,
+  linkFitsRules,
 } from '../sandbox.js'
 
 const tg = replay.graph
@@ -277,5 +278,53 @@ describe('plans (localStorage)', () => {
     deletePlan('구성 B')
     expect(listPlans().map((p) => p.name)).toEqual(['구성 A'])
     expect(loadPlan('없음')).toBe(null)
+  })
+})
+
+// The predicate behind the inspector's 규칙 밖 mark and the overlay's dotted
+// ghost line (derive.linkGhosts). It used to be written inline in Rail.jsx,
+// where only the inspector could reach it; the overlay needed the same answer
+// and a second copy would have let the two disagree about the same link.
+describe('linkFitsRules', () => {
+  const a = (over) => ({ id: 'A', type: 'c2-server', site: '본부', unit: 'U', ...over })
+  const b = (over) => ({ id: 'B', type: 'satcom-terminal', site: '본부', unit: 'U', ...over })
+  const g = (x, y, l) => ({ assets: [x, y], links: [l] })
+
+  it('accepts a bearer both types carry under a satisfied condition', () => {
+    const l = { id: 'L', a: 'A', b: 'B', bearer: 'wired' }
+    expect(linkFitsRules(g(a(), b(), l), rules, l)).toBe(true)
+  })
+  it('rejects wired across two different sites (same_site)', () => {
+    const l = { id: 'L', a: 'A', b: 'B', bearer: 'wired' }
+    expect(linkFitsRules(g(a(), b({ site: '전방' }), l), rules, l)).toBe(false)
+  })
+  it('reads the placeholder site as no site, the way linkCandidates does', () => {
+    const l = { id: 'L', a: 'A', b: 'B', bearer: 'wired' }
+    expect(linkFitsRules(g(a({ site: '신규' }), b({ site: '신규' }), l), rules, l)).toBe(false)
+  })
+  it('rejects satcom with no satcom terminal at either end (needs_type)', () => {
+    const l = { id: 'L', a: 'A', b: 'B', bearer: 'satcom' }
+    expect(linkFitsRules(g(a(), b(), l), rules, l)).toBe(true)
+    expect(linkFitsRules(g(a(), b({ type: 'workstation' }), l), rules, l)).toBe(false)
+  })
+  it('rejects a bearer one end does not carry', () => {
+    const l = { id: 'L', a: 'A', b: 'B', bearer: 'vhf' }
+    expect(linkFitsRules(g(a({ type: 'radio-relay' }), b({ type: 'workstation' }), l), rules, l)).toBe(false)
+  })
+  it('stays silent when the table cannot say', () => {
+    const l = { id: 'L', a: 'A', b: 'B', bearer: 'wired' }
+    expect(linkFitsRules(g(a(), b(), l), null, l)).toBe(true)
+    expect(linkFitsRules(g(a({ type: 'tent' }), b(), l), rules, l)).toBe(true)
+    expect(linkFitsRules(g(a(), b(), l), rules, null)).toBe(true)
+  })
+  it('agrees with linkCandidates on what it would have proposed', () => {
+    const x = a({ site: '본부' })
+    const y = b({ site: '본부' })
+    const graph = { assets: [x, y], links: [] }
+    const proposed = linkCandidates(graph, rules, 'A')
+    for (const c of proposed) {
+      const l = { id: 'L', a: 'A', b: c.id, bearer: c.bearer }
+      expect(linkFitsRules({ ...graph, links: [l] }, rules, l)).toBe(true)
+    }
   })
 })

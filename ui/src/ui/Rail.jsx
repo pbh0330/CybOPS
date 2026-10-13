@@ -3,7 +3,7 @@ import { CAUSE_COLOR } from '../graph.js'
 import { num, pct, missionRows, cutRows, actionRows, linkageOf, eventRows } from '../derive.js'
 import detection from '../detection.json'
 import { techniqueKo, techniqueMeaning, tacticKo, assetName, typeKo } from '../labels.js'
-import { linkCandidates, missionCandidates, siteOf, ruleGap, BEARER_ORDER } from '../sandbox.js'
+import { linkCandidates, missionCandidates, ruleGap, linkFitsRules, BEARER_ORDER } from '../sandbox.js'
 import Readiness from './Readiness.jsx'
 import { CitedText, citeStats, splitSentences, stripCites } from './cite.jsx'
 
@@ -475,15 +475,11 @@ function Build({ graph, assetId, editor, rules, onDeselect }) {
   const gap = ruleGap(rules, asset.type)
   const known = !gap
   const jewel = (graph.crown_jewels || []).includes(assetId)
-  const bearerOk = (l) => {
-    const o = (graph.assets || []).find((a) => a.id === (l.a === assetId ? l.b : l.a))
-    if (!known || !o || !rules.types[o.type]) return true
-    const both = (rules.types[asset.type].bearers || []).includes(l.bearer) && (rules.types[o.type].bearers || []).includes(l.bearer)
-    const r = (rules.bearers || {})[l.bearer] || {}
-    // same reading as linkCandidates: the placeholder site is not a site
-    const sameSite = !!siteOf(asset) && siteOf(asset) === siteOf(o)
-    return both && !(r.same_site && !sameSite) && !(r.needs_type && asset.type !== r.needs_type && o.type !== r.needs_type)
-  }
+  // The predicate moved to sandbox.js (linkFitsRules) so this mark and the
+  // overlay's dotted ghost line (derive.linkGhosts) read the same table. It
+  // used to be inline here, which meant the screen could flag a link the
+  // overlay did not.
+  const bearerOk = (l) => linkFitsRules(graph, rules, l)
   return (
     <div className="build">
       <div className="lk-head">구성</div>

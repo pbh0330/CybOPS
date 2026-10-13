@@ -46,10 +46,14 @@ function paintSymbol(n, state) {
   })
 }
 
-export default function GraphCanvas({ graph, step, steps, idx, view, labels, hidden, cyRef, onSelect, onTap, selected, overlay, contrib }) {
+export default function GraphCanvas({ graph, step, steps, idx, view, labels, hidden, cyRef, onSelect, onTap, selected, overlay, contrib, ghosts, onGhostConnect }) {
   const boxRef = useRef(null)
   const flowRef = useRef({ raf: null, offset: 0, view, hidden })
   const [bands, setBands] = useState([])
+  // U9: the ghost lines, in RENDERED pixels. Measured from where the nodes
+  // actually are and recomputed on every pan, zoom, layout and node drag -
+  // the same rule the layer bands follow, for the same reason.
+  const [ghostLines, setGhostLines] = useState([])
   const [hopCount, setHopCount] = useState(0)
   // Effects run in declaration order, so this one fires before the instance
   // below exists. cyReady is the signal that it now does.
@@ -65,6 +69,12 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
   tapRef.current = onTap
   const selectRef = useRef(onSelect)
   selectRef.current = onSelect
+  // U9 connects through editor.addLinkWith, the same call the inspector's
+  // 연결 button makes. Read through a ref because the handler is attached to
+  // the SVG the same way the taps are attached to cy: once, with props that
+  // change under it.
+  const ghostRef = useRef(onGhostConnect)
+  ghostRef.current = onGhostConnect
 
   flowRef.current.view = view
   flowRef.current.hidden = hidden
@@ -269,6 +279,100 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
     })
   }, [contrib, view, graph, step, cyReady])
 
+  // --- link candidates as ghost lines (U9) ---------------------------------
+  //
+  // Drawn as an SVG layer over the canvas rather than as cytoscape edges, for
+  // three reasons: a candidate is not a dependency and must not enter the
+  // dagre layout or the selected node's path traversal; the line needs a wide
+  // invisible hit stroke so a thumb can reach it at 390px; and dashed versus
+  // dotted belongs in style.css, where the rest of the chrome lives.
+  //
+  // Each line is trimmed to stop clear of both node boxes, so the hit stroke
+  // never sits on top of a node and steal its tap, and the far end carries a
+  // handle - that is the "far endpoint" the line can be connected by, without
+  // overloading what a click on the candidate NODE means (it still selects).
+  const measureGhosts = useCallback(() => {
+    const cy = cyRef.current
+    if (!cy || !ghosts || view === 'geo') { setGhostLines([]); return }
+    const a = cy.$id(ghosts.from)
+    if (!a.length || a.hasClass('hidden')) { setGhostLines([]); return }
+    const pa = a.renderedPosition()
+    const ba = a.renderedBoundingBox({ includeLabels: false })
+    const radA = Math.max(ba.w, ba.h) / 2
+    const out = []
+    const push = (kind, c) => {
+      const b = cy.$id(c.to)
+      if (!b.length || b.hasClass('hidden')) return
+      const pb = b.renderedPosition()
+      const bb = b.renderedBoundingBox({ includeLabels: false })
+      const radB = Math.max(bb.w, bb.h) / 2
+      const dx = pb.x - pa.x
+      const dy = pb.y - pa.y
+      const len = Math.hypot(dx, dy)
+      // two boxes almost touching leave no stub worth drawing, and a 4 px line
+      // under two node borders is noise rather than information
+      if (!(len > radA + radB + 24)) return
+      const ux = dx / len
+      const uy = dy / len
+      out.push({
+        kind, to: c.to, bearer: c.bearer, why: c.why || '', w: c.w || 2,
+        x1: pa.x + ux * (radA + 4), y1: pa.y + uy * (radA + 4),
+        x2: pa.x + ux * (len - radB - 10), y2: pa.y + uy * (len - radB - 10),
+      })
+    }
+    for (const c of ghosts.cands) push('cand', c)
+    for (const c of ghosts.offRule) push('off', c)
+    setGhostLines(out)
+  }, [ghosts, view, cyRef])
+
+  useEffect(() => {
+    const cy = cyRef.current
+    if (!cy) return
+    cy.on('pan zoom resize layoutstop position', measureGhosts)
+    measureGhosts()
+    return () => cy.off('pan zoom resize layoutstop position', measureGhosts)
+  }, [measureGhosts, graph, view, hidden, cyReady])
+
+
+  // --- wargame overlay -----------------------------------------------------
+  // Ghost arrows are the attacker's candidate moves (the engine's legal move
+  // table, top n by gain). They are drawn over the layout and never fed to
+  // it, and they do not crawl: a move that has not happened is not traffic.
+  // The flash marks one adjudication, once per turn.
+  const flashRef = useRef({ turn: -1, timer: null })
+  useEffect(() => {
+    const cy = cyRef.current
+    if (!cy) return
+    cy.edges('.threat-hop').remove()
+    cy.nodes().removeClass('threat isolated')
+    // No game, or a game with nothing adjudicated yet (a restart goes straight
+    // from the old game's overlay to the new one's): forget the last flashed
+    // turn so the next adjudication flashes even on the same turn index.
+    if (!overlay || !overlay.last) flashRef.current.turn = -1
+    if (!overlay) return
+    const els = []
+    for (const c of overlay.candidates) {
+      if (!cy.$id(c.from).length || !cy.$id(c.to).length) continue
+      els.push({ group: 'edges', classes: 'threat-hop', data: { id: `threat:${c.from}->${c.to}`, source: c.from, target: c.to, w: Math.max(1.5, 4 - c.rank * 0.4) } })
+    }
+    if (els.length) cy.add(els)
+    for (const n of overlay.nodeThreats) cy.$id(n.id).addClass('threat')
+    for (const id of overlay.isolated) cy.$id(id).addClass('isolated')
+    // one flash per adjudicated turn
+    if (overlay.last && overlay.last.turn !== flashRef.current.turn) {
+      flashRef.current.turn = overlay.last.turn
+      const n = cy.$id(overlay.last.to)
+      const cls = overlay.last.success ? 'flash-hit' : 'flash-miss'
+      // a second adjudication inside 800 ms: the first target's class must go
+      // too, or its underlay stays on for good once its timer is cancelled
+      clearTimeout(flashRef.current.timer)
+      cy.nodes().removeClass('flash-hit flash-miss')
+      n.addClass(cls)
+      flashRef.current.timer = setTimeout(() => n.removeClass(cls), 800)
+    }
+  }, [overlay, graph, cyReady])
+  useEffect(() => () => clearTimeout(flashRef.current.timer), [])
+
   // --- paint ------------------------------------------------------------
   useEffect(() => {
     const cy = cyRef.current
@@ -357,6 +461,31 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
           ))}
         </div>
       )}
+      {/* U9. aria-hidden on purpose: this is a redundant graphical affordance -
+          the same link is made from the inspector's 연결 button, which is a
+          real button in the tab order. The overlay adds a place on screen, not
+          a second way in. */}
+      {!hidden && ghostLines.length > 0 && (
+        <svg className="ghosts" aria-hidden="true">
+          {ghostLines.map((l) => (
+            <g key={`${l.kind}:${l.to}`} className={`ghost ghost-${l.kind}`}>
+              <line className="ghost-line" x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} strokeWidth={l.w} />
+              {l.kind === 'cand' && (
+                <>
+                  <line
+                    className="ghost-hit" x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2}
+                    onClick={() => ghostRef.current && ghostRef.current(ghosts.from, l.to, l.bearer)}
+                  />
+                  <circle
+                    className="ghost-end" cx={l.x2} cy={l.y2} r={7}
+                    onClick={() => ghostRef.current && ghostRef.current(ghosts.from, l.to, l.bearer)}
+                  />
+                </>
+              )}
+            </g>
+          ))}
+        </svg>
+      )}
       {!hidden && (
         <div className="legend-bar">
           <b>테두리 = 원인</b>
@@ -405,6 +534,20 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
                 <span className="legend-thick" />
                 선 굵기 = {contrib.missionName} 저하 기여 · 자산 간 비교이고 저하도의 몫이 아니다
               </span>
+            </>
+          )}
+          {ghosts && ghostLines.length > 0 && (
+            <>
+              <span className="lg-rule" />
+              <span className="legend-item legend-ghost" title="규칙표(data/link-rules.json)가 고른 후보다. 선이나 끝의 점을 누르면 인스펙터의 연결 버튼과 같은 경로로 이어진다.">
+                <span className="legend-dash" />유령 선 = 연결 가능 후보 {ghosts.cands.length}
+                {ghosts.total > ghosts.cands.length ? `/${ghosts.total}` : ''}
+              </span>
+              {ghosts.offRule.length > 0 && (
+                <span className="legend-item legend-ghost" title="지금 걸려 있지만 규칙표에 맞지 않는 링크다. 끊지 않는다 - 표시만 한다.">
+                  <span className="legend-dot" />점선 = 규칙 밖 링크 {ghosts.offRule.length}
+                </span>
+              )}
             </>
           )}
         </div>

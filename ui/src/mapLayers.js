@@ -94,6 +94,45 @@ export function attackArcFeatures(graph, hops, t, georef) {
   return fc(feats)
 }
 
+// U9: the link candidates of the selected asset, as straight lines on the
+// ground. Straight and not arced: the attack arc is curved because it is a
+// route somebody took, and a candidate is not a route. The far end carries a
+// point feature so the line can be connected by its endpoint as well as by
+// its middle.
+//
+// `kind` is 'cand' (the rule table's candidate) or 'off' (a link already on
+// the board that the rule table no longer fits). MapPane draws the two in
+// separate layers because line-dasharray is not data-driven: the distinction
+// has to survive, and it is a line style, never a colour (ADR-0012).
+export function ghostFeatures(graph, ghosts, t, georef) {
+  const empty = { lines: fc([]), ends: fc([]) }
+  if (!ghosts || !ghosts.from) return empty
+  const a = positionAt((graph?.assets || []).find((x) => x.id === ghosts.from), t)
+  if (!a) return empty
+  const [lon0, lat0] = toLonLat(georef, a.x, a.y)
+  const lines = []
+  const ends = []
+  const add = (kind, c) => {
+    const b = positionAt((graph?.assets || []).find((x) => x.id === c.to), t)
+    if (!b) return
+    const [lon1, lat1] = toLonLat(georef, b.x, b.y)
+    const props = { kind, from: ghosts.from, to: c.to, bearer: c.bearer || '', w: Number(c.w) || 2 }
+    lines.push(line([[lon0, lat0], [lon1, lat1]], props))
+    // 88% of the way out: clear of the 30 px marker at the far end, so the
+    // handle is the ghost line's own endpoint and not the marker behind it
+    if (kind === 'cand') {
+      ends.push({
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: toLonLat(georef, a.x + (b.x - a.x) * 0.88, a.y + (b.y - a.y) * 0.88) },
+        properties: props,
+      })
+    }
+  }
+  for (const c of ghosts.cands || []) add('cand', c)
+  for (const c of ghosts.offRule || []) add('off', c)
+  return { lines: fc(lines), ends: fc(ends) }
+}
+
 export function gridFeatures(georef, extent, spacing = 2000) {
   const [x0, x1] = extent.x, [y0, y1] = extent.y
   const lines = [], labels = []

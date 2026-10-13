@@ -193,9 +193,31 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
 .legend-bar .lg-rule { width: 1px; height: 12px; background: var(--line-strong); }
 .legend-item { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); }
 .legend-sw { width: 10px; height: 10px; border-radius: 2px; border: 1.5px solid currentColor; }
-/* U3 legend key. Thickness carries the whole message: no hue, because red is
-   adversary effect and nothing else (ADR-0024). */
+/* U3 / U9 legend keys. Thickness and dash pattern carry the whole message:
+   no hue, because red is adversary effect and nothing else (ADR-0024). */
 .legend-thick { width: 16px; height: 0; border-top: 5px solid var(--text-secondary); opacity: .8; }
+.legend-dash { width: 16px; height: 0; border-top: 2px dashed var(--text-secondary); opacity: .8; }
+.legend-dot { width: 16px; height: 0; border-top: 2px dotted var(--text-secondary); opacity: .8; }
+
+/* U9: link candidates drawn over the graph canvas. An SVG layer and not
+   cytoscape edges - a candidate is not a dependency, so it must not enter the
+   layout or the selected node's path traversal. Geometry is measured in
+   rendered pixels by GraphCanvas and trimmed clear of both node boxes, so the
+   wide hit stroke never swallows a tap meant for a node.
+
+   Achromatic by rule (ADR-0012, ADR-0024): dashed is a rule-table candidate,
+   dotted is a link already on the board that the table no longer fits. The
+   two are told apart by the dash pattern, never by colour. */
+.ghosts { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.ghost-line { fill: none; stroke: var(--text-secondary); stroke-opacity: .5; stroke-linecap: round; }
+.ghost-cand .ghost-line { stroke-dasharray: 7 5; }
+.ghost-off .ghost-line { stroke-dasharray: 1.5 4; stroke-opacity: .55; }
+.ghost-hit { stroke: transparent; stroke-width: 14; pointer-events: stroke; cursor: pointer; }
+.ghost-end {
+  fill: var(--surface-board); stroke: var(--text-secondary); stroke-opacity: .7; stroke-width: 1.4;
+  pointer-events: all; cursor: pointer;
+}
+.ghost-cand:hover .ghost-line, .ghost-cand:hover .ghost-end { stroke-opacity: 1; }
 
 /* ------------------------------------------------------------- rail */
 
@@ -840,6 +862,16 @@ button.staff-fact:hover { color: var(--text-primary); border-bottom-color: var(-
      what it was built to do. */
   .geo-foot > * { flex: none; }
   .geo-warn { white-space: nowrap; margin-left: 0; }
+
+  /* U9 on a phone. A finger is about 44px wide and the ghost line is 2 to 4px,
+     so the invisible hit stroke and the endpoint handle are what is actually
+     being aimed at; both grow. The visible line does NOT grow with them - a
+     thicker ghost at this size reads as a real link. */
+  .ghost-hit { stroke-width: 26; }
+  .ghost-end { r: 10; stroke-width: 1.8; }
+  /* :hover does not exist on a touch screen, and a sticky hover state left the
+     last-tapped candidate lit after the link was made */
+  .ghost-cand:hover .ghost-line, .ghost-cand:hover .ghost-end { stroke-opacity: .5; }
 
   /* ------------------------------ compact: the sheet takes the ambiguity */
   /* Markers that overlap are not spread out on the map - moving a symbol off

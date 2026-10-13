@@ -3,7 +3,7 @@ import { loadConfig } from './config.js'
 import { loadSymbology, unmappedTypes } from './symbols.js'
 import { createEditor } from './editor.js'
 import { compromiseOf } from './game.js'
-import { computeStep, activePhaseNames, clockOf, gameOverlay, peekLine, contribLayer, contribMission } from './derive.js'
+import { computeStep, activePhaseNames, clockOf, gameOverlay, peekLine, contribLayer, contribMission, linkGhosts } from './derive.js'
 import { attribution } from './facts.js'
 import { makeSandbox, loadRules, validateImport, listPlans, savePlan, loadPlan, deletePlan, SANDBOX_ID, TEMPLATE_ID } from './sandbox.js'
 import { useCompact } from './useCompact.js'
@@ -239,7 +239,16 @@ export default function App() {
     if (!m) return null
     return contribLayer(attribution(graph, step, m.id, payload?.method), m)
   }, [contribOn, graph, step, payload])
-
+  // U9: the selected asset's link candidates, as geometry. Edit mode only -
+  // in observe mode there is nothing to build.
+  const ghosts = useMemo(() => (
+    mode === 'edit' && graph && selectedData && selectedData.kind === 'asset'
+      ? linkGhosts(graph, rules, selectedData.id)
+      : null
+  ), [mode, graph, rules, selectedData])
+  const onGhostConnect = useCallback((a, b, bearer) => {
+    if (editorRef.current) editorRef.current.addLinkWith(a, b, bearer)
+  }, [])
   // While a game runs the clock is the game's cfg.t: the timeline is frozen
   // so the pictures and the turn loop cannot drift apart.
   const locked = mode === 'wargame' && !!game
@@ -580,7 +589,7 @@ export default function App() {
               graph={graph} step={step} steps={payload?.steps} idx={idx} view={view} labels={labels}
               hidden={isGeo} cyRef={cyRef} onSelect={onSelect} onTap={onTap}
               selected={selectedData?.id || null} overlay={overlay}
-              contrib={contrib}
+              contrib={contrib} ghosts={ghosts} onGhostConnect={onGhostConnect}
             />
             {hasGeoref ? (
               <MapPane
@@ -589,6 +598,7 @@ export default function App() {
                 overlay={overlay}
                 editable={mode === 'edit'}
                 compact={compact}
+                ghosts={ghosts} onGhostConnect={onGhostConnect}
                 onMove={(id, x, y) => editorRef.current && editorRef.current.moveAsset(id, x, y)}
               />
             ) : (
