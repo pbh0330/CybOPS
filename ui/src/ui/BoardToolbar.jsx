@@ -1,4 +1,5 @@
 import { createPortal } from 'react-dom'
+import SkinToggle from './SkinToggle.jsx'
 
 const VIEWS = [
   ['dependency', '임무 의존'],
@@ -52,6 +53,12 @@ export default function BoardToolbar({
     </>
   ) : null
 
+  // The theme switch belongs with the other DISPLAY controls (the view
+  // segment, the label checkbox): it changes how the screen looks and
+  // nothing about what it says. Same portal as the rest, so on a narrow
+  // screen there is one of it, inside the topbar's ⋯ panel.
+  const skinSeg = <SkinToggle />
+
   const labelsChk = (
     <label className="chk">
       <input type="checkbox" checked={labels} onChange={(e) => onLabels(e.target.checked)} /> 라벨
@@ -93,6 +100,7 @@ export default function BoardToolbar({
       )}
 
       {into(labelsChk)}
+      {into(skinSeg)}
       <button type="button" onClick={onFit}>화면 맞춤</button>
     </div>
   )
