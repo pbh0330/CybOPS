@@ -3,7 +3,7 @@ import { CAUSE_COLOR } from '../graph.js'
 import { num, pct, missionRows, cutRows, actionRows, linkageOf, eventRows } from '../derive.js'
 import detection from '../detection.json'
 import { techniqueKo, techniqueMeaning, tacticKo, assetName, typeKo } from '../labels.js'
-import { linkCandidates, missionCandidates, ruleGap, linkFitsRules, BEARER_ORDER } from '../sandbox.js'
+import { linkCandidates, missionCandidates, ruleGap, linkFitsRules, linkException, BEARER_ORDER } from '../sandbox.js'
 import Readiness from './Readiness.jsx'
 import { CitedText, citeStats, splitSentences, stripCites } from './cite.jsx'
 
@@ -507,16 +507,28 @@ function Build({ graph, assetId, editor, rules, onDeselect }) {
       {known && cands.length === 0 && <div className="none">지금 연결할 수 있는 상대가 없다. 같은 위치의 자산을 놓거나 베어러가 맞는 중계 노드를 두어라.</div>}
 
       {mine.length > 0 && <div className="lk-sub">이 자산의 링크</div>}
-      {mine.map((l) => (
+      {mine.map((l) => {
+        // A link whose scenario declared an abstraction exception is not
+        // 규칙 밖, and it is not a plain link either: a rule was waived and
+        // the declaration says what was left unmodelled. The mark carries
+        // that reason - the declaration exists to make the simplification
+        // visible on screen, not to make it disappear (ADR-0033).
+        const waived = linkException(l)
+        const fits = bearerOk(l)
+        return (
         <div className="build-cand" key={l.id}>
           <span>{assetName(graph, l.a === assetId ? l.b : l.a).ko}<em className="ref">{l.id}</em></span>
           <select value={l.bearer} onChange={(e) => ed.setLinkBearer(l.id, e.target.value)}>
             {BEARER_ORDER.map((b) => <option key={b} value={b}>{b}</option>)}
           </select>
-          {!bearerOk(l) && <span className="build-warn">규칙 밖</span>}
+          {!fits && <span className="build-warn">규칙 밖</span>}
+          {fits && waived && (
+            <span className="build-decl" title={`${waived.exempts.join(', ')} 면제: ${waived.why}`}>선언된 예외</span>
+          )}
           <button type="button" className="req-btn" onClick={() => ed.removeLink(l.id)}>끊기</button>
         </div>
-      ))}
+        )
+      })}
 
       {/* removal is the eraser tool + a tap on desktop (editor.js handleTap);
           this is the same call, reached without switching tools (M2 task 2) */}
