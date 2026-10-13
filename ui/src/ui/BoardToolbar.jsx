@@ -1,4 +1,6 @@
+import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
+import { useToolbarFold } from '../fold.js'
 
 const VIEWS = [
   ['dependency', '임무 의존'],
@@ -22,9 +24,29 @@ export default function BoardToolbar({
   // through a portal, so there is one view switch and one label checkbox in
   // the whole app no matter how wide the window is.
   menuNode = null,
+  // U12: 넘침은 뷰포트가 아니라 내용으로 판정한다. 이 툴바가 자기 상자를 넘는지
+  // 재서 위로 알리고, App 이 `compact || 넘침` 으로 `menuNode` 를 넘긴다.
+  // 재는 쪽과 접는 쪽이 같은 엘리먼트여야 하므로 측정은 여기서 한다.
+  onFold,
 }) {
   const editing = mode === 'edit'
   const into = (el) => (menuNode && el ? createPortal(el, menuNode) : el)
+
+  // 구조 서명: 컨트롤 묶음이 들고 나는 것만. 이것이 바뀌면 기억한 폭을 버린다.
+  // 둘 다 상단바에서 바뀌므로(모드 세그먼트, 시나리오 select) 패널을 열어 둔
+  // 채 바뀌는 일이 없다.
+  //
+  // 뷰(`contribOk`)는 **들어가지 않는다.** 비활성 체크박스는 활성과 폭이 같고,
+  // 뷰는 접힌 패널 안에서 눌린다 - 여기 넣으면 패널 안에서 뷰를 고르는 순간
+  // 판정이 초기화되어 그 패널이 닫힌다.
+  const box = useRef(null)
+  const sig = `${editing ? 'e' : '-'}|${sandbox ? 's' : '-'}`
+  // 다시 재기만 하는 신호: 저장된 구성이 생기면 삭제 select 가 하나 더 붙고,
+  // 구성 이름이 길면 그 select 가 넓어지고, `editState` 캡션은 자산/링크 수가
+  // 바뀔 때마다 길이가 달라진다. 판정 상태는 건드리지 않는다.
+  const probe = `${plans.map((p) => p.name).join('\u001f')}|${editState || ''}`
+  const folded = useToolbarFold(box, sig, probe)
+  useEffect(() => { if (onFold) onFold(folded) }, [folded, onFold])
 
   const viewSeg = (
     <div className="seg" role="group" aria-label="뷰">
@@ -79,7 +101,7 @@ export default function BoardToolbar({
   )
 
   return (
-    <div className="board-toolbar">
+    <div className="board-toolbar" ref={box}>
       {into(viewSeg)}
 
       {editing && (
