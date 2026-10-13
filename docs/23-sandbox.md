@@ -74,7 +74,7 @@
     "satcom": { "label": "위성", "needs_type": "satcom-terminal" }
   },
   "types": {
-    "c2-server": { "bearers": ["wired", "satcom"], "provides": ["messaging", "intel"], "performs": ["T-ORDER", "T-SITREP"] },
+    "c2-server": { "bearers": ["wired", "vhf", "satcom"], "provides": ["messaging", "intel"], "performs": ["T-ORDER", "T-SITREP"] },
     "...": {}
   }
 }

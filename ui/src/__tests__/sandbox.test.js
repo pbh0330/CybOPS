@@ -328,3 +328,48 @@ describe('linkFitsRules', () => {
     }
   })
 })
+
+// The rule table is a copy of what tacnet-01 declares (its `template` field
+// says so), so every link a shipped scenario declares should pass it. Pinning
+// one link by name would catch one omission; walking all of them catches the
+// next one too. The judge is the app's own linkFitsRules, not a re-statement
+// of the rule: the point is that the screen and this test cannot disagree.
+//
+// Links that are off the table today for a reason that is NOT a missing table
+// entry are pinned here by id, each with its reason. The assertion is equality
+// with this list, so a NEW off-table link fails, and so does fixing one of
+// these without removing it here (a stale exception hides the next regression).
+// They are open findings, not accepted behaviour; see the U13 report.
+describe('shipped scenarios against the rule table', () => {
+  const offTable = (graph) => {
+    const byId = new Map(graph.assets.map((a) => [a.id, a]))
+    return (graph.links || [])
+      .filter((l) => !linkFitsRules(graph, rules, l))
+      .map((l) => {
+        const a = byId.get(l.a)
+        const b = byId.get(l.b)
+        return `${l.id}: ${l.a}(${a && a.type}) --${l.bearer}--> ${l.b}(${b && b.type})`
+      })
+  }
+  // wired is same_site only, and this link joins two different sites
+  const TACNET_KNOWN = ['L-TOC-FDC: TOC-SRV(c2-server) --wired--> FDC-SRV(fire-control-server)']
+  // wired is same_site only; the switch and firewall here serve other sites by
+  // design (defnet-01 _links_note: no per-unit access switch is modelled)
+  const DEFNET_KNOWN = [
+    'L-SW-ESX02: SW01(switch) --wired--> ESX02(hypervisor)',
+    'L-SW-DC02: SW01(switch) --wired--> DC02(domain-controller)',
+    'L-SW-DB02: SW01(switch) --wired--> DB02(database)',
+    'L-FW-WKS001: FW01(firewall) --wired--> WKS001(workstation)',
+    'L-FW-WKS002: FW01(firewall) --wired--> WKS002(workstation)',
+    'L-FW-WKS003: FW01(firewall) --wired--> WKS003(workstation)',
+    'L-FW-WKS004: FW01(firewall) --wired--> WKS004(workstation)',
+    'L-FW-WKS005: FW01(firewall) --wired--> WKS005(workstation)',
+  ]
+  it('tacnet-01 declares no link outside the table beyond the pinned ones', () => {
+    expect(offTable(tg)).toEqual(TACNET_KNOWN)
+  })
+  it('defnet-01 declares no link outside the table beyond the pinned ones', async () => {
+    const defnet = (await import('../../public/data/defnet-01.replay.json')).default
+    expect(offTable(defnet.graph)).toEqual(DEFNET_KNOWN)
+  })
+})
