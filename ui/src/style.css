@@ -26,7 +26,11 @@
   --text-secondary: #c2c6cb;
   --text-muted: #99a0a7;
 
-  /* cause palette - ADR-0012. attack is the only red on this screen. */
+  /* cause palette - ADR-0012. attack is the only red on this screen.
+     Mirror of tokens.mjs CAUSE_COLOR, which is where the JS side reads them.
+     CSS cannot import a value, so the literals stay here and
+     tools/token-parity.mjs holds the two files to each other. Edit tokens.mjs
+     first. The comment marker above is what that tool looks for. */
   --attack: #ff4d5e;
   --env: #7d93ab;
   --inter: #c07dff;

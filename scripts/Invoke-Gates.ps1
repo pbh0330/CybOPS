@@ -4,8 +4,15 @@
 #
 # WHY THIS EXISTS
 #
-# There are ten Test-*.ps1 gates in this repo and CLAUDE.md tells you to put two
-# of them "in CI". There is no CI, and there was no way to run them together, so
+# As of 2026-10-14 there are sixteen Test-*.ps1 scripts in scripts\, and the
+# $gates list below has thirteen entries - ten of those scripts (Test-BundleConfig
+# appears twice, once per bundle) plus Add-Bom.ps1 and Write-OptcManifestLog.ps1.
+# This sentence used to say "ten Test-*.ps1 gates in this repo" and had drifted
+# well before the gate added today: count the files, do not trust the number in
+# a comment. The list below is the authority.
+#
+# CLAUDE.md tells you to put two of them "in CI". There is no CI, and there was
+# no way to run them together, so
 # in practice each one got run when someone remembered it. Two consequences
 # showed up on 2026-09-10:
 #
@@ -52,6 +59,7 @@ $gates = @(
   @{ name = 'ocsf conformance';   tier = 'offline'; script = 'Test-OcsfConformance.ps1';  args = @{} },
   @{ name = 'geo invariance';     tier = 'offline'; script = 'Test-GeoInvariance.ps1';    args = @{} },
   @{ name = 'scenario invariants';tier = 'offline'; script = 'Test-ScenarioInvariants.ps1'; args = @{} },
+  @{ name = 'token parity';       tier = 'offline'; script = 'Test-TokenParity.ps1';       args = @{} },
   @{ name = 'ui unit tests';      tier = 'offline'; script = 'Test-UiUnit.ps1';         args = @{} },
   @{ name = 'bundle: local';      tier = 'offline'; script = 'Test-BundleConfig.ps1';
      args = @{ Bundle = (Join-Path $root 'ui\dist') } },

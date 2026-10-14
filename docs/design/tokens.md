@@ -3,6 +3,12 @@
 Figma: `MC-CyCOP UI Redesign` (`mwTJW4NKL4T3W44lnn6qCR`), 컬렉션 `MC-CyCOP` / 모드 `Dark`.
 변수 27개. 이 표가 원본이고 Figma 는 사본이다.
 
+**코드가 읽는 출처는 `ui/src/tokens.mjs` 하나다.** Figma 에 대해서는 이 표가 여전히
+원본이지만, 화면을 그리는 값은 `tokens.mjs` 에서 나온다. `ui/src/style.css` 의 `:root` 는
+CSS 가 값을 import 할 수 없어 남은 사본이고, 이 표도 사람이 읽는 사본이다. 세 쪽이
+갈라지면 `ui/tools/token-parity.mjs` 가 잡는다 - 게이트는 `.\scripts\Test-TokenParity.ps1`
+다. hex 대소문자는 비교에서 무시하므로 이 표의 대문자는 그대로 둔다.
+
 ## 핵심 규칙 - 채도는 의미에만 쓴다
 
 크롬(상단바·패널·버튼·탭·시간축)에는 **유채색을 쓰지 않는다.** 화면에서 채도를 가진
