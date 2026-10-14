@@ -1,8 +1,8 @@
 {
   "tool": "ui/tools/staff-eval.mjs",
-  "generated": "2026-10-13T19:06:57.973Z",
+  "generated": "2026-10-13T20:00:11.688Z",
   "scenario": "tacnet-01",
-  "code_rev": "979456d",
+  "code_rev": "422a07d",
   "golden": {
     "items": 41,
     "abstain": 8,
