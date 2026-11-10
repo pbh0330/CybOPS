@@ -1,0 +1,593 @@
+/* MC-CyCOP - Apple skin.
+ *
+ * A SECOND stylesheet, not an edit of the first. Every rule below is scoped
+ * under `[data-theme-skin="apple"]` on the document root, so with the
+ * attribute absent not one selector matches: the default theme is exactly
+ * what it was before this file existed. SkinToggle.jsx sets and removes that
+ * attribute, and removing it is the whole rollback.
+ *
+ * WHAT THIS FILE CHANGES: surfaces, type, spacing, radii, material.
+ *
+ * WHAT IT MUST NOT: the cause palette. `--attack`, `--env`, `--inter`,
+ * `--mobility`, `--terrain`, `--maintenance`, `--unknown` and `--ok` carry
+ * MEANING - red is attack and nothing else (ADR-0012), and the chrome stays
+ * achromatic (ADR-0024/0025). None of the eight is redefined anywhere in this
+ * file, nothing here puts a hue on chrome, and every rule that touches an
+ * element which can also carry a cause colour (`.wg-result`, `.map-mark-sym`,
+ * `.cause`, `.bar span`, the kpi dots) leaves that colour's property alone.
+ * If a state colour reads badly on the lighter Apple surfaces that is an ADR
+ * question, not a line to add here.
+ *
+ * Tokens: Figma file "MC-CyCOP Apple Theme Tokens" (80RJPPTyKWECl5m0dhA3dM),
+ * 18 variables and 7 text styles. The table, the provenance and the two
+ * places this file deliberately departs from the token set are written up in
+ * `docs/design/tokens-apple.md`.
+ *
+ * Specificity note: `[data-theme-skin="apple"] .foo` is (0,2,0) against the
+ * base `.foo` at (0,1,0), and this file is loaded after style.css, so nothing
+ * here needs `!important` except where the base rule already used it (the two
+ * MapLibre overrides at the end).
+ */
+
+/* ------------------------------------------------------------------ tokens */
+
+:root[data-theme-skin="apple"] {
+  /* Surfaces. Apple dark is near-black and lifts by LIGHTNESS, not by a
+     border, so the ramp below is the elevation system and the border rules
+     further down mostly take borders away.
+   *
+   * The card sits at elevated-1, one step LOWER than the first draft put it.
+   * That draft used elevated-2 (#2C2C2E) and the measurement in section 4 of
+   * docs/design/tokens-apple.md said it cost the three dimmest cause colours
+   * their small-text contrast: maintenance 3.85, attack 4.30, env 4.40. The
+   * card is where `.tag-hot` (10px, attack red) and the cause chips live, so
+   * that is not a rounding error. Nothing about the cause palette changed to
+   * fix it - the surface under it came down.
+   *
+   * The step-down costs one thing and the rules below pay it. Base CSS uses
+   * `--surface-raised` for TWO roles, the card and the control at rest, and
+   * at elevated-1 a control standing on the elevated-1 top bar would be
+   * invisible. So the card keeps the token and every CONTROL is moved up to
+   * elevated-2 by name, and the panels that HOLD cards (rail, sheet, staff
+   * dock, palette) come down to base so the cards still read as lifted.
+   * Bars - the top strip and the timeline - stay at elevated-1. That split
+   * is Apple's own: a grouped list sits on the base colour with elevated
+   * cells, while a bar sits one step up. */
+  --surface-app: #000000;      /* surface/base - app, stage, card-holding panels */
+  --surface-board: #000000;    /* surface/base - the stage is the deepest plane */
+  --surface-chrome: #1c1c1e;   /* surface/elevated-1 - bars (top strip, timeline) */
+  --surface-raised: #1c1c1e;   /* surface/elevated-1 - CARDS */
+  --surface-hover: #2c2c2e;    /* surface/elevated-2 - controls at rest, chips */
+  --surface-active: #3a3a3c;   /* surface/elevated-3 - hover, selected segment */
+
+  /* Separator. ONE colour at two opacities: a hairline that needs to recede
+     gets fainter, never darker, so it still reads as a hairline over #000 and
+     over #2c2c2e alike. */
+  --line-strong: #38383a;                 /* separator */
+  --line-soft: rgba(56, 56, 58, .55);
+
+  /* Text. The token set has three levels and so does this screen, but they do
+     not line up. text/secondary at 60% composites to about #989aa0 over
+     elevated-1, which is where this screen's `--text-muted` already sits, and
+     text/tertiary at 30% measures ~2.2:1 there - right for a placeholder,
+     wrong for the several hundred 10-12px labels that carry the picture. So
+     the tokens shift down one tier, an 85% step fills the gap at the top, and
+     the true tertiary is used only on marks the existing design already
+     treats as decorative (`.ref`, the ADR line in the rail foot, the staff
+     timestamp). Written up in docs/design/tokens-apple.md. */
+  --text-primary: #ffffff;                     /* text/primary */
+  --text-secondary: rgba(235, 235, 245, .85);  /* interpolated - NOT a token */
+  --text-muted: rgba(235, 235, 245, .6);       /* text/secondary */
+  --text-tertiary: rgba(235, 235, 245, .3);    /* text/tertiary */
+
+  /* Radii. 980px is the pill: any height resolves to a full round end. */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-pill: 980px;
+
+  /* Spacing */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+
+  /* Shadow. The dark theme used a 30px drop to separate planes; here the
+     lightness step does that, so the shadow is only a contact edge and a soft
+     ambient one. */
+  --shadow: 0 .5px 0 rgba(255, 255, 255, .04), 0 8px 28px rgba(0, 0, 0, .55);
+
+  /* Type. On macOS this resolves to SF Pro; on this Windows machine it falls
+     through to the bundled IBM Plex Sans KR, so the ramp below (size, weight,
+     leading, tracking) is what carries the look, not the face. Pretendard is
+     kept ahead of Plex because it has SF-like metrics where it is installed. */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", Pretendard, "IBM Plex Sans KR", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+
+/* --------------------------------------------------------------- type ramp */
+/* The 7 text styles, applied by ROLE. Values are size / weight / leading /
+   tracking exactly as the Figma text styles carry them.
+     Title1    28 600 34 -0.4
+     Title2    22 600 28 -0.3
+     Headline  17 600 22 -0.2
+     Body      15 400 20 -0.1
+     Callout   13 400 18  0
+     Caption   12 400 16  0
+     Micro     11 400 14 +0.1 */
+
+[data-theme-skin="apple"] body {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: -.1px;
+  scrollbar-color: rgba(235, 235, 245, .3) transparent;
+}
+
+/* Title1 - the one number on the screen that is read from across a room */
+[data-theme-skin="apple"] .clock-time {
+  font-family: var(--font-sans);
+  font-size: 28px; font-weight: 600; line-height: 34px; letter-spacing: -.4px;
+}
+
+/* Title2 - mission degradation, the engagement clock, a card total.
+   These move off the mono face onto the sans with tabular figures, which is
+   how Apple sets a metric: the mono face stays where a string is genuinely
+   code (ids, bearers, log timestamps - see the Callout/Micro block). */
+[data-theme-skin="apple"] .kpi-v,
+[data-theme-skin="apple"] .tb-clock b,
+[data-theme-skin="apple"] .mission-total {
+  font-family: var(--font-sans);
+  font-size: 22px; font-weight: 600; line-height: 28px; letter-spacing: -.3px;
+}
+
+/* Headline - a panel says what it is */
+[data-theme-skin="apple"] .rail-head h2,
+[data-theme-skin="apple"] .stream-head,
+[data-theme-skin="apple"] .mission-name,
+[data-theme-skin="apple"] .action-cost,
+[data-theme-skin="apple"] .onboard-head h2,
+[data-theme-skin="apple"] .staff-toggle .staff-title {
+  font-size: 17px; font-weight: 600; line-height: 22px; letter-spacing: -.2px;
+}
+
+/* Body - prose. The briefing sentences and the staff answer are the longest
+   text on the screen and the only text written by a model; they get the
+   reading size. */
+[data-theme-skin="apple"] .brief-s,
+[data-theme-skin="apple"] .brief-first,
+[data-theme-skin="apple"] .onboard-list li,
+[data-theme-skin="apple"] .staff-asked,
+[data-theme-skin="apple"] .staff-outcome-why,
+[data-theme-skin="apple"] .staff-run-label {
+  font-size: 15px; font-weight: 400; line-height: 22px; letter-spacing: -.1px;
+}
+
+/* Callout - controls and list rows */
+:where([data-theme-skin="apple"]) button,
+:where([data-theme-skin="apple"]) select,
+:where([data-theme-skin="apple"]) input,
+[data-theme-skin="apple"] .seg button,
+[data-theme-skin="apple"] .tabs button,
+[data-theme-skin="apple"] .cut,
+[data-theme-skin="apple"] .inspect dl,
+[data-theme-skin="apple"] .rd-row,
+[data-theme-skin="apple"] .build-cand {
+  font-size: 13px; line-height: 18px; letter-spacing: 0;
+}
+
+/* Caption - a value's qualifier */
+[data-theme-skin="apple"] .brand-sub,
+[data-theme-skin="apple"] .rail-head .when,
+[data-theme-skin="apple"] .chk,
+[data-theme-skin="apple"] .tb-phase,
+[data-theme-skin="apple"] .badge,
+[data-theme-skin="apple"] .sheet-peek {
+  font-size: 12px; line-height: 16px; letter-spacing: 0;
+}
+
+/* Micro - the label under a number, an axis tick, a caption. Positive
+   tracking: at 11px the Korean and the Latin both need the air. */
+[data-theme-skin="apple"] .kpi-l,
+[data-theme-skin="apple"] .rail-caption,
+[data-theme-skin="apple"] .legend-item,
+[data-theme-skin="apple"] .band-label,
+[data-theme-skin="apple"] .geo-hint,
+[data-theme-skin="apple"] .rail-foot,
+[data-theme-skin="apple"] .queue-head,
+[data-theme-skin="apple"] .staff-caption {
+  font-size: 11px; line-height: 14px; letter-spacing: .1px;
+}
+[data-theme-skin="apple"] .kpi-l { margin-top: 3px; }
+
+/* The mono face is kept for strings that are code: asset ids, bearer names,
+   log timestamps, coordinates. */
+[data-theme-skin="apple"] .ev-t,
+[data-theme-skin="apple"] .rd-count,
+[data-theme-skin="apple"] .build-bearer,
+[data-theme-skin="apple"] .staff-when,
+[data-theme-skin="apple"] .wg-target,
+[data-theme-skin="apple"] .seg.speed button {
+  font-family: var(--font-mono);
+}
+
+/* text/tertiary at its real 30%, on the marks that were already decorative */
+[data-theme-skin="apple"] .ref,
+[data-theme-skin="apple"] .rail-foot .adr,
+[data-theme-skin="apple"] .staff-when,
+[data-theme-skin="apple"] .brief-meta,
+[data-theme-skin="apple"] .evidence .ev-foot {
+  color: var(--text-tertiary);
+}
+
+/* ---------------------------------------------------------------- controls */
+/* A control at rest is a lifted plane with no border. The border is kept at
+   1px transparent rather than removed: `button.danger` and `button.is-armed`
+   set `border-color` only, and taking the border away would have silently
+   un-marked the two destructive buttons on the screen.
+ *
+ * `:where()` on the skin scope is load-bearing here, and it cost a bug to
+ * learn. Written the obvious way, `[data-theme-skin="apple"] button` is
+ * (0,2,0) and beats EVERY single-class rule in the base sheet: the first
+ * draft of this file silently repainted the play button (`.play-btn`, a white
+ * disc with a black glyph) in card grey with a black glyph on it, took the
+ * attack tint off the engagement button (`.wg-go`) and put a plate behind
+ * every row of the event log (`.ev`). `:where()` contributes zero
+ * specificity, so this rule is (0,0,1) - exactly the base `button` rule it
+ * means to replace, winning only on source order - and every specialised
+ * button in the base sheet keeps the geometry and the colour it chose. */
+
+:where([data-theme-skin="apple"]) button,
+:where([data-theme-skin="apple"]) select {
+  background: var(--surface-hover);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 7px 14px;
+  transition: background .2s cubic-bezier(.4, 0, .2, 1), color .2s cubic-bezier(.4, 0, .2, 1);
+}
+:where([data-theme-skin="apple"]) button:hover,
+:where([data-theme-skin="apple"]) select:hover { background: var(--surface-active); }
+/* the base hover rule paints a navy hairline (#3a4656) that belongs to the
+   other theme. Taking it off needs the full-specificity scope, and the two
+   marked states are excluded by name: `.danger` and `.is-armed` set a border
+   COLOUR and nothing else, so a blanket transparent on :hover would have made
+   the mark vanish under the pointer - which is the one moment it matters. */
+[data-theme-skin="apple"] button:hover:not(.danger):not(.is-armed),
+[data-theme-skin="apple"] select:hover { border-color: transparent; }
+:where([data-theme-skin="apple"]) button:disabled:hover { background: var(--surface-hover); border-color: transparent; }
+[data-theme-skin="apple"] :focus-visible { outline: 2px solid var(--text-primary); outline-offset: 2px; }
+
+/* the round transport buttons keep their own geometry; what they take from
+   the skin is the surface ramp and the press */
+[data-theme-skin="apple"] .play-btn { border: none; width: 42px; height: 42px; }
+[data-theme-skin="apple"] .play-btn:hover { background: #fff; }
+[data-theme-skin="apple"] .play-btn:active,
+[data-theme-skin="apple"] .step-btn:active { transform: scale(.94); }
+[data-theme-skin="apple"] .step-btn { width: 30px; height: 30px; background: var(--surface-hover); }
+/* Base CSS paints these with `--surface-raised` too, but they are CONTROLS,
+   not cards: at elevated-1 they would disappear into the bar or the panel
+   behind them. One step up, by name. */
+[data-theme-skin="apple"] .tb-file,
+[data-theme-skin="apple"] .staff-ask-go,
+[data-theme-skin="apple"] .staff-q-run,
+[data-theme-skin="apple"] .wg-pick input { background: var(--surface-hover); }
+[data-theme-skin="apple"] .staff-ask-go:hover:enabled,
+[data-theme-skin="apple"] .staff-q-run:hover { background: var(--surface-active); }
+/* the situation band is a luminance ramp and needs three distinct steps above
+   the elevated-1 bar it sits on; lv1 and lv2 both landed on elevated-2 once
+   the ramp moved */
+[data-theme-skin="apple"] .kpi-band.lv1 .kpi-v { background: var(--surface-hover); }
+[data-theme-skin="apple"] .kpi-band.lv2 .kpi-v { background: var(--surface-active); }
+[data-theme-skin="apple"] .help-btn:hover,
+[data-theme-skin="apple"] .tb-menu-btn:hover { background: var(--surface-raised); }
+
+/* The iOS segmented control: a track one step up from its surroundings, with
+   the selection as a thumb one step above that. No dividers, no outline. */
+[data-theme-skin="apple"] .seg {
+  border: none;
+  border-radius: 10px;
+  background: var(--surface-hover);
+  padding: 2px;
+  gap: 2px;
+}
+[data-theme-skin="apple"] .seg button {
+  background: none;
+  border: none;
+  border-radius: 7px;
+  padding: 5px 13px;
+  color: var(--text-muted);
+}
+[data-theme-skin="apple"] .seg button + button { border-left: none; }
+[data-theme-skin="apple"] .seg button.on {
+  background: var(--surface-active);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+[data-theme-skin="apple"] .seg button:hover:not(.on) { background: transparent; color: var(--text-secondary); }
+[data-theme-skin="apple"] .seg button:active { transform: none; }
+
+/* the theme switch itself lives with the other display controls */
+[data-theme-skin="apple"] .skin-seg button { padding: 5px 11px; }
+
+[data-theme-skin="apple"] .tabs { padding: 0 var(--sp-3); border-bottom-color: var(--line-soft); }
+[data-theme-skin="apple"] .tabs button { padding: 13px 12px 11px; border-radius: 0; background: none; }
+[data-theme-skin="apple"] .tabs button:hover { background: none; color: var(--text-secondary); }
+
+[data-theme-skin="apple"] .build-row input,
+[data-theme-skin="apple"] .build-row select,
+[data-theme-skin="apple"] .wg-pick input,
+[data-theme-skin="apple"] .staff-ask-input {
+  background: var(--surface-hover);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+}
+
+/* ------------------------------------------------------------ chrome planes */
+/* The top bar, the rail and the timeline are elevated-1 and OPAQUE. They sit
+   on opaque siblings, not over the map, so translucency there would only show
+   black through and cost a compositor layer. The material is further down, on
+   the things that actually float. */
+
+/* The strip is the one place on this screen where the Apple ramp costs more
+   room than it buys. Measured at 1600x900: the default theme's bar lays out
+   at ~1500px of the 1600 available, and the ramp (22px metrics, 16px brand,
+   the segmented control's track padding) pushed the SAME content to 1602 -
+   two pixels over, which flex resolved by shrinking every item until 관측 /
+   편집 / 교전 each broke onto two lines and the brand wrapped. So the skin
+   takes its padding back out: 16px at the ends and 12px per KPI, against the
+   base theme's 20 and 14. That is ~74px of headroom, and the rules below make
+   the failure mode deterministic if a longer scenario ever eats it - every
+   fixed block refuses to shrink and the phase text is the one thing that
+   truncates. */
+[data-theme-skin="apple"] .topbar {
+  height: 68px;
+  padding: 0 var(--sp-4);
+  gap: var(--sp-4);
+  border-bottom-color: var(--line-strong);
+}
+[data-theme-skin="apple"] .kpi { padding: 0 var(--sp-3); border-left-color: var(--line-soft); }
+[data-theme-skin="apple"] .kpi:first-child { padding-left: var(--sp-1); }
+[data-theme-skin="apple"] .tb-rule { background: var(--line-soft); height: 22px; }
+[data-theme-skin="apple"] .brand { gap: var(--sp-2); }
+[data-theme-skin="apple"] .brand-mark { font-size: 16px; font-weight: 600; letter-spacing: -.2px; }
+
+@media (min-width: 861px) {
+  /* compact has its own topbar (it wraps on purpose), so this is desktop only */
+  [data-theme-skin="apple"] .brand,
+  [data-theme-skin="apple"] .topbar > .tb-field,
+  [data-theme-skin="apple"] .topbar > .seg,
+  [data-theme-skin="apple"] .kpis,
+  [data-theme-skin="apple"] .tb-clock { flex: none; }
+  [data-theme-skin="apple"] .brand,
+  [data-theme-skin="apple"] .seg button,
+  [data-theme-skin="apple"] .kpi-l,
+  [data-theme-skin="apple"] .kpi-band .kpi-v { white-space: nowrap; }
+  [data-theme-skin="apple"] .tb-phase { min-width: 0; }
+  [data-theme-skin="apple"] .tb-phase b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+
+[data-theme-skin="apple"] .board-toolbar {
+  padding: 10px var(--sp-4);
+  border-bottom-color: var(--line-soft);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+[data-theme-skin="apple"] .board-toolbar::-webkit-scrollbar { height: 0; }
+
+/* A panel that HOLDS cards comes down to base so the cards read as lifted.
+   The hairline on its edge is what separates it from the stage now, which is
+   the Apple grouped-list arrangement rather than a second grey. The bars
+   above (.topbar) and below (.timeline) keep elevated-1. */
+[data-theme-skin="apple"] .rail,
+[data-theme-skin="apple"] .staff-dock,
+[data-theme-skin="apple"] .palette { background: var(--surface-app); }
+[data-theme-skin="apple"] .rail { border-left-color: var(--line-strong); }
+[data-theme-skin="apple"] .rail-fixed { padding: var(--sp-4) var(--sp-4) var(--sp-5); border-bottom-color: var(--line-strong); }
+[data-theme-skin="apple"] .rail-body { padding: var(--sp-4); }
+[data-theme-skin="apple"] .rail-foot { padding: var(--sp-3) var(--sp-4) var(--sp-4); border-top-color: var(--line-soft); }
+[data-theme-skin="apple"] .rail-head { margin-bottom: var(--sp-4); }
+
+[data-theme-skin="apple"] .timeline { height: 108px; padding: 0 var(--sp-5); border-top-color: var(--line-strong); }
+
+[data-theme-skin="apple"] .stream { border-top-color: var(--line-strong); }
+[data-theme-skin="apple"] .stream-head { padding: var(--sp-3) var(--sp-4) var(--sp-2); }
+[data-theme-skin="apple"] .brief-card { padding: var(--sp-3) var(--sp-4); border-top-color: var(--line-strong); }
+[data-theme-skin="apple"] .staff-dock { border-top-color: var(--line-strong); }
+[data-theme-skin="apple"] .staff-queries { border-right-color: var(--line-soft); }
+
+/* ------------------------------------------------------------------- cards */
+/* A card is the next lightness step up from its panel and has no border. */
+
+[data-theme-skin="apple"] .mission,
+[data-theme-skin="apple"] .action,
+[data-theme-skin="apple"] .step-note,
+[data-theme-skin="apple"] .wg-move,
+[data-theme-skin="apple"] .staff-outcome,
+[data-theme-skin="apple"] .palette-item,
+[data-theme-skin="apple"] .stack-pick button {
+  background: var(--surface-raised);
+  border-color: transparent;
+  border-radius: var(--radius-md);
+}
+[data-theme-skin="apple"] .mission { padding: 14px 14px 14px 0; margin-bottom: var(--sp-2); }
+[data-theme-skin="apple"] .mission .edge { width: 3px; border-radius: 0 var(--radius-pill) var(--radius-pill) 0; }
+[data-theme-skin="apple"] .mission.inactive { background: var(--surface-raised); border: none; padding: 14px; }
+[data-theme-skin="apple"] .action { padding: var(--sp-3) var(--sp-4); }
+[data-theme-skin="apple"] .action .req-btn { background: var(--surface-active); border-radius: var(--radius-pill); padding: 6px 14px; }
+[data-theme-skin="apple"] .step-note { padding: var(--sp-3); }
+[data-theme-skin="apple"] .ev { border-radius: var(--radius-sm); padding: 4px 10px; }
+[data-theme-skin="apple"] .ev:hover, [data-theme-skin="apple"] .ev.is-now { background: var(--surface-raised); }
+
+/* `.wg-result` carries the adjudication on its LEFT border, and that border is
+   a cause colour (`is-hit` is attack). Only the other three sides are taken
+   away here; the cause bar is untouched by construction. */
+[data-theme-skin="apple"] .wg-result {
+  background: var(--surface-raised);
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  border-radius: var(--radius-md);
+  padding: var(--sp-3);
+}
+
+[data-theme-skin="apple"] .onboard { background: rgba(0, 0, 0, .55); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); }
+[data-theme-skin="apple"] .onboard-card {
+  background: var(--surface-chrome);
+  border-color: transparent;
+  border-radius: var(--radius-lg);
+  padding: var(--sp-5) var(--sp-6);
+}
+
+/* ---------------------------------------------------------------- hairlines */
+/* Dashed rules are not an Apple device: every divider is the same hairline at
+   the opacity its job calls for. */
+
+[data-theme-skin="apple"] .cut,
+[data-theme-skin="apple"] .build-cand,
+[data-theme-skin="apple"] .staff-ans { border-bottom-color: var(--line-soft); }
+[data-theme-skin="apple"] .queue,
+[data-theme-skin="apple"] .wg-log,
+[data-theme-skin="apple"] .palette-note,
+[data-theme-skin="apple"] .linkage,
+[data-theme-skin="apple"] .evidence,
+[data-theme-skin="apple"] .build,
+[data-theme-skin="apple"] .step-note .gt {
+  border-top-style: solid;
+  border-top-color: var(--line-soft);
+}
+[data-theme-skin="apple"] .band { border-top-color: var(--line-soft); }
+[data-theme-skin="apple"] .brief-first,
+[data-theme-skin="apple"] .brief-s,
+[data-theme-skin="apple"] .staff-err { border-left-color: var(--line-strong); }
+[data-theme-skin="apple"] .lg-rule { background: var(--line-soft); }
+[data-theme-skin="apple"] .rd { padding: var(--sp-3) var(--sp-4); border-bottom-color: var(--line-strong); }
+
+/* ------------------------------------------------------------ pills, chips */
+/* Short labels become capsules. The ones that carry a cause keep their
+   `currentColor` outline and their colour: only the geometry changes. */
+
+[data-theme-skin="apple"] .badge,
+[data-theme-skin="apple"] .cause,
+[data-theme-skin="apple"] .tag-hot,
+[data-theme-skin="apple"] .cite-chip,
+[data-theme-skin="apple"] .cite-chip-ex,
+[data-theme-skin="apple"] .unverified,
+[data-theme-skin="apple"] .build-warn,
+[data-theme-skin="apple"] .staff-badge,
+[data-theme-skin="apple"] .step-note .gt-tactic {
+  border-radius: var(--radius-pill);
+  padding: 2px 9px;
+}
+[data-theme-skin="apple"] .kpi-band .kpi-v {
+  border-radius: var(--radius-pill);
+  border-color: transparent;
+  padding: 3px 12px;
+  font-size: 15px;
+}
+[data-theme-skin="apple"] .bar { height: 8px; border-radius: var(--radius-pill); background: var(--line-soft); }
+[data-theme-skin="apple"] .legend-sw { border-radius: 3px; }
+[data-theme-skin="apple"] .sheet-bar { background: rgba(235, 235, 245, .3); }
+
+/* --------------------------------------------------------------- material */
+/* Translucency only where something genuinely floats over other content: the
+   overlays on the stage, the compact `⋯` panel, the sheet, the toast. The
+   watermark ("가상 훈련 시나리오 · 실제 부대 배치 아님", ADR-0025) is on this
+   list but gets the thickest material of the set, because it has to stay
+   readable over satellite tiles and it is not allowed to be switched off. */
+
+/* The floating materials come down with the ramp. This is not only taste:
+   `.legend-bar` carries the eight cause SWATCHES, so it is one of the
+   surfaces section 4 of the token doc has to measure, and at elevated-2 over
+   the black stage it composited to about #202022. At elevated-1 it lands
+   near #141416 and the swatches gain about 0.7 of a ratio point. */
+[data-theme-skin="apple"] .legend-bar,
+[data-theme-skin="apple"] .geo-controls,
+[data-theme-skin="apple"] .map-tile-error,
+[data-theme-skin="apple"] .toast {
+  background: rgba(28, 28, 30, .72);
+  border-color: transparent;
+  border-radius: var(--radius-md);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  box-shadow: var(--shadow);
+}
+[data-theme-skin="apple"] .legend-bar { padding: var(--sp-2) var(--sp-3); gap: var(--sp-3); }
+[data-theme-skin="apple"] .geo-controls { padding: var(--sp-2) var(--sp-3); }
+[data-theme-skin="apple"] .toast { padding: var(--sp-3) var(--sp-4); border-radius: var(--radius-lg); }
+
+[data-theme-skin="apple"] .map-watermark {
+  background: rgba(28, 28, 30, .86);
+  border-color: transparent;
+  border-radius: var(--radius-sm);
+  padding: var(--sp-2) var(--sp-3);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+/* Only the plate behind the symbol. The ring is state - attack red, an outage
+   cause - and `.map-mark.<cause> .map-mark-sym` is (0,3,0) against this
+   (0,2,0), so every cause ring keeps its colour. */
+[data-theme-skin="apple"] .map-mark-sym { background: rgba(28, 28, 30, .72); }
+[data-theme-skin="apple"] .map-mark-label { background: rgba(28, 28, 30, .8); border-radius: 6px; padding: 2px 7px; }
+
+/* the base rules for these two use `!important`, so these have to as well */
+[data-theme-skin="apple"] .maplibregl-ctrl-group {
+  background: rgba(28, 28, 30, .8) !important;
+  border-color: transparent;
+  border-radius: var(--radius-sm);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+}
+[data-theme-skin="apple"] .maplibregl-ctrl-attrib { background: rgba(0, 0, 0, .55) !important; }
+
+[data-theme-skin="apple"] .geo-foot { border-top-color: var(--line-soft); padding: var(--sp-3) var(--sp-4); }
+
+/* ----------------------------------------------------------- compact (390) */
+
+[data-theme-skin="apple"] .sheet {
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  border-top-color: transparent;
+  /* the sheet IS the rail on a phone, so its material sits at base: the
+     elevated-1 cards inside it have to have something to be lifted off */
+  background: rgba(0, 0, 0, .86);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  backdrop-filter: saturate(180%) blur(24px);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, .5);
+}
+[data-theme-skin="apple"] .sheet-grip { border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+
+[data-theme-skin="apple"] .tb-menu {
+  background: rgba(28, 28, 30, .9);
+  border-bottom-color: transparent;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  padding: var(--sp-3) var(--sp-4) var(--sp-4);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  backdrop-filter: saturate(180%) blur(24px);
+  box-shadow: var(--shadow);
+}
+[data-theme-skin="apple"] .tb-menu .seg button { border-radius: 8px; }
+[data-theme-skin="apple"] .stack-pick button { border-radius: var(--radius-sm); }
+[data-theme-skin="apple"] .stack-pick button.on { background: var(--surface-hover); }
+[data-theme-skin="apple"] button.staff-fact { border-radius: var(--radius-sm); }
+
+@media (max-width: 860px) {
+  /* The bar is 56px of thumb target per the compact spec; the desktop 68px
+     above must not reach it. */
+  /* the compact bar WRAPS on purpose - row 1 is the 56px strip, row 2 is the
+     KPI ribbon - so it keeps the base theme's gap. The desktop 16px above put
+     16px of row gap in there too and pushed the `⋯` button onto a row of
+     its own. */
+  [data-theme-skin="apple"] .topbar { height: auto; padding: 0 var(--sp-3); gap: 0 10px; }
+  [data-theme-skin="apple"] .board-toolbar { padding: var(--sp-2) var(--sp-3); }
+  [data-theme-skin="apple"] .timeline { height: 84px; padding: 0 var(--sp-3); }
+  [data-theme-skin="apple"] .rail-fixed { padding: var(--sp-3) var(--sp-4); }
+  [data-theme-skin="apple"] .clock-time { font-size: 22px; line-height: 28px; letter-spacing: -.3px; }
+}
+
+@media (max-width: 560px) {
+  [data-theme-skin="apple"] .timeline { height: 64px; }
+  [data-theme-skin="apple"] .clock-time { font-size: 20px; line-height: 24px; }
+}
