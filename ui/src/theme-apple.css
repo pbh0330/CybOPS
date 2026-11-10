@@ -578,10 +578,15 @@
 }
 [data-theme-skin="apple"] .sheet-grip { border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
 
+/* 이 패널은 폭에 따라 두 가지 물건이다. compact 에서는 상단바에 붙은 전폭 시트이고
+   (기본 테마가 border-radius: 0 으로 만든다), 데스크톱에서는 오른쪽에 걸린 322px
+   드롭다운이다. 아래 모서리만 둥글리는 것은 시트 쪽에만 맞는 모양인데 모든 폭에
+   적용돼 있었다 - U12 가 "compact 전제" 라고 남긴 미결이 이것이다.
+   U12 가 툴바 접기를 넣으면서 이 패널이 데스크톱에서도 뜨게 됐고, 그때부터 화면
+   가운데 떠 있는 상자의 윗모서리가 각지게 됐다. 폭별로 가른다. */
 [data-theme-skin="apple"] .tb-menu {
   background: rgba(28, 28, 30, .9);
-  border-bottom-color: transparent;
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  border-radius: var(--radius-lg);
   padding: var(--sp-3) var(--sp-4) var(--sp-4);
   -webkit-backdrop-filter: saturate(180%) blur(24px);
   backdrop-filter: saturate(180%) blur(24px);
@@ -593,6 +598,12 @@
 [data-theme-skin="apple"] button.staff-fact { border-radius: var(--radius-sm); }
 
 @media (max-width: 860px) {
+  /* compact 에서는 상단바에 붙은 전폭 시트다. 위는 상단바에 닿으므로 각지고
+     아래만 둥근다. 데스크톱 드롭다운은 위 규칙의 네 모서리를 쓴다. */
+  [data-theme-skin="apple"] .tb-menu {
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    border-bottom-color: transparent;
+  }
   /* The bar is 56px of thumb target per the compact spec; the desktop 68px
      above must not reach it. */
   /* the compact bar WRAPS on purpose - row 1 is the 56px strip, row 2 is the
