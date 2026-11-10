@@ -241,7 +241,7 @@ E3 에서 비교한 로컬 모델이다. **모델 가중치는 저장소에 넣�
 
 | 자산 | 출처 | 라이선스 | 재배포 | 비고 |
 |---|---|---|---|---|
-| AWS Architecture Icons Release 22-2025.07.31 | AWS Architecture Center 의 공식 자산 패키지 | AWS Trademark Guidelines 및 패키지 동봉 조건 | **원본 패키지는 커밋하지 않는다** | `docs/design/aws-soc-architecture.html`, `docs/design/2026-11-10-aws-soc-architecture.pptx` 에 필요한 17개만 삽입 |
+| AWS Architecture Icons Release 22-2025.07.31 | AWS Architecture Center 의 공식 자산 패키지 | AWS Trademark Guidelines 및 패키지 동봉 조건 | **원본 패키지는 커밋하지 않는다** | `docs/design/aws-soc-architecture.html`, `docs/design/2026-11-10-aws-soc-architecture.pptx` 에 필요한 19개만 삽입 |
 
 지키는 것 셋.
 
