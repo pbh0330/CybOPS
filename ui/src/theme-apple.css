@@ -377,6 +377,25 @@
 }
 [data-theme-skin="apple"] .board-toolbar::-webkit-scrollbar { height: 0; }
 
+/* The second strip where the Apple ramp costs more room than it buys, and the
+   same answer as the topbar above: take the padding back out.
+   Measured at 1280x800 in edit mode, the worst case the fold has to clear:
+   the default theme lays the toolbar out at 690 of 690 available (0 over),
+   the Apple ramp's 7px/14px controls push the SAME content to 703 - 13 over,
+   which the fold cannot free because it has one stage and has already spent
+   it. The buttons go back to the base theme's 11px horizontal while keeping
+   the ramp's 7px vertical, which frees ~6px per control across the thirteen
+   controls edit mode shows. The vertical ramp is what the skin reads as; the
+   horizontal was never load-bearing.
+   `skin.test.js` pins this: the Apple horizontal padding may not exceed the
+   base theme's, because the number that broke it is not knowledge, it is a
+   value someone can raise again without noticing. */
+[data-theme-skin="apple"] .board-toolbar button,
+[data-theme-skin="apple"] .board-toolbar select {
+  padding-left: 11px;
+  padding-right: 11px;
+}
+
 /* A panel that HOLDS cards comes down to base so the cards read as lifted.
    The hairline on its edge is what separates it from the stage now, which is
    the Apple grouped-list arrangement rather than a second grey. The bars

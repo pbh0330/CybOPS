@@ -92,3 +92,49 @@ describe('applySkin', () => {
     expect(readSkin(store)).toBe('default')
   })
 })
+
+// --- 툴바 가로 패딩 (2026-11-10) --------------------------------------
+//
+// Apple 스킨을 머지하면서 상판 툴바가 1280x800 편집 모드에서 13px 넘쳤다.
+// 기본 테마는 같은 내용을 690 of 690 으로 눕히는데, Apple 의 7px/14px 컨트롤이
+// 같은 내용을 703 으로 밀었다. U12 의 fold 는 한 단뿐이고 이미 그 한 단을 썼다.
+//
+// 고친 값은 가로 11px 이고, 그 값이 다시 올라가는 것을 막는 것이 이 검사다.
+// **막은 것은 지식이 아니라 검사기다** - 이 저장소가 여섯 번 배운 문장이다.
+// 브라우저 없이 잴 수 있는 것은 CSS 텍스트뿐이라 거기까지만 한다. 넘침 자체는
+// 사람이 브라우저에서 재고 그 수치를 theme-apple.css 주석에 적는다.
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+
+const px = (s) => Number(String(s).replace('px', ''))
+const read = (rel) => readFileSync(fileURLToPath(new URL(rel, import.meta.url)), 'utf8')
+
+describe('Apple 스킨의 툴바 가로 패딩', () => {
+  const apple = read('../theme-apple.css')
+  const base = read('../style.css')
+
+  // 기본 테마의 button/select 가로 패딩
+  const baseH = px((base.match(/button,\s*select\s*\{[^}]*padding:\s*\d+px\s+(\d+)px/s) || [])[1])
+  // Apple 의 툴바 전용 재지정
+  const tbLeft = px((apple.match(/\.board-toolbar button,[^{]*\{[^}]*padding-left:\s*(\d+)px/s) || [])[1])
+  const tbRight = px((apple.match(/\.board-toolbar button,[^{]*\{[^}]*padding-right:\s*(\d+)px/s) || [])[1])
+
+  it('기본 테마의 가로 패딩을 읽어 낸다', () => {
+    expect(Number.isFinite(baseH)).toBe(true)
+    expect(baseH).toBeGreaterThan(0)
+  })
+
+  it('툴바 전용 재지정이 존재한다', () => {
+    expect(Number.isFinite(tbLeft)).toBe(true)
+    expect(Number.isFinite(tbRight)).toBe(true)
+  })
+
+  it('기본 테마보다 넓지 않다 - 넓어지면 1280 에서 다시 넘친다', () => {
+    expect(tbLeft).toBeLessThanOrEqual(baseH)
+    expect(tbRight).toBeLessThanOrEqual(baseH)
+  })
+
+  it('좌우가 같다', () => {
+    expect(tbLeft).toBe(tbRight)
+  })
+})
