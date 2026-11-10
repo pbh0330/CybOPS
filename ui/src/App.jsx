@@ -18,10 +18,11 @@ import Onboard from './ui/Onboard.jsx'
 import Wargame from './ui/Wargame.jsx'
 import Sheet from './ui/Sheet.jsx'
 import StaffDock from './ui/StaffDock.jsx'
+import { OperationsHeader, OperationsMoments, OperationsPanel } from './operations/OperationsPanels.jsx'
 
 // The sandbox is not a file: it is derived in the browser from the template
 // replay (ADR-0027), so it is always listed and never HEAD-checked.
-const SCENARIOS = ['tacnet-01', 'defnet-01', SANDBOX_ID]
+const SCENARIOS = ['tacnet-01', 'airnet-01', 'defnet-01', SANDBOX_ID]
 const HISTORY_MAX = 60
 
 // Mounts an imperative module (editor.js) into the React tree. It owns its
@@ -47,12 +48,13 @@ export default function App() {
   // start so a demo step or a screenshot can be reached without clicking.
   // Anything unknown is ignored and the defaults stand.
   const link = useRef(new URLSearchParams(window.location.search))
+  const [studio, setStudio] = useState(link.current.get('studio') === '1')
   const pick = (key, allowed, dflt) => (allowed.includes(link.current.get(key)) ? link.current.get(key) : dflt)
-  const [view, setView] = useState(pick('view', ['dependency', 'transport', 'geo'], 'dependency'))
+  const [view, setView] = useState(studio ? 'dependency' : pick('view', ['dependency', 'transport', 'geo'], 'dependency'))
   // Once the operator has picked a view, nothing picks for them again. A
   // ?view= deep link counts as a pick: whoever wrote that URL already chose.
-  const viewChosen = useRef(link.current.get('view') !== null)
-  const onView = useCallback((v) => { viewChosen.current = true; setView(v) }, [])
+  const viewChosen = useRef(link.current.get('view') !== null || link.current.get('studio') === '1')
+  const onView = useCallback((v) => { viewChosen.current = true; setStudio(false); setView(v) }, [])
   const [mode, setMode] = useState('observe')
   const [tab, setTab] = useState(pick('tab', ['cuts', 'actions', 'inspect'], 'actions'))
   const [labels, setLabels] = useState(true)
@@ -98,6 +100,7 @@ export default function App() {
   const [rules, setRules] = useState(null)
   const [plans, setPlans] = useState([])
   const isSandbox = scenarioId === SANDBOX_ID
+  const studioActive = studio && !compact && mode === 'observe'
 
   const cyRef = useRef(null)
   const editorRef = useRef(null)
@@ -141,7 +144,7 @@ export default function App() {
         let seen = false
         try { seen = localStorage.getItem('mccycop:onboard:seen') === '1' } catch { /* ignore */ }
         // a deep link is someone who already knows the screen; do not cover it
-        const deep = ['scenario', 't', 'view', 'tab', 'select'].some((k) => link.current.has(k))
+        const deep = ['scenario', 't', 'view', 'tab', 'select', 'studio'].some((k) => link.current.has(k))
         if (!seen && !deep) setOnboard(true)
       } catch (e) {
         if (alive) setError(e.message)
@@ -495,7 +498,7 @@ export default function App() {
     )
   }
 
-  const isGeo = view === 'geo'
+  const isGeo = view === 'geo' && !studioActive
   const hasGeoref = !!(graph && graph.geo && graph.geo.georef)
 
   // ONE staff dock, same rule as the rail below: built here and handed to
@@ -542,6 +545,7 @@ export default function App() {
   return (
     <div
       className="app"
+      data-studio={studioActive ? '1' : undefined}
       data-compact={compact ? '1' : undefined}
       data-sheet={compact ? sheetState : undefined}
     >
@@ -561,6 +565,8 @@ export default function App() {
         folded={tbOver}
         onMenuNode={setMenuNode}
       />
+
+      {studioActive && <OperationsHeader graph={graph} step={step} selected={selectedData?.id} onSelect={onSelect} />}
 
       <div className={`main${mode === 'edit' ? ' is-editing' : ''}`}>
         {mode === 'edit' && (
@@ -591,6 +597,13 @@ export default function App() {
 
         <section className="board">
           <BoardToolbar
+            studio={studioActive} studioAllowed={!compact && mode === 'observe'}
+            onStudio={() => {
+              viewChosen.current = true
+              setView('dependency')
+              setStudio((v) => !v)
+              if (!selectedData && graph?.assets?.length) onSelect(graph.assets.find((a) => a.visual_model === 'fighter')?.id || graph.assets[0].id)
+            }}
             view={view} onView={onView} mode={mode}
             labels={labels} onLabels={setLabels}
             contrib={contribOn} onContrib={setContribOn} contribOk={view !== 'geo'}
@@ -609,17 +622,21 @@ export default function App() {
             menuNode={foldTools ? menuNode : null}
             onFold={setTbOver}
           />
-          <div className="canvas-wrap">
+          <div className="canvas-wrap" data-studio={studioActive ? '1' : undefined}>
+            <div className="dependency-stage" hidden={isGeo}>
+            {studioActive && <div className="ops-stage-heading"><b>임무 의존 그래프</b><span>임무 → 작업 → 서비스 → 자산</span></div>}
             <GraphCanvas
-              graph={graph} step={step} steps={payload?.steps} idx={idx} view={view} labels={labels}
+              graph={graph} step={step} steps={payload?.steps} idx={idx} view={studioActive ? 'dependency' : view} labels={labels}
+              split={studioActive}
               hidden={isGeo} cyRef={cyRef} onSelect={onSelect} onTap={onTap}
               selected={selectedData?.id || null} overlay={overlay}
               contrib={contrib} ghosts={ghosts} onGhostConnect={onGhostConnect}
             />
+            </div>
             {hasGeoref ? (
               <MapPane
                 graph={graph} step={step} steps={payload?.steps} idx={idx}
-                selected={selectedData?.id || null} onSelect={onSelect} hidden={!isGeo}
+                selected={selectedData?.id || null} onSelect={onSelect} hidden={!isGeo && !studioActive}
                 overlay={overlay}
                 editable={mode === 'edit'}
                 compact={compact}
@@ -629,14 +646,21 @@ export default function App() {
             ) : (
               <GeoPane
                 graph={graph} step={step} cam={geoCam} onCam={setGeoCam}
-                selected={selectedData?.id || null} onSelect={onSelect} hidden={!isGeo}
+                selected={selectedData?.id || null} onSelect={onSelect} hidden={!isGeo && !studioActive}
               />
             )}
           </div>
         </section>
 
-        {!compact && railEl}
+        {!compact && (studioActive ? <OperationsPanel
+          graph={graph} step={step} payload={payload} idx={idx} selected={selectedData?.id}
+          onSelect={onSelect} edited={edited}
+          onInspect={() => { setStudio(false); setTab('inspect') }}
+          onActions={() => { setStudio(false); setTab('actions') }}
+        /> : railEl)}
       </div>
+
+      {studioActive && <OperationsMoments graph={graph} steps={payload?.steps} idx={idx} edited={edited} onSeek={setIdx} />}
 
       <Timeline
         graph={graph} payload={payload} idx={idx} step={step}

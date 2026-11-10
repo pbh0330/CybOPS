@@ -254,3 +254,17 @@ E3 에서 비교한 로컬 모델이다. **모델 가중치는 저장소에 넣�
 원본 `.pptx` 덱 두 개(약 39 MB)는 저장소에 넣지 않는다. 데이터셋 원본과 같은 취급이다
 (ADR-0010 의 자세). 다시 받을 곳은 위 출처이고, 삽입한 아이콘의 릴리스 번호를 위 표에
 적어 두었으므로 같은 도면을 다시 만들 수 있다.
+
+## 8. 통합 작전 화면 자산 (2026-11-10)
+
+| 자산 | 출처 | 라이선스 | 재배포 | 용도 |
+|---|---|---|---|---|
+| Three.js 0.187.0 | [공식 저장소](https://github.com/mrdoob/three.js), npm `three` | MIT | 저작권·라이선스 고지 포함 시 가능 | 표시 전용 자산 3D. 로컬 번들에 포함, `package-lock.json`에 무결성 해시 고정 |
+| 전투기·조기경보통제기·지휘차·서버 등 8종 모형 | `ui/src/operations/models.js` 자체 저작 | 저장소 자체 저작물과 동일 조건 | 외부 모델 라이선스 제약 없음 | 일반화한 가상 형상. 실제 장비 제원·성능 미사용 |
+| `airnet-01` | `scripts/build_airnet_demo.py` 자체 저작, tacnet 공개 지리 앵커 재사용 | 저장소 자체 저작물과 동일 조건 | 외부 데이터셋 제약 없음 | 개발·회귀·구성 타당성 전용. 탐지 성능 주장 금지 |
+
+Three.js 라이선스는 설치 패키지의 LICENSE 및
+[공식 원문](https://github.com/mrdoob/three.js/blob/dev/LICENSE)을 확인했다.
+원문은 `ui/public/licenses/three-LICENSE.txt`로 번들에 동봉한다.
+영상·타사 모형·텍스처는 복제하지 않았다. 합성 시나리오의 입력·코드·출력 해시는
+`scenarios/airnet-01/MANIFEST.json`에 남긴다.

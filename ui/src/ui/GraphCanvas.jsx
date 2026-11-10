@@ -34,7 +34,7 @@ const LEGEND = [
 function paintSymbol(n, state) {
   const d = n.data()
   const color = state === 'attack' ? '#ffb4ba' : state === 'outage' ? '#93a6ba' : '#e6f0fb'
-  const dev = deviceIconDataUri(d.assetType, { size: 44, color })
+  const dev = deviceIconDataUri(d.visualModel || d.assetType, { size: 44, color })
   if (!dev) return
   n.style({
     'background-image': dev,
@@ -47,7 +47,7 @@ function paintSymbol(n, state) {
   })
 }
 
-export default function GraphCanvas({ graph, step, steps, idx, view, labels, hidden, cyRef, onSelect, onTap, selected, overlay, contrib, ghosts, onGhostConnect }) {
+export default function GraphCanvas({ graph, step, steps, idx, view, labels, hidden, cyRef, onSelect, onTap, selected, overlay, contrib, ghosts, onGhostConnect, split = false }) {
   const boxRef = useRef(null)
   const flowRef = useRef({ raf: null, offset: 0, view, hidden })
   const [bands, setBands] = useState([])
@@ -159,8 +159,19 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
     bindTaps(cy, tapRef, selectRef)
     if (import.meta.env && import.meta.env.DEV) window.__cy = cy
     setCyReady((v) => v + 1)
-    return () => { cy.destroy(); cyRef.current = null }
+    const resize = new ResizeObserver(() => { if (boxRef.current?.clientWidth) cy.resize() })
+    resize.observe(boxRef.current)
+    return () => { resize.disconnect(); cy.destroy(); cyRef.current = null }
   }, [graph])
+
+  useEffect(() => {
+    if (hidden) return
+    const frame = requestAnimationFrame(() => {
+      const cy = cyRef.current
+      if (cy) { cy.resize(); cy.fit(cy.elements().not('.hidden'), 32) }
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [split, hidden, graph])
 
   // --- view visibility and layout ---------------------------------------
   useEffect(() => {

@@ -13,6 +13,9 @@
 // (ADR-0013).
 
 export const ICON_PATHS = {
+  // Original generic platform silhouettes; display overlays, not SIDC replacements.
+  'training-fighter': '<path d="M12 2l2 7 7 6v2l-7-3v5l3 2v1l-5-1-5 1v-1l3-2v-5l-7 3v-2l7-6z" />',
+  'training-aew': '<path d="M12 2v19M10 5l-1 6-6 3v2l7-2v5l-3 2h10l-3-2v-5l7 2v-2l-6-3-1-6" /><ellipse cx="12" cy="10" rx="4" ry="2" />',
   'building-broadcast-tower': '<path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" /> <path d="M16.616 13.924a5 5 0 1 0 -9.23 0" /> <path d="M20.307 15.469a9 9 0 1 0 -16.615 0" /> <path d="M9 21l3 -9l3 9" /> <path d="M10 19h4" />',
   'database': '<path d="M4 6a8 3 0 1 0 16 0a8 3 0 1 0 -16 0" /> <path d="M4 6v6a8 3 0 0 0 16 0v-6" /> <path d="M4 12v6a8 3 0 0 0 16 0v-6" />',
   'device-desktop': '<path d="M3 5a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v10a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1v-10" /> <path d="M7 20h10" /> <path d="M9 16v4" /> <path d="M15 16v4" />',
@@ -92,6 +95,8 @@ export function serviceIconSvgMarkup(kind, opts = {}) {
 // Asset.type -> icon. Types come from the scenarios; anything unmapped falls
 // back to no icon so a new type is visibly unstyled rather than silently wrong.
 export const ICON_BY_TYPE = {
+  fighter: 'training-fighter',
+  aew: 'training-aew',
   'c2-server': 'server-2',
   'fire-control-server': 'topology-star-3',
   'database': 'database',

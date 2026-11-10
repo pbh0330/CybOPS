@@ -1,0 +1,55 @@
+{
+  "scenario_id": "airnet-01",
+  "origin": "original synthetic fixture, not an external dataset",
+  "license": "project-authored; same terms as repository",
+  "redistributable": true,
+  "allowed_use": [
+    "development",
+    "regression",
+    "construct validation"
+  ],
+  "excluded_use": "detection performance claims",
+  "code_base": "a71eace",
+  "generator": "scripts/build_airnet_demo.py",
+  "generator_sha256": "045aa0491604b5c1b115a332f2ed9f66a7a63d120b6c27c387065a7ff0b5d60d",
+  "inputs": [
+    {
+      "path": "scenarios/tacnet-01/mission.json",
+      "sha256": "f365d50018f96f27f52b88b214594df7e4f96ad52c120e41de1e62fced5f2705"
+    }
+  ],
+  "parameters": {
+    "horizon_minutes": 120,
+    "step_minutes": 5
+  },
+  "files": [
+    {
+      "path": "mission.json",
+      "sha256": "94f49212809be7c39e4b2b6f969f9e9e92d54b53bec4cd3ebe01baad9f780418"
+    },
+    {
+      "path": "attack-timeline.json",
+      "sha256": "2433d721531a015e49487adbf5270a51d35d3d6ebe9874500f759e3a370412f2"
+    }
+  ],
+  "replay": {
+    "path": "ui/public/data/airnet-01.replay.json",
+    "sha256": "e08446306acd152b33c24a0b8df861624328320daea2f4e35692bf1639cf22f3",
+    "engine": "scripts/Invoke-MissionPropagation.ps1",
+    "engine_sha256": "83a162fc1377d8d1d963403f741544b1a5ea70305ae6c1fe5ed62861361b8fe4",
+    "exporter_sha256": "ff668be0a8e097eeb270bdcc535c12fccb3ecbd615e00e7ee29e930b2faebdb7",
+    "inputs": [
+      {
+        "path": "mission.json",
+        "sha256": "94f49212809be7c39e4b2b6f969f9e9e92d54b53bec4cd3ebe01baad9f780418"
+      },
+      {
+        "path": "attack-timeline.json",
+        "sha256": "2433d721531a015e49487adbf5270a51d35d3d6ebe9874500f759e3a370412f2"
+      }
+    ],
+    "method": "weighted",
+    "steps": 24,
+    "generated": "2026-11-10T16:27:45.3447896+09:00"
+  }
+}

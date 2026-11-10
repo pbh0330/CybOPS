@@ -87,7 +87,7 @@ export function buildElements(g) {
     els.push({
       data: {
         // meaning first, id second: "CO2-VEH" alone told the operator nothing
-        id: a.id, kind: 'asset', label: name.twoLine, assetType: a.type,
+        id: a.id, kind: 'asset', label: name.twoLine, assetType: a.type, visualModel: a.visual_model,
         assetTypeKo: name.typeKo, siteName: name.site, unitName: unitNameOf[a.unit] || '',
         unit: a.unit || '', unitEchelon: echelonOf[a.unit] || '',
         site: a.site || '', mobility: a.mobility || 'static',

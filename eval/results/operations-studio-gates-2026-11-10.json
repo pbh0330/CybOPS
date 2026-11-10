@@ -1,0 +1,101 @@
+{
+  "generated": "2026-11-10T07:38:57.7868527Z",
+  "generator": "scripts/Invoke-Gates.ps1",
+  "tiers": [
+    "offline"
+  ],
+  "gates": [
+    {
+      "name": "case collisions",
+      "tier": "offline",
+      "status": "pass",
+      "exit": 0,
+      "seconds": 1.2
+    },
+    {
+      "name": "ps1 encoding (bom)",
+      "tier": "offline",
+      "status": "pass",
+      "exit": 0,
+      "seconds": 0.3
+    },
+    {
+      "name": "ontology",
+      "tier": "offline",
+      "status": "pass",
+      "exit": 0,
+      "seconds": 0.3
+    },
+    {
+      "name": "ocsf conformance",
+      "tier": "offline",
+      "status": "pass",
+      "exit": 0,
+      "seconds": 2.5
+    },
+    {
+      "name": "geo invariance",
+      "tier": "offline",
+      "status": "pass",
+      "exit": 0,
+      "seconds": 12.4
+    },
+    {
+      "name": "scenario invariants",
+      "tier": "offline",
+      "status": "pass",
+      "exit": 0,
+      "seconds": 2.3
+    },
+    {
+      "name": "token parity",
+      "tier": "offline",
+      "status": "pass",
+      "exit": 0,
+      "seconds": 0.2
+    },
+    {
+      "name": "ui unit tests",
+      "tier": "offline",
+      "status": "pass",
+      "exit": 0,
+      "seconds": 6.8
+    },
+    {
+      "name": "bundle: local",
+      "tier": "offline",
+      "status": "pass",
+      "exit": 0,
+      "seconds": 0.2
+    },
+    {
+      "name": "bundle: hosted",
+      "tier": "offline",
+      "status": "pass",
+      "exit": 0,
+      "seconds": 0.0
+    },
+    {
+      "name": "proxy allowlist",
+      "tier": "offline",
+      "status": "pass",
+      "exit": 0,
+      "seconds": 0.2
+    },
+    {
+      "name": "optc manifest",
+      "tier": "data",
+      "status": "skipped",
+      "exit": null,
+      "seconds": 0
+    },
+    {
+      "name": "briefing citations",
+      "tier": "model",
+      "status": "skipped",
+      "exit": null,
+      "seconds": 0
+    }
+  ],
+  "passed": true
+}

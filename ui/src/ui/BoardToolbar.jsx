@@ -11,6 +11,7 @@ const VIEWS = [
 
 export default function BoardToolbar({
   view, onView, mode, labels, onLabels, onFit,
+  studio = false, studioAllowed = false, onStudio,
   // U3: the contribution layer. Off by default - it costs one engine run per
   // compromised asset and it is an analysis layer, not part of the picture.
   // `contribOk` is false in the geo view, which has no dependency edges to
@@ -110,6 +111,9 @@ export default function BoardToolbar({
   return (
     <div className="board-toolbar" ref={box}>
       {into(viewSeg)}
+      {into(<button type="button" className="ops-toggle" aria-pressed={studio} disabled={!studioAllowed}
+        title={studioAllowed ? '임무 그래프 · 보조 지도 · 3D 자산을 같은 시점으로 보기' : '넓은 화면의 관측 모드에서 사용할 수 있습니다'}
+        onClick={onStudio}>통합 작전</button>)}
 
       {editing && (
         <>

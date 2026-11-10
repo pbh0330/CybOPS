@@ -417,6 +417,12 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
   // the pane is display:none while another view is up; MapLibre has to be
   // told when its box got a size again
   useEffect(() => { if (!hidden && mapRef.current) mapRef.current.resize() }, [hidden])
+  useEffect(() => {
+    if (!ready || !boxRef.current) return
+    const observer = new ResizeObserver(() => { if (boxRef.current?.clientWidth) mapRef.current?.resize() })
+    observer.observe(boxRef.current)
+    return () => observer.disconnect()
+  }, [ready])
 
   // --- overlays per step ---------------------------------------------
   useEffect(() => {
@@ -470,7 +476,7 @@ export default function MapPane({ graph, step, steps, idx, selected, onSelect, h
       const iso = isolated.includes(r.id)
       const state = iso ? 'outage' : r.compromise > 0 ? 'attack' : r.outage ? `outage cause-${r.outage}` : 'ok'
       const color = iso ? '#93a6ba' : r.compromise > 0 ? '#ffb4ba' : r.outage ? '#93a6ba' : '#e6f0fb'
-      const uri = deviceIconDataUri(asset?.type, { size: 30, color })
+      const uri = deviceIconDataUri(asset?.visual_model || asset?.type, { size: 30, color })
       let m = markers.current.get(r.id)
       if (!m) {
         const el = document.createElement('div')

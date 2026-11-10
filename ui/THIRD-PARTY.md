@@ -80,3 +80,11 @@ ADR-0024 로 상황도 UI 의 DOM 계층을 React 로 옮기면서 들어왔다.
   시스템에 없으면 Pretendard → Segoe UI → 맑은 고딕 순으로 대체된다.
   오프라인 시연에서 글꼴을 보장하려면 웹폰트 파일을 `ui/public/` 에 넣고 `@font-face`
   로 자체 호스팅해야 한다. **아직 하지 않았다.**
+
+## Three.js (2026-11-10)
+
+- 패키지: `three@0.187.0`, [공식 저장소](https://github.com/mrdoob/three.js).
+- 라이선스: MIT. 저작권 및 라이선스 고지를 포함하여 재배포 가능.
+- 전체 원문: `public/licenses/three-LICENSE.txt` (빌드에 동봉).
+- 용도: 통합 작전 화면의 선택 자산 모형. 코드 지연 로드, 자체 저작 geometry,
+  외부 모형·텍스처 다운로드 없음. 기체 모형·플랫폼 아이콘은 자체 저작물이다.
