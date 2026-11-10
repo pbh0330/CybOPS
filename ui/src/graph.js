@@ -7,6 +7,7 @@
 import { symbolDataUri, isVerified, unitSymbolDataUri } from './symbols.js'
 import { serviceIconDataUri } from './icons.js'
 import { assetName } from './labels.js'
+import { CAUSE_COLOR } from './tokens.mjs'
 
 // Node shape used to carry the device class. It does not need to any more: the
 // device icon says what the machine is, and a canvas of triangles, hexagons and
@@ -15,16 +16,13 @@ import { assetName } from './labels.js'
 
 // Cause colours. These are the only saturated colours on the screen
 // (ADR-0024); they match docs/design/tokens.md one for one.
-export const CAUSE_COLOR = {
-  attack: '#ff4d5e',
-  mobility: '#35c8ff',
-  terrain: '#a7c261',
-  maintenance: '#7f8794',
-  unknown: '#ffb020',
-  env: '#7d93ab',
-  inter: '#c07dff',
-  ok: '#2fd18b',
-}
+//
+// THIS IS A RE-EXPORT, NOT THE DEFINITION. The values live in tokens.mjs and
+// tools/token-parity.mjs holds style.css and docs/design/tokens.md to them.
+// The line below stays because GeoPane, GraphCanvas, MapPane, Rail, Timeline
+// and Topbar all import CAUSE_COLOR from '../graph.js': repointing six files
+// at the new module would be a diff with no benefit. Edit tokens.mjs.
+export { CAUSE_COLOR }
 
 // degradation -> colour. ACHROMATIC BY RULE (ADR-0024): brighter is worse and
 // there is no hue at all.
@@ -264,7 +262,8 @@ export function stylesheet() {
       style: {
         'curve-style': 'straight',
         'target-arrow-shape': 'none',
-        'line-color': '#2fd18b',
+        // a healthy link is the ok colour, not a green that happens to match it
+        'line-color': CAUSE_COLOR.ok,
         'line-style': 'dashed',
         'line-dash-pattern': [7, 6],
         'width': 2,

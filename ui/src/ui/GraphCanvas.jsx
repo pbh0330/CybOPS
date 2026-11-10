@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import cytoscape from 'cytoscape'
 import dagre from 'cytoscape-dagre'
 import { buildElements, stylesheet, bindTaps, LAYOUTS, CAUSE_COLOR, degColor } from '../graph.js'
+import { CHROME } from '../tokens.mjs'
 import { deviceIconDataUri } from '../icons.js'
 import { num, linkageOf, attackHops } from '../derive.js'
 import { techniqueKo } from '../labels.js'
@@ -409,12 +410,12 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
         // node:selected stylesheet rule alone never shows through a bypass.
         const isSel = n.id() === selected
         n.style('background-color', degColor(v))
-        n.style('border-color', isSel ? '#f2f3f4' : isIso ? '#f2f3f4' : (cause ? (CAUSE_COLOR[cause] || '#2a3442') : (hit ? CAUSE_COLOR.attack : '#2a3442')))
+        n.style('border-color', isSel ? CHROME.textPrimary : isIso ? CHROME.textPrimary : (cause ? (CAUSE_COLOR[cause] || CHROME.lineStrong) : (hit ? CAUSE_COLOR.attack : CHROME.lineStrong)))
         n.style('border-width', isSel ? 3 : isIso ? 4 : (cause || hit ? 2.5 : 1.5))
         n.style('border-style', isIso ? 'double' : (cause ? 'dashed' : 'solid'))
         n.toggleClass('hit', hit)
         n.toggleClass('out', !!cause && !hit)
-        n.data('outColor', cause ? (CAUSE_COLOR[cause] || CAUSE_COLOR.unknown) : '#000')
+        n.data('outColor', cause ? (CAUSE_COLOR[cause] || CAUSE_COLOR.unknown) : CHROME.nodeUnderlayNone)
 
         const inactive = temporal && d.kind === 'task' && d.phase && !activePhases.has(d.phase)
         n.toggleClass('dim', inactive)
@@ -423,7 +424,7 @@ export default function GraphCanvas({ graph, step, steps, idx, view, labels, hid
       for (const e of cy.edges('.transport')) {
         const cause = linkOut[e.id()]
         e.toggleClass('cut', !!cause)
-        e.style('line-color', cause ? (CAUSE_COLOR[cause] || '#8a8f98') : '#2fd18b')
+        e.style('line-color', cause ? (CAUSE_COLOR[cause] || CHROME.causeFallback) : CAUSE_COLOR.ok)
         e.style('label', cause ? `${e.data('bearer')} · ${cause}` : e.data('bearer'))
       }
     })
