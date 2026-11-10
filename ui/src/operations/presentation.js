@@ -6,7 +6,7 @@ export const percent = (v) => valueOf(v) === null ? '미측정' : `${(v * 100).t
 
 export function modelKind(asset) {
   if (!asset) return null
-  if (['fighter', 'aew'].includes(asset.visual_model)) return asset.visual_model
+  if (['fighter', 'aew', 'ship', 'usv', 'spacecraft'].includes(asset.visual_model)) return asset.visual_model
   if (asset.type === 'satcom-terminal') return 'satellite'
   if (asset.type === 'radio-relay') return 'relay'
   if (asset.type === 'c2-terminal' && /VEH|지휘차/.test(`${asset.id} ${asset.site || ''}`)) return 'vehicle'

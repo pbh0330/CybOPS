@@ -88,7 +88,7 @@ describe('airnet authored construct, not detection performance', () => {
 })
 
 describe('bundled generic geometry', () => {
-  for (const kind of ['fighter', 'aew', 'vehicle', 'rack', 'relay', 'satellite', 'network', 'terminal']) {
+  for (const kind of ['fighter', 'aew', 'ship', 'usv', 'spacecraft', 'vehicle', 'rack', 'relay', 'satellite', 'network', 'terminal']) {
     it(`${kind} has finite geometry and releases each resource once`, () => {
       const model = buildModel(kind)
       const geometries = new Set(), materials = new Set()

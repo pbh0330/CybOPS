@@ -262,6 +262,7 @@ E3 에서 비교한 로컬 모델이다. **모델 가중치는 저장소에 넣�
 | Three.js 0.187.0 | [공식 저장소](https://github.com/mrdoob/three.js), npm `three` | MIT | 저작권·라이선스 고지 포함 시 가능 | 표시 전용 자산 3D. 로컬 번들에 포함, `package-lock.json`에 무결성 해시 고정 |
 | 전투기·조기경보통제기·지휘차·서버 등 8종 모형 | `ui/src/operations/models.js` 자체 저작 | 저장소 자체 저작물과 동일 조건 | 외부 모델 라이선스 제약 없음 | 일반화한 가상 형상. 실제 장비 제원·성능 미사용 |
 | `airnet-01` | `scripts/build_airnet_demo.py` 자체 저작, tacnet 공개 지리 앵커 재사용 | 저장소 자체 저작물과 동일 조건 | 외부 데이터셋 제약 없음 | 개발·회귀·구성 타당성 전용. 탐지 성능 주장 금지 |
+| `jointnet-01`, 추가 3종 모형·환경 셰이더 | `scripts/build_jointnet_demo.py`, `ui/src/operations/` 자체 저작 | 저장소 자체 저작물과 동일 조건 | 외부 데이터셋·모형 라이선스 제약 없음 | 합동 훈련 화면. 지휘함·수상정·우주 단말을 더해 총 11종. 물리·탐지 성능 주장 금지 |
 
 Three.js 라이선스는 설치 패키지의 LICENSE 및
 [공식 원문](https://github.com/mrdoob/three.js/blob/dev/LICENSE)을 확인했다.

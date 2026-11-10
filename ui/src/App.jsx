@@ -19,10 +19,11 @@ import Wargame from './ui/Wargame.jsx'
 import Sheet from './ui/Sheet.jsx'
 import StaffDock from './ui/StaffDock.jsx'
 import { OperationsHeader, OperationsMoments, OperationsPanel } from './operations/OperationsPanels.jsx'
+import OperationsWorkspace from './operations/OperationsWorkspace.jsx'
 
 // The sandbox is not a file: it is derived in the browser from the template
 // replay (ADR-0027), so it is always listed and never HEAD-checked.
-const SCENARIOS = ['tacnet-01', 'airnet-01', 'defnet-01', SANDBOX_ID]
+const SCENARIOS = ['tacnet-01', 'jointnet-01', 'airnet-01', 'defnet-01', SANDBOX_ID]
 const HISTORY_MAX = 60
 
 // Mounts an imperative module (editor.js) into the React tree. It owns its
@@ -596,7 +597,7 @@ export default function App() {
         )}
 
         <section className="board">
-          <BoardToolbar
+          {!studioActive && <BoardToolbar
             studio={studioActive} studioAllowed={!compact && mode === 'observe'}
             onStudio={() => {
               viewChosen.current = true
@@ -621,8 +622,9 @@ export default function App() {
             onSavePlan={onSavePlan} onLoadPlan={onLoadPlan} onDeletePlan={onDeletePlan} onImport={onImport}
             menuNode={foldTools ? menuNode : null}
             onFold={setTbOver}
-          />
-          <div className="canvas-wrap" data-studio={studioActive ? '1' : undefined}>
+          />}
+          <OperationsWorkspace active={studioActive} graph={graph} step={step} steps={payload?.steps}
+            idx={idx} selected={selectedData?.id} onSelect={onSelect} onSeek={setIdx} playing={playing} cyRef={cyRef} onExit={()=>setStudio(false)}>
             <div className="dependency-stage" hidden={isGeo}>
             {studioActive && <div className="ops-stage-heading"><b>임무 의존 그래프</b><span>임무 → 작업 → 서비스 → 자산</span></div>}
             <GraphCanvas
@@ -649,7 +651,7 @@ export default function App() {
                 selected={selectedData?.id || null} onSelect={onSelect} hidden={!isGeo && !studioActive}
               />
             )}
-          </div>
+          </OperationsWorkspace>
         </section>
 
         {!compact && (studioActive ? <OperationsPanel

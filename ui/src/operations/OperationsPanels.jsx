@@ -1,23 +1,16 @@
-import { Component, lazy, Suspense, useMemo } from 'react'
+import { useMemo } from 'react'
 import { assetName } from '../labels.js'
 import { positionAt } from '../geo.js'
 import { CAUSE_COLOR } from '../tokens.mjs'
 import { assetSnapshot, modelKind, missionSeries, operationMoments, percent, timeLabel, trendPath, valueOf } from './presentation.js'
 import './operations.css'
 
-const AssetScene = lazy(() => import('./AssetScene.jsx'))
 const CAUSES = { attack: '침해', mobility: '기동 단절', terrain: '지형 단절', maintenance: '정비', unknown: '미상 단절' }
-const MODELS = { fighter: '전투기', aew: '조기경보통제기', vehicle: '지휘차', rack: '서버 랙', satellite: '위성 단말', relay: '무선 중계소', network: '네트워크 장비', terminal: '임무 단말' }
-
-class SceneBoundary extends Component {
-  state = { failed: false }
-  static getDerivedStateFromError() { return { failed: true } }
-  render() { return this.state.failed ? <p className="ops-muted">3D 모형을 불러오지 못했습니다. 자산 정보는 계속 이용할 수 있습니다.</p> : this.props.children }
-}
+const MODELS = { fighter: '전투기', aew: '조기경보통제기', ship: '해상 지휘함', usv: '무인 수상정', spacecraft: '우주 중계 단말', vehicle: '지휘차', rack: '서버 랙', satellite: '위성 단말', relay: '무선 중계소', network: '네트워크 장비', terminal: '임무 단말' }
 
 export function OperationsHeader({ graph, step, selected, onSelect }) {
   return <section className="ops-overview" aria-label="통합 작전 현황">
-    <div className="ops-title"><span>임무중심 공동상황도</span><strong>통합 작전</strong><small>합성 훈련 · 판단값은 결정론 엔진 산출</small></div>
+    <div className="ops-title"><span>MISSION-CENTRIC COP</span><strong>통합 작전</strong><small>훈련 · 합성 데이터</small></div>
     <div className="ops-missions">
       {(graph?.missions || []).map((m) => {
         const active = step?.mission_active?.[m.id] !== false
@@ -58,7 +51,6 @@ export function OperationsPanel({ graph, step, payload, idx, selected, onSelect,
       {(graph?.assets || []).map((a) => <option key={a.id} value={a.id}>{assetName(graph, a.id).ko} · {a.id}</option>)}
     </select></label>
     <div className="ops-asset-title"><h2>{asset ? assetName(graph, asset.id).ko : selectedMission?.name || '임무에서 자산까지'}</h2><span>{asset ? `${asset.id} · ${MODELS[kind]}` : '의존 그래프와 지도에서 연결된 자산을 살펴보세요'}</span></div>
-    <SceneBoundary key={kind}><Suspense fallback={<div className="ops-scene"><p className="ops-scene-empty">3D 모형 준비 중</p></div>}><AssetScene kind={kind} cause={cause} /></Suspense></SceneBoundary>
     {snap && <>
       <div className="ops-status" style={{ '--cause': CAUSE_COLOR[cause] || 'var(--text-muted)' }}><i />{cause ? CAUSES[cause] || cause : snap.degradation === null ? '상태 미측정' : snap.degradation > 0 ? '의존 자산 영향' : '관측된 침해·단절 없음'}<span>엔진 상태</span></div>
       <dl className="ops-facts">

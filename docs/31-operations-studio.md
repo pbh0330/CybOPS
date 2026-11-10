@@ -1,5 +1,8 @@
 # 통합 작전 화면과 항공 합성 시나리오
 
+이 문서는 `b568db5`의 1차 구현 기록이다. 현재의 큰 3D 환경 장면과 합동 시나리오는
+[후속 구현 문서](32-immersive-operations.md)를 따른다.
+
 2026-11-10. 작업 기준 `a71eace`, 브랜치 `codex/mission-operations-studio`.
 클로드의 SOC 작업과 별도 worktree에서 진행한다.
 

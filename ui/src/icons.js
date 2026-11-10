@@ -13,6 +13,8 @@
 // (ADR-0013).
 
 export const ICON_PATHS = {
+  'training-ship': '<path d="M12 2l5 5 2 12-7 3-7-3L7 7zM9 9h6v7H9zM12 5v4" />',
+  'training-usv': '<path d="M7 3l3 4v13H4V7zM17 3l3 4v13h-6V7zM10 10h4M10 16h4" />',
   // Original generic platform silhouettes; display overlays, not SIDC replacements.
   'training-fighter': '<path d="M12 2l2 7 7 6v2l-7-3v5l3 2v1l-5-1-5 1v-1l3-2v-5l-7 3v-2l7-6z" />',
   'training-aew': '<path d="M12 2v19M10 5l-1 6-6 3v2l7-2v5l-3 2h10l-3-2v-5l7 2v-2l-6-3-1-6" /><ellipse cx="12" cy="10" rx="4" ry="2" />',
@@ -97,6 +99,9 @@ export function serviceIconSvgMarkup(kind, opts = {}) {
 export const ICON_BY_TYPE = {
   fighter: 'training-fighter',
   aew: 'training-aew',
+  ship: 'training-ship',
+  usv: 'training-usv',
+  spacecraft: 'satellite',
   'c2-server': 'server-2',
   'fire-control-server': 'topology-star-3',
   'database': 'database',
