@@ -1,0 +1,66 @@
+{
+  "campaign_id": "CAMP-AIR01",
+  "scenario_id": "airnet-01",
+  "name": "항공 통제 가용성 합성 훈련",
+  "victim_entry": "AIR-C2",
+  "note": "합성 침해 입력. 환경 단절은 mission.json에만 정의.",
+  "steps": [
+    {
+      "t": 0,
+      "label": "연동 정상",
+      "state": {},
+      "note": "두 통제소가 제공하는 이중화 통제 메시징."
+    },
+    {
+      "t": 25,
+      "label": "주 통제소 침해",
+      "state": {
+        "AIR-C2": 0.6
+      },
+      "gt": {
+        "technique": "T1078",
+        "tactic": "initial-access"
+      },
+      "note": "예비 통제소가 가용한 동안 이중화가 받친다."
+    },
+    {
+      "t": 40,
+      "label": "주 통제소 장악",
+      "state": {
+        "AIR-C2": 1
+      },
+      "gt": {
+        "technique": "T1486",
+        "tactic": "impact"
+      },
+      "note": "예비 링크 미상 단절과 겹친다. 두 원인을 별도로 표시한다."
+    },
+    {
+      "t": 80,
+      "label": "공중 상황 단말 침해",
+      "state": {
+        "AIR-C2": 1,
+        "AEW-01": 0.65
+      },
+      "gt": {
+        "technique": "T1021",
+        "tactic": "lateral-movement"
+      },
+      "note": "가상 조기경보통제기의 상황 공유 단말 침해. 센서 성능을 뜻하지 않는다."
+    },
+    {
+      "t": 100,
+      "label": "편대 단말 가용성 저하",
+      "state": {
+        "AIR-C2": 1,
+        "AEW-01": 0.65,
+        "FTR-01": 0.5
+      },
+      "gt": {
+        "technique": "T1486",
+        "tactic": "impact"
+      },
+      "note": "전투기 1의 임무 단말 저하. 비행·무장 제어 모델이 아니다."
+    }
+  ]
+}

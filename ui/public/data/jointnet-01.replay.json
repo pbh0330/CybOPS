@@ -1,0 +1,4279 @@
+{
+  "generated": "2026-11-10T17:47:41.6283873+09:00",
+  "generator": "scripts/Export-ReplayData.ps1",
+  "contract": 1,
+  "note": "Precomputed by the deterministic engine. The UI displays these numbers and never recomputes them (ADR-0003).",
+  "scenario_id": "jointnet-01",
+  "method": "weighted",
+  "step": 5.0,
+  "graph": {
+    "scenario_id": "jointnet-01",
+    "name": "합동 임무 연동 · 해상 / 항공 / 우주",
+    "network_type": "tactical",
+    "authored": "2026-11-10",
+    "classification": "합성 훈련 전용. 실제 부대·항공기 성능·작전계획 미사용.",
+    "basis": "영상 표현을 재구성하는 자체 저작 합성 훈련. 물리·무장·탐지 성능 모델이 아님.",
+    "timeline": {
+      "unit": "minute",
+      "t0_iso": "2026-11-10T06:00:00+09:00",
+      "horizon": 120,
+      "step": 5
+    },
+    "cause_labels": {
+      "attack": "적대 행위에 의한 침해·거부. 침해 상태 입력(attack-timeline.json)에서만 발생한다.",
+      "mobility": "기동에 의한 단절 - 지휘소 이동, 안테나 미전개, 장비 미전개.",
+      "terrain": "지형에 의한 단절 - 능선 차폐, 계곡 진입, 가시선 상실.",
+      "maintenance": "계획된 정비·전원 차단.",
+      "unknown": "원인 미상. 공격으로 단정하지 않는다(ADR-0012 2항). 상황도에 '미상'으로 표기한다."
+    },
+    "geo": {
+      "_role": "보조 레이어다. 기본 뷰는 임무-자산 의존성 그래프이며 지도는 토글 가능한 부가 뷰다(ADR-0001). 저하도·우선순위·색상 등급 어느 것도 이 블록을 읽지 않는다.",
+      "_not_ip_geolocation": "이 블록과 asset.geo 는 자산대장 정보다. 외부 IP 지오로케이션(enrichment.geo.country)과 다른 것이고, 같은 필드에 넣지 않는다. 후자는 이벤트에 붙고 판단에 쓰지 않는다(ADR-0002).",
+      "frame": {
+        "id": "TACGRID-01",
+        "kind": "local-plane",
+        "canonical": true,
+        "unit": "meter",
+        "axes": {
+          "x": "east",
+          "y": "north",
+          "z": "elevation_msl"
+        },
+        "extent": {
+          "x": [
+            0,
+            110000
+          ],
+          "y": [
+            0,
+            80000
+          ],
+          "z": [
+            0,
+            450000
+          ]
+        },
+        "note": "정본 좌표는 이 로컬 평면 하나뿐이다. 자산마다 위경도를 따로 저장하지 않는다 - 두 표현을 각각 저장하면 어긋난다."
+      },
+      "georef": {
+        "purpose": "로컬 평면을 지도 위젯에 올리기 위한 앵커. 표시 전용이다.",
+        "datum": "WGS84",
+        "epsg": 4326,
+        "anchor": {
+          "x": 0,
+          "y": 0,
+          "lat": 38.02,
+          "lon": 128.08
+        },
+        "rotation_deg": 0,
+        "method": "equirectangular-local",
+        "formula": {
+          "lat": "anchor.lat + y / 111320",
+          "lon": "anchor.lon + x / (111320 * cos(anchor.lat))",
+          "inverse_lat": "y = (lat - anchor.lat) * 111320",
+          "inverse_lon": "x = (lon - anchor.lon) * 111320 * cos(anchor.lat)"
+        },
+        "approximation_error_m": 1100,
+        "approximation_note": "확장 영역의 고정 위도 근사. 모서리 검사 약 972m, 표시 허용 오차 1100m. 항법·판단에 사용하지 않음.",
+        "mgrs": {
+          "store": false,
+          "display": true,
+          "derive_from": "wgs84",
+          "gzd": "52S",
+          "default_precision_digits": 8,
+          "note": "MGRS 는 WGS84 datum 기반이라 위경도에서 무손실로 파생된다. 반대로 MGRS 문자열을 정본으로 저장하면 자릿수가 곧 정밀도라 값이 잘리고 격자 경계에서 보간이 깨진다. 그래서 저장은 위경도, 표시는 MGRS 로 나눈다. GZD 는 AO 전체가 UTM zone 52, 위도대 S 에 들어가서 상수다."
+        }
+      },
+      "safety": {
+        "claim": "가상 합동 훈련. 실제 부대 배치·항로·궤도·장비 성능 아님.",
+        "how": [
+          "항적과 고도는 자체 저작. 위성도 천체역학 전파가 아닌 축약 표시 항적.",
+          "환경 효과는 표시 전용이며 엔진 상태를 바꾸지 않음."
+        ],
+        "basemap_policy": "실지형·위성 타일을 이 좌표에 깐다(ADR-0025). 타일 URL 은 config.json 의 map 블록에 있고 오프라인 배치는 그것을 로컬 타일로 바꾼다. 워터마크는 코드에서 끌 수 없다.",
+        "superseded": "2026-09-19 이전의 '가상 좌표' 논거는 docs/17 §4 에 기록으로 남아 있고 ADR-0025 가 폐기했다."
+      },
+      "dem_source": "지도 표시 전용. 항공 시나리오 좌표와 고도는 DEM에서 추출하지 않은 가상값.",
+      "position_rule": {
+        "_note": "시점 t 의 자산 위치를 뽑는 결정론적 규칙. 어떤 구현이든 이 규칙만 따르면 같은 값이 나와야 한다.",
+        "steps": [
+          "asset.geo.kind == 'fixed' 이면 언제나 asset.geo.at 이다.",
+          "asset.geo.kind == 'track' 이면 from <= t < to 인 구간을 segments 에서 찾는다. 구간은 서로 겹치지 않고 [0, timeline.horizon) 을 빈틈없이 덮는다.",
+          "mode == 'hold' 이면 그 구간 내내 at 이다.",
+          "mode == 'move' 이면 u = (t - from) / (to - from) 으로 at 과 to_at 을 성분별 선형보간한다. x, y, z 전부 같은 u 를 쓴다.",
+          "t 가 어떤 구간에도 들어가지 않으면 위치는 0 이나 마지막 값이 아니라 미정의다. 화면에 '위치 미상'으로 표기한다(ADR-0017 의 '활성 단계 없음' 처리와 같은 태도)."
+        ],
+        "orthogonality": "geo 와 outages 는 직교한다. 자산이 outage 중이어도 위치는 계속 정의된다 - 미전개 장비도 어딘가에는 있다. 반대로 위치가 움직인다고 자동으로 outage 가 생기지도 않는다."
+      }
+    },
+    "units": [
+      {
+        "id": "U-AIR",
+        "name": "가상 합동 연동 훈련대",
+        "echelon": "BN",
+        "parent": null
+      }
+    ],
+    "missions": [
+      {
+        "id": "M-AIR-C2",
+        "name": "항공 지휘통제",
+        "priority": 1,
+        "owner": "U-AIR"
+      },
+      {
+        "id": "M-AIR-PICTURE",
+        "name": "공중 상황 공유",
+        "priority": 2,
+        "owner": "U-AIR"
+      },
+      {
+        "id": "M-MARITIME",
+        "name": "해상 임무 연동",
+        "priority": 2,
+        "owner": "U-AIR"
+      }
+    ],
+    "phases": [
+      {
+        "id": "PH-AIR-C2",
+        "mission": "M-AIR-C2",
+        "seq": 1,
+        "name": "편대 통제 유지",
+        "window": {
+          "from": 0,
+          "to": 120
+        }
+      },
+      {
+        "id": "PH-AIR-PICTURE",
+        "mission": "M-AIR-PICTURE",
+        "seq": 1,
+        "name": "상황 공유 유지",
+        "window": {
+          "from": 0,
+          "to": 120
+        }
+      },
+      {
+        "id": "PH-SEA",
+        "mission": "M-MARITIME",
+        "seq": 1,
+        "name": "해상 상황 공유 유지",
+        "window": {
+          "from": 0,
+          "to": 120
+        }
+      }
+    ],
+    "tasks": [
+      {
+        "id": "T-C2-1",
+        "phase": "PH-AIR-C2",
+        "name": "전투기 1 통제정보 수신",
+        "criticality": 1,
+        "performed_at": "FTR-01"
+      },
+      {
+        "id": "T-C2-2",
+        "phase": "PH-AIR-C2",
+        "name": "전투기 2 통제정보 수신",
+        "criticality": 1,
+        "performed_at": "FTR-02"
+      },
+      {
+        "id": "T-PIC-1",
+        "phase": "PH-AIR-PICTURE",
+        "name": "전투기 1 공중상황 수신",
+        "criticality": 1,
+        "performed_at": "FTR-01"
+      },
+      {
+        "id": "T-PIC-2",
+        "phase": "PH-AIR-PICTURE",
+        "name": "전투기 2 공중상황 수신",
+        "criticality": 1,
+        "performed_at": "FTR-02"
+      },
+      {
+        "id": "T-SHIP-01",
+        "phase": "PH-SEA",
+        "name": "가상 해상 지휘함 정보 수신",
+        "criticality": 1,
+        "performed_at": "SHIP-01"
+      },
+      {
+        "id": "T-USV-01",
+        "phase": "PH-SEA",
+        "name": "가상 무인 수상정 정보 수신",
+        "criticality": 1,
+        "performed_at": "USV-01"
+      }
+    ],
+    "services": [
+      {
+        "id": "S-AIR-C2",
+        "name": "항공 통제 메시징",
+        "kind": "messaging",
+        "redundancy_group": "air-c2"
+      },
+      {
+        "id": "S-AIR-PICTURE",
+        "name": "공중 상황 정보",
+        "kind": "intel"
+      },
+      {
+        "id": "S-AIRLINK",
+        "name": "항공 데이터링크",
+        "kind": "messaging"
+      },
+      {
+        "id": "S-SPACE",
+        "name": "우주 중계 데이터",
+        "kind": "messaging"
+      }
+    ],
+    "assets": [
+      {
+        "id": "AIR-C2",
+        "type": "c2-server",
+        "site": "주 합동통제소",
+        "geo": {
+          "kind": "fixed",
+          "frame": "TACGRID-01",
+          "source": "authored-synthetic",
+          "accuracy_m": 100,
+          "at": {
+            "x": 4200,
+            "y": 4200,
+            "z": 300
+          }
+        },
+        "unit": "U-AIR",
+        "os": "appliance",
+        "transit": true,
+        "mobility": "static"
+      },
+      {
+        "id": "AIR-BACKUP",
+        "type": "c2-server",
+        "site": "예비 합동통제소",
+        "geo": {
+          "kind": "fixed",
+          "frame": "TACGRID-01",
+          "source": "authored-synthetic",
+          "accuracy_m": 100,
+          "at": {
+            "x": 5100,
+            "y": 5200,
+            "z": 300
+          }
+        },
+        "unit": "U-AIR",
+        "os": "appliance",
+        "transit": true,
+        "mobility": "static"
+      },
+      {
+        "id": "AIR-GW",
+        "type": "gateway",
+        "site": "합동 데이터링크 중계",
+        "geo": {
+          "kind": "fixed",
+          "frame": "TACGRID-01",
+          "source": "authored-synthetic",
+          "accuracy_m": 100,
+          "at": {
+            "x": 6500,
+            "y": 6400,
+            "z": 300
+          }
+        },
+        "unit": "U-AIR",
+        "os": "appliance",
+        "transit": true,
+        "mobility": "static"
+      },
+      {
+        "id": "FTR-01",
+        "type": "c2-terminal",
+        "visual_model": "fighter",
+        "site": "가상 전투기 1",
+        "geo": {
+          "kind": "track",
+          "frame": "TACGRID-01",
+          "source": "authored-synthetic",
+          "accuracy_m": 100,
+          "segments": [
+            {
+              "from": 0,
+              "to": 30,
+              "mode": "move",
+              "at": {
+                "x": 38000,
+                "y": 18000,
+                "z": 6500
+              },
+              "to_at": {
+                "x": 82000,
+                "y": 27000,
+                "z": 6500
+              }
+            },
+            {
+              "from": 30,
+              "to": 60,
+              "mode": "move",
+              "at": {
+                "x": 82000,
+                "y": 27000,
+                "z": 6500
+              },
+              "to_at": {
+                "x": 77000,
+                "y": 65000,
+                "z": 6500
+              }
+            },
+            {
+              "from": 60,
+              "to": 90,
+              "mode": "move",
+              "at": {
+                "x": 77000,
+                "y": 65000,
+                "z": 6500
+              },
+              "to_at": {
+                "x": 32000,
+                "y": 50000,
+                "z": 6500
+              }
+            },
+            {
+              "from": 90,
+              "to": 120,
+              "mode": "move",
+              "at": {
+                "x": 32000,
+                "y": 50000,
+                "z": 6500
+              },
+              "to_at": {
+                "x": 38000,
+                "y": 18000,
+                "z": 6500
+              }
+            }
+          ]
+        },
+        "unit": "U-AIR",
+        "os": "appliance",
+        "transit": false,
+        "mobility": "mobile"
+      },
+      {
+        "id": "FTR-02",
+        "type": "c2-terminal",
+        "visual_model": "fighter",
+        "site": "가상 전투기 2",
+        "geo": {
+          "kind": "track",
+          "frame": "TACGRID-01",
+          "source": "authored-synthetic",
+          "accuracy_m": 100,
+          "segments": [
+            {
+              "from": 0,
+              "to": 30,
+              "mode": "move",
+              "at": {
+                "x": 42000,
+                "y": 14000,
+                "z": 6900
+              },
+              "to_at": {
+                "x": 86000,
+                "y": 23000,
+                "z": 6900
+              }
+            },
+            {
+              "from": 30,
+              "to": 60,
+              "mode": "move",
+              "at": {
+                "x": 86000,
+                "y": 23000,
+                "z": 6900
+              },
+              "to_at": {
+                "x": 81000,
+                "y": 61000,
+                "z": 6900
+              }
+            },
+            {
+              "from": 60,
+              "to": 90,
+              "mode": "move",
+              "at": {
+                "x": 81000,
+                "y": 61000,
+                "z": 6900
+              },
+              "to_at": {
+                "x": 36000,
+                "y": 46000,
+                "z": 6900
+              }
+            },
+            {
+              "from": 90,
+              "to": 120,
+              "mode": "move",
+              "at": {
+                "x": 36000,
+                "y": 46000,
+                "z": 6900
+              },
+              "to_at": {
+                "x": 42000,
+                "y": 14000,
+                "z": 6900
+              }
+            }
+          ]
+        },
+        "unit": "U-AIR",
+        "os": "appliance",
+        "transit": false,
+        "mobility": "mobile"
+      },
+      {
+        "id": "AEW-01",
+        "type": "gateway",
+        "visual_model": "aew",
+        "site": "가상 조기경보통제기",
+        "geo": {
+          "kind": "track",
+          "frame": "TACGRID-01",
+          "source": "authored-synthetic",
+          "accuracy_m": 100,
+          "segments": [
+            {
+              "from": 0,
+              "to": 30,
+              "mode": "move",
+              "at": {
+                "x": 28000,
+                "y": 29000,
+                "z": 8000
+              },
+              "to_at": {
+                "x": 72000,
+                "y": 38000,
+                "z": 8000
+              }
+            },
+            {
+              "from": 30,
+              "to": 60,
+              "mode": "move",
+              "at": {
+                "x": 72000,
+                "y": 38000,
+                "z": 8000
+              },
+              "to_at": {
+                "x": 67000,
+                "y": 76000,
+                "z": 8000
+              }
+            },
+            {
+              "from": 60,
+              "to": 90,
+              "mode": "move",
+              "at": {
+                "x": 67000,
+                "y": 76000,
+                "z": 8000
+              },
+              "to_at": {
+                "x": 22000,
+                "y": 61000,
+                "z": 8000
+              }
+            },
+            {
+              "from": 90,
+              "to": 120,
+              "mode": "move",
+              "at": {
+                "x": 22000,
+                "y": 61000,
+                "z": 8000
+              },
+              "to_at": {
+                "x": 28000,
+                "y": 29000,
+                "z": 8000
+              }
+            }
+          ]
+        },
+        "unit": "U-AIR",
+        "os": "appliance",
+        "transit": true,
+        "mobility": "mobile"
+      },
+      {
+        "id": "SHIP-01",
+        "type": "c2-terminal",
+        "visual_model": "ship",
+        "site": "가상 해상 지휘함",
+        "geo": {
+          "kind": "track",
+          "frame": "TACGRID-01",
+          "source": "authored-synthetic",
+          "accuracy_m": 100,
+          "segments": [
+            {
+              "from": 0,
+              "to": 30,
+              "mode": "move",
+              "at": {
+                "x": 70000,
+                "y": 15000,
+                "z": 0
+              },
+              "to_at": {
+                "x": 76000,
+                "y": 26000,
+                "z": 0
+              }
+            },
+            {
+              "from": 30,
+              "to": 60,
+              "mode": "move",
+              "at": {
+                "x": 76000,
+                "y": 26000,
+                "z": 0
+              },
+              "to_at": {
+                "x": 80000,
+                "y": 37000,
+                "z": 0
+              }
+            },
+            {
+              "from": 60,
+              "to": 90,
+              "mode": "move",
+              "at": {
+                "x": 80000,
+                "y": 37000,
+                "z": 0
+              },
+              "to_at": {
+                "x": 84000,
+                "y": 49000,
+                "z": 0
+              }
+            },
+            {
+              "from": 90,
+              "to": 120,
+              "mode": "move",
+              "at": {
+                "x": 84000,
+                "y": 49000,
+                "z": 0
+              },
+              "to_at": {
+                "x": 87000,
+                "y": 60000,
+                "z": 0
+              }
+            }
+          ]
+        },
+        "unit": "U-AIR",
+        "os": "appliance",
+        "transit": false,
+        "mobility": "mobile"
+      },
+      {
+        "id": "USV-01",
+        "type": "c2-terminal",
+        "visual_model": "usv",
+        "site": "가상 무인 수상정",
+        "geo": {
+          "kind": "track",
+          "frame": "TACGRID-01",
+          "source": "authored-synthetic",
+          "accuracy_m": 100,
+          "segments": [
+            {
+              "from": 0,
+              "to": 30,
+              "mode": "move",
+              "at": {
+                "x": 65000,
+                "y": 17000,
+                "z": 0
+              },
+              "to_at": {
+                "x": 71000,
+                "y": 29000,
+                "z": 0
+              }
+            },
+            {
+              "from": 30,
+              "to": 60,
+              "mode": "move",
+              "at": {
+                "x": 71000,
+                "y": 29000,
+                "z": 0
+              },
+              "to_at": {
+                "x": 75000,
+                "y": 40000,
+                "z": 0
+              }
+            },
+            {
+              "from": 60,
+              "to": 90,
+              "mode": "move",
+              "at": {
+                "x": 75000,
+                "y": 40000,
+                "z": 0
+              },
+              "to_at": {
+                "x": 79000,
+                "y": 52000,
+                "z": 0
+              }
+            },
+            {
+              "from": 90,
+              "to": 120,
+              "mode": "move",
+              "at": {
+                "x": 79000,
+                "y": 52000,
+                "z": 0
+              },
+              "to_at": {
+                "x": 82000,
+                "y": 63000,
+                "z": 0
+              }
+            }
+          ]
+        },
+        "unit": "U-AIR",
+        "os": "appliance",
+        "transit": false,
+        "mobility": "mobile"
+      },
+      {
+        "id": "ORB-01",
+        "type": "satcom-terminal",
+        "visual_model": "spacecraft",
+        "site": "가상 우주 중계 단말",
+        "geo": {
+          "kind": "track",
+          "frame": "TACGRID-01",
+          "source": "authored-synthetic",
+          "accuracy_m": 100,
+          "segments": [
+            {
+              "from": 0,
+              "to": 30,
+              "mode": "move",
+              "at": {
+                "x": 10000,
+                "y": 60000,
+                "z": 420000
+              },
+              "to_at": {
+                "x": 38000,
+                "y": 65000,
+                "z": 420000
+              }
+            },
+            {
+              "from": 30,
+              "to": 60,
+              "mode": "move",
+              "at": {
+                "x": 38000,
+                "y": 65000,
+                "z": 420000
+              },
+              "to_at": {
+                "x": 65000,
+                "y": 58000,
+                "z": 420000
+              }
+            },
+            {
+              "from": 60,
+              "to": 90,
+              "mode": "move",
+              "at": {
+                "x": 65000,
+                "y": 58000,
+                "z": 420000
+              },
+              "to_at": {
+                "x": 92000,
+                "y": 48000,
+                "z": 420000
+              }
+            },
+            {
+              "from": 90,
+              "to": 120,
+              "mode": "move",
+              "at": {
+                "x": 92000,
+                "y": 48000,
+                "z": 420000
+              },
+              "to_at": {
+                "x": 106000,
+                "y": 35000,
+                "z": 420000
+              }
+            }
+          ]
+        },
+        "unit": "U-AIR",
+        "os": "appliance",
+        "transit": true,
+        "mobility": "mobile"
+      }
+    ],
+    "links": [
+      {
+        "id": "L-PRIMARY",
+        "a": "AIR-C2",
+        "b": "AIR-GW",
+        "bearer": "wired",
+        "rule_exception": {
+          "exempts": [
+            "same_site"
+          ],
+          "why": "가상 지상 전송망의 중간 구간을 생략한 논리 링크."
+        }
+      },
+      {
+        "id": "L-BACKUP",
+        "a": "AIR-BACKUP",
+        "b": "AIR-GW",
+        "bearer": "wired",
+        "outages": [
+          {
+            "from": 40,
+            "to": 60,
+            "cause": "unknown",
+            "note": "예비 통제소 전송 구간 단절. 원인 미상, 공격으로 단정하지 않음."
+          }
+        ],
+        "rule_exception": {
+          "exempts": [
+            "same_site"
+          ],
+          "why": "가상 지상 전송망의 중간 구간을 생략한 논리 링크."
+        }
+      },
+      {
+        "id": "L-DATA-FTR-01",
+        "a": "AIR-GW",
+        "b": "FTR-01",
+        "bearer": "vhf"
+      },
+      {
+        "id": "L-DATA-FTR-02",
+        "a": "AIR-GW",
+        "b": "FTR-02",
+        "bearer": "vhf"
+      },
+      {
+        "id": "L-DATA-AEW-01",
+        "a": "AIR-GW",
+        "b": "AEW-01",
+        "bearer": "vhf"
+      },
+      {
+        "id": "L-JOINT-SHIP-01",
+        "a": "AIR-GW",
+        "b": "SHIP-01",
+        "bearer": "vhf"
+      },
+      {
+        "id": "L-JOINT-USV-01",
+        "a": "AIR-GW",
+        "b": "USV-01",
+        "bearer": "vhf"
+      },
+      {
+        "id": "L-JOINT-ORB-01",
+        "a": "AIR-BACKUP",
+        "b": "ORB-01",
+        "bearer": "satcom"
+      }
+    ],
+    "edges": {
+      "requires": [
+        {
+          "from": "T-C2-1",
+          "to": "S-AIR-C2",
+          "w": 1,
+          "hard": true
+        },
+        {
+          "from": "T-C2-2",
+          "to": "S-AIR-C2",
+          "w": 1,
+          "hard": true
+        },
+        {
+          "from": "T-PIC-1",
+          "to": "S-AIR-PICTURE",
+          "w": 1,
+          "hard": true
+        },
+        {
+          "from": "T-PIC-2",
+          "to": "S-AIR-PICTURE",
+          "w": 1,
+          "hard": true
+        },
+        {
+          "from": "T-C2-1",
+          "to": "S-AIRLINK",
+          "w": 1,
+          "hard": true
+        },
+        {
+          "from": "T-C2-2",
+          "to": "S-AIRLINK",
+          "w": 1,
+          "hard": true
+        },
+        {
+          "from": "T-PIC-1",
+          "to": "S-AIRLINK",
+          "w": 1,
+          "hard": true
+        },
+        {
+          "from": "T-PIC-2",
+          "to": "S-AIRLINK",
+          "w": 1,
+          "hard": true
+        },
+        {
+          "from": "T-SHIP-01",
+          "to": "S-AIR-C2",
+          "w": 1,
+          "hard": true
+        },
+        {
+          "from": "T-SHIP-01",
+          "to": "S-SPACE",
+          "w": 1,
+          "hard": true
+        },
+        {
+          "from": "T-USV-01",
+          "to": "S-AIR-C2",
+          "w": 1,
+          "hard": true
+        },
+        {
+          "from": "T-USV-01",
+          "to": "S-SPACE",
+          "w": 1,
+          "hard": true
+        }
+      ],
+      "provided_by": [
+        {
+          "from": "S-AIR-C2",
+          "to": "AIR-C2",
+          "w": 1
+        },
+        {
+          "from": "S-AIR-C2",
+          "to": "AIR-BACKUP",
+          "w": 1
+        },
+        {
+          "from": "S-AIR-PICTURE",
+          "to": "AEW-01",
+          "w": 1
+        },
+        {
+          "from": "S-AIRLINK",
+          "to": "AIR-GW",
+          "w": 1
+        },
+        {
+          "from": "S-SPACE",
+          "to": "ORB-01",
+          "w": 1
+        }
+      ],
+      "depends_on": [],
+      "hosted_on": [],
+      "redundant_with": [
+        {
+          "a": "AIR-C2",
+          "b": "AIR-BACKUP",
+          "group": "air-c2"
+        }
+      ]
+    },
+    "crown_jewels": [
+      "AIR-C2",
+      "AEW-01",
+      "ORB-01"
+    ],
+    "notes": [
+      "visual_model은 표시 전용. 사이버 단말 유형과 SIDC는 기존 유형을 유지한다.",
+      "표시 항적·고도는 결정론 엔진 입력이 아니다. 실측 장비 성능·전투 결과를 주장하지 않는다.",
+      "해양·구름·지구·연결 시각화는 모형 표현이며 상태·경보·대응 우선순위 계산에 입력되지 않음."
+    ]
+  },
+  "attack": {
+    "campaign_id": "CAMP-JOINT01",
+    "scenario_id": "jointnet-01",
+    "name": "합동 데이터 연동 합성 훈련",
+    "victim_entry": "AIR-C2",
+    "note": "합성 침해 입력. 환경 단절은 mission.json에만 정의.",
+    "steps": [
+      {
+        "t": 0,
+        "label": "연동 정상",
+        "state": {},
+        "note": "두 통제소가 제공하는 이중화 통제 메시징."
+      },
+      {
+        "t": 25,
+        "label": "주 통제소 침해",
+        "state": {
+          "AIR-C2": 0.6
+        },
+        "gt": {
+          "technique": "T1078",
+          "tactic": "initial-access"
+        },
+        "note": "예비 통제소가 가용한 동안 이중화가 받친다."
+      },
+      {
+        "t": 40,
+        "label": "주 통제소 장악",
+        "state": {
+          "AIR-C2": 1
+        },
+        "gt": {
+          "technique": "T1486",
+          "tactic": "impact"
+        },
+        "note": "예비 링크 미상 단절과 겹친다. 두 원인을 별도로 표시한다."
+      },
+      {
+        "t": 70,
+        "label": "우주 중계 단말 저하",
+        "state": {
+          "AIR-C2": 1,
+          "ORB-01": 0.45
+        },
+        "note": "통신 단말 가용성 입력. 실제 궤도·전파·탐지 모델 아님."
+      },
+      {
+        "t": 80,
+        "label": "공중 상황 단말 침해",
+        "state": {
+          "AIR-C2": 1,
+          "AEW-01": 0.65,
+          "ORB-01": 0.45
+        },
+        "gt": {
+          "technique": "T1021",
+          "tactic": "lateral-movement"
+        },
+        "note": "가상 조기경보통제기의 상황 공유 단말 침해. 센서 성능을 뜻하지 않는다."
+      },
+      {
+        "t": 100,
+        "label": "편대 단말 가용성 저하",
+        "state": {
+          "AIR-C2": 1,
+          "AEW-01": 0.65,
+          "FTR-01": 0.5,
+          "ORB-01": 0.45
+        },
+        "gt": {
+          "technique": "T1486",
+          "tactic": "impact"
+        },
+        "note": "전투기 1의 임무 단말 저하. 비행·무장 제어 모델이 아니다."
+      }
+    ]
+  },
+  "steps": [
+    {
+      "t": 0,
+      "time_iso": "2026-11-10T06:00:00.0000000+09:00",
+      "label": "연동 정상",
+      "note": "두 통제소가 제공하는 이중화 통제 메시징.",
+      "gt": [],
+      "compromise": {},
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.0,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 0.0,
+        "AEW-01": 0.0,
+        "ORB-01": 0.0,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.0,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.0,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 0.0,
+        "T-PIC-2": 0.0,
+        "T-C2-2": 0.0,
+        "T-PIC-1": 0.0,
+        "T-SHIP-01": 0.0,
+        "T-C2-1": 0.0
+      },
+      "mission": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 1.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 1.0
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 0.5,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 0.5
+          },
+          "delta": {
+            "M-AIR-C2": 0.5,
+            "M-AIR-PICTURE": 0.5,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": null,
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 5.0,
+      "time_iso": "2026-11-10T06:05:00.0000000+09:00",
+      "label": "연동 정상",
+      "note": "두 통제소가 제공하는 이중화 통제 메시징.",
+      "gt": [],
+      "compromise": {},
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.0,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 0.0,
+        "AEW-01": 0.0,
+        "ORB-01": 0.0,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.0,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.0,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 0.0,
+        "T-PIC-2": 0.0,
+        "T-C2-2": 0.0,
+        "T-PIC-1": 0.0,
+        "T-SHIP-01": 0.0,
+        "T-C2-1": 0.0
+      },
+      "mission": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 1.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 1.0
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 0.5,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 0.5
+          },
+          "delta": {
+            "M-AIR-C2": 0.5,
+            "M-AIR-PICTURE": 0.5,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": null,
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 10.0,
+      "time_iso": "2026-11-10T06:10:00.0000000+09:00",
+      "label": "연동 정상",
+      "note": "두 통제소가 제공하는 이중화 통제 메시징.",
+      "gt": [],
+      "compromise": {},
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.0,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 0.0,
+        "AEW-01": 0.0,
+        "ORB-01": 0.0,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.0,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.0,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 0.0,
+        "T-PIC-2": 0.0,
+        "T-C2-2": 0.0,
+        "T-PIC-1": 0.0,
+        "T-SHIP-01": 0.0,
+        "T-C2-1": 0.0
+      },
+      "mission": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 1.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 1.0
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 0.5,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 0.5
+          },
+          "delta": {
+            "M-AIR-C2": 0.5,
+            "M-AIR-PICTURE": 0.5,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": null,
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 15.0,
+      "time_iso": "2026-11-10T06:15:00.0000000+09:00",
+      "label": "연동 정상",
+      "note": "두 통제소가 제공하는 이중화 통제 메시징.",
+      "gt": [],
+      "compromise": {},
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.0,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 0.0,
+        "AEW-01": 0.0,
+        "ORB-01": 0.0,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.0,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.0,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 0.0,
+        "T-PIC-2": 0.0,
+        "T-C2-2": 0.0,
+        "T-PIC-1": 0.0,
+        "T-SHIP-01": 0.0,
+        "T-C2-1": 0.0
+      },
+      "mission": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 1.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 1.0
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 0.5,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 0.5
+          },
+          "delta": {
+            "M-AIR-C2": 0.5,
+            "M-AIR-PICTURE": 0.5,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": null,
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 20.0,
+      "time_iso": "2026-11-10T06:20:00.0000000+09:00",
+      "label": "연동 정상",
+      "note": "두 통제소가 제공하는 이중화 통제 메시징.",
+      "gt": [],
+      "compromise": {},
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.0,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 0.0,
+        "AEW-01": 0.0,
+        "ORB-01": 0.0,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.0,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.0,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 0.0,
+        "T-PIC-2": 0.0,
+        "T-C2-2": 0.0,
+        "T-PIC-1": 0.0,
+        "T-SHIP-01": 0.0,
+        "T-C2-1": 0.0
+      },
+      "mission": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 1.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 1.0
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 0.5,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 0.5
+          },
+          "delta": {
+            "M-AIR-C2": 0.5,
+            "M-AIR-PICTURE": 0.5,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": null,
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 25.0,
+      "time_iso": "2026-11-10T06:25:00.0000000+09:00",
+      "label": "주 통제소 침해",
+      "note": "예비 통제소가 가용한 동안 이중화가 받친다.",
+      "gt": [
+        {
+          "technique": "T1078",
+          "tactic": "initial-access"
+        }
+      ],
+      "compromise": {
+        "AIR-C2": 0.6
+      },
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.0,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 0.6,
+        "AEW-01": 0.0,
+        "ORB-01": 0.0,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.0,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.0,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 0.0,
+        "T-PIC-2": 0.0,
+        "T-C2-2": 0.0,
+        "T-PIC-1": 0.0,
+        "T-SHIP-01": 0.0,
+        "T-C2-1": 0.0
+      },
+      "mission": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 1.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 1.0
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 0.5,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 0.5
+          },
+          "delta": {
+            "M-AIR-C2": 0.5,
+            "M-AIR-PICTURE": 0.5,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": null,
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 30.0,
+      "time_iso": "2026-11-10T06:30:00.0000000+09:00",
+      "label": "주 통제소 침해",
+      "note": "예비 통제소가 가용한 동안 이중화가 받친다.",
+      "gt": [
+        {
+          "technique": "T1078",
+          "tactic": "initial-access"
+        }
+      ],
+      "compromise": {
+        "AIR-C2": 0.6
+      },
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.0,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 0.6,
+        "AEW-01": 0.0,
+        "ORB-01": 0.0,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.0,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.0,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 0.0,
+        "T-PIC-2": 0.0,
+        "T-C2-2": 0.0,
+        "T-PIC-1": 0.0,
+        "T-SHIP-01": 0.0,
+        "T-C2-1": 0.0
+      },
+      "mission": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 1.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 1.0
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 0.5,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 0.5
+          },
+          "delta": {
+            "M-AIR-C2": 0.5,
+            "M-AIR-PICTURE": 0.5,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": null,
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 35.0,
+      "time_iso": "2026-11-10T06:35:00.0000000+09:00",
+      "label": "주 통제소 침해",
+      "note": "예비 통제소가 가용한 동안 이중화가 받친다.",
+      "gt": [
+        {
+          "technique": "T1078",
+          "tactic": "initial-access"
+        }
+      ],
+      "compromise": {
+        "AIR-C2": 0.6
+      },
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.0,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 0.6,
+        "AEW-01": 0.0,
+        "ORB-01": 0.0,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.0,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.0,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 0.0,
+        "T-PIC-2": 0.0,
+        "T-C2-2": 0.0,
+        "T-PIC-1": 0.0,
+        "T-SHIP-01": 0.0,
+        "T-C2-1": 0.0
+      },
+      "mission": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 1.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 1.0
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 0.5,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 0.5
+          },
+          "delta": {
+            "M-AIR-C2": 0.5,
+            "M-AIR-PICTURE": 0.5,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": null,
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 40.0,
+      "time_iso": "2026-11-10T06:40:00.0000000+09:00",
+      "label": "주 통제소 장악",
+      "note": "예비 링크 미상 단절과 겹친다. 두 원인을 별도로 표시한다.",
+      "gt": [
+        {
+          "technique": "T1486",
+          "tactic": "impact"
+        }
+      ],
+      "compromise": {
+        "AIR-C2": 1.0
+      },
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.0,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 1.0,
+        "AEW-01": 0.0,
+        "ORB-01": 0.0,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.0,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.0,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 1.0,
+        "T-PIC-2": 0.0,
+        "T-C2-2": 1.0,
+        "T-PIC-1": 0.0,
+        "T-SHIP-01": 1.0,
+        "T-C2-1": 1.0
+      },
+      "mission": {
+        "M-AIR-C2": 1.0,
+        "M-MARITIME": 1.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 1.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 1.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 1.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 1.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 1.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.5
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.5,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 1.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": "unknown",
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 45.0,
+      "time_iso": "2026-11-10T06:45:00.0000000+09:00",
+      "label": "주 통제소 장악",
+      "note": "예비 링크 미상 단절과 겹친다. 두 원인을 별도로 표시한다.",
+      "gt": [
+        {
+          "technique": "T1486",
+          "tactic": "impact"
+        }
+      ],
+      "compromise": {
+        "AIR-C2": 1.0
+      },
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.0,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 1.0,
+        "AEW-01": 0.0,
+        "ORB-01": 0.0,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.0,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.0,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 1.0,
+        "T-PIC-2": 0.0,
+        "T-C2-2": 1.0,
+        "T-PIC-1": 0.0,
+        "T-SHIP-01": 1.0,
+        "T-C2-1": 1.0
+      },
+      "mission": {
+        "M-AIR-C2": 1.0,
+        "M-MARITIME": 1.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 1.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 1.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 1.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 1.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 1.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.5
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.5,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 1.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": "unknown",
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 50.0,
+      "time_iso": "2026-11-10T06:50:00.0000000+09:00",
+      "label": "주 통제소 장악",
+      "note": "예비 링크 미상 단절과 겹친다. 두 원인을 별도로 표시한다.",
+      "gt": [
+        {
+          "technique": "T1486",
+          "tactic": "impact"
+        }
+      ],
+      "compromise": {
+        "AIR-C2": 1.0
+      },
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.0,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 1.0,
+        "AEW-01": 0.0,
+        "ORB-01": 0.0,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.0,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.0,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 1.0,
+        "T-PIC-2": 0.0,
+        "T-C2-2": 1.0,
+        "T-PIC-1": 0.0,
+        "T-SHIP-01": 1.0,
+        "T-C2-1": 1.0
+      },
+      "mission": {
+        "M-AIR-C2": 1.0,
+        "M-MARITIME": 1.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 1.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 1.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 1.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 1.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 1.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.5
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.5,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 1.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": "unknown",
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 55.0,
+      "time_iso": "2026-11-10T06:55:00.0000000+09:00",
+      "label": "주 통제소 장악",
+      "note": "예비 링크 미상 단절과 겹친다. 두 원인을 별도로 표시한다.",
+      "gt": [
+        {
+          "technique": "T1486",
+          "tactic": "impact"
+        }
+      ],
+      "compromise": {
+        "AIR-C2": 1.0
+      },
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.0,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 1.0,
+        "AEW-01": 0.0,
+        "ORB-01": 0.0,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.0,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.0,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 1.0,
+        "T-PIC-2": 0.0,
+        "T-C2-2": 1.0,
+        "T-PIC-1": 0.0,
+        "T-SHIP-01": 1.0,
+        "T-C2-1": 1.0
+      },
+      "mission": {
+        "M-AIR-C2": 1.0,
+        "M-MARITIME": 1.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 1.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 1.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 1.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 1.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 1.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.5
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.5,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 1.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": "unknown",
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 60.0,
+      "time_iso": "2026-11-10T07:00:00.0000000+09:00",
+      "label": "주 통제소 장악",
+      "note": "예비 링크 미상 단절과 겹친다. 두 원인을 별도로 표시한다.",
+      "gt": [
+        {
+          "technique": "T1486",
+          "tactic": "impact"
+        }
+      ],
+      "compromise": {
+        "AIR-C2": 1.0
+      },
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.0,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 1.0,
+        "AEW-01": 0.0,
+        "ORB-01": 0.0,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.0,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.0,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 0.0,
+        "T-PIC-2": 0.0,
+        "T-C2-2": 0.0,
+        "T-PIC-1": 0.0,
+        "T-SHIP-01": 0.0,
+        "T-C2-1": 0.0
+      },
+      "mission": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 1.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 1.0
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 0.5,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 0.5
+          },
+          "delta": {
+            "M-AIR-C2": 0.5,
+            "M-AIR-PICTURE": 0.5,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": null,
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 65.0,
+      "time_iso": "2026-11-10T07:05:00.0000000+09:00",
+      "label": "주 통제소 장악",
+      "note": "예비 링크 미상 단절과 겹친다. 두 원인을 별도로 표시한다.",
+      "gt": [
+        {
+          "technique": "T1486",
+          "tactic": "impact"
+        }
+      ],
+      "compromise": {
+        "AIR-C2": 1.0
+      },
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.0,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 1.0,
+        "AEW-01": 0.0,
+        "ORB-01": 0.0,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.0,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.0,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 0.0,
+        "T-PIC-2": 0.0,
+        "T-C2-2": 0.0,
+        "T-PIC-1": 0.0,
+        "T-SHIP-01": 0.0,
+        "T-C2-1": 0.0
+      },
+      "mission": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 1.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 1.0
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 0.5,
+            "M-MARITIME": 0.0,
+            "M-AIR-PICTURE": 0.5
+          },
+          "delta": {
+            "M-AIR-C2": 0.5,
+            "M-AIR-PICTURE": 0.5,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": null,
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 70.0,
+      "time_iso": "2026-11-10T07:10:00.0000000+09:00",
+      "label": "우주 중계 단말 저하",
+      "note": "통신 단말 가용성 입력. 실제 궤도·전파·탐지 모델 아님.",
+      "gt": [],
+      "compromise": {
+        "ORB-01": 0.45,
+        "AIR-C2": 1.0
+      },
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.0,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 1.0,
+        "AEW-01": 0.0,
+        "ORB-01": 0.45,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.0,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.45,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 0.45,
+        "T-PIC-2": 0.0,
+        "T-C2-2": 0.0,
+        "T-PIC-1": 0.0,
+        "T-SHIP-01": 0.45,
+        "T-C2-1": 0.0
+      },
+      "mission": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.45,
+        "M-AIR-PICTURE": 0.0
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 1.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.55
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 0.5,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 0.5
+          },
+          "delta": {
+            "M-AIR-C2": 0.5,
+            "M-AIR-PICTURE": 0.5,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.45,
+        "M-AIR-PICTURE": 0.0
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": null,
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 75.0,
+      "time_iso": "2026-11-10T07:15:00.0000000+09:00",
+      "label": "우주 중계 단말 저하",
+      "note": "통신 단말 가용성 입력. 실제 궤도·전파·탐지 모델 아님.",
+      "gt": [],
+      "compromise": {
+        "ORB-01": 0.45,
+        "AIR-C2": 1.0
+      },
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.0,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 1.0,
+        "AEW-01": 0.0,
+        "ORB-01": 0.45,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.0,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.45,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 0.45,
+        "T-PIC-2": 0.0,
+        "T-C2-2": 0.0,
+        "T-PIC-1": 0.0,
+        "T-SHIP-01": 0.45,
+        "T-C2-1": 0.0
+      },
+      "mission": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.45,
+        "M-AIR-PICTURE": 0.0
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 1.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.55
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 0.5,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 0.5
+          },
+          "delta": {
+            "M-AIR-C2": 0.5,
+            "M-AIR-PICTURE": 0.5,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.45,
+        "M-AIR-PICTURE": 0.0
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": null,
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 80.0,
+      "time_iso": "2026-11-10T07:20:00.0000000+09:00",
+      "label": "공중 상황 단말 침해",
+      "note": "가상 조기경보통제기의 상황 공유 단말 침해. 센서 성능을 뜻하지 않는다.",
+      "gt": [
+        {
+          "technique": "T1021",
+          "tactic": "lateral-movement"
+        }
+      ],
+      "compromise": {
+        "AEW-01": 0.65,
+        "ORB-01": 0.45,
+        "AIR-C2": 1.0
+      },
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.0,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 1.0,
+        "AEW-01": 0.65,
+        "ORB-01": 0.45,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.65,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.45,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 0.45,
+        "T-PIC-2": 0.65,
+        "T-C2-2": 0.0,
+        "T-PIC-1": 0.65,
+        "T-SHIP-01": 0.45,
+        "T-C2-1": 0.0
+      },
+      "mission": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.45,
+        "M-AIR-PICTURE": 0.65
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 0.65
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.35,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.65
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.55
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 0.5,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 0.825
+          },
+          "delta": {
+            "M-AIR-C2": 0.5,
+            "M-AIR-PICTURE": 0.175,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.45,
+        "M-AIR-PICTURE": 0.65
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": null,
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 85.0,
+      "time_iso": "2026-11-10T07:25:00.0000000+09:00",
+      "label": "공중 상황 단말 침해",
+      "note": "가상 조기경보통제기의 상황 공유 단말 침해. 센서 성능을 뜻하지 않는다.",
+      "gt": [
+        {
+          "technique": "T1021",
+          "tactic": "lateral-movement"
+        }
+      ],
+      "compromise": {
+        "AEW-01": 0.65,
+        "ORB-01": 0.45,
+        "AIR-C2": 1.0
+      },
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.0,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 1.0,
+        "AEW-01": 0.65,
+        "ORB-01": 0.45,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.65,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.45,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 0.45,
+        "T-PIC-2": 0.65,
+        "T-C2-2": 0.0,
+        "T-PIC-1": 0.65,
+        "T-SHIP-01": 0.45,
+        "T-C2-1": 0.0
+      },
+      "mission": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.45,
+        "M-AIR-PICTURE": 0.65
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 0.65
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.35,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.65
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.55
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 0.5,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 0.825
+          },
+          "delta": {
+            "M-AIR-C2": 0.5,
+            "M-AIR-PICTURE": 0.175,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.45,
+        "M-AIR-PICTURE": 0.65
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": null,
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 90.0,
+      "time_iso": "2026-11-10T07:30:00.0000000+09:00",
+      "label": "공중 상황 단말 침해",
+      "note": "가상 조기경보통제기의 상황 공유 단말 침해. 센서 성능을 뜻하지 않는다.",
+      "gt": [
+        {
+          "technique": "T1021",
+          "tactic": "lateral-movement"
+        }
+      ],
+      "compromise": {
+        "AEW-01": 0.65,
+        "ORB-01": 0.45,
+        "AIR-C2": 1.0
+      },
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.0,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 1.0,
+        "AEW-01": 0.65,
+        "ORB-01": 0.45,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.65,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.45,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 0.45,
+        "T-PIC-2": 0.65,
+        "T-C2-2": 0.0,
+        "T-PIC-1": 0.65,
+        "T-SHIP-01": 0.45,
+        "T-C2-1": 0.0
+      },
+      "mission": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.45,
+        "M-AIR-PICTURE": 0.65
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 0.65
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.35,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.65
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.55
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 0.5,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 0.825
+          },
+          "delta": {
+            "M-AIR-C2": 0.5,
+            "M-AIR-PICTURE": 0.175,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.45,
+        "M-AIR-PICTURE": 0.65
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": null,
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 95.0,
+      "time_iso": "2026-11-10T07:35:00.0000000+09:00",
+      "label": "공중 상황 단말 침해",
+      "note": "가상 조기경보통제기의 상황 공유 단말 침해. 센서 성능을 뜻하지 않는다.",
+      "gt": [
+        {
+          "technique": "T1021",
+          "tactic": "lateral-movement"
+        }
+      ],
+      "compromise": {
+        "AEW-01": 0.65,
+        "ORB-01": 0.45,
+        "AIR-C2": 1.0
+      },
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.0,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 1.0,
+        "AEW-01": 0.65,
+        "ORB-01": 0.45,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.65,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.45,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 0.45,
+        "T-PIC-2": 0.65,
+        "T-C2-2": 0.0,
+        "T-PIC-1": 0.65,
+        "T-SHIP-01": 0.45,
+        "T-C2-1": 0.0
+      },
+      "mission": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.45,
+        "M-AIR-PICTURE": 0.65
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 0.65
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.35,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 0.0,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.65
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.55
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 0.5,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 0.825
+          },
+          "delta": {
+            "M-AIR-C2": 0.5,
+            "M-AIR-PICTURE": 0.175,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.45,
+        "M-AIR-PICTURE": 0.65
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": null,
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 100.0,
+      "time_iso": "2026-11-10T07:40:00.0000000+09:00",
+      "label": "편대 단말 가용성 저하",
+      "note": "전투기 1의 임무 단말 저하. 비행·무장 제어 모델이 아니다.",
+      "gt": [
+        {
+          "technique": "T1486",
+          "tactic": "impact"
+        }
+      ],
+      "compromise": {
+        "AEW-01": 0.65,
+        "FTR-01": 0.5,
+        "ORB-01": 0.45,
+        "AIR-C2": 1.0
+      },
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.5,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 1.0,
+        "AEW-01": 0.65,
+        "ORB-01": 0.45,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.65,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.45,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 0.45,
+        "T-PIC-2": 0.65,
+        "T-C2-2": 0.0,
+        "T-PIC-1": 0.65,
+        "T-SHIP-01": 0.45,
+        "T-C2-1": 0.5
+      },
+      "mission": {
+        "M-AIR-C2": 0.25,
+        "M-MARITIME": 0.45,
+        "M-AIR-PICTURE": 0.65
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 0.25,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 0.65
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 0.25,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.35,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 0.25,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.65
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.55
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 0.5,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 0.825
+          },
+          "delta": {
+            "M-AIR-C2": 0.25,
+            "M-AIR-PICTURE": 0.175,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.25,
+        "M-MARITIME": 0.45,
+        "M-AIR-PICTURE": 0.65
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": null,
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 105.0,
+      "time_iso": "2026-11-10T07:45:00.0000000+09:00",
+      "label": "편대 단말 가용성 저하",
+      "note": "전투기 1의 임무 단말 저하. 비행·무장 제어 모델이 아니다.",
+      "gt": [
+        {
+          "technique": "T1486",
+          "tactic": "impact"
+        }
+      ],
+      "compromise": {
+        "AEW-01": 0.65,
+        "FTR-01": 0.5,
+        "ORB-01": 0.45,
+        "AIR-C2": 1.0
+      },
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.5,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 1.0,
+        "AEW-01": 0.65,
+        "ORB-01": 0.45,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.65,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.45,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 0.45,
+        "T-PIC-2": 0.65,
+        "T-C2-2": 0.0,
+        "T-PIC-1": 0.65,
+        "T-SHIP-01": 0.45,
+        "T-C2-1": 0.5
+      },
+      "mission": {
+        "M-AIR-C2": 0.25,
+        "M-MARITIME": 0.45,
+        "M-AIR-PICTURE": 0.65
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 0.25,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 0.65
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 0.25,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.35,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 0.25,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.65
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.55
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 0.5,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 0.825
+          },
+          "delta": {
+            "M-AIR-C2": 0.25,
+            "M-AIR-PICTURE": 0.175,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.25,
+        "M-MARITIME": 0.45,
+        "M-AIR-PICTURE": 0.65
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": null,
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 110.0,
+      "time_iso": "2026-11-10T07:50:00.0000000+09:00",
+      "label": "편대 단말 가용성 저하",
+      "note": "전투기 1의 임무 단말 저하. 비행·무장 제어 모델이 아니다.",
+      "gt": [
+        {
+          "technique": "T1486",
+          "tactic": "impact"
+        }
+      ],
+      "compromise": {
+        "AEW-01": 0.65,
+        "FTR-01": 0.5,
+        "ORB-01": 0.45,
+        "AIR-C2": 1.0
+      },
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.5,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 1.0,
+        "AEW-01": 0.65,
+        "ORB-01": 0.45,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.65,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.45,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 0.45,
+        "T-PIC-2": 0.65,
+        "T-C2-2": 0.0,
+        "T-PIC-1": 0.65,
+        "T-SHIP-01": 0.45,
+        "T-C2-1": 0.5
+      },
+      "mission": {
+        "M-AIR-C2": 0.25,
+        "M-MARITIME": 0.45,
+        "M-AIR-PICTURE": 0.65
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 0.25,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 0.65
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 0.25,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.35,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 0.25,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.65
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.55
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 0.5,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 0.825
+          },
+          "delta": {
+            "M-AIR-C2": 0.25,
+            "M-AIR-PICTURE": 0.175,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.25,
+        "M-MARITIME": 0.45,
+        "M-AIR-PICTURE": 0.65
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": null,
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    },
+    {
+      "t": 115.0,
+      "time_iso": "2026-11-10T07:55:00.0000000+09:00",
+      "label": "편대 단말 가용성 저하",
+      "note": "전투기 1의 임무 단말 저하. 비행·무장 제어 모델이 아니다.",
+      "gt": [
+        {
+          "technique": "T1486",
+          "tactic": "impact"
+        }
+      ],
+      "compromise": {
+        "AEW-01": 0.65,
+        "FTR-01": 0.5,
+        "ORB-01": 0.45,
+        "AIR-C2": 1.0
+      },
+      "asset": {
+        "AIR-BACKUP": 0.0,
+        "USV-01": 0.0,
+        "FTR-01": 0.5,
+        "SHIP-01": 0.0,
+        "AIR-GW": 0.0,
+        "AIR-C2": 1.0,
+        "AEW-01": 0.65,
+        "ORB-01": 0.45,
+        "FTR-02": 0.0
+      },
+      "service": {
+        "S-AIR-PICTURE": 0.65,
+        "S-AIR-C2": 0.0,
+        "S-SPACE": 0.45,
+        "S-AIRLINK": 0.0
+      },
+      "task": {
+        "T-USV-01": 0.45,
+        "T-PIC-2": 0.65,
+        "T-C2-2": 0.0,
+        "T-PIC-1": 0.65,
+        "T-SHIP-01": 0.45,
+        "T-C2-1": 0.5
+      },
+      "mission": {
+        "M-AIR-C2": 0.25,
+        "M-MARITIME": 0.45,
+        "M-AIR-PICTURE": 0.65
+      },
+      "whatif": {
+        "AIR-C2": {
+          "mission": {
+            "M-AIR-C2": 0.25,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 0.65
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.0
+          }
+        },
+        "AEW-01": {
+          "mission": {
+            "M-AIR-C2": 0.25,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 1.0
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.35,
+            "M-MARITIME": 0.0
+          }
+        },
+        "ORB-01": {
+          "mission": {
+            "M-AIR-C2": 0.25,
+            "M-MARITIME": 1.0,
+            "M-AIR-PICTURE": 0.65
+          },
+          "delta": {
+            "M-AIR-C2": 0.0,
+            "M-AIR-PICTURE": 0.0,
+            "M-MARITIME": 0.55
+          }
+        },
+        "FTR-01": {
+          "mission": {
+            "M-AIR-C2": 0.5,
+            "M-MARITIME": 0.45,
+            "M-AIR-PICTURE": 0.825
+          },
+          "delta": {
+            "M-AIR-C2": 0.25,
+            "M-AIR-PICTURE": 0.175,
+            "M-MARITIME": 0.0
+          }
+        }
+      },
+      "mission_active": {
+        "M-AIR-C2": true,
+        "M-MARITIME": true,
+        "M-AIR-PICTURE": true
+      },
+      "mission_attack": {
+        "M-AIR-C2": 0.25,
+        "M-MARITIME": 0.45,
+        "M-AIR-PICTURE": 0.65
+      },
+      "mission_env": {
+        "M-AIR-C2": 0.0,
+        "M-MARITIME": 0.0,
+        "M-AIR-PICTURE": 0.0
+      },
+      "active_phases": [
+        "PH-AIR-C2",
+        "PH-AIR-PICTURE",
+        "PH-SEA"
+      ],
+      "asset_outage": {
+        "AIR-BACKUP": null,
+        "USV-01": null,
+        "FTR-01": null,
+        "SHIP-01": null,
+        "AIR-GW": null,
+        "AIR-C2": null,
+        "AEW-01": null,
+        "ORB-01": null,
+        "FTR-02": null
+      },
+      "link_outage": {
+        "L-DATA-FTR-02": null,
+        "L-BACKUP": null,
+        "L-DATA-AEW-01": null,
+        "L-JOINT-ORB-01": null,
+        "L-JOINT-SHIP-01": null,
+        "L-JOINT-USV-01": null,
+        "L-PRIMARY": null,
+        "L-DATA-FTR-01": null
+      }
+    }
+  ]
+}

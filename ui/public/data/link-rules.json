@@ -1,0 +1,25 @@
+{
+  "template": "tacnet-01",
+  "bearers": {
+    "wired":  { "label": "유선",   "same_site": true },
+    "vhf":    { "label": "VHF" },
+    "hf":     { "label": "HF" },
+    "satcom": { "label": "위성",   "needs_type": "satcom-terminal" },
+    "lte":    { "label": "LTE" }
+  },
+  "types": {
+    "c2-server":           { "bearers": ["wired", "vhf", "satcom"], "provides": ["messaging", "intel"], "performs": ["T-ORDER", "T-SITREP"] },
+    "c2-terminal":         { "bearers": ["wired", "vhf", "lte"],    "performs": ["T-BFT", "T-CTRL", "T-CO1REP", "T-CO2REP"] },
+    "workstation":         { "bearers": ["wired"],                  "performs": ["T-ORDER", "T-SITREP"] },
+    "terminal":            { "bearers": ["wired", "lte"],           "performs": ["T-CFF"] },
+    "radio-relay":         { "bearers": ["vhf", "hf"],              "provides": ["voice"] },
+    "satcom-terminal":     { "bearers": ["wired", "satcom"],        "provides": ["voice"] },
+    "gateway":             { "bearers": ["wired", "vhf", "lte"],    "provides": ["position-reporting"] },
+    "switch":              { "bearers": ["wired"] },
+    "firewall":            { "bearers": ["wired"] },
+    "fire-control-server": { "bearers": ["wired", "vhf"],           "provides": ["fire-control"], "performs": ["T-CFF"] },
+    "observer-terminal":   { "bearers": ["vhf", "lte"],             "performs": ["T-TGT"] },
+    "database": { "bearers": ["wired"] }, "file-server": { "bearers": ["wired"] }, "mail-server": { "bearers": ["wired"] },
+    "web-server": { "bearers": ["wired"] }, "domain-controller": { "bearers": ["wired"] }, "hypervisor": { "bearers": ["wired"] }
+  }
+}

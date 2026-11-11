@@ -1,5 +1,13 @@
 import { describe, it, expect } from 'vitest'
-import { eventRows, kpiOf, timeLabel, BAND_LABELS } from '../derive.js'
+import replay from '../../public/data/tacnet-01.replay.json'
+import rules from '../../public/data/link-rules.json'
+import { startGame, defend, pass, attackerTurn } from '../game.js'
+import {
+  eventRows, kpiOf, timeLabel, BAND_LABELS, gameOverlay, peekLine,
+  contribLayer, contribMission, linkGhosts,
+} from '../derive.js'
+import { attribution } from '../facts.js'
+import { linkCandidates } from '../sandbox.js'
 
 const graph = {
   timeline: { t0_iso: '2026-09-10T06:00:00+09:00', horizon: 420, step: 15 },
@@ -72,5 +80,260 @@ describe('kpiOf', () => {
     const at = (v) => kpiOf(graph, { mission: { 'M-C2': v }, compromise: {}, link_outage: {} }).band.level
     expect([at(0), at(0.1), at(0.5), at(0.7)]).toEqual([0, 1, 2, 3])
     expect(BAND_LABELS).toEqual(['정상', '주의', '경계', '심각'])
+  })
+})
+
+describe('gameOverlay', () => {
+  const g = replay.graph
+  it('returns null without a game', () => expect(gameOverlay(g, null)).toBe(null))
+  it('lists lateral candidates as edges, self-targets as node threats, and marks isolated/footholds', () => {
+    let G = startGame(g, { mode: 'hold', turns: 8, t: 150, foothold: { id: 'CO2-VEH', level: 0.8 }, seed: 11, strategy: 'greedy' })
+    G = defend(g, G, { type: 'isolate', id: 'FDC-TERM' })
+    const o = gameOverlay(g, G)
+    expect(o.isolated).toEqual(['FDC-TERM'])
+    expect(o.footholds).toEqual(['CO2-VEH'])
+    expect(o.candidates.every((c) => c.from !== c.to)).toBe(true)
+    expect(o.candidates.length + o.nodeThreats.length).toBeLessThanOrEqual(6)
+    expect(o.last).toBe(null)
+    G = attackerTurn(g, G)
+    const o2 = gameOverlay(g, G)
+    expect(o2.turn).toBe(1)
+    if (G.history[0].attacker && G.history[0].attacker.move.target) expect(o2.last).toMatchObject({ turn: 0 })
+  })
+})
+
+describe('peekLine', () => {
+  const s = { ...steps[2], mission: { 'M-C2': 0.72, 'M-FIRE': 0.1 }, mission_active: { 'M-C2': true, 'M-FIRE': true } }
+  it('headlines the top-priority mission and its degradation', () => {
+    expect(peekLine(graph, s, null)).toBe('지휘통제 P1 72.0%')
+  })
+  it('skips a mission the current phase has switched off', () => {
+    const off = { ...s, mission_active: { 'M-C2': false, 'M-FIRE': true } }
+    expect(peekLine(graph, off, null)).toBe('화력지원 P2 10.0%')
+  })
+  it('reads zero before anything has happened', () => {
+    expect(peekLine(graph, steps[0], null)).toBe('지휘통제 P1 0.0%')
+  })
+  it('a running game replaces it with the turn and the score', () => {
+    const g = replay.graph
+    let G = startGame(g, { mode: 'hold', turns: 8, t: 150, foothold: { id: 'CO2-VEH', level: 0.8 }, seed: 11, strategy: 'greedy' })
+    expect(peekLine(g, s, G)).toBe(`턴 1/8 · 점수 ${G.score.total.toFixed(2)}`)
+    G = pass(G)
+    G = attackerTurn(g, G)
+    expect(peekLine(g, s, G)).toBe(`턴 2/8 · 점수 ${G.score.total.toFixed(2)}`)
+  })
+  it('survives a graph with no missions at all', () => {
+    expect(peekLine({ missions: [] }, {}, null)).toBe('임무 없음')
+  })
+})
+
+// --- U3: contribution as thickness ---------------------------------------
+//
+// The one thing these tests exist to hold down: the weight is scaled by the
+// LARGEST contribution in the set and never by the mission total.
+//
+// U1 measured why. engine.js serviceDegFor MULTIPLIES the providers of a
+// redundancy_group, so with two providers compromised, removing either one
+// alone reads as decisive and the same loss is charged twice. On tacnet-01 at
+// t=180, RELAY-1 (0.6) and SAT-TERM (0.7) against M-FIRE each read +8.6%p
+// against a total of 8.6% - an individual sum of +17.3%p. Divided by the
+// total, both lines would be drawn at full thickness and the picture would
+// say each of two assets is the whole of a loss they share. A pair sweep
+// found four such combinations, so this is the normal case for a redundancy
+// group, not a corner.
+describe('contribLayer', () => {
+  const tg = replay.graph
+  const at = (i, compromise) => ({ ...replay.steps[i], compromise })
+  // the measured pair, read off the engine here rather than asserted as a
+  // constant, so a scenario edit fails the premise instead of the metric
+  const PAIR = { 'RELAY-1': 0.6, 'SAT-TERM': 0.7 }
+
+  it('has the premise: per-asset contributions sum past the total', () => {
+    const a = attribution(tg, at(12, PAIR), 'M-FIRE')
+    expect(a.sum).toBeGreaterThan(a.total)
+    expect(a.interaction).toBeLessThan(0)
+    // what a share would have claimed, and why it cannot be drawn
+    for (const r of a.rows) expect(r.contribution / a.total).toBeCloseTo(1, 6)
+  })
+
+  it('scales by max(contribution) in the set, not by the mission total', () => {
+    const comp = { 'RELAY-1': 0.6, 'SAT-TERM': 0.7, 'TOC-SRV': 0.5 }
+    const a = attribution(tg, at(12, comp), 'M-FIRE')
+    const layer = contribLayer(a, { id: 'M-FIRE', name: '화력지원' })
+    expect(a.sum).toBeGreaterThan(a.total)          // the trap is live here too
+    const max = Math.max(...a.rows.map((r) => r.contribution))
+    for (const row of layer.rows) {
+      const src = a.rows.find((r) => r.id === row.id)
+      expect(row.w).toBeCloseTo(src.contribution / max, 9)
+      // and NOT the share: on this set the two readings differ
+      expect(row.w).not.toBeCloseTo(src.contribution / a.total, 4)
+    }
+    expect(layer.max).toBeCloseTo(max, 9)
+    expect(layer.missionName).toBe('화력지원')
+  })
+
+  it('keeps every weight inside 0..1 even where the sum is twice the total', () => {
+    const layer = contribLayer(attribution(tg, at(12, PAIR), 'M-FIRE'), null)
+    expect(layer.rows.length).toBe(2)
+    for (const r of layer.rows) {
+      expect(r.w).toBeGreaterThan(0)
+      expect(r.w).toBeLessThanOrEqual(1)
+    }
+    // equal contributions draw equally: the comparison says "these two are
+    // the same", which is the true statement about a shared loss
+    expect(layer.rows[0].w).toBeCloseTo(layer.rows[1].w, 9)
+    expect(layer.rows.reduce((x, r) => x + r.contribution, 0)).toBeGreaterThan(layer.total)
+  })
+
+  it('carries the heaviest asset at full weight and ranks downward', () => {
+    const comp = { 'RELAY-1': 0.6, 'SAT-TERM': 0.7, 'TOC-SRV': 0.5 }
+    const layer = contribLayer(attribution(tg, at(12, comp), 'M-FIRE'), null)
+    expect(layer.rows[0].w).toBeCloseTo(1, 9)
+    const ws = layer.rows.map((r) => r.w)
+    expect(ws).toEqual([...ws].sort((x, y) => y - x))
+  })
+
+  // The engine is monotone in compromise, so clearing one asset's compromise
+  // never makes the mission worse and `contribution` is never negative. That
+  // is a premise, not an assumption: it is measured here against the engine,
+  // so the day it stops being true this breaks instead of the picture quietly
+  // drifting away from the fact layer.
+  it('has no negative contribution to draw, because the engine is monotone', () => {
+    const every = Object.fromEntries(tg.assets.map((x, i) => [x.id, 0.3 + (i % 5) / 20]))
+    for (const mid of ['M-C2', 'M-FIRE']) {
+      const a = attribution(tg, at(23, every), mid)
+      for (const r of a.rows) expect(r.contribution).toBeGreaterThanOrEqual(0)
+      expect(contribLayer(a, null).dropped).toBe(0)
+    }
+  })
+
+  // If that premise ever fails, the drawing and the fact layer must not say
+  // different things about the same asset. attributionFacts narrates a
+  // negative row through Math.abs with its sign printed; thickness cannot
+  // carry a sign without hue, and hue is the adversary's (ADR-0024). So the
+  // row is dropped from the drawing AND counted, and GraphCanvas appends the
+  // count to the legend. The picture is then short of the fact card but says
+  // so, which is the only version of this that is not a contradiction.
+  it('drops a negative contribution, counts it, and keeps it out of the scale', () => {
+    const layer = contribLayer({
+      active: true, mission: 'M', total: 0.2,
+      rows: [{ id: 'A', contribution: 0.1 }, { id: 'B', contribution: -0.4 }, { id: 'C', contribution: 0.05 }],
+    }, null)
+    expect(layer.rows.map((r) => r.id)).toEqual(['A', 'C'])
+    expect(layer.dropped).toBe(1)
+    // -0.4 is the largest magnitude in the set and must NOT become the scale:
+    // every drawn line would then be a sliver of a row that is not drawn
+    expect(layer.max).toBeCloseTo(0.1, 9)
+    expect(layer.rows[0].w).toBeCloseTo(1, 9)
+  })
+
+  it('reports no drop when every contribution is positive', () => {
+    const layer = contribLayer({ active: true, mission: 'M', total: 0.2, rows: [{ id: 'A', contribution: 0.1 }] }, null)
+    expect(layer.dropped).toBe(0)
+  })
+
+  it('draws nothing when there is nothing to compare', () => {
+    expect(contribLayer(null, null)).toBe(null)
+    expect(contribLayer({ active: false, rows: [{ id: 'A', contribution: 1 }] }, null)).toBe(null)
+    // compromised but contributing nothing to this mission: a 0 weight is not
+    // a thin line, it is no line
+    expect(contribLayer({ active: true, rows: [{ id: 'A', contribution: 0 }], total: 0 }, null)).toBe(null)
+    expect(contribLayer(attribution(tg, at(12, {}), 'M-FIRE'), null)).toBe(null)
+  })
+})
+
+describe('contribMission', () => {
+  const tg = replay.graph
+  it('picks the highest-priority mission with active work', () => {
+    const m = contribMission(tg, { mission_active: { 'M-C2': true, 'M-FIRE': true } })
+    expect(m.id).toBe('M-C2')
+  })
+  it('skips a mission with no active task at this step', () => {
+    const m = contribMission(tg, { mission_active: { 'M-C2': false, 'M-FIRE': true } })
+    expect(m.id).toBe('M-FIRE')
+  })
+  it('treats a step with no activity table as all active', () => {
+    expect(contribMission(tg, {}).id).toBe('M-C2')
+  })
+  it('has nothing to name without missions', () => {
+    expect(contribMission({ missions: [] }, {})).toBe(null)
+    expect(contribMission(null, null)).toBe(null)
+  })
+})
+
+// --- U9: where a selected asset can connect ------------------------------
+describe('linkGhosts', () => {
+  const tg = replay.graph
+
+  it('draws one line per target, on the best-ranked bearer', () => {
+    const gh = linkGhosts(tg, rules, 'BN-SRV')
+    const ids = gh.cands.map((c) => c.to)
+    expect(new Set(ids).size).toBe(ids.length)
+    const all = linkCandidates(tg, rules, 'BN-SRV')
+    for (const c of gh.cands) {
+      const best = all.find((x) => x.id === c.to)
+      expect(c.bearer).toBe(best.bearer)            // the bearer addLinkWith gets
+    }
+    expect(gh.from).toBe('BN-SRV')
+  })
+
+  it('ranks from 1 and thins with the rank, the way the wargame ghosts do', () => {
+    const gh = linkGhosts(tg, rules, 'BN-SRV')
+    expect(gh.cands.map((c) => c.rank)).toEqual(gh.cands.map((x, i) => i + 1))
+    const ws = gh.cands.map((c) => c.w)
+    expect(ws).toEqual([...ws].sort((x, y) => y - x))
+    expect(Math.min(...ws)).toBeGreaterThanOrEqual(1.5)
+  })
+
+  it('caps the drawn lines and still reports how many there were', () => {
+    const gh = linkGhosts(tg, rules, 'BN-SRV')
+    expect(gh.cands.length).toBeLessThanOrEqual(8)
+    expect(gh.total).toBeGreaterThanOrEqual(gh.cands.length)
+  })
+
+  it('never proposes a link that is already there', () => {
+    const gh = linkGhosts(tg, rules, 'BN-SRV')
+    const mine = (tg.links || []).filter((l) => l.a === 'BN-SRV' || l.b === 'BN-SRV')
+      .map((l) => (l.a === 'BN-SRV' ? l.b : l.a))
+    for (const c of gh.cands) expect(mine).not.toContain(c.to)
+  })
+
+  it('marks an existing link the rule table no longer fits, and does not drop it', () => {
+    // same site is what wired needs; move one end and the link is out of rule
+    const wired = (tg.links || []).find((l) => l.bearer === 'wired' && (l.a === 'TOC-WS' || l.b === 'TOC-WS'))
+    expect(wired).toBeTruthy()
+    const off = {
+      ...tg,
+      assets: tg.assets.map((a) => (a.id === 'TOC-WS' ? { ...a, site: '다른 곳' } : a)),
+    }
+    const gh = linkGhosts(off, rules, 'TOC-WS')
+    expect(gh.offRule.map((x) => x.id)).toContain(wired.id)
+    // and the clean board has none of them
+    expect((linkGhosts(tg, rules, 'TOC-WS') || { offRule: [] }).offRule).toEqual([])
+  })
+
+  it('has nothing to draw without a table, an asset, or a candidate', () => {
+    expect(linkGhosts(tg, null, 'BN-SRV')).toBe(null)
+    expect(linkGhosts(tg, rules, 'NOPE')).toBe(null)
+    expect(linkGhosts(null, rules, 'BN-SRV')).toBe(null)
+    const lone = { assets: [{ id: 'A', type: 'switch', site: '본부' }], links: [] }
+    expect(linkGhosts(lone, rules, 'A')).toBe(null)
+  })
+
+  // This used to be named for a `gap` field that carried the rule table's
+  // reason for silence. The field was unreachable - every case that makes
+  // ruleGap non-null also empties both lists, so the `return null` fires
+  // first - no caller read it, and the test named for it asserted only that
+  // it was null. It is deleted. What is true is below: when the table cannot
+  // speak the overlay draws nothing and says nothing, and the reason stays
+  // with the inspector, which prints it beside its own count.
+  it('says nothing at all when the rule table cannot speak, reason included', () => {
+    const odd = { assets: [{ id: 'A', type: 'tent', site: '본부' }, { id: 'B', type: 'switch', site: '본부' }], links: [] }
+    expect(linkGhosts(odd, rules, 'A')).toBe(null)          // type absent from the table
+    expect(linkGhosts(tg, null, 'BN-SRV')).toBe(null)       // no table at all
+    // and a live overlay carries geometry only - no reason field for a
+    // caller to render, because none of the three callers wants one
+    expect(Object.keys(linkGhosts(tg, rules, 'BN-SRV')).sort())
+      .toEqual(['cands', 'from', 'offRule', 'total'])
   })
 })

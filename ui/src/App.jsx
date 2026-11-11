@@ -2,8 +2,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { loadConfig } from './config.js'
 import { loadSymbology, unmappedTypes } from './symbols.js'
 import { createEditor } from './editor.js'
-import { createWargame } from './wargame.js'
-import { computeStep, activePhaseNames, clockOf } from './derive.js'
+import { compromiseOf } from './game.js'
+import { computeStep, activePhaseNames, clockOf, gameOverlay, peekLine, contribLayer, contribMission, linkGhosts } from './derive.js'
+import { attribution } from './facts.js'
+import { makeSandbox, loadRules, validateImport, listPlans, savePlan, loadPlan, deletePlan, SANDBOX_ID, TEMPLATE_ID } from './sandbox.js'
+import { useCompact } from './useCompact.js'
 import Topbar from './ui/Topbar.jsx'
 import BoardToolbar from './ui/BoardToolbar.jsx'
 import GraphCanvas from './ui/GraphCanvas.jsx'
@@ -12,12 +15,19 @@ import MapPane from './ui/MapPane.jsx'
 import Rail from './ui/Rail.jsx'
 import Timeline from './ui/Timeline.jsx'
 import Onboard from './ui/Onboard.jsx'
+import Wargame from './ui/Wargame.jsx'
+import Sheet from './ui/Sheet.jsx'
+import StaffDock from './ui/StaffDock.jsx'
+import { OperationsHeader, OperationsMoments, OperationsPanel } from './operations/OperationsPanels.jsx'
+import OperationsWorkspace from './operations/OperationsWorkspace.jsx'
 
-const SCENARIOS = ['tacnet-01', 'defnet-01']
+// The sandbox is not a file: it is derived in the browser from the template
+// replay (ADR-0027), so it is always listed and never HEAD-checked.
+const SCENARIOS = ['tacnet-01', 'jointnet-01', 'airnet-01', 'defnet-01', SANDBOX_ID]
 const HISTORY_MAX = 60
 
-// Mounts an imperative module (editor.js, wargame.js) into the React tree.
-// Those two own their own DOM; React owns the box they live in.
+// Mounts an imperative module (editor.js) into the React tree. It owns its
+// own DOM; React owns the box it lives in.
 function Mount({ make, deps = [], className }) {
   const ref = useRef(null)
   useEffect(() => {
@@ -28,6 +38,7 @@ function Mount({ make, deps = [], className }) {
 }
 
 export default function App() {
+  const compact = useCompact()
   const [error, setError] = useState(null)
   const [scenarios, setScenarios] = useState(SCENARIOS)
   const [scenarioId, setScenarioId] = useState(null)
@@ -38,30 +49,77 @@ export default function App() {
   // start so a demo step or a screenshot can be reached without clicking.
   // Anything unknown is ignored and the defaults stand.
   const link = useRef(new URLSearchParams(window.location.search))
+  const [studio, setStudio] = useState(link.current.get('studio') === '1')
   const pick = (key, allowed, dflt) => (allowed.includes(link.current.get(key)) ? link.current.get(key) : dflt)
-  const [view, setView] = useState(pick('view', ['dependency', 'transport', 'geo'], 'dependency'))
+  const [view, setView] = useState(studio ? 'dependency' : pick('view', ['dependency', 'transport', 'geo'], 'dependency'))
+  // Once the operator has picked a view, nothing picks for them again. A
+  // ?view= deep link counts as a pick: whoever wrote that URL already chose.
+  const viewChosen = useRef(link.current.get('view') !== null || link.current.get('studio') === '1')
+  const onView = useCallback((v) => { viewChosen.current = true; setStudio(false); setView(v) }, [])
   const [mode, setMode] = useState('observe')
   const [tab, setTab] = useState(pick('tab', ['cuts', 'actions', 'inspect'], 'actions'))
   const [labels, setLabels] = useState(true)
+  // U3: the contribution layer is OFF by default. It is an analysis layer and
+  // it costs one engine run per compromised asset, so nobody pays for it
+  // until they ask.
+  const [contribOn, setContribOn] = useState(false)
   const [playing, setPlaying] = useState(false)
   const [speed, setSpeed] = useState(1)
   const [selectedData, setSelectedData] = useState(null)
+  // The assets that shared the last tap, when there was more than one and the
+  // screen is too small to pull them apart. The ONLY place that decides a
+  // stack matters: MapPane always reports what overlapped, and a desktop
+  // mouse is precise enough that the report is thrown away here.
+  const [stack, setStack] = useState(null)
   const [requests, setRequests] = useState([])
   const [edited, setEdited] = useState(false)
   const [tool, setTool] = useState('select')
   const [histVer, setHistVer] = useState(0)
-  const [wgVer, setWgVer] = useState(0)
+  // the wargame is a value (game.js); App owns it so the pictures can read it
+  const [game, setGame] = useState(null)
   const [onboard, setOnboard] = useState(false)
+  // The topbar's `⋯` panel. Controls that live in other components are
+  // parented INTO this node rather than rebuilt in it - one node per control,
+  // same rule as railEl below.
+  const [menuNode, setMenuNode] = useState(null)
+  // U12: 상판 툴바가 자기 상자를 넘었다고 알려 온 상태. 좁은 화면이 아니어도
+  // (1600x900 은 compact 가 아니다) 내용이 넘치면 같은 `⋯` 패널로 접는다.
+  // 측정은 BoardToolbar 가 자기 엘리먼트에서 하고, 판정의 히스테리시스는
+  // fold.js 에 있다 - 접으면 넘침이 사라지므로 상자 폭으로만 되돌린다.
+  const [tbOver, setTbOver] = useState(false)
+  // 접힘의 단일 신호. 뷰포트 질의(ADR-0030)와 넘침 측정은 서로 다른 신호이고,
+  // 여기서 OR 로 합쳐져 같은 패널로 간다.
+  const foldTools = compact || tbOver
+  // U15: 시트가 지금 어느 높이인지. 상태의 주인은 Sheet 이고 여기는 그것을
+  // `.app` 의 data-sheet 로 적기만 한다 - CSS 가 시트 높이(--sheet-h)를 그
+  // 속성으로 고르고, 지도 워터마크의 bottom 이 같은 값에서 계산된다(ADR-0025).
+  // 워터마크는 지도 패널 안에 있어서 시트의 data-state 를 직접 못 읽는다.
+  const [sheetState, setSheetState] = useState('peek')
   const [toast, setToast] = useState(null)
   const [geoCam, setGeoCam] = useState({ mode: '2d', az: 35, pitch: 55, zScale: 12, terrain: true })
+  // sandbox (ADR-0027): the link rule table, and the saved plans in localStorage
+  const [rules, setRules] = useState(null)
+  const [plans, setPlans] = useState([])
+  const isSandbox = scenarioId === SANDBOX_ID
+  const studioActive = studio && !compact && mode === 'observe'
 
   const cyRef = useRef(null)
   const editorRef = useRef(null)
-  const wargameRef = useRef(null)
   const graphRef = useRef(null)
   const hist = useRef({ past: [], future: [], last: null })
 
   graphRef.current = graph
+
+  // The rail's 참모 tab exists only when App hands it a staffSlot, which only
+  // happens on a phone (`staffSlot={compact ? staffEl : null}` below). Rail
+  // derives its own fallback from that (`active = tab === 'staff' && !hasStaff
+  // ? 'actions' : tab`), but `tab` itself - the state App owns and would put
+  // back into a `?tab=` link - never gets told. Left alone, a phone-to-desktop
+  // rotate leaves `tab` pointing at 'staff' while the rail visibly shows 대응:
+  // this keeps the one stored value in step with what Rail can actually show.
+  useEffect(() => {
+    if (!compact && tab === 'staff') setTab('actions')
+  }, [compact, tab])
 
   // --- boot -------------------------------------------------------------
   useEffect(() => {
@@ -70,20 +128,24 @@ export default function App() {
       try {
         await loadConfig()
         await loadSymbology()
+        const linkRules = await loadRules()
         const available = []
         for (const id of SCENARIOS) {
+          if (id === SANDBOX_ID) { available.push(id); continue }
           const res = await fetch(`./data/${id}.replay.json`, { method: 'HEAD' }).catch(() => null)
           if (res && res.ok) available.push(id)
         }
         const list = available.length ? available : SCENARIOS
         if (!alive) return
+        setRules(linkRules)
+        setPlans(listPlans())
         setScenarios(list)
         const wanted = link.current.get('scenario')
         setScenarioId(list.includes(wanted) ? wanted : list[0])
         let seen = false
         try { seen = localStorage.getItem('mccycop:onboard:seen') === '1' } catch { /* ignore */ }
         // a deep link is someone who already knows the screen; do not cover it
-        const deep = ['scenario', 't', 'view', 'tab', 'select'].some((k) => link.current.has(k))
+        const deep = ['scenario', 't', 'view', 'tab', 'select', 'studio'].some((k) => link.current.has(k))
         if (!seen && !deep) setOnboard(true)
       } catch (e) {
         if (alive) setError(e.message)
@@ -101,15 +163,24 @@ export default function App() {
     setPlaying(false)
     ;(async () => {
       try {
-        const res = await fetch(`./data/${scenarioId}.replay.json`)
-        if (!res.ok) throw new Error(`${scenarioId}.replay.json (${res.status})`)
-        const p = await res.json()
+        // the sandbox has no file of its own: fetch the template and derive
+        const sandbox = scenarioId === SANDBOX_ID
+        const fileId = sandbox ? TEMPLATE_ID : scenarioId
+        const res = await fetch(`./data/${fileId}.replay.json`)
+        if (!res.ok) throw new Error(`${fileId}.replay.json (${res.status})`)
+        const loaded = await res.json()
         if (!alive) return
+        let p = loaded
+        if (sandbox) {
+          p = makeSandbox(loaded)
+          p.template = loaded   // presets and import validation read the template
+        }
         const missing = unmappedTypes()
         if (missing.length) console.warn('[symbols] SIDC 미매핑 타입:', missing.join(', '))
 
         let g = structuredClone(p.graph)
-        let wasEdited = false
+        // the sandbox has no exported steps: it is always the local engine's
+        let wasEdited = sandbox
         try {
           const raw = localStorage.getItem(storageKey(scenarioId))
           if (raw) {
@@ -135,7 +206,9 @@ export default function App() {
           link.current.delete('t')
         }
         setIdx(start)
+        setGame(null)   // a game belongs to the graph it started on
         setSelectedData(null)
+        setStack(null)
         setHistVer((v) => v + 1)
       } catch (e) {
         if (alive) setError(e.message)
@@ -144,29 +217,79 @@ export default function App() {
     return () => { alive = false }
   }, [scenarioId, storageKey])
 
-  // --- derived ----------------------------------------------------------
-  const wargameState = wargameRef.current && wargameRef.current.isActive()
-    ? wargameRef.current.getState()
-    : null
+  // --- compact default view (ADR-0001 mobile exception) ------------------
+  // On a phone the map opens first, because that is the picture a thumb can
+  // read without zooming. Two conditions and no more: compact, and the
+  // scenario actually HAS a georef - defnet-01 has none, so it opens on the
+  // graph. This is a default, never a correction: the moment the operator
+  // touches the view control (or arrived by a ?view= link) it stops firing
+  // for good. It re-evaluates per scenario load because "which view exists"
+  // is a property of the scenario, not of the session.
+  useEffect(() => {
+    if (viewChosen.current) return
+    if (!compact || !graph) return
+    setView(graph.geo && graph.geo.georef ? 'geo' : 'dependency')
+  }, [compact, graph])
 
+  // --- derived ----------------------------------------------------------
+  // A running game replaces the replay's compromise state. If the graph is
+  // edited mid-game the game is kept: the engine recomputes on the new graph
+  // (ADR-0019).
+  const wargameState = useMemo(() => (mode === 'wargame' && game ? compromiseOf(game) : null), [mode, game])
   const step = useMemo(
     () => computeStep({ payload, graph, idx, edited, wargameState }),
-    // wgVer is the signal that the turn loop moved; wargameState is read fresh
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [payload, graph, idx, edited, wgVer]
+    [payload, graph, idx, edited, wargameState]
   )
+  const overlay = useMemo(() => (mode === 'wargame' && game && graph ? gameOverlay(graph, game) : null), [mode, game, graph])
+  // U3. attribution() is leave-one-out against the engine: one runChain per
+  // compromised asset plus two. Only computed when the toggle is on, and
+  // memoised on the step so panning the picture does not re-run the engine.
+  //
+  // contribLayer scales the %p by max(contribution) INSIDE the set. It is
+  // never divided by the mission total: a per-asset contribution can exceed
+  // that total (engine.js serviceDegFor multiplies the providers of a
+  // redundancy_group), so a share would be a false statement about a loss two
+  // assets share. The legend carries that sentence.
+  //
+  // `view` is in the condition, not only in GraphCanvas: the geo view draws no
+  // dependency edges, so without it the toggle paid (N + 2) runChain calls for
+  // a picture nobody gets. The toggle's own state survives the trip through
+  // the map - BoardToolbar disables the checkbox there and says why, so the
+  // control and what it can do agree.
+  const contrib = useMemo(() => {
+    if (!contribOn || view === 'geo' || !graph || !step) return null
+    const m = contribMission(graph, step)
+    if (!m) return null
+    return contribLayer(attribution(graph, step, m.id, payload?.method), m)
+  }, [contribOn, view, graph, step, payload])
+  // U9: the selected asset's link candidates, as geometry. Edit mode only -
+  // in observe mode there is nothing to build.
+  const ghosts = useMemo(() => (
+    mode === 'edit' && graph && selectedData && selectedData.kind === 'asset'
+      ? linkGhosts(graph, rules, selectedData.id)
+      : null
+  ), [mode, graph, rules, selectedData])
+  const onGhostConnect = useCallback((a, b, bearer) => {
+    if (editorRef.current) editorRef.current.addLinkWith(a, b, bearer)
+  }, [])
+  // While a game runs the clock is the game's cfg.t: the timeline is frozen
+  // so the pictures and the turn loop cannot drift apart.
+  const locked = mode === 'wargame' && !!game
+  const lockedLabel = game && game.phase === 'over' ? '교전 종료 · 시점 고정' : '교전 중 · 시점 고정'
 
   const phases = useMemo(() => activePhaseNames(graph, step), [graph, step])
   const when = clockOf(step).time
 
   // --- playback ---------------------------------------------------------
   useEffect(() => {
-    if (!playing || !payload) return
+    if (!playing || !payload || locked) return
     const id = setInterval(() => {
       setIdx((i) => (i + 1 >= payload.steps.length ? 0 : i + 1))
     }, 900 / speed)
     return () => clearInterval(id)
-  }, [playing, payload, speed])
+  }, [playing, payload, speed, locked])
+  // a game freezes the clock; the play button must not stay lit behind it
+  useEffect(() => { if (locked) setPlaying(false) }, [locked])
 
   // --- edit bookkeeping -------------------------------------------------
   const commitEdit = useCallback(() => {
@@ -217,10 +340,58 @@ export default function App() {
     const g = structuredClone(payload.graph)
     hist.current = { past: [], future: [], last: structuredClone(g) }
     setGraph(g)
-    setEdited(false)
+    // the sandbox stays on the local engine: its "original" is the empty board
+    setEdited(isSandbox)
     setHistVer((v) => v + 1)
-    setToast('시나리오를 원본으로 되돌렸다')
-  }, [payload, scenarioId, storageKey])
+    setToast(isSandbox ? '교전장을 비웠다' : '시나리오를 원본으로 되돌렸다')
+  }, [payload, scenarioId, storageKey, isSandbox])
+
+  // --- sandbox plans (ADR-0027) -----------------------------------------
+  // A plan is a graph snapshot under a name in localStorage. Loading one is
+  // an edit like any other: it goes through applySnapshot so undo can take
+  // it back and the per-scenario overlay is rewritten.
+  const onSavePlan = useCallback((name) => {
+    if (!graphRef.current) return
+    savePlan(name, graphRef.current)
+    setPlans(listPlans())
+    setToast(`구성 '${name}' 을 저장했다`)
+  }, [])
+
+  const onLoadPlan = useCallback((name) => {
+    const g = loadPlan(name)
+    if (!g) { setToast(`구성 '${name}' 이 없다`); return }
+    hist.current.past.push(structuredClone(graphRef.current))
+    if (hist.current.past.length > HISTORY_MAX) hist.current.past.shift()
+    hist.current.future = []
+    applySnapshot(g)
+    setToast(`구성 '${name}' 을 불러왔다`)
+  }, [applySnapshot])
+
+  const onDeletePlan = useCallback((name) => {
+    deletePlan(name)
+    setPlans(listPlans())
+    setToast(`구성 '${name}' 을 지웠다`)
+  }, [])
+
+  // A file exported from this screen (the graph) or a whole replay payload
+  // ({ graph, ... }). It must share the template's mission layer: the
+  // sandbox is about the network, not about rewriting what the mission needs.
+  const onImport = useCallback(async (file) => {
+    if (!payload) return
+    let obj
+    try { obj = JSON.parse(await file.text()) } catch { setToast('JSON 을 읽지 못했다'); return }
+    const g = obj && obj.graph ? obj.graph : obj
+    const v = validateImport(payload, g)
+    if (!v.ok) { setToast(`불러오기 거부: ${v.errors.join(' / ')}`); return }
+    // a tacnet-01 replay passes the mission-layer check but carries its own
+    // id; what lands on this board is the sandbox, whatever the file said
+    g.scenario_id = SANDBOX_ID
+    hist.current.past.push(structuredClone(graphRef.current))
+    if (hist.current.past.length > HISTORY_MAX) hist.current.past.shift()
+    hist.current.future = []
+    applySnapshot(g)
+    setToast(`${file.name} 을 불러왔다 · 자산 ${(g.assets || []).length} · 링크 ${(g.links || []).length}`)
+  }, [payload, applySnapshot])
 
   const exportScenario = useCallback(() => {
     const blob = new Blob([JSON.stringify(graphRef.current, null, 2)], { type: 'application/json' })
@@ -236,9 +407,11 @@ export default function App() {
     const onKey = (e) => {
       const typing = /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)
       if (typing) return
-      if (e.code === 'Space') { e.preventDefault(); setPlaying((p) => !p); return }
-      if (e.key === 'ArrowRight') { setIdx((i) => Math.min((payload?.steps.length || 1) - 1, i + 1)); return }
-      if (e.key === 'ArrowLeft') { setIdx((i) => Math.max(0, i - 1)); return }
+      if (e.code === 'Space') { e.preventDefault(); if (!locked) setPlaying((p) => !p); return }
+      if (e.key === 'ArrowRight') { if (!locked) setIdx((i) => Math.min((payload?.steps.length || 1) - 1, i + 1)); return }
+      if (e.key === 'ArrowLeft') { if (!locked) setIdx((i) => Math.max(0, i - 1)); return }
+      // undo/redo rewrite the graph a running game was started on
+      if (mode === 'wargame' && game) return
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
         e.preventDefault()
         if (e.shiftKey) redo(); else undo()
@@ -246,19 +419,30 @@ export default function App() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [payload, undo, redo])
+  }, [payload, undo, redo, locked, mode, game])
 
   // --- selection --------------------------------------------------------
-  const onSelect = useCallback((id) => {
+  // `stack` is what the map found under the tap (see MapPane). Every other
+  // caller - the graph canvas, a ?select= link, the stack list itself when it
+  // wants the list gone - passes nothing, which reads as "one thing, no
+  // ambiguity" and clears the list.
+  // (the parameter is not called `stack`: that is the state variable this
+  // very callback sets, and shadowing it here is how you end up setting a
+  // value to itself.)
+  // `opts.keepTab` is the staff dock's: inside the sheet the dock IS a rail
+  // tab, so switching to 선택 under it would throw the answer off screen the
+  // moment a fact was pressed. Every other caller wants the inspector.
+  const onSelect = useCallback((id, hits, opts) => {
     const cy = cyRef.current
-    if (!id || !cy) { setSelectedData(null); return }
+    if (!id || !cy) { setStack(null); setSelectedData(null); return }
     const n = cy.$id(id)
-    if (!n.length) { setSelectedData(null); return }
+    if (!n.length) { setStack(null); setSelectedData(null); return }
     cy.$(':selected').unselect()
     n.select()
     setSelectedData(n.data())
-    setTab('inspect')
-  }, [])
+    setStack(compact && Array.isArray(hits) && hits.length > 1 ? hits : null)
+    if (!opts || !opts.keepTab) setTab('inspect')
+  }, [compact])
 
   // ?select=<node id>: select once the graph (and the cytoscape instance,
   // built in the child's effect, which runs before this one) exists
@@ -302,10 +486,7 @@ export default function App() {
 
   // --- mode switching ---------------------------------------------------
   useEffect(() => {
-    if (mode !== 'wargame' && wargameRef.current) {
-      wargameRef.current.stop?.()
-      setWgVer((v) => v + 1)
-    }
+    if (mode !== 'wargame') setGame(null)
     if (mode === 'edit') setTool('select')
   }, [mode])
 
@@ -318,11 +499,57 @@ export default function App() {
     )
   }
 
-  const isGeo = view === 'geo'
+  const isGeo = view === 'geo' && !studioActive
   const hasGeoref = !!(graph && graph.geo && graph.geo.georef)
 
+  // ONE staff dock, same rule as the rail below: built here and handed to
+  // exactly one parent - the rail's 참모 tab on a phone, a bottom drawer on a
+  // desktop. Two instances would mean two query logs and two writers for
+  // `mccycop:staff:<scenarioId>`.
+  const staffEl = graph ? (
+    <StaffDock
+      graph={graph} step={step} game={mode === 'wargame' ? game : null}
+      sandbox={isSandbox} method={payload?.method} scenarioId={scenarioId}
+      compact={compact}
+      onSelect={(id) => onSelect(id, null, { keepTab: compact })}
+    />
+  ) : null
+
+  // ONE rail. It is built here and handed to exactly one parent below - the
+  // grid column on a desktop, the bottom sheet on a phone. Rendering <Rail>
+  // inside both branches would give the screen two tab states, two briefing
+  // fetches and two wargame panels that disagree with each other.
+  const railEl = (
+    <Rail
+      graph={graph} step={step} scenarioId={scenarioId} edited={edited}
+      when={when} tab={tab} onTab={setTab}
+      requests={requests} onRequest={onRequest}
+      selectedData={selectedData} onToast={setToast} mode={mode}
+      stack={stack} onPick={(id) => onSelect(id, stack)}
+      onDeselect={() => onSelect(null)} compact={compact}
+      editor={editorRef} rules={rules} sandbox={isSandbox}
+      staffSlot={compact ? staffEl : null}
+      payload={payload} idx={idx} onSeekIdx={(i) => setIdx(i)}
+      wargameSlot={mode === 'wargame' ? (
+        // keyed on the scenario so a switch unmounts the panel: its
+        // in-flight model call is then discarded, not written back
+        <Wargame
+          key={scenarioId}
+          graph={graph} payload={payload} idx={idx} game={game} onGame={setGame}
+          onSeekIdx={(i) => setIdx(i)} onToast={setToast} onMode={setMode}
+          sandbox={isSandbox}
+        />
+      ) : null}
+    />
+  )
+
   return (
-    <div className="app">
+    <div
+      className="app"
+      data-studio={studioActive ? '1' : undefined}
+      data-compact={compact ? '1' : undefined}
+      data-sheet={compact ? sheetState : undefined}
+    >
       <Topbar
         scenarios={scenarios}
         scenarioId={scenarioId}
@@ -333,13 +560,27 @@ export default function App() {
         onHelp={() => setOnboard(true)}
         graph={graph}
         step={step}
+        game={mode === 'wargame' ? game : null}
+        sandbox={isSandbox}
+        compact={compact}
+        folded={tbOver}
+        onMenuNode={setMenuNode}
       />
+
+      {studioActive && <OperationsHeader graph={graph} step={step} selected={selectedData?.id} onSelect={onSelect} />}
 
       <div className={`main${mode === 'edit' ? ' is-editing' : ''}`}>
         {mode === 'edit' && (
           <Mount
             className="palette"
-            deps={[graph, mode]}
+            // Deliberately NOT keyed on `graph`. The editor never reads a
+            // captured graph - getGraph/getCy are getters - so rebuilding it
+            // on every edit bought nothing and cost the active tool: each
+            // rebuild ran `ed.setTool('select')` while React's `tool` state
+            // stayed put, so the toolbar went on showing 삭제 while the
+            // editor had quietly gone back to 선택. `commitEdit` is here
+            // because it IS captured, and it changes with the scenario.
+            deps={[mode, commitEdit]}
             make={(el) => {
               const ed = createEditor({
                 paletteEl: el,
@@ -356,9 +597,17 @@ export default function App() {
         )}
 
         <section className="board">
-          <BoardToolbar
-            view={view} onView={setView} mode={mode}
+          {!studioActive && <BoardToolbar
+            studio={studioActive} studioAllowed={!compact && mode === 'observe'}
+            onStudio={() => {
+              viewChosen.current = true
+              setView('dependency')
+              setStudio((v) => !v)
+              if (!selectedData && graph?.assets?.length) onSelect(graph.assets.find((a) => a.visual_model === 'fighter')?.id || graph.assets[0].id)
+            }}
+            view={view} onView={onView} mode={mode}
             labels={labels} onLabels={setLabels}
+            contrib={contribOn} onContrib={setContribOn} contribOk={view !== 'geo'}
             onFit={() => cyRef.current && cyRef.current.fit(undefined, 16)}
             tool={tool}
             onTool={(t) => { setTool(t); editorRef.current?.setTool(t) }}
@@ -366,67 +615,74 @@ export default function App() {
             canRedo={hist.current.future.length > 0}
             onUndo={undo} onRedo={redo}
             onExport={exportScenario} onReset={resetEdits}
-            editState={edited ? '편집됨 · 수치는 로컬 엔진이 계산한다' : ''}
-          />
-          <div className="canvas-wrap">
+            editState={isSandbox
+              ? `구성 중 · 자산 ${graph?.assets?.length ?? 0} · 링크 ${graph?.links?.length ?? 0}`
+              : (edited ? '편집됨 · 수치는 로컬 엔진이 계산한다' : '')}
+            sandbox={isSandbox} plans={plans}
+            onSavePlan={onSavePlan} onLoadPlan={onLoadPlan} onDeletePlan={onDeletePlan} onImport={onImport}
+            menuNode={foldTools ? menuNode : null}
+            onFold={setTbOver}
+          />}
+          <OperationsWorkspace active={studioActive} graph={graph} step={step} steps={payload?.steps}
+            idx={idx} selected={selectedData?.id} onSelect={onSelect} onSeek={setIdx} playing={playing} cyRef={cyRef} onExit={()=>setStudio(false)}>
+            <div className="dependency-stage" hidden={isGeo}>
+            {studioActive && <div className="ops-stage-heading"><b>임무 의존 그래프</b><span>임무 → 작업 → 서비스 → 자산</span></div>}
             <GraphCanvas
-              graph={graph} step={step} steps={payload?.steps} idx={idx} view={view} labels={labels}
+              graph={graph} step={step} steps={payload?.steps} idx={idx} view={studioActive ? 'dependency' : view} labels={labels}
+              split={studioActive}
               hidden={isGeo} cyRef={cyRef} onSelect={onSelect} onTap={onTap}
-              selected={selectedData?.id || null}
+              selected={selectedData?.id || null} overlay={overlay}
+              contrib={contrib} ghosts={ghosts} onGhostConnect={onGhostConnect}
             />
+            </div>
             {hasGeoref ? (
               <MapPane
                 graph={graph} step={step} steps={payload?.steps} idx={idx}
-                selected={selectedData?.id || null} onSelect={onSelect} hidden={!isGeo}
+                selected={selectedData?.id || null} onSelect={onSelect} hidden={!isGeo && !studioActive}
+                overlay={overlay}
+                editable={mode === 'edit'}
+                compact={compact}
+                ghosts={ghosts} onGhostConnect={onGhostConnect}
+                onMove={(id, x, y) => editorRef.current && editorRef.current.moveAsset(id, x, y)}
               />
             ) : (
               <GeoPane
                 graph={graph} step={step} cam={geoCam} onCam={setGeoCam}
-                selected={selectedData?.id || null} onSelect={onSelect} hidden={!isGeo}
+                selected={selectedData?.id || null} onSelect={onSelect} hidden={!isGeo && !studioActive}
               />
             )}
-          </div>
+          </OperationsWorkspace>
         </section>
 
-        <Rail
-          graph={graph} step={step} scenarioId={scenarioId} edited={edited}
-          when={when} tab={tab} onTab={setTab}
-          requests={requests} onRequest={onRequest}
-          selectedData={selectedData} onToast={setToast} mode={mode}
-          editor={editorRef}
-          payload={payload} idx={idx} onSeekIdx={(i) => setIdx(i)}
-          wargameSlot={mode === 'wargame' ? (
-            <Mount
-              deps={[graph, mode]}
-              make={(el) => {
-                const wg = createWargame({
-                  mountEl: el,
-                  getGraph: () => graphRef.current,
-                  getT: () => {
-                    const b = payload?.steps[idx]
-                    return b && b.t !== undefined && b.t !== null ? Number(b.t) : -1
-                  },
-                  getMethod: () => payload?.method || 'weighted',
-                  onChange: () => setWgVer((v) => v + 1),
-                })
-                wargameRef.current = wg
-                // start from whatever the replay says is compromised right
-                // now, so the wargame begins in the situation the operator was
-                // just looking at
-                wg.start((payload?.steps[idx] || {}).compromise || {})
-                return () => { wg.stop?.(); wargameRef.current = null }
-              }}
-            />
-          ) : null}
-        />
+        {!compact && (studioActive ? <OperationsPanel
+          graph={graph} step={step} payload={payload} idx={idx} selected={selectedData?.id}
+          onSelect={onSelect} edited={edited}
+          onInspect={() => { setStudio(false); setTab('inspect') }}
+          onActions={() => { setStudio(false); setTab('actions') }}
+        /> : railEl)}
       </div>
+
+      {studioActive && <OperationsMoments graph={graph} steps={payload?.steps} idx={idx} edited={edited} onSeek={setIdx} />}
 
       <Timeline
         graph={graph} payload={payload} idx={idx} step={step}
         playing={playing} onPlay={() => setPlaying((p) => !p)} onSeek={onSeek}
-        speed={speed} onSpeed={setSpeed}
+        speed={speed} onSpeed={setSpeed} locked={locked} lockedLabel={lockedLabel}
+        menuNode={compact ? menuNode : null}
         onStep={(d) => setIdx((i) => Math.max(0, Math.min((payload?.steps.length || 1) - 1, i + d)))}
       />
+
+      {compact && (
+        <Sheet
+          peek={peekLine(graph, step, mode === 'wargame' ? game : null)}
+          raised={selectedData?.id ?? null}
+          onStateChange={setSheetState}
+        >
+          {railEl}
+        </Sheet>
+      )}
+
+      {!compact && staffEl}
 
       {onboard && <Onboard onClose={() => setOnboard(false)} />}
       {toast && <div className="toast">{toast}</div>}

@@ -6,6 +6,9 @@
 
 import { runStep, containmentCandidates } from './engine.js'
 import { assetName, linkName, techniqueKo } from './labels.js'
+import { legalFor } from './game.js'
+import { footholds } from './attack.js'
+import { linkCandidates, linkFitsRules } from './sandbox.js'
 
 export function num(v) { return typeof v === 'number' ? v : Number(v || 0) }
 export function pct(v) { return `${(num(v) * 100).toFixed(1)}%` }
@@ -165,7 +168,9 @@ export function attackHops(steps, idx) {
   return { order, hops }
 }
 
-const CAUSE_KO_ROW = { attack: '공격', mobility: '기동', terrain: '지형', maintenance: '정비', unknown: '미상' }
+// One word per cause, shared by the event log and the staff query layer so a
+// sentence and a row never name the same cause differently.
+export const CAUSE_KO_ROW = { attack: '공격', mobility: '기동', terrain: '지형', maintenance: '정비', unknown: '미상' }
 
 // Wall clock for an offset in minutes, or the offset itself when the
 // scenario has no t0 (defnet-01's chain clock).
@@ -252,4 +257,171 @@ export function kpiOf(graph, s) {
   const worst = Math.max(0, ...missions.filter((m) => m.active).map((m) => m.total))
   const level = worst <= 0 ? 0 : worst < 0.3 ? 1 : worst < 0.7 ? 2 : 3
   return { missions, compromised: { n: compromised, total: assets.length }, cuts: { n: cuts, byCause }, band: { level, label: BAND_LABELS[level] } }
+}
+
+// The single line the collapsed sheet shows on a phone. It reports, it never
+// computes: the degradation comes out of kpiOf, which reads the same step the
+// rail reads, so the peek and the panel behind it can never disagree. During
+// an engagement the turn and the score replace it - that is what the operator
+// is tracking while the clock is frozen.
+export function peekLine(graph, step, game) {
+  if (game && game.cfg) {
+    const t = num(game.score?.total)
+    const score = game.cfg.mode === 'hold' ? t.toFixed(2) : t
+    return `턴 ${num(game.turn) + 1}/${game.cfg.turns} · 점수 ${score}`
+  }
+  const { missions } = kpiOf(graph, step)
+  // missions is already priority-sorted; a phase-inactive mission has no
+  // number to show, so the top ACTIVE one is the headline
+  const m = missions.find((x) => x.active) || missions[0]
+  if (!m) return '임무 없음'
+  return `${m.name} P${m.priority} ${pct(m.total)}`
+}
+
+// What the pictures draw during a wargame. Candidates are the attacker's top
+// six legal moves as the engine scores them - read from the same list the
+// panel shows, never inferred. Lateral moves become edges, self-targeted
+// moves (escalate/deny/credential) become node threats.
+export function gameOverlay(g, game) {
+  if (!game) return null
+  const top = legalFor(g, game).filter((m) => m.target).slice(0, 6)
+  const candidates = [], nodeThreats = []
+  top.forEach((m, i) => {
+    if (m.from && m.from !== m.target) candidates.push({ from: m.from, to: m.target, gain: m.gain, rank: i + 1, label: m.label })
+    else nodeThreats.push({ id: m.target, gain: m.gain, rank: i + 1, label: m.label })
+  })
+  const rec = game.history[game.history.length - 1]
+  const last = rec && rec.attacker && rec.attacker.move.target
+    ? { from: rec.attacker.move.from, to: rec.attacker.move.target, success: rec.attacker.success, turn: rec.turn }
+    : null
+  return { candidates, nodeThreats, last, isolated: game.isolated.slice(), footholds: footholds(game.attacker, game.isolated), turn: game.turn }
+}
+
+// --- U3: contribution as thickness --------------------------------------
+//
+// `attribution()` (facts.js) measures, per asset, how many percentage points
+// of ONE mission's degradation that asset's compromise accounts for: set its
+// compromise back to 0, run the chain again, take the drop. The numbers are
+// the engine's, measured, not fitted (ADR-0003).
+//
+// THE SCALE IS max(contribution) INSIDE THE SET, NEVER THE MISSION TOTAL.
+//
+// This is not a stylistic preference. Per-asset contributions can EXCEED the
+// total they are drawn against, because engine.js serviceDegFor multiplies
+// the providers of a redundancy_group: with two providers compromised,
+// removing either one alone reads as decisive and the same loss is charged
+// twice. On tacnet-01 at t=180, RELAY-1 (0.6) and SAT-TERM (0.7) against
+// M-FIRE each read +8.6%p for a total of 8.6% - an individual sum of +17.3%p
+// against a total of 8.6%, and a pair sweep found four such combinations.
+// Dividing by the total would draw two lines at 100% each and a picture that
+// says each of two assets is the whole of a loss both of them share.
+//
+// So the weight is a RANK-FREE COMPARISON BETWEEN ASSETS and nothing else.
+// The legend has to say that, because thickness invites being read as a share.
+//
+// WHAT HAPPENS TO A NEGATIVE CONTRIBUTION, AND WHY THE TWO LAYERS AGREE.
+//
+// `contribution` is `total - after`, so it goes negative when clearing one
+// asset's compromise makes the mission WORSE. The engine is monotone in
+// compromise today, so that does not happen: a leave-one-out sweep over every
+// asset of tacnet-01 finds no negative, and the test below pins that premise
+// rather than assuming it. `attribution()` still prints the sign (facts.js
+// sgnPp) for the day the engine stops being monotone, and `attributionFacts`
+// narrates such a row through `Math.abs`.
+//
+// If that day comes, the two layers must not say different things about the
+// same asset. Thickness cannot carry a sign - the only honest encodings left
+// would be hue, and hue is the adversary's (ADR-0012, ADR-0024). So the
+// drawing DROPS a negative row rather than drawing its magnitude as if it
+// were a contribution, and reports `dropped` so the legend can say the
+// picture is not showing everything the fact layer is saying. Silence there
+// would be the one state the fact card and the situation picture could
+// contradict each other in.
+//
+// A contribution of exactly 0 is dropped the same way and for a plainer
+// reason: 0 is not a thin line, it is no line.
+export function contribLayer(attr, mission) {
+  if (!attr || attr.active === false) return null
+  const all = attr.rows || []
+  const rows = all.filter((r) => num(r.contribution) > 0)
+  const dropped = all.filter((r) => num(r.contribution) < 0).length
+  if (!rows.length) return null
+  const max = Math.max(...rows.map((r) => num(r.contribution)))
+  if (!(max > 0)) return null
+  return {
+    mission: attr.mission,
+    missionName: (mission && (mission.name || mission.id)) || attr.mission,
+    total: num(attr.total),
+    max,
+    dropped,
+    // w is contribution / max(contribution): 1 for the heaviest asset in the
+    // set, proportional below it, and never a fraction of `total`.
+    rows: rows
+      .map((r) => ({ id: r.id, contribution: num(r.contribution), w: num(r.contribution) / max }))
+      .sort((a, b) => (b.contribution - a.contribution) || String(a.id).localeCompare(String(b.id))),
+  }
+}
+
+// Which mission the contribution layer is about. attribution() splits ONE
+// mission's degradation, so the layer has to name one: the highest-priority
+// mission that has active work at this step, the same mission peekLine puts in
+// the phone's one line. Reported, never averaged across missions - a mean of
+// two different totals is not a contribution to either.
+export function contribMission(graph, s) {
+  const missions = (graph?.missions || []).slice().sort((a, b) => (num(a.priority) || 9) - (num(b.priority) || 9))
+  const active = (m) => (s?.mission_active ? s.mission_active[m.id] !== false : true)
+  return missions.find(active) || missions[0] || null
+}
+
+// --- U9: where a selected asset can connect ------------------------------
+//
+// The inspector's candidate list (Rail's 구성 block) says WHAT can be wired.
+// It never said WHERE, so a name had to be matched against the picture by
+// hand. This is the same list as geometry: one line per candidate target.
+//
+// `linkCandidates` emits one row per (target, bearer) pair. The overlay keeps
+// the best-ranked bearer per target - a second line to the same box says
+// nothing the first does not, and the full bearer list belongs in the
+// inspector. The bearer that rides along is the one `addLinkWith` is called
+// with, so the line and the inspector's 연결 button create the same link.
+//
+// Two kinds, told apart by LINE STYLE and never by colour (ADR-0012,
+// ADR-0024 - these are construction aids, and red is the adversary's):
+//
+//   cands    the rule table's candidates, drawn dashed, clickable
+//   offRule  this asset's EXISTING links that the rule table no longer fits
+//            (the inspector's 규칙 밖 mark, same predicate), drawn dotted and
+//            inert - there is nothing to connect, the point is that the flag
+//            now has a place on screen
+//
+// Nothing to draw returns null, and the overlay then says NOTHING - it does
+// not carry a reason. The reason belongs to the inspector, which already
+// prints it beside its own count (`연결 가능 (n)` or `- 규칙표 없음` /
+// `- 규칙표에 없는 유형`, from sandbox.ruleGap). This used to return that
+// string as a `gap` field, which no caller read and which was unreachable
+// anyway: every case that makes `ruleGap` non-null also empties both lists,
+// so the `return null` above fires first.
+const GHOST_MAX = 8
+
+export function linkGhosts(graph, rules, assetId) {
+  if (!graph || !assetId) return null
+  const me = (graph.assets || []).find((a) => a.id === assetId)
+  if (!me) return null
+  const seen = new Set()
+  const cands = []
+  for (const c of linkCandidates(graph, rules, assetId)) {
+    if (seen.has(c.id)) continue
+    seen.add(c.id)
+    cands.push({ to: c.id, bearer: c.bearer, why: c.why, rank: cands.length + 1 })
+  }
+  const shown = cands.slice(0, GHOST_MAX)
+  // same thickness rule as the wargame's ghost arrows (gameOverlay), so the
+  // two overlays are read with one eye
+  for (const c of shown) c.w = Math.max(1.5, 4 - c.rank * 0.4)
+  const offRule = (graph.links || [])
+    .filter((l) => l.a === assetId || l.b === assetId)
+    .filter((l) => !linkFitsRules(graph, rules, l))
+    .map((l) => ({ id: l.id, to: l.a === assetId ? l.b : l.a, bearer: l.bearer || '', w: 2 }))
+  if (!shown.length && !offRule.length) return null
+  return { from: assetId, total: cands.length, cands: shown, offRule }
 }

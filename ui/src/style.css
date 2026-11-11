@@ -26,7 +26,11 @@
   --text-secondary: #c2c6cb;
   --text-muted: #99a0a7;
 
-  /* cause palette - ADR-0012. attack is the only red on this screen. */
+  /* cause palette - ADR-0012. attack is the only red on this screen.
+     Mirror of tokens.mjs CAUSE_COLOR, which is where the JS side reads them.
+     CSS cannot import a value, so the literals stay here and
+     tools/token-parity.mjs holds the two files to each other. Edit tokens.mjs
+     first. The comment marker above is what that tool looks for. */
   --attack: #ff4d5e;
   --env: #7d93ab;
   --inter: #c07dff;
@@ -82,7 +86,11 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
 
 /* ------------------------------------------------------------- topbar */
 
+/* position: relative at every width, not only in compact: the `⋯` panel hangs
+   off this bar on a desktop too now (U12), and without a positioned ancestor
+   it would anchor to the viewport. */
 .topbar {
+  position: relative;
   display: flex; align-items: center; gap: 18px;
   height: 64px; flex: none; padding: 0 20px;
   background: var(--surface-chrome);
@@ -101,6 +109,40 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
   width: 26px; height: 26px; padding: 0; border-radius: 50%;
   display: grid; place-items: center; background: none; color: var(--text-secondary);
 }
+
+/* ------------------------------------------------------- the `⋯` panel */
+/* U12: 이 패널은 좁은 화면 전용이 아니다. 상판 툴바가 자기 상자를 넘으면
+   데스크톱에서도 여기로 접히므로, 구조에 해당하는 규칙(위치, 쌓임 순서,
+   열림/닫힘, 폭을 차지하는 자식들)은 미디어쿼리 밖에 있어야 한다.
+   `min-height: 44px` 같은 터치 치수는 따라 나오지 않는다 - 마우스에는 그 치수가
+   필요 없고, 네 개 컨트롤이 데스크톱 상단바 아래에서 손가락만큼 커질 이유가
+   없다. 그 규칙들은 compact 미디어쿼리에 그대로 남는다. */
+.tb-menu-btn {
+  width: 26px; height: 26px; padding: 0; flex: none;
+  display: grid; place-items: center; font-size: 15px; line-height: 1;
+  background: none; color: var(--text-secondary);
+}
+/* The panel is always in the DOM while it exists at all - the controls that
+   moved here are parented into it - so "closed" is display:none and not an
+   unmount. */
+.tb-menu {
+  display: none;
+  position: absolute; top: 100%; right: 12px; z-index: 35;
+  flex-direction: column; align-items: stretch; gap: 8px;
+  min-width: 240px; max-width: min(380px, calc(100vw - 24px));
+  padding: 10px; background: var(--surface-chrome);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, .45);
+  max-height: 70dvh; overflow-y: auto;
+}
+.tb-menu[data-open="1"] { display: flex; }
+.tb-menu .tb-rule { display: none; }
+.tb-menu .seg { width: 100%; }
+.tb-menu .seg button { flex: 1; }
+.tb-menu > button, .tb-menu select, .tb-menu .tb-file { width: 100%; }
+/* 접힌 것이 왜 여기 있는지. 넓은 화면에서만 나온다 - 좁은 화면의 `⋯` 는
+   원래부터 그 서랍이고 설명할 것이 없다. */
+.tb-menu-why { margin: 0; font-size: 11px; line-height: 1.5; color: var(--text-muted); }
 
 .kpis { display: flex; align-items: stretch; gap: 0; }
 .kpi { display: flex; align-items: center; gap: 8px; padding: 0 14px; border-left: 1px solid var(--line-soft); }
@@ -144,11 +186,21 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
 .main.is-editing { grid-template-columns: 210px 1fr 380px; }
 .board { display: flex; flex-direction: column; min-width: 0; background: var(--surface-board); }
 
+/* overflow-x 는 모든 폭에서 auto 다. 접기(U12)가 제대로 돌면 scrollWidth 가
+   clientWidth 와 같아 스크롤바는 나타나지 않는다. 이것은 ResizeObserver 도
+   resize 이벤트도 없는 환경(구형 브라우저, 정적 번들 ADR-0018)에서 컨트롤이
+   상자 밖에서 잘린 채 닿을 수 없게 되는 것을 막는 마지막 안전망이다. */
 .board-toolbar {
   display: flex; align-items: center; gap: 8px; flex: none;
   padding: 8px 16px; border-bottom: 1px solid var(--line-strong);
+  overflow-x: auto;
 }
-.board-toolbar .sp { flex: 1; }
+/* 좌우 묶음을 벌리는 빈 스페이서. 음수 마진 8px 씩은 `gap` 을 되돌리는 것이다 -
+   폭이 모자라면 이 스페이서가 0 으로 줄어드는데 `gap: 8px` 은 폭 0 인 자식에게도
+   양옆 8px 을 주므로, 보이지 않는 자식 하나가 16px 을 쓰고 그만큼이 끝의
+   `화면 맞춤` 을 상자 밖으로 밀어낸다(1280x800 에서 측정된 3px 이 그것이다).
+   넓은 화면에서는 스페이서가 16px 만큼 더 자라므로 이웃은 제자리에 있다. */
+.board-toolbar .sp { flex: 1; margin: 0 -8px; }
 /* Buttons never wrap to two lines: the status caption is the one thing that
    may shrink, and it truncates before anything else moves. */
 .board-toolbar button, .board-toolbar .seg, .board-toolbar .chk { white-space: nowrap; flex: none; }
@@ -156,8 +208,21 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
   margin: 0; min-width: 0; flex: 0 1 auto;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
+.board-toolbar select { flex: none; }
+/* A file input dressed as a toolbar button: the real input covers the label
+   invisibly so the click opens the picker. */
+.tb-file {
+  position: relative; overflow: hidden; display: inline-flex; align-items: center;
+  padding: 5px 11px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+  background: var(--surface-raised); cursor: pointer; font-size: 13px; white-space: nowrap; flex: none;
+}
+.tb-file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 .chk { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text-secondary); cursor: pointer; }
 .chk input { accent-color: var(--text-secondary); }
+/* a control that cannot do anything here says so before it is clicked; the
+   `title` carries the reason (BoardToolbar) */
+.chk.is-off { opacity: .45; cursor: not-allowed; }
+.chk.is-off input { cursor: not-allowed; }
 
 .canvas-wrap { position: relative; flex: 1; min-height: 0; }
 #cy { position: absolute; inset: 0; }
@@ -184,6 +249,31 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
 .legend-bar .lg-rule { width: 1px; height: 12px; background: var(--line-strong); }
 .legend-item { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-muted); }
 .legend-sw { width: 10px; height: 10px; border-radius: 2px; border: 1.5px solid currentColor; }
+/* U3 / U9 legend keys. Thickness and dash pattern carry the whole message:
+   no hue, because red is adversary effect and nothing else (ADR-0024). */
+.legend-thick { width: 16px; height: 0; border-top: 5px solid var(--text-secondary); opacity: .8; }
+.legend-dash { width: 16px; height: 0; border-top: 2px dashed var(--text-secondary); opacity: .8; }
+.legend-dot { width: 16px; height: 0; border-top: 2px dotted var(--text-secondary); opacity: .8; }
+
+/* U9: link candidates drawn over the graph canvas. An SVG layer and not
+   cytoscape edges - a candidate is not a dependency, so it must not enter the
+   layout or the selected node's path traversal. Geometry is measured in
+   rendered pixels by GraphCanvas and trimmed clear of both node boxes, so the
+   wide hit stroke never swallows a tap meant for a node.
+
+   Achromatic by rule (ADR-0012, ADR-0024): dashed is a rule-table candidate,
+   dotted is a link already on the board that the table no longer fits. The
+   two are told apart by the dash pattern, never by colour. */
+.ghosts { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.ghost-line { fill: none; stroke: var(--text-secondary); stroke-opacity: .5; stroke-linecap: round; }
+.ghost-cand .ghost-line { stroke-dasharray: 7 5; }
+.ghost-off .ghost-line { stroke-dasharray: 1.5 4; stroke-opacity: .55; }
+.ghost-hit { stroke: transparent; stroke-width: 14; pointer-events: stroke; cursor: pointer; }
+.ghost-end {
+  fill: var(--surface-board); stroke: var(--text-secondary); stroke-opacity: .7; stroke-width: 1.4;
+  pointer-events: all; cursor: pointer;
+}
+.ghost-cand:hover .ghost-line, .ghost-cand:hover .ghost-end { stroke-opacity: 1; }
 
 /* ------------------------------------------------------------- rail */
 
@@ -319,6 +409,8 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
 .seg.speed button { padding: 4px 9px; font-size: 11px; font-family: "IBM Plex Mono", ui-monospace, Consolas, monospace; }
 .ribbon-wrap { flex: 1; min-width: 0; }
 #ribbon { display: block; width: 100%; height: 64px; cursor: pointer; }
+.timeline.is-locked #ribbon { opacity: .45; cursor: default; }
+.tl-locked { font-size: 10.5px; color: var(--text-muted); white-space: nowrap; }
 .clock { text-align: right; min-width: 116px; }
 .clock-time { font-family: "IBM Plex Mono", ui-monospace, Consolas, monospace; font-size: 26px; font-weight: 600; line-height: 1.1; }
 .clock-sub { font-size: 11px; color: var(--text-muted); }
@@ -388,6 +480,49 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
 /* the cost line can be long; the button must never wrap */
 .action .req-btn { white-space: nowrap; flex: none; }
 .action-detail > span:first-child { min-width: 0; }
+
+/* inspector build block (sandbox, ADR-0027): site, unit, jewel, then the link
+   candidates the rule table allows and this asset's own links. Achromatic like
+   the rest of the rail; the one mark, 규칙 밖, is the unknown-cause amber. */
+.build { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--line-strong); }
+.build .lk-head { font-size: 11px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; letter-spacing: .02em; }
+.build .lk-sub { font-size: 11px; color: var(--text-muted); margin: 10px 0 4px; }
+.build .lk-chk { display: flex; margin: 3px 0; }
+.build-row { display: flex; gap: 8px; margin: 6px 0 8px; }
+.build-row label { flex: 1; display: flex; flex-direction: column; gap: 3px; font-size: 11px; color: var(--text-muted); }
+.build-row input, .build-row select { padding: 4px 7px; font-size: 12px; background: var(--surface-raised); border: 1px solid var(--line-strong); border-radius: 4px; color: var(--text-primary); }
+.build-cand { display: flex; align-items: center; gap: 6px; padding: 5px 0; border-bottom: 1px solid var(--line-soft); font-size: 12px; }
+.build-cand > span:first-child { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.build-bearer { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; color: var(--text-secondary); }
+.build-why { font-size: 10.5px; color: var(--text-muted); }
+/* achromatic emphasis, the readiness-card convention (ADR-0024): a flag on
+   chrome is not a status colour */
+.build-warn { font-size: 10px; padding: 1px 6px; border-radius: 3px; border: 1px solid var(--line-strong); color: var(--text-primary); font-weight: 600; }
+/* a declared abstraction exception (ADR-0033). Quieter than 규칙 밖 because it
+   is not a finding, but still a mark: the scenario waived a rule and the
+   reason hangs on the title. Dashed, to read as "declared" not "wrong". */
+.build-decl { font-size: 10px; padding: 1px 6px; border-radius: 3px; border: 1px dashed var(--line-strong); color: var(--text-secondary); cursor: help; }
+.build-cand select { font-size: 11px; padding: 2px 6px; }
+.build .req-btn { white-space: nowrap; flex: none; font-size: 11px; padding: 3px 9px; color: var(--text-secondary); }
+/* mission linkage: the rule table's picks first, the rest folded */
+.linkage .lk-more { margin-top: 4px; }
+.linkage .lk-more summary { cursor: pointer; font-size: 11px; color: var(--text-muted); }
+
+/* readiness card (sandbox, ADR-0027): above the mission card. Achromatic;
+   the one colour is the "교전 가능" state word, which is a status colour. */
+.rd { flex: none; padding: 12px 16px; border-bottom: 1px solid var(--line-strong); }
+.rd .rail-head { margin-bottom: 8px; }
+.rd-row { display: flex; align-items: baseline; gap: 8px; font-size: 12px; padding: 3px 0; min-width: 0; }
+.rd-label { min-width: 72px; color: var(--text-muted); }
+.rd-count { font-family: "IBM Plex Mono", ui-monospace, monospace; color: var(--text-secondary); }
+.rd-missing { flex: 1; min-width: 0; font-size: 11px; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* short and warn rows are the same achromatic emphasis - the only colour on
+   this card is --ok on the ready word below (ADR-0024/0025) */
+.rd-row.is-short .rd-count, .rd-row.is-warn .rd-count { color: var(--text-primary); font-weight: 600; }
+.rd .rail-caption { margin: 6px 0 0; }
+.rd.is-ready .rail-head .when { color: var(--ok); }
+/* the locked start button says why */
+.wg-lock { font-size: 11px; color: var(--text-muted); margin: 6px 0 0; line-height: 1.5; }
 
 /* geo layout, corrected: the pane must fill the canvas box the way #cy does,
    otherwise geo.js measures a zero-height container and draws nothing. */
@@ -461,6 +596,8 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
    here used to win the cascade and put the marker back in normal document
    flow, which is why every marker piled up at the top-left of the map. */
 .map-mark { width: 44px; height: 44px; cursor: pointer; }
+.map-mark.is-draggable { cursor: grab; }
+.map-mark.is-draggable:active { cursor: grabbing; }
 .map-mark-sym {
   width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
   background: rgba(7,10,16,.72); border: 2px solid var(--line-strong);
@@ -479,4 +616,591 @@ button.danger:hover { background: rgba(255,77,94,.12); border-color: rgba(255,77
 .map-mark.cause-maintenance .map-mark-sym { border-color: var(--maintenance); }
 .map-mark.cause-unknown .map-mark-sym { border-color: var(--unknown); box-shadow: 0 0 14px rgba(255,176,32,.4); }
 .map-mark.is-selected .map-mark-sym { outline: 3px solid var(--text-primary); outline-offset: 2px; }
+/* wargame: isolation is the defender's achromatic mark, threat is the attacker's
+   faint red halo, and the flash is one adjudication (GraphCanvas draws the same) */
+.map-mark.is-isolated .map-mark-sym { border: 3px double var(--text-primary); box-shadow: 0 0 0 3px rgba(242,243,244,.12); animation: none; }
+.map-mark.is-threat .map-mark-sym { box-shadow: 0 0 0 6px rgba(255,77,94,.12); }
+.map-mark.flash-hit .map-mark-sym { animation: flash-hit .8s ease-out 1; }
+.map-mark.flash-miss .map-mark-sym { animation: flash-miss .8s ease-out 1; }
+@keyframes flash-hit { 0% { box-shadow: 0 0 0 0 rgba(255,77,94,.7); } 100% { box-shadow: 0 0 0 26px rgba(255,77,94,0); } }
+@keyframes flash-miss { 0% { box-shadow: 0 0 0 0 rgba(154,165,177,.6); } 100% { box-shadow: 0 0 0 20px rgba(154,165,177,0); } }
 @keyframes mark-pulse { 0%, 100% { box-shadow: 0 0 0 4px rgba(255,77,94,.22), 0 0 18px rgba(255,77,94,.55); } 50% { box-shadow: 0 0 0 9px rgba(255,77,94,.08), 0 0 26px rgba(255,77,94,.75); } }
+
+/* ------------------------------------------------------- compact: sheet */
+
+.sheet { display: none; }
+
+/* U15: 시트 높이는 이 세 줄에만 있다. 값은 그대로다(56px / 50dvh / 86dvh).
+   `.sheet` 가 아니라 `.app` 에 올려 두는 이유는 지도 워터마크가 같은 값을 읽어야
+   하기 때문이다(ADR-0025: 덮인 고지는 꺼진 고지다). 커스텀 프로퍼티는 자손으로만
+   상속되므로 `.sheet` 에 선언하면 형제인 지도 패널이 못 읽는다.
+   `data-sheet` 은 App 이 적고, Sheet 의 `data-state` 와 같은 값이다 - 둘 다
+   Sheet 의 `onStateChange` 하나에서 나오므로 상태의 사본이 늘지 않는다.
+   속성이 아직 없는 첫 렌더에서도 peek 으로 정의돼 있어 높이가 비는 순간은 없다. */
+[data-compact="1"] { --sheet-peek-h: 56px; --sheet-h: var(--sheet-peek-h); }
+[data-compact="1"][data-sheet="peek"] { --sheet-h: var(--sheet-peek-h); }
+[data-compact="1"][data-sheet="half"] { --sheet-h: 50dvh; }
+[data-compact="1"][data-sheet="full"] { --sheet-h: 86dvh; }
+
+[data-compact="1"] .sheet {
+  display: flex; flex-direction: column;
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+  background: var(--surface-chrome);
+  border-top: 1px solid var(--line-strong);
+  border-radius: 12px 12px 0 0;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  transition: height .18s ease;
+}
+/* 세 상태의 높이는 전부 위의 --sheet-h 에서 온다. `data-state` 는 그대로 남는다 -
+   peek 에서 본문을 접는 아래 규칙이 그것을 읽고, 드래그 중의 인라인 height 가
+   이 규칙을 덮는 것도 그대로다. */
+[data-compact="1"] .sheet { height: var(--sheet-h); }
+
+.sheet-grip {
+  flex: none; display: flex; flex-direction: column; align-items: center; gap: 4px;
+  background: none; border: none; border-radius: 12px 12px 0 0;
+  padding: 8px 12px 6px; width: 100%; min-height: 44px;
+  touch-action: none;                 /* the grip drags; the page must not */
+}
+.sheet-bar { width: 36px; height: 4px; border-radius: 2px; background: var(--line-strong); }
+.sheet-peek {
+  font-size: 12px; color: var(--text-secondary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+.sheet-body {
+  flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+[data-compact="1"] .sheet[data-state="peek"] .sheet-body { display: none; }
+
+/* --------------------------------------------------------------- 참모 */
+/* The staff panel. New chrome, so it gets its own rules and edits none of the
+   rail's: on a desktop it is a drawer on the bottom edge of .app, on a phone
+   it is the rail's 참모 tab (see the compact block). ONE component either way
+   - App.jsx builds the node once and picks the parent.
+
+   Achromatic by rule (ADR-0024): a fact number separates itself with the mono
+   face, a tie says 동률 in words, and nothing in here reaches for a hue. Red
+   stays attack-only. */
+.staff-dock {
+  flex: none; display: flex; flex-direction: column; min-height: 0;
+  border-top: 1px solid var(--line-strong); background: var(--surface-chrome);
+}
+.staff-dock.is-open { height: 40dvh; }
+.staff-toggle {
+  flex: none; width: 100%; height: 32px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 14px; background: none; border: none; border-radius: 0;
+  color: var(--text-secondary); font-size: 12px; text-align: left;
+}
+.staff-toggle:hover { background: var(--surface-hover); }
+.staff-toggle .staff-title { font-weight: 500; color: var(--text-primary); }
+.staff-toggle .staff-sub { color: var(--text-muted); }
+.staff-toggle .staff-last {
+  margin-left: auto; color: var(--text-muted);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 46%;
+}
+.staff-toggle .staff-chev { flex: none; font-size: 9px; color: var(--text-muted); }
+
+.staff { flex: 1 1 auto; min-height: 0; display: flex; }
+.staff-queries {
+  flex: none; width: 264px; min-height: 0; overflow-y: auto; scrollbar-width: thin;
+  padding: 10px 12px 14px; border-right: 1px solid var(--line-strong);
+  display: flex; flex-direction: column; gap: 8px;
+}
+/* The question box. One line above the catalogue, and the ONLY control in
+   this panel that needs a model - when there is none it goes flat and says
+   why, while every button under it keeps working (ADR-0018 static bundle:
+   the demo runs on a laptop with no GPU). No hue here either: a disabled
+   input is disabled by weight, not by colour (ADR-0024). */
+/* The input takes the whole column and the button drops under it, right
+   aligned. Sharing one 264px row with 묻기 left the field 180px, which cut the
+   placeholder - the one line that tells a first-time reader what may be typed
+   here - at "질문을 쓴다 (예: TOC-SR". A wrapped row costs ~30px of height
+   once, at the top of a scrolling column, and buys the field the column:
+   measured 229px with the scrollbar, 211px of that being text. */
+.staff-askbox { display: flex; flex-wrap: wrap; gap: 6px; align-items: stretch; }
+.staff-ask-input {
+  flex: 1 1 100%; min-width: 0; padding: 6px 8px; font-size: 12px;
+  background: var(--surface-app); color: var(--text-primary);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+}
+.staff-ask-input::placeholder { color: var(--text-muted); }
+.staff-ask-input:focus { outline: none; border-color: var(--text-muted); }
+.staff-ask-input:disabled { opacity: .5; }
+.staff-ask-go {
+  flex: none; margin-left: auto; padding: 6px 10px; font-size: 12px;
+  background: var(--surface-raised); color: var(--text-primary);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+}
+.staff-ask-go:hover:enabled { background: var(--surface-hover); }
+.staff-llm-note {
+  margin: 0; font-size: 11px; line-height: 1.6; color: var(--text-muted);
+  border-left: 2px dashed var(--line-strong); padding-left: 8px;
+}
+.staff-llm-note b { color: var(--text-secondary); font-weight: 500; }
+
+.staff-queries-head { margin: 0 0 2px; font-size: 11px; color: var(--text-muted); }
+.staff-q { display: flex; flex-direction: column; gap: 4px; }
+.staff-q-run {
+  width: 100%; text-align: left; padding: 7px 10px; font-size: 12px;
+  background: var(--surface-raised); border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm); color: var(--text-primary);
+}
+.staff-q-run:hover { background: var(--surface-hover); }
+.staff-args { display: flex; flex-wrap: wrap; gap: 4px 8px; padding-left: 2px; }
+.staff-arg { display: flex; align-items: center; gap: 5px; min-width: 0; font-size: 11px; color: var(--text-muted); }
+.staff-arg > span { font-family: "IBM Plex Mono", ui-monospace, Consolas, monospace; flex: none; }
+.staff-arg select {
+  min-width: 0; max-width: 158px; padding: 3px 6px; font-size: 11px;
+  background: var(--surface-app); color: var(--text-secondary);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+}
+.staff-clear {
+  margin-top: auto; padding: 5px 9px; font-size: 11px; align-self: flex-start;
+  background: none; color: var(--text-muted); border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+}
+
+.staff-answers { flex: 1 1 auto; min-width: 0; min-height: 0; overflow-y: auto; scrollbar-width: thin; padding: 10px 14px 14px; }
+.staff-empty, .staff-err { margin: 0 0 10px; font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+.staff-err { color: var(--text-secondary); border-left: 2px solid var(--line-strong); padding-left: 10px; }
+
+.staff-ans { padding: 0 0 12px; margin-bottom: 12px; border-bottom: 1px solid var(--line-soft); }
+.staff-ans:last-child { border-bottom: none; margin-bottom: 0; }
+.staff-run { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 8px; }
+.staff-badge {
+  font-size: 10px; padding: 1px 6px; border-radius: 4px;
+  border: 1px solid var(--line-strong); color: var(--text-secondary);
+}
+.staff-run-label { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+.staff-qid, .staff-argchip {
+  font-family: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  font-size: 10px; color: var(--text-muted);
+  border: 1px solid var(--line-soft); border-radius: 3px; padding: 0 4px;
+}
+.staff-when { margin-left: auto; font-size: 10px; color: var(--text-muted); font-family: "IBM Plex Mono", ui-monospace, Consolas, monospace; }
+
+.staff-facts { list-style: none; margin: 0 0 10px; padding: 0; }
+.staff-facts li { display: flex; align-items: baseline; gap: 8px; padding: 2px 0; }
+.staff-fn {
+  flex: none; width: 26px;
+  font-family: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  font-size: 11px; color: var(--text-muted);
+}
+.staff-fact {
+  flex: 1 1 auto; min-width: 0; font-size: 12px; line-height: 1.6;
+  color: var(--text-secondary); text-align: left;
+}
+button.staff-fact {
+  background: none; border: none; border-radius: 0; padding: 0;
+  border-bottom: 1px dotted var(--line-strong); cursor: pointer;
+}
+button.staff-fact:hover { color: var(--text-primary); border-bottom-color: var(--text-primary); }
+
+/* A card whose basis (staff.js ctxT + graphFingerprint) no longer matches the
+   screen - the timeline moved, the graph was edited, or both. Reduced emphasis
+   on the whole card plus a caption line that names WHICH of the two changed,
+   never a colour (ADR-0024): red stays attack-only, and "stale" is not an
+   attack. The reason leads the caption upright so it reads as a label against
+   the italic sentence, which is the only weight difference in the block. */
+.staff-ans.is-stale { opacity: 0.72; }
+.staff-stale {
+  margin: 0 0 8px; font-size: 11px; font-style: italic; line-height: 1.5;
+  color: var(--text-muted); border-left: 2px dashed var(--line-strong); padding-left: 8px;
+}
+.staff-stale-why { font-style: normal; font-weight: 500; color: var(--text-secondary); }
+.staff-tie { margin: 0 0 6px; font-size: 11px; color: var(--text-muted); }
+.staff-table-wrap { overflow-x: auto; scrollbar-width: thin; }
+.staff-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.staff-table th, .staff-table td {
+  text-align: left; padding: 4px 8px 4px 0; white-space: nowrap;
+  border-bottom: 1px solid var(--line-soft); color: var(--text-secondary);
+}
+.staff-table th { color: var(--text-muted); font-weight: 400; }
+.staff-table td.is-tie { color: var(--text-primary); }
+.staff-tie-mark { font-style: normal; margin-left: 6px; font-size: 10px; color: var(--text-muted); }
+.staff-note { margin: 8px 0 0; font-size: 11px; line-height: 1.6; color: var(--text-muted); }
+
+/* --- what came back from the model --------------------------------------
+   Abstention and failure are DIFFERENT outcomes and look different, but
+   neither is red: an abstention is the model working correctly, and a dead
+   endpoint is not an attack (ADR-0024 keeps red for the attack layer). The
+   solid rule is the abstention - it is an answer; the dashed one is the
+   failure - nothing was computed. */
+.staff-asking { margin: 0 0 10px; font-size: 12px; color: var(--text-muted); }
+.staff-outcome {
+  margin: 0 0 12px; padding: 8px 10px; border-radius: var(--radius-sm);
+  background: var(--surface-raised); border: 1px solid var(--line-soft);
+}
+.staff-outcome.is-abstain { border-left: 2px solid var(--line-strong); }
+.staff-outcome.is-fail { border-left: 2px dashed var(--line-strong); }
+.staff-outcome-head {
+  margin: 0 0 4px; font-size: 12px; color: var(--text-primary);
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px;
+}
+.staff-outcome-q { color: var(--text-muted); font-size: 11px; min-width: 0; overflow-wrap: anywhere; }
+.staff-outcome-why { margin: 0 0 4px; font-size: 12px; line-height: 1.6; color: var(--text-secondary); overflow-wrap: anywhere; }
+.staff-outcome-note { margin: 0; font-size: 11px; line-height: 1.6; color: var(--text-muted); }
+
+/* The question, and the one paragraph a model wrote. `.brief-s` and
+   `.cite-chip` come from cite.jsx, the same renderer the rail's briefing
+   uses - one citation renderer, so the 미검증 rule cannot drift (ADR-0009). */
+.staff-asked { margin: 0 0 6px; font-size: 12px; line-height: 1.6; color: var(--text-secondary); }
+.staff-asked b { font-weight: 500; color: var(--text-muted); margin-right: 5px; }
+.staff-say { margin: 0 0 10px; }
+.staff-say .brief-s { margin-bottom: 6px; font-size: 12.5px; }
+.staff-caption { margin: 0 0 6px; font-size: 10.5px; color: var(--text-muted); }
+.staff-cite-meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 10.5px; color: var(--text-muted); }
+/* Where a citation chip landed. Held by a background, not a hue, and it
+   stays until the next chip is pressed - the reader looks away and back. */
+.staff-facts li.is-hl { background: var(--surface-hover); border-radius: var(--radius-sm); }
+
+/* ----------------------------------------------- compact: single column */
+
+@media (max-width: 860px) {
+  /* 100vh is left in place above: a browser that does not know dvh keeps the
+     value it understands rather than collapsing to nothing. */
+  .app { height: 100dvh; }
+  .main { grid-template-columns: 1fr; }
+  /* One column means two ROWS, and `auto auto` gave the palette its full
+     content height (527px) and the board whatever was left (71px), which made
+     .canvas-wrap 0px - the stage this breakpoint exists to keep. The palette
+     asks for its own (now one-item-tall) height, the board takes the rest.
+     minmax(0, 1fr) and not 1fr: a 1fr row floors at its content's
+     min-content height, which the canvas would push past the screen. */
+  .main.is-editing {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  /* M1 capped this at 30dvh and scrolled it vertically - a stopgap that cost
+     the stage 253px to show two rows of a four-row column. It is one
+     horizontal strip now: the same buttons in the same order, scrolled with a
+     thumb flick instead. `max-height` is gone, the height is the content's,
+     and what it no longer takes goes to .canvas-wrap. */
+  .main.is-editing .palette {
+    display: flex; flex-direction: row; align-items: center;
+    gap: 10px; padding: 8px 12px;
+    min-height: 0; overflow-x: auto; overflow-y: hidden;
+    scroll-snap-type: x proximity; scroll-padding-left: 12px;
+    -webkit-overflow-scrolling: touch;
+    border-right: none; border-bottom: 1px solid var(--line);
+  }
+  .main.is-editing .palette > * { flex: none; }
+  /* Two paragraphs of prose cannot ride in a strip one item tall: on one line
+     they are ~2000px of text to scroll past before the first asset, and
+     wrapped they give back exactly the height this change is taking. The
+     headings stay - they say what the strip is and group it - the prose does
+     not. Nothing here is the only copy of anything: adding is what the
+     buttons do, and the 연결 tool names itself in the toolbar. */
+  .main.is-editing .palette-head p,
+  .main.is-editing .palette-note { display: none; }
+  .main.is-editing .palette-head h2 { margin: 0; white-space: nowrap; }
+  /* The snap targets are the GROUPS, not the items: a flick should land on
+     "통신" or "서버", which is how the column was read. Aligning every item
+     instead made the strip snap one item in the moment it was laid out -
+     proximity snapping resolves at scrollLeft 0 too - so it opened at 127px,
+     with its own heading and the first group's name already scrolled off. */
+  .main.is-editing .palette-head,
+  .main.is-editing .palette-group { scroll-snap-align: start; }
+  .main.is-editing .palette-group {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 0;
+  }
+  .main.is-editing .palette-group-name { margin-bottom: 0; white-space: nowrap; }
+  .main.is-editing .palette-items { display: flex; gap: 6px; }
+  .main.is-editing .palette-item { flex: none; min-width: 60px; }
+  /* one line each: a label that wraps makes every item in the strip two lines
+     tall, and the strip is the stage's height */
+  .main.is-editing .palette-label { white-space: nowrap; }
+  /* The rail's CONTENT moved into the sheet - the same React node, in the
+     other parent. This hides the empty grid column only; scoping it to a
+     direct child of .main matters because what is inside the sheet is also
+     an <aside class="rail">. */
+  .main > .rail { display: none; }
+  .board { min-width: 0; }
+  /* Reserve the sheet's 56px peek on .app, not on .main: the timeline is a
+     sibling of .main and would otherwise sit underneath the fixed sheet.
+     Padding here keeps the stage AND the timeline above it, which is the
+     stacking the compact spec draws. */
+  /* U15: 같은 56px 을 여기서 또 적지 않는다. 이것은 "peek 높이만큼" 이라는 뜻이고
+     그 값은 --sheet-peek-h 한 곳에 있다. */
+  .app { padding-bottom: calc(var(--sheet-peek-h) + env(safe-area-inset-bottom, 0px)); }
+  /* inside the sheet the rail is the whole panel: no left edge, no second
+     surface colour on top of the sheet's own */
+  .sheet .rail { border-left: none; background: none; }
+  .sheet .rail-body { overflow: visible; }
+  /* The geo footer is a horizontally scrolling strip by construction
+     (overflow-x: auto). At 390px .geo-warn still carried white-space: normal
+     and margin-left: auto, so it was squeezed to ~42px wide and wrapped into a
+     511px-tall column; the footer is flex: none, so that column ate the stage
+     and left the map canvas 17px high. Let the strip scroll sideways, which is
+     what it was built to do. */
+  .geo-foot > * { flex: none; }
+  .geo-warn { white-space: nowrap; margin-left: 0; }
+
+  /* U9 on a phone. A finger is about 44px wide and the ghost line is 2 to 4px,
+     so the invisible hit stroke and the endpoint handle are what is actually
+     being aimed at; both grow. The visible line does NOT grow with them - a
+     thicker ghost at this size reads as a real link. */
+  .ghost-hit { stroke-width: 26; }
+  .ghost-end { r: 10; stroke-width: 1.8; }
+  /* :hover does not exist on a touch screen, and a sticky hover state left the
+     last-tapped candidate lit after the link was made. Each element goes back
+     to ITS OWN base: one blanket value put the handle (.7) below where it
+     started, so the one a finger had just pressed read fainter than the ones
+     it had not. */
+  .ghost-cand:hover .ghost-line { stroke-opacity: .5; }
+  .ghost-cand:hover .ghost-end { stroke-opacity: .7; }
+
+  /* ------------------------------ compact: the sheet takes the ambiguity */
+  /* Markers that overlap are not spread out on the map - moving a symbol off
+     its grid square would be a lie about where the asset is. The tap reports
+     everything under it and the list says what was there, which is the one
+     place a phone has room to ask. Achromatic by rule: the row that is
+     selected is raised and heavier, never coloured. */
+  .stack-pick {
+    display: flex; flex-direction: column; gap: 4px;
+    margin: 0 0 12px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .stack-pick-head {
+    font-size: 11px; letter-spacing: .04em; color: var(--text-muted);
+    text-transform: none; padding: 2px 0 4px;
+  }
+  .stack-pick button {
+    display: flex; align-items: center; justify-content: flex-start;
+    min-height: 44px; width: 100%; padding: 0 12px;
+    font-size: 14px; text-align: left; color: var(--text-secondary);
+    background: none; border: 1px solid var(--line-strong);
+    border-radius: var(--radius-sm);
+  }
+  .stack-pick button.on {
+    background: var(--surface-raised); color: var(--text-primary); font-weight: 600;
+  }
+  .stack-pick button .ref { margin-left: auto; }
+
+  /* ------------------------------------- compact: topbar is one line */
+  /* The strip WRAPS, it is not rebuilt: row 1 is the 56px bar (brand,
+     scenario, ?, ⋯) and row 2 is the KPI ribbon, which is the "KPI 띠를
+     상단바 밖 한 줄로" of the spec without a second DOM. Everything that
+     left the bar went into the ⋯ panel as the same node, not a copy. */
+  /* position: relative 는 이제 기본 규칙에 있다 - 패널이 데스크톱에서도 이
+     바에 걸린다. */
+  .topbar {
+    height: auto; flex-wrap: wrap; align-content: flex-start;
+    gap: 0 10px; padding: 0 12px; padding-top: env(safe-area-inset-top, 0px);
+  }
+  .topbar .brand { min-height: 56px; align-items: center; }
+  .brand-mark { white-space: nowrap; }
+  .topbar .tb-rule { display: none; }
+  .topbar .tb-phase, .topbar .tb-clock { display: none; }
+  .tb-field { flex: 0 1 auto; min-width: 0; min-height: 56px; }
+  /* At 390px the word 시나리오 next to the select had nowhere to go and broke
+     one character per line, which is what made the bar two rows tall. The
+     label is taken off the picture only: it keeps its `for`, so the select is
+     still named for a screen reader. */
+  .tb-field label {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
+  .tb-field select { min-width: 0; max-width: 46vw; }
+  .kpis {
+    order: 9; flex: 0 0 100%; width: 100%; align-items: center;
+    padding-bottom: 8px;
+    overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+  }
+  .kpi { scroll-snap-align: start; flex: none; }
+
+  /* 엄지 치수와 전폭 배치만 여기 남는다. 구조는 미디어쿼리 밖의 기본 규칙이다. */
+  .tb-menu-btn { width: 44px; height: 44px; font-size: 18px; }
+  .tb-menu {
+    left: 0; right: 0; min-width: 0; max-width: none;
+    padding: 12px; gap: 10px;
+    border: none; border-bottom: 1px solid var(--line-strong); border-radius: 0;
+  }
+  /* a thumb needs 44px, and everything in here is meant for a thumb */
+  .tb-menu .seg button { min-height: 44px; font-size: 14px; }
+  .tb-menu > button, .tb-menu select, .tb-menu .tb-file { min-height: 44px; }
+  .tb-menu .chk { min-height: 44px; font-size: 14px; }
+  /* 여기 남은 것(화면 맞춤, 편집 도구)은 기본 규칙의 overflow-x: auto 를 타고
+     옆으로 스크롤된다. 390px 에서는 접고도 안 들어가므로 그것이 정상이다. */
+  .board-toolbar { padding: 8px 12px; }
+
+  .timeline { height: 84px; gap: 12px; padding: 0 12px; }
+  .clock { min-width: 96px; }
+  .clock-time { font-size: 22px; }
+
+  /* ---------------------------------------------- compact: 44px targets */
+  /* Measured before touching anything (390x844, DevTools): the rail's own
+     tabs were 42.4px, action/build req-btn ran 25-33px, and the event
+     stream's log rows - buttons too, each one seeks the replay - were the
+     worst at 22.66px. None of that matches "already 44px"; only
+     .tb-menu/.stack-pick had an explicit min-height already. One rule
+     across the whole rail/sheet/inspect surface, not case by case. */
+  .rail button, .sheet button, .stack-pick button, .inspect button {
+    min-height: 44px;
+  }
+  /* ...except the event stream's log rows, which the blanket rule took from
+     ~23px to 44px and so nearly doubled the scroll length of a 48-row list
+     inside a 190px window (4.3 rows visible instead of 8.4). The stream is
+     read, not operated: a row is a full-width band, the only thing a tap does
+     is seek the replay, and a mis-seek costs a second tap on the right row.
+     34px is still a deliberate target - wide, and taller than the 23px the
+     rows had - without turning the log into a list of buttons. */
+  /* align-content, because .ev is a grid whose one row is baseline-aligned:
+     without it the spare height all lands under the text. */
+  .stream-body .ev { min-height: 34px; align-content: center; }
+
+  /* ------------------------------------------ compact: 참모 is a rail tab */
+  /* The bottom edge is already M1's sheet. A second fixed drawer would fight
+     it for that edge and for the thumb, so App hands the ONE StaffDock node
+     to Rail instead of to .app: `.staff-dock` does not exist at this width at
+     all, and the same panel opens inside the sheet under the 참모 tab. Two
+     instances would be two query logs writing one localStorage key. */
+  .staff { flex-direction: column; }
+  .staff-queries {
+    width: auto; min-height: 0; overflow: visible;
+    padding: 0 0 10px; margin-bottom: 12px;
+    border-right: none; border-bottom: 1px solid var(--line-strong);
+  }
+  /* the blanket 44px rule above already sizes these; the selects are not
+     buttons, so they say it themselves */
+  .staff-arg { width: 100%; }
+  .staff-arg select { flex: 1 1 auto; max-width: none; min-height: 32px; font-size: 12px; }
+  .staff-clear { margin-top: 4px; align-self: stretch; text-align: center; }
+  .staff-answers { overflow: visible; padding: 0; }
+  /* A fact is a full-width tap target here, so the dotted rule under it would
+     run the width of the sheet: the ref marks itself by being raised. */
+  button.staff-fact {
+    border-bottom: none; padding: 6px 8px; margin: -6px -8px;
+    background: var(--surface-raised); border-radius: var(--radius-sm);
+  }
+  .staff-facts li { align-items: flex-start; }
+  /* The question box is a thumb target. The blanket rule above reaches the
+     buttons (묻기, and 다시 확인 in its place when there is no model) because
+     they are `.rail button`; the input is not a button, so it says 44px
+     itself rather than sitting 4px short of the rule next to it. The row is
+     wide enough here to keep field and button side by side, and it wraps
+     rather than squeezing the input to nothing at 320px. */
+  .staff-askbox { flex-wrap: wrap; }
+  .staff-ask-input { flex: 1 1 60%; min-height: 44px; font-size: 13px; }
+  .staff-ask-go { flex: 0 0 auto; min-height: 44px; padding: 6px 14px; margin-left: 0; }
+  .staff-outcome { padding: 8px; }
+  .staff-outcome-q { flex-basis: 100%; }
+  /* Chips are tapped here, not clicked: the sentence gets line height to
+     keep them from overlapping the line above. */
+  .staff-say .brief-s { line-height: 1.9; padding-left: 8px; }
+  .staff-facts li.is-hl { padding: 2px 6px; margin: 0 -6px; }
+  /* The caption can carry two reasons at once (clock AND graph), so at this
+     width it wraps into a short paragraph rather than a line - give it room
+     to breathe instead of letting it crowd the first fact. */
+  .staff-stale { line-height: 1.6; padding: 4px 0 4px 8px; }
+  .staff-when { display: none; }
+}
+
+/* --------------------------------------------- compact: no sparkline */
+/* Under ~560px the ribbon is too short to read a 6-hour axis off, and the
+   transport is what a thumb actually reaches for. The SVG is hidden, never
+   removed: the desktop timeline is the same component. */
+@media (max-width: 560px) {
+  .timeline { height: 64px; }
+  .ribbon-wrap { display: none; }
+  .clock { margin-left: auto; min-width: 0; }
+  .clock-time { font-size: 20px; }
+}
+
+/* ============================================================= U15: 워터마크 */
+/* ADR-0025 3번은 "가상 훈련 시나리오 · 실제 부대 배치 아님" 을 항상 표시하고 끌
+ * 수 없게 한다. 그런데 bottom: 56px 는 시트(ADR-0030)의 peek 높이와 같은 값이어서
+ * peek 에서만 보였고 half(50dvh) 와 full(86dvh) 에서는 시트가 그 위를 덮었다.
+ * 덮인 고지는 꺼진 고지다 - 이 화면이 실제 부대 배치가 아니라는 고지는 여기 하나뿐이다.
+ *
+ * 데스크톱은 건드리지 않는다: 시트가 없으므로 bottom 은 그대로 56px 이고, 그 값은
+ * 지도 패널 바닥의 .geo-foot 을 비키는 높이다. peek 도 건드리지 않는다 - .app 이
+ * 아래에 비워 두는 띠가 정확히 peek 높이라서(위의 --sheet-peek-h) peek 시트는
+ * 지도 패널 바닥에도 못 닿는다. 390x843 실측으로 워터마크 아래끝이 뷰포트
+ * 바닥에서 175px, peek 시트 윗끝이 56px 이다.
+ *
+ * 그래서 올라가는 것은 peek 보다 높은 상태뿐이다. 그 상태에서는 position: fixed
+ * 로 바뀐다. 시트도 fixed 라서 같은 좌표계에서 재야 "시트 위" 가 정확해진다.
+ * 패널 안에서 absolute 로 재려면 타임라인 높이와 .app 의 아래 패딩을 이 규칙에
+ * 또 적어야 하고, 그것이 같은 수가 두 곳에 생기는 그 일이다. 높이는 --sheet-h
+ * 한 곳에서 오고 여기서는 읽기만 한다.
+ *
+ * 상태를 두 개 적는 것이 조건부로 숨기는 것은 아니다. 문장은 세 상태 전부에서
+ * 같은 하나로 보인다. 상태가 하나 늘면 `watermark.test.js` 가 그 상태에 이 규칙이
+ * 없다고 말한다 - peek 보다 높은 상태는 전부 여기 있어야 한다.
+ *
+ * z-index 는 시트(30) 보다 위다. 자리로 이미 안 겹치지만 dvh 반올림이나 safe-area
+ * 로 1px 이 겹치는 날 고지가 지는 쪽이 되지 않게 한다. pointer-events: none 이므로
+ * 시트의 손잡이를 가로채지 않는다.
+ *
+ * 문장의 두 번째 사본은 만들지 않는다. MapPane.jsx 의 그 한 노드가 움직인다.
+ * 배경 불투명도와 색은 그대로이므로 U7 이 잰 대비도 그대로다 - 이 블록은 위치만
+ * 바꾼다. */
+[data-compact="1"][data-sheet="half"] .map-watermark,
+[data-compact="1"][data-sheet="full"] .map-watermark {
+  position: fixed;
+  bottom: calc(var(--sheet-h) + 8px);
+  z-index: 31;
+}
+
+/* ================================================================= U7: 와이어 */
+/* The wire (holographic) render mode. Deliberately the LAST block in this
+ * file and self-contained, so it merges mechanically against anything else
+ * editing the sheet or the toolbar.
+ *
+ * There is no colour in here, by rule. RedCarpet's hologram is cyan and
+ * `--mobility` IS cyan (#35c8ff): a cyan terrain would misuse one of the
+ * eight cause colours rather than add a ninth (ADR-0024, ADR-0012). The mode
+ * is geometry and opacity; the map layers live in mapLayers.js `WIRE`.
+ */
+
+/* The render seg sits beside 바탕/차원 and must not be the thing that pushes
+   the controls block onto a third row at 390px. */
+.seg-wire button { white-space: nowrap; }
+
+/* The base switcher is disabled, not hidden, while the mode is on: the
+   operator has to see which basemap comes back. Disabled chrome is quieter,
+   never coloured. */
+.geo-controls .seg button:disabled { opacity: .45; cursor: default; }
+
+/* ADR-0025: the watermark cannot be turned off, and once the basemap is gone
+   it sits over the near-black board with brightened grid lines crossing
+   behind it. Computed contrast of --text-primary against the composited
+   panel (WCAG relative luminance):
+     today, panel .78 over the dark board ............ 17.83:1
+     today, panel .78 over a bright satellite pixel ... 13.35:1  <- the floor now
+     wire,  panel .92 over the board .................. 17.83:1
+     wire,  panel .92 over a 0.5-opacity grid line .... 16.69:1  <- the floor here
+     wire,  panel left at .78 over that grid line ..... 14.06:1  (rejected)
+   So the panel gets MORE opaque in this mode, not less: the mode's worst case
+   is above the one the screen already ships with. The border steps up from
+   --line-strong (1.57:1 against the panel) to --text-muted (7.49:1) so the
+   box still has an edge against a background that is now nearly its own
+   value. Achromatic throughout - both are existing neutral tokens. */
+.map-pane[data-wire="1"] .map-watermark {
+  background: rgba(7, 10, 16, .92);
+  border-color: var(--text-muted);
+}
+
+/* The MapLibre attribution and nav control keep their own surface - the tile
+   attribution is still owed even when no raster tile is drawn, because the
+   DEM is still being fetched. */
+.map-pane[data-wire="1"] .maplibregl-ctrl-attrib { background: rgba(7, 10, 16, .85) !important; }
+
+@media (max-width: 860px) {
+  /* ADR-0030: the control has to be reachable with a thumb at 390px, and a
+     third seg must not push the block onto a second row over the stage.
+     Measured at 390x844 in the page: today's two segs are 298px wide, one
+     row, with 32.1px buttons (the blanket 44px rule covers .rail/.sheet/
+     .inspect and never this block). Adding a third seg at the desktop
+     padding takes it to 334px, which is wider than the 334px the block has
+     from `right: 56px` to the left edge, so it wraps: two rows, 97.8px tall
+     over the stage. Narrower padding plus a real 44px target gives one row
+     again, 329.6px wide, 61px tall, every button 44px.
+     The render seg leads, because it is the one that changes the most. */
+  .map-controls { right: 52px; gap: 6px; padding: 6px 8px; }
+  .map-controls .seg button { padding: 6px 9px; min-height: 44px; }
+  .seg-wire { order: -1; }
+}

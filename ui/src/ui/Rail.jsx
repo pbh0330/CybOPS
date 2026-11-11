@@ -2,7 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { CAUSE_COLOR } from '../graph.js'
 import { num, pct, missionRows, cutRows, actionRows, linkageOf, eventRows } from '../derive.js'
 import detection from '../detection.json'
-import { techniqueKo, techniqueMeaning, tacticKo } from '../labels.js'
+import { techniqueKo, techniqueMeaning, tacticKo, assetName, typeKo } from '../labels.js'
+import { linkCandidates, missionCandidates, ruleGap, linkFitsRules, linkException, BEARER_ORDER } from '../sandbox.js'
+import Readiness from './Readiness.jsx'
+import { CitedText, citeStats, splitSentences, stripCites } from './cite.jsx'
 
 // The rail. Six stacked panels became one fixed block plus tabs (ADR-0024):
 // mission state is always visible because it is the answer to "how bad is it",
@@ -76,7 +79,7 @@ function MissionState({ graph, step, when }) {
 // number comes from eval/results via tools/pull-detection.mjs, with the file
 // and the date it was pulled - nothing here is typed in. It is evidence in the
 // ADR-0009 sense: a claim with its source attached, or no claim.
-function DetectionEvidence() {
+function DetectionEvidence({ compact }) {
   const d = detection
   const fmt = (x, n = 2) => Number(x).toFixed(n)
   return (
@@ -105,7 +108,16 @@ function DetectionEvidence() {
         <div className="ev-row" key={sg.name}>
           <span>{sg.name}</span>
           <b>{sg.attack_cells}/{sg.cells}</b>
-          <em className="ref" title={techniqueMeaning(sg.technique)}>{sg.technique} {techniqueKo(sg.technique)}</em>
+          {compact ? (
+            // a `title` never opens on a tap - the same string gets a tap path
+            // instead of a second tooltip component (M2 task 2)
+            <details className="ev-ref-details">
+              <summary className="ref">{sg.technique} {techniqueKo(sg.technique)}</summary>
+              {techniqueMeaning(sg.technique) && <p className="rail-caption">{techniqueMeaning(sg.technique)}</p>}
+            </details>
+          ) : (
+            <em className="ref" title={techniqueMeaning(sg.technique)}>{sg.technique} {techniqueKo(sg.technique)}</em>
+          )}
         </div>
       ))}
       <div className="ev-foot">
@@ -115,7 +127,7 @@ function DetectionEvidence() {
   )
 }
 
-function Cuts({ graph, step }) {
+function Cuts({ graph, step, compact }) {
   const rows = cutRows(graph, step)
   if (!rows.length) return <div className="none">현재 단절·침해 없음</div>
   const anyAttack = rows.some((r) => r.cause === 'attack')
@@ -149,7 +161,7 @@ function Cuts({ graph, step }) {
           <span className="note">{r.note}</span>
         </div>
       ))}
-      {anyAttack && <DetectionEvidence />}
+      {anyAttack && <DetectionEvidence compact={compact} />}
     </>
   )
 }
@@ -235,34 +247,21 @@ function Brief({ scenarioId, step, edited, onToast }) {
   if (edited) return <div className="none">편집된 그래프에는 해당 브리핑이 없다</div>
   if (!data || !data.brief || !data.brief.text) return <div className="none">이 시각의 브리핑이 없다</div>
 
+  // 칩도 배지도 cite.jsx 가 그린다 - 참모 답변과 같은 렌더러다 (ADR-0009).
   const facts = new Map((data.pack?.facts || []).map((f) => [f.id, f.text]))
-  const sentences = String(data.brief.text).split(/(?<=[.!?])\s+/).filter((x) => x.trim())
+  const stats = citeStats(data.brief.text)
 
   return (
     <>
       <p className="rail-caption">이 문단만 LLM 이 썼다. 숫자는 결정론 계층이 만든 것이다 (ADR-0003)</p>
-      {sentences.map((raw, i) => {
-        const cites = [...raw.matchAll(/\[(F\d+)\]/g)].map((m) => m[1])
-        const text = raw.replace(/\[(F\d+)\]/g, '').replace(/\s+([.,])/g, '$1').trim()
-        return (
-          <p className="brief-s" key={i}>
-            {text}{' '}
-            {cites.map((c) => (
-              <button
-                key={c} type="button"
-                className={`cite-chip${facts.has(c) ? '' : ' is-bad'}`}
-                title={facts.get(c) || '근거를 찾지 못했다'}
-                onClick={() => onToast(`${c} — ${facts.get(c) || '근거 없음'}`)}
-              >{c}</button>
-            ))}
-            {cites.length === 0 && <span className="unverified">미검증</span>}
-          </p>
-        )
-      })}
+      <CitedText
+        text={data.brief.text} facts={facts}
+        onCite={(c, hit) => onToast(`${c} — ${hit || '근거 없음'}`)}
+      />
       <div className="brief-meta">
         <span>{data.brief.model || ''}</span>
         <span>{data.brief.prompt_version || ''}</span>
-        <span>{sentences.length}문장 · 인용 {sentences.filter((x) => /\[F\d+\]/.test(x)).length}건</span>
+        <span>{stats.sentences}문장 · 인용 {stats.cited}건</span>
       </div>
     </>
   )
@@ -282,9 +281,8 @@ function BriefCard({ scenarioId, step, edited, onToast }) {
     return () => { alive = false }
   }, [scenarioId, t, edited])
   const text = data?.brief?.text ? String(data.brief.text) : ''
-  const sentences = text.split(/(?<=[.!?])\s+/).filter((x) => x.trim())
-  const cited = sentences.filter((x) => /\[F\d+\]/.test(x)).length
-  const unverified = sentences.length - cited
+  const sentences = splitSentences(text)
+  const { cited, unverified } = citeStats(text)
   return (
     <div className="brief-card">
       <div className="brief-card-head">
@@ -298,7 +296,7 @@ function BriefCard({ scenarioId, step, edited, onToast }) {
       </div>
       {!sentences.length && <div className="none">{edited ? '편집된 그래프에는 브리핑이 없다' : '이 시점 브리핑 없음'}</div>}
       {sentences.length > 0 && !open && (
-        <p className="brief-first">{sentences[0].replace(/\[(F\d+)\]/g, '').trim()}</p>
+        <p className="brief-first">{stripCites(sentences[0])}</p>
       )}
       {open && <Brief scenarioId={scenarioId} step={step} edited={edited} onToast={onToast} />}
       {sentences.length > 0 && (
@@ -352,11 +350,48 @@ function nameOf(list, id) {
   return x ? x.name || id : id
 }
 
-function Linkage({ graph, assetId, mode, editor }) {
+function Linkage({ graph, assetId, mode, editor, rules }) {
   const link = linkageOf(graph, assetId)
   const asset = (graph.assets || []).find((a) => a.id === assetId)
   const ed = editor && editor.current
   const editing = mode === 'edit' && ed
+  // the rule table says which services a type can provide and which tasks it
+  // can perform; those come first, the rest fold away. No table: everything.
+  const mc = rules ? missionCandidates(graph, rules, assetId) : null
+  const split = (list, ids) => {
+    if (!mc) return [list, []]
+    const want = new Set(ids)
+    return [list.filter((x) => want.has(x.id)), list.filter((x) => !want.has(x.id))]
+  }
+  const [svcFirst, svcRest] = split(graph.services || [], mc ? mc.services : [])
+  const [taskFirst, taskRest] = split(graph.tasks || [], mc ? mc.tasks : [])
+  const svcRow = (svc) => (
+    <label className="chk lk-chk" key={svc.id}>
+      <input
+        type="checkbox"
+        checked={link.provides.includes(svc.id)}
+        onChange={(e) => {
+          const next = link.provides.filter((id) => id !== svc.id)
+          if (e.target.checked) next.push(svc.id)
+          ed.setProvidedBy(assetId, next)
+        }}
+      />
+      {svc.name || svc.id} <span className="ref">{svc.id}</span>
+    </label>
+  )
+  const taskRow = (t) => (
+    <label className="chk lk-chk" key={t.id}>
+      <input
+        type="checkbox"
+        checked={t.performed_at === assetId}
+        onChange={(e) => ed.setPerformedAt(t.id, e.target.checked ? assetId : null)}
+      />
+      {t.name || t.id} <span className="ref">{t.id}</span>
+      {t.performed_at && t.performed_at !== assetId && (
+        <span className="ref">지금: {t.performed_at}</span>
+      )}
+    </label>
+  )
   const rows = [
     ['서비스 제공', link.provides.map((id) => nameOf(graph.services, id))],
     ['작업 수행', link.hosts.map((id) => nameOf(graph.tasks, id))],
@@ -379,37 +414,20 @@ function Linkage({ graph, assetId, mode, editor }) {
       {editing && (
         <>
           <div className="lk-group">
-            <div className="lk-sub">이 자산이 제공하는 서비스</div>
-            {(graph.services || []).map((svc) => (
-              <label className="chk lk-chk" key={svc.id}>
-                <input
-                  type="checkbox"
-                  checked={link.provides.includes(svc.id)}
-                  onChange={(e) => {
-                    const next = link.provides.filter((id) => id !== svc.id)
-                    if (e.target.checked) next.push(svc.id)
-                    ed.setProvidedBy(assetId, next)
-                  }}
-                />
-                {svc.name || svc.id} <span className="ref">{svc.id}</span>
-              </label>
-            ))}
+            <div className="lk-sub">이 자산이 제공하는 서비스{mc ? ` - 유형에 맞는 ${svcFirst.length}` : ''}</div>
+            {svcFirst.map(svcRow)}
+            {mc && svcFirst.length === 0 && svcRest.length > 0 && <div className="none">이 유형이 제공하는 서비스 종류가 규칙표에 없다</div>}
+            {svcRest.length > 0 && (mc
+              ? <details className="lk-more"><summary>그 외 {svcRest.length}</summary>{svcRest.map(svcRow)}</details>
+              : svcRest.map(svcRow))}
           </div>
           <div className="lk-group">
-            <div className="lk-sub">이 자산에서 수행하는 작업</div>
-            {(graph.tasks || []).map((t) => (
-              <label className="chk lk-chk" key={t.id}>
-                <input
-                  type="checkbox"
-                  checked={t.performed_at === assetId}
-                  onChange={(e) => ed.setPerformedAt(t.id, e.target.checked ? assetId : null)}
-                />
-                {t.name || t.id} <span className="ref">{t.id}</span>
-                {t.performed_at && t.performed_at !== assetId && (
-                  <span className="ref">지금: {t.performed_at}</span>
-                )}
-              </label>
-            ))}
+            <div className="lk-sub">이 자산에서 수행하는 작업{mc ? ` - 유형에 맞는 ${taskFirst.length}` : ''}</div>
+            {taskFirst.map(taskRow)}
+            {mc && taskFirst.length === 0 && taskRest.length > 0 && <div className="none">이 유형이 수행하는 작업이 규칙표에 없다</div>}
+            {taskRest.length > 0 && (mc
+              ? <details className="lk-more"><summary>그 외 {taskRest.length}</summary>{taskRest.map(taskRow)}</details>
+              : taskRest.map(taskRow))}
           </div>
           <label className="chk lk-chk">
             <input
@@ -425,16 +443,125 @@ function Linkage({ graph, assetId, mode, editor }) {
   )
 }
 
-function Inspect({ graph, step, data, mode, editor }) {
+// Building the network. The rule table (data/link-rules.json) says which
+// types can link over which bearer and under what condition (wired needs the
+// same site, satcom needs a satcom terminal at one end); the candidate list is
+// that table applied to the board, so the person is told what can be wired
+// rather than left to guess and be refused. A link that no longer fits the
+// rule (site changed after wiring, bearer switched) is flagged, not removed:
+// the board stays the person's, the flag is the table's opinion.
+const WHY_KO = { site: '같은 위치', unit: '같은 부대', transit: '중계 노드', bearer: '베어러 일치' }
+
+function Build({ graph, assetId, editor, rules, onDeselect }) {
+  const ed = editor.current
+  const asset = (graph.assets || []).find((a) => a.id === assetId)
+  // the site input is committed on blur / Enter, not per keystroke: setSite
+  // snaps an empty value back to '신규', which would fight the person mid-word.
+  // Hooks sit above the early return so their order never changes.
+  const liveSite = asset ? asset.site || '' : ''
+  const [siteDraft, setSiteDraft] = useState(liveSite)
+  useEffect(() => { setSiteDraft(liveSite) }, [assetId, liveSite])
+  // deletion asks in place, not with window.confirm (a modal has no place on
+  // a phone mid-edit); switching selection cancels a pending confirm rather
+  // than leaving it armed against whatever gets selected next
+  const [confirmDel, setConfirmDel] = useState(false)
+  useEffect(() => { setConfirmDel(false) }, [assetId])
+  if (!asset) return null
+  const commitSite = () => { if (siteDraft !== liveSite) ed.setSite(assetId, siteDraft) }
+  const cands = linkCandidates(graph, rules, assetId)
+  const mine = (graph.links || []).filter((l) => l.a === assetId || l.b === assetId)
+  // null when the table knows the type; else the reason ('규칙표 없음' when
+  // link-rules.json did not load, '규칙표에 없는 유형' otherwise)
+  const gap = ruleGap(rules, asset.type)
+  const known = !gap
+  const jewel = (graph.crown_jewels || []).includes(assetId)
+  // The predicate moved to sandbox.js (linkFitsRules) so this mark and the
+  // overlay's dotted ghost line (derive.linkGhosts) read the same table. It
+  // used to be inline here, which meant the screen could flag a link the
+  // overlay did not.
+  const bearerOk = (l) => linkFitsRules(graph, rules, l)
+  return (
+    <div className="build">
+      <div className="lk-head">구성</div>
+      <div className="build-row">
+        <label>위치(site)<input
+          value={siteDraft}
+          onChange={(e) => setSiteDraft(e.target.value)}
+          onBlur={commitSite}
+          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); commitSite() } }}
+        /></label>
+        <label>부대<select value={asset.unit || ''} onChange={(e) => ed.setUnit(assetId, e.target.value)}>
+          <option value="">-</option>{(graph.units || []).map((u) => <option key={u.id} value={u.id}>{u.name || u.id}</option>)}</select></label>
+      </div>
+      <label className="chk lk-chk"><input type="checkbox" checked={jewel} onChange={() => ed.toggleJewel(assetId)} /> 보석(crown jewel)으로 표시 - 보석 방어 모드의 패배 조건</label>
+
+      <div className="lk-sub">연결 가능 {known ? `(${cands.length})` : `- ${gap}`}</div>
+      {cands.slice(0, 8).map((c) => (
+        <div className="build-cand" key={`${c.id}:${c.bearer}`}>
+          <span>{assetName(graph, c.id).ko}<em className="ref">{c.id}</em></span>
+          <span className="build-bearer">{c.bearer}</span>
+          <span className="build-why">{WHY_KO[c.why]}</span>
+          <button type="button" className="req-btn" onClick={() => ed.addLinkWith(assetId, c.id, c.bearer)}>연결</button>
+        </div>
+      ))}
+      {known && cands.length === 0 && <div className="none">지금 연결할 수 있는 상대가 없다. 같은 위치의 자산을 놓거나 베어러가 맞는 중계 노드를 두어라.</div>}
+
+      {mine.length > 0 && <div className="lk-sub">이 자산의 링크</div>}
+      {mine.map((l) => {
+        // A link whose scenario declared an abstraction exception is not
+        // 규칙 밖, and it is not a plain link either: a rule was waived and
+        // the declaration says what was left unmodelled. The mark carries
+        // that reason - the declaration exists to make the simplification
+        // visible on screen, not to make it disappear (ADR-0033).
+        const waived = linkException(l)
+        const fits = bearerOk(l)
+        return (
+        <div className="build-cand" key={l.id}>
+          <span>{assetName(graph, l.a === assetId ? l.b : l.a).ko}<em className="ref">{l.id}</em></span>
+          <select value={l.bearer} onChange={(e) => ed.setLinkBearer(l.id, e.target.value)}>
+            {BEARER_ORDER.map((b) => <option key={b} value={b}>{b}</option>)}
+          </select>
+          {!fits && <span className="build-warn">규칙 밖</span>}
+          {fits && waived && (
+            <span className="build-decl" title={`${waived.exempts.join(', ')} 면제: ${waived.why}`}>선언된 예외</span>
+          )}
+          <button type="button" className="req-btn" onClick={() => ed.removeLink(l.id)}>끊기</button>
+        </div>
+        )
+      })}
+
+      {/* removal is the eraser tool + a tap on desktop (editor.js handleTap);
+          this is the same call, reached without switching tools (M2 task 2) */}
+      <div className="build-row build-del">
+        {confirmDel ? (
+          <>
+            <span>정말 지울까</span>
+            <button type="button" className="danger" onClick={() => { ed.removeAsset(assetId); onDeselect && onDeselect() }}>지운다</button>
+            <button type="button" onClick={() => setConfirmDel(false)}>취소</button>
+          </>
+        ) : (
+          <button type="button" className="danger" onClick={() => setConfirmDel(true)}>자산 삭제</button>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function Inspect({ graph, step, data, mode, editor, rules, onDeselect }) {
   if (!data) return <div className="inspect-empty">노드를 클릭하면 기여 경로가 나온다.</div>
   const rows = []
   const add = (k, v) => rows.push([k, v])
   add('종류', KIND_KO[data.kind] || data.kind)
+  // an asset is editable in the build block below (site, unit, transit), so
+  // its rows and title read the live graph, not the selection snapshot
+  const live = data.kind === 'asset' ? (graph.assets || []).find((a) => a.id === data.id) : null
   if (data.kind === 'asset') {
-    add('자산 유형', data.assetTypeKo || data.assetType)
-    add('부대 / 위치', `${data.unitName || data.unit} / ${data.site}`)
-    add('기동성', data.mobility)
-    add('중계', data.transit ? '가능' : '종단 단말(중계 안 함)')
+    const a = live || data
+    add('자산 유형', live ? typeKo(live.type) : (data.assetTypeKo || data.assetType))
+    const unitName = ((graph.units || []).find((u) => u.id === a.unit) || {}).name || a.unit || '-'
+    add('부대 / 위치', `${unitName} / ${a.site || '-'}`)
+    add('기동성', a.mobility || 'static')
+    add('중계', a.transit === false ? '종단 단말(중계 안 함)' : '가능')
     add('영향도', pct(num(step?.asset?.[data.id])))
     const c = (step?.asset_outage || {})[data.id]
     if (c) add('현재 단절', c)
@@ -459,11 +586,14 @@ function Inspect({ graph, step, data, mode, editor }) {
   return (
     <div className="inspect">
       <div className="rail-head" style={{ marginBottom: 10 }}>
-        <h2>{data.siteName || data.label?.split('\n')[0] || data.id}</h2>
+        <h2>{live ? assetName(graph, data.id).ko : (data.siteName || data.label?.split('\n')[0] || data.id)}</h2>
         <span className="when">{data.id}</span>
       </div>
       <dl>{rows.map(([k, v]) => <div key={k} style={{ display: 'contents' }}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
-      {data.kind === 'asset' && <Linkage graph={graph} assetId={data.id} mode={mode} editor={editor} />}
+      {data.kind === 'asset' && mode === 'edit' && editor && editor.current && (
+        <Build graph={graph} assetId={data.id} editor={editor} rules={rules} onDeselect={onDeselect} />
+      )}
+      {data.kind === 'asset' && <Linkage graph={graph} assetId={data.id} mode={mode} editor={editor} rules={rules} />}
     </div>
   )
 }
@@ -476,30 +606,64 @@ const TABS = [
 
 export default function Rail({
   graph, step, scenarioId, edited, when, tab, onTab,
-  requests, onRequest, selectedData, onToast, mode, wargameSlot, editor,
-  payload, idx, onSeekIdx,
+  requests, onRequest, selectedData, onToast, mode, wargameSlot, staffSlot, editor,
+  payload, idx, onSeekIdx, rules, sandbox, stack, onPick, onDeselect, compact,
 }) {
   const cuts = cutRows(graph, step).length
   const acts = actionRows(graph, step).length
   const counts = { cuts, actions: acts }
+  // A stack survives a delete (App only clears it from the inspector's own
+  // delete button, not the eraser tool) and it survives a rotate to desktop
+  // (App never clears it when compact goes false). Filtering against the
+  // live asset list and gating on compact here, at the one place that
+  // renders it, means neither caller has to get both right.
+  const liveStack = compact ? (stack || []).filter((id) => (graph?.assets || []).some((a) => a.id === id)) : []
+  // The staff panel is a TAB here, never a second drawer: on a phone the rail
+  // already lives inside M1's sheet, and a second fixed drawer would fight it
+  // for the bottom edge. App decides which parent gets the one StaffDock node
+  // (App.jsx staffEl); this only says where it lands when the parent is us.
+  // Rotating to desktop takes the slot away, so an active 참모 tab has to fall
+  // back rather than leave the body empty.
+  const hasStaff = !!staffSlot
+  const active = tab === 'staff' && !hasStaff ? 'actions' : tab
+  const tabList = hasStaff ? [...TABS, ['staff', '참모']] : TABS
 
   return (
     <aside className="rail">
+      {/* sandbox: whether the board is playable comes before how bad it is */}
+      {sandbox && graph && <Readiness graph={graph} />}
       <MissionState graph={graph} step={step} when={when} />
 
       {mode === 'wargame' ? (
         <>
-          <div className="tabs"><button type="button" className="on">교전</button></div>
-          <div className="rail-body">{wargameSlot}</div>
+          <div className="tabs" role="tablist">
+            <button
+              type="button" role="tab" aria-selected={active !== 'staff'}
+              className={active !== 'staff' ? 'on' : ''}
+              onClick={() => onTab('actions')}
+            >
+              교전
+            </button>
+            {hasStaff && (
+              <button
+                type="button" role="tab" aria-selected={active === 'staff'}
+                className={active === 'staff' ? 'on' : ''}
+                onClick={() => onTab('staff')}
+              >
+                참모
+              </button>
+            )}
+          </div>
+          <div className="rail-body">{active === 'staff' ? staffSlot : wargameSlot}</div>
         </>
       ) : (
         <>
           <div className="tabs" role="tablist">
-            {TABS.map(([id, label]) => (
+            {tabList.map(([id, label]) => (
               <button
                 key={id} type="button" role="tab"
-                aria-selected={tab === id}
-                className={tab === id ? 'on' : ''}
+                aria-selected={active === id}
+                className={active === id ? 'on' : ''}
                 onClick={() => onTab(id)}
               >
                 {label}
@@ -508,9 +672,29 @@ export default function Rail({
             ))}
           </div>
           <div className="rail-body">
-            {tab === 'cuts' && <Cuts graph={graph} step={step} />}
-            {tab === 'actions' && <Actions graph={graph} step={step} requests={requests} onRequest={onRequest} />}
-            {tab === 'inspect' && <Inspect graph={graph} step={step} data={selectedData} mode={mode} editor={editor} />}
+            {/* The map cannot separate markers that land on the same pixel, so
+                it hands the ambiguity up instead of guessing: this is the list
+                of everything that shared the tap. App only ever fills it on a
+                narrow screen - a mouse does not need it. */}
+            {liveStack.length > 1 && (
+              <div className="stack-pick">
+                <div className="stack-pick-head">이 위치에 자산 {liveStack.length}</div>
+                {liveStack.map((id) => (
+                  <button
+                    key={id} type="button"
+                    className={id === selectedData?.id ? 'on' : ''}
+                    aria-pressed={id === selectedData?.id}
+                    onClick={() => onPick && onPick(id)}
+                  >
+                    {assetName(graph, id).ko}<em className="ref">{id}</em>
+                  </button>
+                ))}
+              </div>
+            )}
+            {active === 'cuts' && <Cuts graph={graph} step={step} compact={compact} />}
+            {active === 'actions' && <Actions graph={graph} step={step} requests={requests} onRequest={onRequest} />}
+            {active === 'inspect' && <Inspect graph={graph} step={step} data={selectedData} mode={mode} editor={editor} rules={rules} onDeselect={onDeselect} />}
+            {active === 'staff' && staffSlot}
           </div>
         </>
       )}

@@ -4,8 +4,15 @@
 #
 # WHY THIS EXISTS
 #
-# There are ten Test-*.ps1 gates in this repo and CLAUDE.md tells you to put two
-# of them "in CI". There is no CI, and there was no way to run them together, so
+# As of 2026-10-14 there are sixteen Test-*.ps1 scripts in scripts\, and the
+# $gates list below has thirteen entries - ten of those scripts (Test-BundleConfig
+# appears twice, once per bundle) plus Add-Bom.ps1 and Write-OptcManifestLog.ps1.
+# This sentence used to say "ten Test-*.ps1 gates in this repo" and had drifted
+# well before the gate added today: count the files, do not trust the number in
+# a comment. The list below is the authority.
+#
+# CLAUDE.md tells you to put two of them "in CI". There is no CI, and there was
+# no way to run them together, so
 # in practice each one got run when someone remembered it. Two consequences
 # showed up on 2026-09-10:
 #
@@ -45,17 +52,43 @@ $root = Split-Path $PSScriptRoot -Parent
 # Each gate is a name, a tier, and how to call it. Nothing here interprets the
 # output: a gate is expected to set its own exit code, and a gate that does not
 # is a gate to fix rather than to special-case.
+#
+# An optional 'skipExit' is the one exit code from that gate which means "I
+# checked nothing, and here is why" rather than pass or fail. It exists because
+# the alternative is worse in both directions: a gate that passes when its
+# target is absent is a gate that reports on nothing, and a gate that fails
+# when its target is absent trains everybody to read red as normal. A skip
+# prints the gate's own reason and does not set the exit code of this script.
+#
+# THE BUNDLE GATES AND ui\dist-hosted
+#
+# 'bundle: hosted' used to point at ui\dist-hosted. No script in this repo
+# builds that directory - Publish-Briefings.ps1 writes briefing JSON into
+# ui\public\data and never a bundle - so the gate was green in the main tree
+# only because a directory from 2026-09-09 happened to still be there, and red
+# in every fresh worktree for the same reason. Three agents in a row read that
+# red as "worktrees are like that".
+#
+# What the deploy actually gates is ui\dist with a hosted config.json copied
+# into it (Deploy-Aws.ps1 step 3, then step 4's gate). So that is what this
+# gates: the same bundle directory, judged against the hosted config file the
+# deploy copies in. No second directory, nothing to keep in sync, and the
+# answer depends only on committed inputs plus whether a build was run.
 $gates = @(
   @{ name = 'case collisions';    tier = 'offline'; script = 'Test-CaseCollisions.ps1';   args = @{} },
   @{ name = 'ps1 encoding (bom)'; tier = 'offline'; script = 'Add-Bom.ps1';               args = @{ Check = $true } },
   @{ name = 'ontology';           tier = 'offline'; script = 'Test-Ontology.ps1';         args = @{} },
   @{ name = 'ocsf conformance';   tier = 'offline'; script = 'Test-OcsfConformance.ps1';  args = @{} },
   @{ name = 'geo invariance';     tier = 'offline'; script = 'Test-GeoInvariance.ps1';    args = @{} },
+  @{ name = 'scenario invariants';tier = 'offline'; script = 'Test-ScenarioInvariants.ps1'; args = @{} },
+  @{ name = 'token parity';       tier = 'offline'; script = 'Test-TokenParity.ps1';       args = @{} },
   @{ name = 'ui unit tests';      tier = 'offline'; script = 'Test-UiUnit.ps1';         args = @{} },
-  @{ name = 'bundle: local';      tier = 'offline'; script = 'Test-BundleConfig.ps1';
-     args = @{ Bundle = (Join-Path $root 'ui\dist') } },
-  @{ name = 'bundle: hosted';     tier = 'offline'; script = 'Test-BundleConfig.ps1';
-     args = @{ Bundle = (Join-Path $root 'ui\dist-hosted') } },
+  @{ name = 'bundle: local';      tier = 'offline'; script = 'Test-BundleConfig.ps1'; skipExit = 3;
+     args = @{ Bundle = (Join-Path $root 'ui\dist'); Posture = 'local' } },
+  @{ name = 'bundle: hosted';     tier = 'offline'; script = 'Test-BundleConfig.ps1'; skipExit = 3;
+     args = @{ Bundle  = (Join-Path $root 'ui\dist'); Posture = 'hosted'
+               Config  = (Join-Path $root 'ui\public\config.aws.example.json') } },
+  @{ name = 'proxy allowlist';    tier = 'offline'; script = 'Test-ProxyAllowlist.ps1';   args = @{} },
   @{ name = 'optc manifest';      tier = 'data';    script = 'Write-OptcManifestLog.ps1'; args = @{ Check = $true } },
   @{ name = 'briefing citations'; tier = 'model';   script = 'Test-BriefingCitations.ps1'; args = @{} }
 )
@@ -106,29 +139,43 @@ foreach ($g in $gates) {
     $code = 1
   }
   $secs = [math]::Round(((Get-Date) - $t0).TotalSeconds, 1)
-  $status = if ($code -eq 0) { 'pass' } else { 'FAIL' }
+  $status = 'FAIL'
+  if ($code -eq 0) {
+    $status = 'pass'
+  } elseif ($null -ne $g.skipExit -and $code -eq $g.skipExit) {
+    # The gate ran and told us it could not check anything. Its own output says
+    # why and what to run, and the quoting below prints that.
+    $status = 'skip'
+  }
 
   [void]$results.Add([pscustomobject]@{
     name = $g.name; tier = $g.tier; status = $status; exit = $code; seconds = $secs
   })
   Write-Output ("  {0,-4}  {1,-22} {2,6}s  exit {3}" -f $status, $g.name, $secs, $code)
 
-  # Only a failure is worth quoting. A passing gate has already said so.
+  # Only a failure is worth quoting - a passing gate has already said so - and
+  # a skip, because a skip that does not say why is the thing this avoids.
   if ($code -ne 0) {
     $tail = @($out | Select-Object -Last 4)
     foreach ($line in $tail) { Write-Output ("          | " + $line) }
   }
 }
 
-$ran    = @($results | Where-Object { $_.status -ne 'skipped' })
+$ran    = @($results | Where-Object { $_.status -ne 'skipped' -and $_.status -ne 'skip' })
 $failed = @($ran | Where-Object { $_.status -ne 'pass' })
+$unable = @($results | Where-Object { $_.status -eq 'skip' })
+$byTier = @($results | Where-Object { $_.status -eq 'skipped' })
 
 Write-Output '=========================================================================='
-Write-Output ("  ran {0}, passed {1}, failed {2}, skipped {3}" -f `
-  $ran.Count, ($ran.Count - $failed.Count), $failed.Count, ($results.Count - $ran.Count))
+Write-Output ("  ran {0}, passed {1}, failed {2}, not checked {3}, skipped (tier) {4}" -f `
+  $ran.Count, ($ran.Count - $failed.Count), $failed.Count, $unable.Count, $byTier.Count)
 Write-Output ''
 if ($failed.Count -gt 0) {
   Write-Output ("RESULT: FAIL   " + (($failed | ForEach-Object { $_.name }) -join ', '))
+} elseif ($unable.Count -gt 0) {
+  # Not a pass about the skipped gate. A pass about everything that could run,
+  # with the one thing nobody checked named out loud.
+  Write-Output ("RESULT: PASS   not checked: " + (($unable | ForEach-Object { $_.name }) -join ', '))
 } else {
   Write-Output 'RESULT: PASS'
 }

@@ -29,17 +29,27 @@
 // Nothing else on the screen depends on a model. Briefings are pre-generated
 // JSON produced by scripts/New-BriefingPack.ps1 and shipped with the bundle, so
 // a hosted copy with llm.enabled = false still shows every number, every
-// briefing and every citation. Only the live attacker goes away.
+// briefing and every citation. What goes away is the live attacker and, since
+// S2, the staff's free-text question box and its sentences - the staff's query
+// buttons, facts and tables are engine output and need no model (ADR-0028 §4).
 
 const DEFAULTS = {
   llm: {
     enabled: true,
     endpoint: 'http://127.0.0.1:11434',
     model: 'qwen2.5:7b-instruct-q4_K_M',
-    // Shown in the UI when the endpoint cannot be reached. Deployments that
-    // deliberately run without a model should say so here rather than letting
-    // the reader think something is broken.
-    unavailable_note: '이 배포본에는 모델 서버가 없다. greedy 와 random 은 그대로 동작한다.',
+    // The model's default role is the staff officer (ADR-0028). The LLM
+    // attacker of ADR-0019 is not deleted - the engine, the prompt and the
+    // chooser all stay - it just does not appear in the start card unless
+    // this is true. Putting it back is this one flag, which is the point:
+    // ADR-0019 was not overturned, its default was moved.
+    attacker_enabled: false,
+    // Shown in the UI when the endpoint cannot be reached. Two surfaces read
+    // it now - the staff's question box and the wargame's start card - so it
+    // has to say what still works on both, not just in the wargame.
+    // Deployments that deliberately run without a model should say so here
+    // rather than letting the reader think something is broken.
+    unavailable_note: '이 배포본에는 모델 서버가 없다. 참모의 질의 버튼·사실·표와 미리 생성된 브리핑, greedy/random 교전은 그대로 동작한다. 빠지는 것은 서술 문장과 자연어 질문뿐이다.',
   },
   // Map tiles are the one CDN exception (ADR-0025). An on-prem deployment
   // points these at its own tile server; nothing else in the bundle leaves

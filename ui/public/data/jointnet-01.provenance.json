@@ -1,0 +1,44 @@
+{
+  "scenario_id": "jointnet-01",
+  "origin": "original synthetic fixture",
+  "license": "project-authored; same terms as repository",
+  "redistributable": true,
+  "allowed_use": [
+    "development",
+    "regression",
+    "construct validation"
+  ],
+  "excluded_use": "physical combat or detection performance claims",
+  "code_base": "b568db5",
+  "generator": "scripts/build_jointnet_demo.py",
+  "generator_sha256": "9cdb7f7c20e81c7f6519aa7935ecfaec4403841fa776d2dd92a4e58f12fa4720",
+  "inputs": [
+    {
+      "path": "scenarios/airnet-01/mission.json",
+      "sha256": "94f49212809be7c39e4b2b6f969f9e9e92d54b53bec4cd3ebe01baad9f780418"
+    },
+    {
+      "path": "scenarios/airnet-01/attack-timeline.json",
+      "sha256": "2433d721531a015e49487adbf5270a51d35d3d6ebe9874500f759e3a370412f2"
+    }
+  ],
+  "files": [
+    {
+      "path": "mission.json",
+      "sha256": "4365e7125593b27d54ca402fe8ecc2a97924a06390668b40d9ffb62dc01e7e92"
+    },
+    {
+      "path": "attack-timeline.json",
+      "sha256": "28aaadc1ced1e0b5e1af30bfa19607b185958f7cde8a58c309d89c66b86fdd23"
+    }
+  ],
+  "replay": {
+    "path": "ui/public/data/jointnet-01.replay.json",
+    "sha256": "2f81fab5e0b890ceeabc233fe2865f43ecd5b0d4e6ff4ab3f77bbba132416ac4",
+    "engine": "scripts/Invoke-MissionPropagation.ps1",
+    "engine_sha256": "83a162fc1377d8d1d963403f741544b1a5ea70305ae6c1fe5ed62861361b8fe4",
+    "exporter_sha256": "ff668be0a8e097eeb270bdcc535c12fccb3ecbd615e00e7ee29e930b2faebdb7",
+    "steps": 24,
+    "generated": "2026-11-10T17:47:41.6283873+09:00"
+  }
+}

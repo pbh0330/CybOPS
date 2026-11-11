@@ -21,6 +21,10 @@
 
 import { terrainModel, surfaceAt, terrainSvg } from './terrain.js'
 import { typeKo } from './labels.js'
+// `causeColor` arrives as an argument (GeoPane passes CAUSE_COLOR), but the ok
+// colour and the greys around it were bare literals here. They come from the
+// one source now (ADR-0024).
+import { CAUSE_COLOR, CHROME } from './tokens.mjs'
 
 // Position of an asset at time t, from the segment table. Outside every
 // segment the position is undefined, and undefined is drawn as absent rather
@@ -459,7 +463,7 @@ export function renderGeo({
     const pb = drawPos[l.b]
     if (!pa || !pb) continue
     const cause = linkOut[l.id]
-    const color = cause ? (causeColor[cause] || '#8a8f98') : '#2fd18b'
+    const color = cause ? (causeColor[cause] || CHROME.causeFallback) : CAUSE_COLOR.ok
     const bearer = String(l.bearer || '').toLowerCase()
     const wired = /wired|fibre|fiber|cable|lan|copper|landline/.test(bearer)
     const satcom = isSat(bearer)
@@ -648,7 +652,7 @@ export function renderGeo({
   for (const d of drawList) {
     const { a, p, P, ground, hit, cause, members, label } = d
     const key = folded[a.id]
-    const ring = cause ? (causeColor[cause] || '#8a8f98') : (hit ? causeColor.attack : '#3a4657')
+    const ring = cause ? (causeColor[cause] || CHROME.causeFallback) : (hit ? causeColor.attack : CHROME.markRingIdle)
     const icon = iconFor(a.type, hit ? 'attack' : cause ? 'outage' : 'ok')
     const sel = members.some((m) => m.id === selected) ? ' is-selected' : ''
 

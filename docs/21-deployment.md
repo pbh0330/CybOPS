@@ -70,9 +70,15 @@ RESULT: DO NOT DEPLOY   1 failure(s)
 서버에 아무 모델이나 받게 하거나, 있는 모델을 지울 수 있다.** 추론 비용은 눈에
 보이는 문제이고, 모델 관리는 기계를 망가뜨리는 문제다.
 
-그래서 예시 설정은 **허용 목록**으로 짰다. `/api/generate` 와 `/api/tags` 두 경로만
+그래서 예시 설정은 **허용 목록**으로 짰다. `/api/chat` 과 `/api/tags` 두 경로만
 열고 `/api/llm/` 아래 나머지는 403 이다. 거부 목록으로 짜면 Ollama 가 엔드포인트를
 하나 추가하는 날 틀린 설정이 된다.
+
+> **이 두 경로는 한 번 어긋나 있었다.** 예시는 `/api/generate` 를 열어 뒀는데 클라이언트는
+> `/api/chat` 을 부른다(`ui/src/staff-llm.mjs`, `ui/src/attack-llm.mjs`, `probeLlm`). `proxied`
+> 자세의 모든 모델 호출이 403 이었다는 뜻이다. 지금은 `scripts\Test-ProxyAllowlist.ps1` 이
+> 클라이언트가 실제로 부르는 업스트림 경로를 `ui/src/` 에서 긁어 두 예시 파일과 대조하고,
+> 어긋나면 exit 1 이다. 게이트 목록에 들어가 있다.
 
 ### 3.2 유량 제한은 사람의 속도에 맞춘다
 
@@ -108,13 +114,53 @@ Copy-Item ui\public\config.hosted.example.json ui\dist\config.json -Force
 # 5) 복사
 #    ui\dist\*  ->  /srv/mc-cycop/
 
-# 6) proxied 인 경우에만: deploy
-ginx.example.conf 를 반영하고
+# 6) proxied 인 경우에만: deploy/nginx.example.conf 를 반영하고
 #    htpasswd 를 만든다. 만들지 않았으면 5)로 돌아가 off 로 다시 올린다.
+```
+
+**S3 + CloudFront 로 올리는 경우에는 2)~7)을 `scripts\Deploy-Aws.ps1` 이 대신한다.**
+같은 절차의 실행 가능한 절반이다 - 자세 `config.json` 을 `ui\dist` 에 쓰고, 위 4)의 게이트를
+돌리고, 캐시가 다른 두 묶음을 나눠 올린 뒤 무효화한다. 절차와 확인 목록은
+`docs/24-aws-demo.md`, 근거는 ADR-0029.
+
+```powershell
+.\scripts\Deploy-Aws.ps1 -Bucket <bucket> -DistributionId <id> -DryRun   # 먼저 읽는다
+.\scripts\Deploy-Aws.ps1 -Bucket <bucket> -DistributionId <id>
 ```
 
 3)에서 `config.json` 을 `ui\public\` 이 아니라 `ui\dist\` 에 두는 것에 주의한다.
 `public/` 을 고치면 다음 빌드에 반영되지만 **이번 산출물에는 안 들어간다.**
+
+### 4.1 호스티드 번들은 별도 디렉터리가 아니다
+
+**`ui\dist-hosted` 를 만드는 스크립트는 이 저장소에 없다.** 호스티드 산출물은 위
+절차 그대로 `ui\dist` **하나**이고, `local` 과 다른 것은 그 안의 `config.json`
+**한 파일**뿐이다. 그러니 호스티드 번들을 만드는 명령은 위 2)~3) 두 줄이다.
+
+```powershell
+# 자체 호스팅(nginx/Caddy)용 호스티드 번들
+npm --prefix ui run build
+Copy-Item ui\public\config.hosted.example.json ui\dist\config.json -Force
+.\scripts\Test-BundleConfig.ps1 -Bundle ui\dist -Posture hosted
+
+# AWS 시연 사본용 호스티드 번들: 위 세 줄을 Deploy-Aws.ps1 이 대신한다
+.\scripts\Deploy-Aws.ps1 -Bucket <bucket> -DistributionId <id> -DryRun
+```
+
+번들을 호스티드 자세로 **갈아입히지 않고** 자세 설정만 미리 검사하려면 `-Config` 로
+들어갈 파일을 가리킨다. `Invoke-Gates.ps1` 의 `bundle: hosted` 가 이 형태로 돌고,
+`Deploy-Aws.ps1` 4단계가 복사 **뒤에** 검사하는 것과 같은 짝을 복사 **전에** 본다.
+
+```powershell
+.\scripts\Test-BundleConfig.ps1 -Bundle ui\dist -Posture hosted `
+  -Config ui\public\config.aws.example.json
+```
+
+> **낡은 `ui/dist-hosted/` 와 `ui/mc-cycop-hosted.zip`.** 2026-09-09 에 손으로 만든
+> 것이고 ADR-0024(React 재설계)가 "재생성해야 한다" 고 적은 뒤 재생성되지 않았다.
+> 게이트가 2026-10-14 부터 그것을 더 이상 읽지 않으므로 **아무것도 그 디렉터리를
+> 참조하지 않는다.** 지우는 것은 사람의 몫이고(ADR-0010 4번), 안 지워도 해롭지 않다.
+> 둘 다 gitignore 대상이다.
 
 ## 5. 올린 뒤 확인
 
@@ -133,6 +179,14 @@ ginx.example.conf 를 반영하고
 
 - **인증 방식이 basic auth 다.** 시연 규모에서는 충분하지만 계정 관리가 없다.
   여러 사람이 각자 접속해야 하면 그때 다시 본다.
+  **AWS 시연 사본에서는 그 역할을 CloudFront 뷰어 요청 함수가 한다** - 서버가 없으므로
+  `htpasswd` 도 없고, 함수가 `Authorization` 헤더를 상수와 비교한 뒤 그 헤더를 지운다
+  (ADR-0029 5번, `infra/README.md`). 계정 관리가 없다는 한계는 그대로다.
 - **HTTPS 인증서 발급은 이 문서 밖이다.** 예시는 Let's Encrypt 경로를 가정한다.
-- **접속 로그에 무엇을 남길지 정하지 않았다.** 유량 제한이 걸린 요청을 남길지 여부가
-  개인정보 문제와 닿는다. 실제로 공개하기 전에 정한다.
+  AWS 시연 사본은 CloudFront 기본 도메인의 인증서를 쓰므로 뷰어 구간은 해결돼 있고,
+  **모델 오리진 구간이 평문으로 남는다**(ADR-0029 6번). 도메인을 확보하면 그쪽도 닫힌다.
+- ~~**접속 로그에 무엇을 남길지 정하지 않았다.**~~ **닫혔다(2026-09-23, ADR-0029 8번).**
+  CloudFront **표준 로그만** 쌓고 **90일 수명주기로 지운다**(`infra/demo-static.yaml` 의
+  로그 버킷). **유량 제한에 걸린 요청을 따로 남기지 않는다** - 따로 남기면 "차단된 사람"
+  목록이 되고 그것은 개인정보 쪽으로 한 발 들어가는 일인데, 시연 사본에서 그 기록으로 할
+  일이 없다. 표준 로그만으로 접속 여부와 경로는 보인다.

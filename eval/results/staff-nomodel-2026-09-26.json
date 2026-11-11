@@ -1,0 +1,67 @@
+{
+  "tool": "ui/tools/staff-eval.mjs",
+  "generated": "2026-09-26T08:47:44.615Z",
+  "scenario": "tacnet-01",
+  "code_rev": "d5bb3db",
+  "golden": {
+    "items": 38,
+    "abstain": 8,
+    "abstain_share": 0.2105,
+    "per_class": {
+      "state_summary": 6,
+      "mission_why": 6,
+      "asset_impact": 6,
+      "containment_top": 5,
+      "compare_defense": 4,
+      "readiness_gap": 3
+    },
+    "problems": [],
+    "ok": true,
+    "file": "eval/golden/staff/tacnet-01.jsonl",
+    "sha": "d4bc998"
+  },
+  "endpoint": "http://127.0.0.1:11434",
+  "requested_model": "qwen2.5:7b-instruct-q4_K_M",
+  "catalog_regression": {
+    "cases": 30,
+    "pass": 30,
+    "fail": 0,
+    "queries_covered": [
+      "asset_impact",
+      "compare_defense",
+      "containment_top",
+      "mission_why",
+      "readiness_gap",
+      "state_summary"
+    ],
+    "queries_uncovered": [],
+    "failures": []
+  },
+  "model": null,
+  "model_skip": {
+    "reason": "endpoint_unreachable",
+    "detail": "GET http://127.0.0.1:11434/api/tags: fetch failed",
+    "available_models": []
+  },
+  "measured": [
+    "catalog_regression"
+  ],
+  "not_measured": [
+    "routing_precision_at_1",
+    "citation_rate",
+    "unverified_rate",
+    "abstention",
+    "latency"
+  ],
+  "note": [
+    "모델에 닿지 못해 라우팅·인용·기권·지연을 측정하지 않았다. 이 값들은 0 이 아니라 null 이다.",
+    "돌린 것은 카탈로그 직접 호출 회귀뿐이다 - 골든셋의 기대 질의를 staff.validate + staff.ask 로 실제 실행해 사실이 나오는지만 확인했다.",
+    "라우팅 품질에 대해 이 파일은 아무것도 말하지 않는다."
+  ],
+  "routing": null,
+  "narration": null,
+  "abstention": null,
+  "latency": null,
+  "errors": null,
+  "records": []
+}

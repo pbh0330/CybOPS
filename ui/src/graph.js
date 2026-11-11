@@ -7,6 +7,7 @@
 import { symbolDataUri, isVerified, unitSymbolDataUri } from './symbols.js'
 import { serviceIconDataUri } from './icons.js'
 import { assetName } from './labels.js'
+import { CAUSE_COLOR } from './tokens.mjs'
 
 // Node shape used to carry the device class. It does not need to any more: the
 // device icon says what the machine is, and a canvas of triangles, hexagons and
@@ -15,16 +16,13 @@ import { assetName } from './labels.js'
 
 // Cause colours. These are the only saturated colours on the screen
 // (ADR-0024); they match docs/design/tokens.md one for one.
-export const CAUSE_COLOR = {
-  attack: '#ff4d5e',
-  mobility: '#35c8ff',
-  terrain: '#a7c261',
-  maintenance: '#7f8794',
-  unknown: '#ffb020',
-  env: '#7d93ab',
-  inter: '#c07dff',
-  ok: '#2fd18b',
-}
+//
+// THIS IS A RE-EXPORT, NOT THE DEFINITION. The values live in tokens.mjs and
+// tools/token-parity.mjs holds style.css and docs/design/tokens.md to them.
+// The line below stays because GeoPane, GraphCanvas, MapPane, Rail, Timeline
+// and Topbar all import CAUSE_COLOR from '../graph.js': repointing six files
+// at the new module would be a diff with no benefit. Edit tokens.mjs.
+export { CAUSE_COLOR }
 
 // degradation -> colour. ACHROMATIC BY RULE (ADR-0024): brighter is worse and
 // there is no hue at all.
@@ -89,7 +87,7 @@ export function buildElements(g) {
     els.push({
       data: {
         // meaning first, id second: "CO2-VEH" alone told the operator nothing
-        id: a.id, kind: 'asset', label: name.twoLine, assetType: a.type,
+        id: a.id, kind: 'asset', label: name.twoLine, assetType: a.type, visualModel: a.visual_model,
         assetTypeKo: name.typeKo, siteName: name.site, unitName: unitNameOf[a.unit] || '',
         unit: a.unit || '', unitEchelon: echelonOf[a.unit] || '',
         site: a.site || '', mobility: a.mobility || 'static',
@@ -224,6 +222,18 @@ export function stylesheet() {
     // read the same way as its border (ADR-0012: red only for attack)
     { selector: 'node.hit', style: { 'underlay-color': CAUSE_COLOR.attack, 'underlay-opacity': 0.28, 'underlay-padding': 12, 'underlay-shape': 'ellipse' } },
     { selector: 'node.out', style: { 'underlay-color': 'data(outColor)', 'underlay-opacity': 0.16, 'underlay-padding': 10, 'underlay-shape': 'ellipse' } },
+    // wargame marks on nodes. They sit after .hit/.out so a flash wins the
+    // underlay; the matching edge rule (edge.threat-hop) lives with the other
+    // edge rules below, after the base 'edge' rule that would otherwise
+    // override its width and curve.
+    { selector: 'node.threat', style: { 'underlay-color': CAUSE_COLOR.attack, 'underlay-opacity': 0.12, 'underlay-padding': 8, 'underlay-shape': 'ellipse' } },
+    // a foothold that is also a self-move target keeps the hit glow: what has
+    // happened outranks what might
+    { selector: 'node.hit.threat', style: { 'underlay-color': CAUSE_COLOR.attack, 'underlay-opacity': 0.28, 'underlay-padding': 12, 'underlay-shape': 'ellipse' } },
+    // isolation is the defender's mark: achromatic double ring
+    { selector: 'node.isolated', style: { 'underlay-color': '#f2f3f4', 'underlay-opacity': 0.10, 'underlay-padding': 10, 'underlay-shape': 'ellipse' } },
+    { selector: 'node.flash-hit', style: { 'underlay-color': CAUSE_COLOR.attack, 'underlay-opacity': 0.55, 'underlay-padding': 22, 'underlay-shape': 'ellipse', 'transition-property': 'underlay-opacity, underlay-padding', 'transition-duration': '350ms' } },
+    { selector: 'node.flash-miss', style: { 'underlay-color': '#9aa5b1', 'underlay-opacity': 0.35, 'underlay-padding': 18, 'underlay-shape': 'ellipse', 'transition-property': 'underlay-opacity, underlay-padding', 'transition-duration': '350ms' } },
 
     {
       selector: 'edge',
@@ -252,7 +262,8 @@ export function stylesheet() {
       style: {
         'curve-style': 'straight',
         'target-arrow-shape': 'none',
-        'line-color': '#2fd18b',
+        // a healthy link is the ok colour, not a green that happens to match it
+        'line-color': CAUSE_COLOR.ok,
         'line-style': 'dashed',
         'line-dash-pattern': [7, 6],
         'width': 2,
@@ -291,14 +302,65 @@ export function stylesheet() {
         'z-index': 9,
       },
     },
+    // the attacker's candidate moves during a wargame: red because they are
+    // the attacker's (ADR-0012), faint because they have not happened. Must
+    // follow the base 'edge' rule (width, curve-style) to take effect.
+    { selector: 'edge.threat-hop', style: {
+      'curve-style': 'unbundled-bezier', 'control-point-distances': [40], 'control-point-weights': [0.5],
+      'line-color': CAUSE_COLOR.attack, 'target-arrow-color': CAUSE_COLOR.attack, 'target-arrow-shape': 'triangle',
+      'line-style': 'dotted', 'width': 'data(w)', 'opacity': 0.28, 'z-index': 8, 'label': '' } },
     // contribution path of the selected node: what it rests on and what
     // rests on it. Everything else steps back instead of disappearing, so
     // the path is read in its context.
     { selector: 'node.faded', style: { 'opacity': 0.16 } },
     { selector: 'edge.faded', style: { 'opacity': 0.08 } },
     { selector: 'edge.path', style: { 'width': 2, 'line-color': '#9aa5b1', 'target-arrow-color': '#9aa5b1', 'opacity': 1 } },
+    // U3: contribution as thickness. `contribW` is derive.contribLayer's
+    // weight - a per-asset contribution in %p divided by the LARGEST
+    // contribution in the same set, never by the mission total. Per-asset
+    // contributions can exceed that total (engine.js serviceDegFor multiplies
+    // the providers of a redundancy_group, so either provider alone reads as
+    // decisive), and a thickness drawn as a share of the total would say each
+    // of two assets was the whole of a loss both of them share.
+    //
+    // Thickness and opacity only. No hue at all: red is adversary effect and
+    // nothing else (ADR-0012, ADR-0024), and this layer is analysis. The node
+    // outline is used rather than its border because the border already
+    // carries the cause and the selection, and a relay that contributes
+    // through reachability alone has no structural edge to thicken.
+    //
+    // Declared after .path and .faded so the weight wins the width while
+    // .faded keeps element opacity, which is a different property.
+    { selector: 'node.contrib', style: {
+      'outline-width': 'mapData(contribW, 0, 1, 1.5, 8)', 'outline-color': '#9aa5b1',
+      'outline-opacity': 'mapData(contribW, 0, 1, 0.3, 0.85)', 'outline-offset': 2 } },
+    { selector: 'edge.contrib', style: {
+      'width': 'mapData(contribW, 0, 1, 1.6, 7)',
+      'line-opacity': 'mapData(contribW, 0, 1, 0.4, 1)', 'z-index': 7 } },
     { selector: '.hidden', style: { 'display': 'none' } },
   ]
+}
+
+// Tap wiring for a cytoscape instance.
+//
+// These handlers are registered exactly once, when the instance is created,
+// and the instance is deliberately NOT rebuilt when a callback changes -
+// rebuilding on every mode switch would throw the layout and the viewport
+// away. So they must not keep the callbacks that happened to be in scope at
+// creation: App's `onTap` closes over `mode`, and entering edit mode makes a
+// new one. Reading the refs at tap time is the same shape MapPane already
+// uses for its marker handlers (moveRef/selectRef).
+//
+// `onTap` returning true means an edit tool consumed the tap; a consumed tap
+// must not also change the selection.
+export function bindTaps(cy, tapRef, selectRef) {
+  cy.on('tap', 'node', (evt) => {
+    const onTap = tapRef.current
+    if (onTap && onTap(evt.target)) return
+    selectRef.current(evt.target.id())
+  })
+  cy.on('tap', 'edge', (evt) => { if (tapRef.current) tapRef.current(evt.target) })
+  cy.on('tap', (evt) => { if (evt.target === cy) selectRef.current(null) })
 }
 
 export const LAYOUTS = {

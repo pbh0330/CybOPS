@@ -34,6 +34,14 @@ function Slider({ label, value, min, max, unit, onChange }) {
 
 export default function GeoPane({ graph, step, cam, onCam, selected, onSelect, hidden }) {
   const boxRef = useRef(null)
+  const [boxSize, setBoxSize] = useState('')
+  useEffect(() => {
+    const box = boxRef.current
+    if (!box) return
+    const observer = new ResizeObserver(() => setBoxSize(`${box.clientWidth}x${box.clientHeight}`))
+    observer.observe(box)
+    return () => observer.disconnect()
+  }, [])
   const [viewT, setViewT] = useState({ zoom: 1, x: 0, y: 0 })
   // clusters the reader has opened; geo.js folds every other co-located
   // group into one marker with a count badge
@@ -81,7 +89,7 @@ export default function GeoPane({ graph, step, cam, onCam, selected, onSelect, h
       handlers.push([g, fn])
     }
     return () => { for (const [g, fn] of handlers) g.removeEventListener('click', fn) }
-  }, [graph, step, cam, selected, hidden, expanded])
+  }, [graph, step, cam, selected, hidden, expanded, boxSize])
 
   // Zoom and pan are a view transform on the finished drawing, not camera
   // parameters. Keeping them out of renderGeo means zooming costs one style
